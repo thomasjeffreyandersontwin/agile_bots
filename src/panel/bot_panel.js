@@ -59,7 +59,7 @@ class BotPanel {
       console.log(`[BotPanel] Panel version: ${this._panelVersion}`);
       
       // Determine bot directory (from env var or default to story_bot)
-      let botDirectory = process.env.BOT_DIRECTORY || path.join(workspaceRoot, 'agile_bot', 'bots', 'story_bot');
+      let botDirectory = process.env.BOT_DIRECTORY || path.join(workspaceRoot, 'agile_bots', 'bots', 'story_bot');
       // Ensure bot directory is absolute
       if (!path.isAbsolute(botDirectory)) {
         botDirectory = path.join(workspaceRoot, botDirectory);

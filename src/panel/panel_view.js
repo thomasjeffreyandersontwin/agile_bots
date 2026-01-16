@@ -105,7 +105,7 @@ class PanelView {
         
         return new Promise((resolve, reject) => {
             const workspaceRoot = PanelView._workspaceDir;
-            const cliPath = path.join(workspaceRoot, 'agile_bot', 'src', 'cli', 'cli_main.py');
+            const cliPath = path.join(workspaceRoot, 'agile_bots', 'src', 'cli', 'cli_main.py');
             
             PanelView._log(`CLI path: ${cliPath}`);
             PanelView._log(`Workspace root: ${workspaceRoot}`);

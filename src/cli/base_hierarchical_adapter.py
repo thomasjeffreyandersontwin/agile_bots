@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from agile_bot.src.cli.adapter_factory import AdapterFactory
+from agile_bots.src.cli.adapter_factory import AdapterFactory
 
 class BaseHierarchicalAdapter(ABC):
     def __init__(self, domain_object, channel: str, factory: Optional[AdapterFactory] = None):

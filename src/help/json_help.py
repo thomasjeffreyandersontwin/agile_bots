@@ -1,7 +1,7 @@
 
 import json
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.help.help import Help
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.help.help import Help
 
 class JSONHelp(JSONAdapter):
     

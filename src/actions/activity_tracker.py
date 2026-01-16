@@ -12,7 +12,7 @@ except ImportError:
     TinyDB = None
 
 def make_json_serializable(obj: Any) -> Any:
-    from agile_bot.src.instructions.instructions import Instructions
+    from agile_bots.src.instructions.instructions import Instructions
     
     if isinstance(obj, Instructions):
         return obj.to_dict()

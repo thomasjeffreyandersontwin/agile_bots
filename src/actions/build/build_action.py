@@ -212,7 +212,7 @@ class BuildStoryGraphAction(Action):
         if 'rules' in instructions._data and instructions._data['rules']:
             all_rules = instructions._data['rules']
             rule_files = []
-            bots_dir = self.behavior.bot_paths.python_workspace_root / 'agile_bot' / 'bots'
+            bots_dir = self.behavior.bot_paths.python_workspace_root / 'agile_bots' / 'bots'
             
             for rule in all_rules:
                 rule_path = None

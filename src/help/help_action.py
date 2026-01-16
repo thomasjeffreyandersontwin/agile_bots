@@ -86,7 +86,7 @@ class HelpAction(Action):
             self._add_command_help(cmd_file, instructions)
     
     def _sort_commands_by_behavior_order(self, command_files):
-        from agile_bot.src.utils import read_json_file
+        from agile_bots.src.utils import read_json_file
         bot_name = self.behavior.bot_name
         bot_directory = self.behavior.bot_paths.bot_directory
         
@@ -100,7 +100,7 @@ class HelpAction(Action):
         return sorted(command_files, key=get_command_order)
     
     def _get_behavior_order(self, bot_directory: Path, behavior_name: str) -> int:
-        from agile_bot.src.utils import read_json_file
+        from agile_bots.src.utils import read_json_file
         behavior_json_path = bot_directory / 'behaviors' / behavior_name / 'behavior.json'
         if not behavior_json_path.exists():
             return 999
@@ -253,7 +253,7 @@ class HelpAction(Action):
         if not action_config_file.exists():
             return
         try:
-            from agile_bot.src.utils import read_json_file
+            from agile_bots.src.utils import read_json_file
             action_config = read_json_file(action_config_file)
             description = action_config.get('description', f'{action_name} action')
             instructions.add_display(f'### {action_name}')

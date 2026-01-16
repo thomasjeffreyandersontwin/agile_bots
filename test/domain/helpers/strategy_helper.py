@@ -95,7 +95,7 @@ class StrategyTestHelper(BaseHelper):
         Returns:
             Path to strategy.json
         """
-        from agile_bot.src.bot_path import BotPath
+        from agile_bots.src.bot_path import BotPath
         bot_paths = BotPath(workspace_path=self.parent.workspace, bot_directory=self.parent.bot_directory)
         documentation_path = bot_paths.documentation_path
         return self.parent.workspace / documentation_path / 'strategy.json'

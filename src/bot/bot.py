@@ -169,7 +169,7 @@ class Bot:
         )
 
     def help(self, topic: Optional[str] = None):
-        from agile_bot.src.help.help import Help
+        from agile_bots.src.help.help import Help
         
         return Help(bot=self)
     

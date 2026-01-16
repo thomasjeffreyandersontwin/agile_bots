@@ -46,7 +46,7 @@ class BehaviorMatcher:
         return False
 
     def _load_behavior_triggers(self) -> BehaviorTriggers:
-        behaviors_dir = self.bot_paths.python_workspace_root / 'agile_bot' / 'bots' / self.bot_name / 'behaviors'
+        behaviors_dir = self.bot_paths.python_workspace_root / 'agile_bots' / 'bots' / self.bot_name / 'behaviors'
         behavior_triggers = {}
         for behavior_dir in behaviors_dir.iterdir():
             if behavior_dir.is_dir() and not behavior_dir.name.startswith('_'):
@@ -57,7 +57,7 @@ class BehaviorMatcher:
         return BehaviorTriggers(triggers=behavior_triggers)
 
     def _load_action_triggers(self) -> ActionTriggers:
-        behaviors_dir = self.bot_paths.python_workspace_root / 'agile_bot' / 'bots' / self.bot_name / 'behaviors'
+        behaviors_dir = self.bot_paths.python_workspace_root / 'agile_bots' / 'bots' / self.bot_name / 'behaviors'
         action_triggers = {}
         for behavior_dir in behaviors_dir.iterdir():
             if behavior_dir.is_dir() and not behavior_dir.name.startswith('_'):

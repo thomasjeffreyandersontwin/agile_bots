@@ -1,6 +1,6 @@
 
-from agile_bot.src.cli.adapters import TTYAdapter
-from agile_bot.src.instructions.instructions import Instructions
+from agile_bots.src.cli.adapters import TTYAdapter
+from agile_bots.src.instructions.instructions import Instructions
 
 class TTYInstructions(TTYAdapter):
     
@@ -71,7 +71,7 @@ class TTYInstructions(TTYAdapter):
                 output_lines.append(f"- {self.add_bold(f'{question}:')} {answer}")
         elif guardrails_dict:
             if hasattr(self.instructions, '_guardrails') and self.instructions._guardrails:
-                from agile_bot.src.cli.adapter_factory import AdapterFactory
+                from agile_bots.src.cli.adapter_factory import AdapterFactory
                 guardrails_adapter = AdapterFactory.create(self.instructions._guardrails, 'tty')
                 output_lines.append(guardrails_adapter.serialize())
             else:
@@ -128,7 +128,7 @@ class TTYInstructions(TTYAdapter):
             saved_assumptions = assumptions
         
         if hasattr(self.instructions, '_strategy') and self.instructions._strategy:
-            from agile_bot.src.cli.adapter_factory import AdapterFactory
+            from agile_bots.src.cli.adapter_factory import AdapterFactory
             strategy_adapter = AdapterFactory.create(self.instructions._strategy, 'tty')
             output_lines.append(strategy_adapter.serialize())
         elif saved_decisions or saved_assumptions or strategy_criteria or assumptions:

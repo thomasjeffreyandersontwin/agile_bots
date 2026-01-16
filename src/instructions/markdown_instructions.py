@@ -1,6 +1,6 @@
 
-from agile_bot.src.cli.adapters import MarkdownAdapter
-from agile_bot.src.instructions.instructions import Instructions
+from agile_bots.src.cli.adapters import MarkdownAdapter
+from agile_bots.src.instructions.instructions import Instructions
 
 class MarkdownInstructions(MarkdownAdapter):
     
@@ -13,7 +13,7 @@ class MarkdownInstructions(MarkdownAdapter):
         
         scope = self.instructions.scope
         if scope and (scope.value or scope.type.value == 'showAll'):
-            from agile_bot.src.cli.adapters import MarkdownAdapter
+            from agile_bots.src.cli.adapters import MarkdownAdapter
             
             output_lines.append("## Scope")
             output_lines.append("")
@@ -29,7 +29,7 @@ class MarkdownInstructions(MarkdownAdapter):
             
             results = scope.results
             if results:
-                from agile_bot.src.cli.adapter_factory import AdapterFactory
+                from agile_bots.src.cli.adapter_factory import AdapterFactory
                 try:
                     adapter = AdapterFactory.create(results, 'markdown')
                     scope_content = adapter.serialize()

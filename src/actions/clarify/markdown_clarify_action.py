@@ -1,6 +1,6 @@
 
-from agile_bot.src.actions.markdown_action import MarkdownAction
-from agile_bot.src.actions.clarify.clarify_action import ClarifyContextAction
+from agile_bots.src.actions.markdown_action import MarkdownAction
+from agile_bots.src.actions.clarify.clarify_action import ClarifyContextAction
 
 class MarkdownClarifyAction(MarkdownAction):
     
@@ -12,5 +12,5 @@ class MarkdownClarifyAction(MarkdownAction):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

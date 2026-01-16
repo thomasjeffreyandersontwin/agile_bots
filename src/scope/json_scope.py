@@ -1,8 +1,8 @@
 
 import json
 from pathlib import Path
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.scope.scope import Scope
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.scope.scope import Scope
 
 class JSONScope(JSONAdapter):
     
@@ -44,7 +44,7 @@ class JSONScope(JSONAdapter):
         if self.scope.type.value in ('story', 'showAll'):
             story_graph = self.scope._get_story_graph_results()
             if story_graph:
-                from agile_bot.src.story_graph.json_story_graph import JSONStoryGraph
+                from agile_bots.src.story_graph.json_story_graph import JSONStoryGraph
                 graph_adapter = JSONStoryGraph(story_graph)
                 content = graph_adapter.to_dict().get('content', [])
                 
@@ -161,7 +161,7 @@ class JSONScope(JSONAdapter):
         if story_test_file and test_method:
             test_file_path = test_dir / story_test_file
             if test_file_path.exists():
-                from agile_bot.src.utils import find_test_method_line
+                from agile_bots.src.utils import find_test_method_line
                 line_number = find_test_method_line(test_file_path, test_method)
                 
                 if line_number:

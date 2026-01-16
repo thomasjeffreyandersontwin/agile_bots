@@ -1,7 +1,7 @@
 
-from agile_bot.src.actions.tty_action import TTYAction
-from agile_bot.src.actions.validate.validate_action import ValidateRulesAction
-from agile_bot.src.instructions.instructions import Instructions
+from agile_bots.src.actions.tty_action import TTYAction
+from agile_bots.src.actions.validate.validate_action import ValidateRulesAction
+from agile_bots.src.instructions.instructions import Instructions
 
 class TTYValidateAction(TTYAction):
     
@@ -45,7 +45,7 @@ class TTYValidateAction(TTYAction):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)
     
     @staticmethod
@@ -59,6 +59,6 @@ class TTYValidateAction(TTYAction):
             if key != 'base_instructions':
                 instructions_obj.set(key, value)
         
-        from agile_bot.src.instructions.tty_instructions import TTYInstructions
+        from agile_bots.src.instructions.tty_instructions import TTYInstructions
         instructions_adapter = TTYInstructions(instructions_obj)
         return instructions_adapter.serialize()

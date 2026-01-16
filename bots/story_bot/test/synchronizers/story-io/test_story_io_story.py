@@ -7,9 +7,9 @@ Tests for Story domain component with user associations and optional stories.
 from mamba import description, context, it, before
 from expects import expect, equal, be_none, be_true, be_false, contain
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_position import Position
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_feature import Feature
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_position import Position
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_feature import Feature
 
 
 def create_story(name='Test Story', sequential_order=None, users=None, steps=None, story_type=None):

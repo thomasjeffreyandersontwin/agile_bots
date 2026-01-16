@@ -13,7 +13,7 @@ These tests focus on CLI-specific concerns:
 Uses parameterized tests to run same test logic across all 3 channels.
 """
 import pytest
-from agile_bot.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
+from agile_bots.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
 
 
 # ============================================================================
@@ -625,7 +625,7 @@ class TestTrackActivityForWorkspaceUsingCLI:
         # Verify activity log not in bot directory
         from pathlib import Path
         repo_root = Path(__file__).parent.parent.parent.parent
-        bot_area_log = repo_root / 'agile_bot' / 'bots' / 'story_bot' / 'activity_log.json'
+        bot_area_log = repo_root / 'agile_bots' / 'bots' / 'story_bot' / 'activity_log.json'
         assert not bot_area_log.exists()
     
     @pytest.mark.skip(reason="Activity tracking exists in domain but not wired through CLI execution path yet")

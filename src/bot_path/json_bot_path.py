@@ -1,7 +1,7 @@
 
 import json
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.bot_path.bot_path import BotPath
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.bot_path.bot_path import BotPath
 
 class JSONBotPath(JSONAdapter):
     

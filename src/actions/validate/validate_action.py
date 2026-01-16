@@ -78,7 +78,7 @@ class ValidateRulesAction(Action):
         all_rules = rules_data.get('validation_rules', [])
         if all_rules:
             rule_files = []
-            bots_dir = self.behavior.bot_paths.python_workspace_root / 'agile_bot' / 'bots'
+            bots_dir = self.behavior.bot_paths.python_workspace_root / 'agile_bots' / 'bots'
             for rule in all_rules:
                 rule_file = rule.get('rule_file', '')
                 if rule_file:

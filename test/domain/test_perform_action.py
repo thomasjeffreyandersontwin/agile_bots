@@ -17,15 +17,15 @@ import pytest
 from pathlib import Path
 import json
 import os
-from agile_bot.src.actions.build.build_action import BuildStoryGraphAction
-from agile_bot.src.actions.render.render_action import RenderOutputAction
-from agile_bot.src.actions.action_context import (
+from agile_bots.src.actions.build.build_action import BuildStoryGraphAction
+from agile_bots.src.actions.render.render_action import RenderOutputAction
+from agile_bots.src.actions.action_context import (
     ClarifyActionContext,
     StrategyActionContext,
     ValidateActionContext,
     ScopeActionContext
 )
-from agile_bot.test.domain.bot_test_helper import BotTestHelper
+from agile_bots.test.domain.bot_test_helper import BotTestHelper
 
 
 # ============================================================================
@@ -235,8 +235,8 @@ class TestClarifyRequirements:
         helper.clarify.given_guardrails_in_workspace(behavior_name)
         
         # When: Behavior loads guardrails from workspace
-        from agile_bot.src.bot_path import BotPath
-        from agile_bot.src.behaviors.behavior import Behavior
+        from agile_bots.src.bot_path import BotPath
+        from agile_bots.src.behaviors.behavior import Behavior
         bot_paths = BotPath(workspace_path=helper.workspace, bot_directory=helper.bot_directory)
         behavior = Behavior(name=behavior_name, bot_paths=bot_paths)
         guardrails = behavior.guardrails
@@ -257,8 +257,8 @@ class TestClarifyRequirements:
         helper.strategy.given_strategy_guardrails_in_workspace(behavior_name)
         
         # When: Behavior loads guardrails from workspace
-        from agile_bot.src.bot_path import BotPath
-        from agile_bot.src.behaviors.behavior import Behavior
+        from agile_bots.src.bot_path import BotPath
+        from agile_bots.src.behaviors.behavior import Behavior
         bot_paths = BotPath(workspace_path=helper.workspace, bot_directory=helper.bot_directory)
         behavior = Behavior(name=behavior_name, bot_paths=bot_paths)
         guardrails = behavior.guardrails
@@ -292,7 +292,7 @@ class TestValidateRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Validate action from production behavior
-        from agile_bot.src.actions.validate.validate_action import ValidateRulesAction
+        from agile_bots.src.actions.validate.validate_action import ValidateRulesAction
         action = ValidateRulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Validate action executes
@@ -320,7 +320,7 @@ class TestValidateRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Validate action from production behavior
-        from agile_bot.src.actions.validate.validate_action import ValidateRulesAction
+        from agile_bots.src.actions.validate.validate_action import ValidateRulesAction
         action = ValidateRulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Validate action executes
@@ -351,7 +351,7 @@ class TestValidateRules:
         helper.story.create_story_graph(story_graph_data)
         
         # AND: Scope filtered to "Build Knowledge" epic
-        from agile_bot.src.scope import Scope, ScopeType
+        from agile_bots.src.scope import Scope, ScopeType
         scope = Scope(workspace_directory=tmp_path)
         scope.filter(type=ScopeType.STORY, value=['Build Knowledge'])
         
@@ -360,7 +360,7 @@ class TestValidateRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Validate action with rules
-        from agile_bot.src.actions.validate.validate_action import ValidateRulesAction
+        from agile_bots.src.actions.validate.validate_action import ValidateRulesAction
         action = ValidateRulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Validate action executes with scope
@@ -406,7 +406,7 @@ class TestValidateRules:
         (src_dir / 'main.py').write_text('# main file')
         
         # AND: Scope filtered to test files only
-        from agile_bot.src.scope import Scope, ScopeType
+        from agile_bots.src.scope import Scope, ScopeType
         scope = Scope(workspace_directory=tmp_path)
         scope.filter(type=ScopeType.FILES, value=['**/test*.py'])
         
@@ -415,7 +415,7 @@ class TestValidateRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Validate action with rules
-        from agile_bot.src.actions.validate.validate_action import ValidateRulesAction
+        from agile_bots.src.actions.validate.validate_action import ValidateRulesAction
         action = ValidateRulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Validate action executes with scope
@@ -461,8 +461,8 @@ class TestDisplayRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Rules action from production behavior
-        from agile_bot.src.rules.rules_action import RulesAction
-        from agile_bot.src.actions.action_context import RulesActionContext
+        from agile_bots.src.rules.rules_action import RulesAction
+        from agile_bots.src.actions.action_context import RulesActionContext
         action = RulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Rules action executes
@@ -484,8 +484,8 @@ class TestDisplayRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Rules action
-        from agile_bot.src.rules.rules_action import RulesAction
-        from agile_bot.src.actions.action_context import RulesActionContext
+        from agile_bots.src.rules.rules_action import RulesAction
+        from agile_bots.src.actions.action_context import RulesActionContext
         action = RulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Rules action executes
@@ -507,8 +507,8 @@ class TestDisplayRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Rules action
-        from agile_bot.src.rules.rules_action import RulesAction
-        from agile_bot.src.actions.action_context import RulesActionContext
+        from agile_bots.src.rules.rules_action import RulesAction
+        from agile_bots.src.actions.action_context import RulesActionContext
         action = RulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Rules action executes
@@ -534,8 +534,8 @@ class TestDisplayRules:
         user_message = "Show me the rules for test organization"
         
         # AND: Rules action
-        from agile_bot.src.rules.rules_action import RulesAction
-        from agile_bot.src.actions.action_context import RulesActionContext
+        from agile_bots.src.rules.rules_action import RulesAction
+        from agile_bots.src.actions.action_context import RulesActionContext
         action = RulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Rules action executes with message
@@ -558,8 +558,8 @@ class TestDisplayRules:
         behavior = helper.bot.behaviors.current
         
         # AND: Rules action
-        from agile_bot.src.rules.rules_action import RulesAction
-        from agile_bot.src.actions.action_context import RulesActionContext
+        from agile_bots.src.rules.rules_action import RulesAction
+        from agile_bots.src.actions.action_context import RulesActionContext
         action = RulesAction(behavior=behavior, action_config=None)
         
         # WHEN: Rules action executes without message

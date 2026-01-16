@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from .resources.scan import Scan
     from .resources.scope import Scope
     from .resources.violation import Violation
-    from agile_bot.src.actions.rules.rule import Rule
+    from agile_bots.src.actions.rules.rule import Rule
     from .resources.block import Block
     from .resources.file import File
 

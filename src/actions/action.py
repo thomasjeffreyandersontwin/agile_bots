@@ -549,7 +549,7 @@ class Action:
         instructions.set('action_instructions', action_data)
     
     def _build_display_content(self, instructions: Instructions):
-        from agile_bot.src.instructions.markdown_instructions import MarkdownInstructions
+        from agile_bots.src.instructions.markdown_instructions import MarkdownInstructions
 
         temp_instructions = instructions.copy()
         temp_instructions._display_content = []

@@ -4,7 +4,7 @@ from typing import List, TYPE_CHECKING
 if TYPE_CHECKING:
     from .scope import Scope
     from .violation import Violation
-    from agile_bot.src.actions.rules.rule import Rule
+    from agile_bots.src.actions.rules.rule import Rule
 
 class Scan:
     

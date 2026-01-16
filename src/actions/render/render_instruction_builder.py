@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Dict, Any, List, TYPE_CHECKING
 if TYPE_CHECKING:
-    from agile_bot.src.actions.render.render_spec import RenderSpec
+    from agile_bots.src.actions.render.render_spec import RenderSpec
 
 class RenderInstructionBuilder:
 

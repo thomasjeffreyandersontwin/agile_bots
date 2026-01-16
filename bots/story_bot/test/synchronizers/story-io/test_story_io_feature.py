@@ -7,9 +7,9 @@ Tests for Feature domain component following Mamba BDD patterns.
 from mamba import description, context, it, before
 from expects import expect, equal, be_none, be_true, be_false
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_feature import Feature
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_epic import Epic
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_feature import Feature
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_epic import Epic
 
 
 def create_feature(name='Test Feature', sequential_order=None, story_count=None):

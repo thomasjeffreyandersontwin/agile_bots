@@ -1,9 +1,9 @@
 
 import json
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.cli.base_hierarchical_adapter import BaseBehaviorsAdapter, BaseBehaviorAdapter
-from agile_bot.src.behaviors.behavior import Behavior
-from agile_bot.src.behaviors.behaviors import Behaviors
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.cli.base_hierarchical_adapter import BaseBehaviorsAdapter, BaseBehaviorAdapter
+from agile_bots.src.behaviors.behavior import Behavior
+from agile_bots.src.behaviors.behaviors import Behaviors
 
 class JSONBehaviors(BaseBehaviorsAdapter, JSONAdapter):
     

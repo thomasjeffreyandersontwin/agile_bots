@@ -219,7 +219,7 @@ class CursorCommandGenerator(BaseBehaviorsAdapter):
         return registry_path
     
     def _get_registry_path(self) -> Path:
-        registry_path = self.workspace_root / 'agile_bot' / 'bots' / 'registry.json'
+        registry_path = self.workspace_root / 'agile_bots' / 'bots' / 'registry.json'
         registry_path.parent.mkdir(parents=True, exist_ok=True)
         return registry_path
     

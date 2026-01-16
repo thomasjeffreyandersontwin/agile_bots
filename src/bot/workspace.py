@@ -43,7 +43,7 @@ def get_base_actions_directory(bot_directory: Path=None) -> Path:
             except Exception:
                 pass
     
-    return python_workspace_root / 'agile_bot' / 'base_actions'
+    return python_workspace_root / 'agile_bots' / 'base_actions'
 
 def get_behavior_folder(bot_name: str, behavior: str) -> Path:
     bot_directory = get_bot_directory()

@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Tuple
 import sys
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
 
 
 def extract_positions_from_drawio(drawio_path: Path) -> Dict[str, Dict[str, float]]:

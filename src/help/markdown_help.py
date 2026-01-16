@@ -1,6 +1,6 @@
 
-from agile_bot.src.cli.adapters import MarkdownAdapter
-from agile_bot.src.help.help import Help
+from agile_bots.src.cli.adapters import MarkdownAdapter
+from agile_bots.src.help.help import Help
 
 class MarkdownHelp(MarkdownAdapter):
     
@@ -63,5 +63,5 @@ class MarkdownHelp(MarkdownAdapter):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

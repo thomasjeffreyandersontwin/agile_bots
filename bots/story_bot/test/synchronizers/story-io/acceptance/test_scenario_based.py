@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 import shutil
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
 
 
 class ScenarioBasedTestRunner:

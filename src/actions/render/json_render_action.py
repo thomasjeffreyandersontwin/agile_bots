@@ -1,7 +1,7 @@
 
 import json
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.actions.render.render_action import RenderOutputAction
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.actions.render.render_action import RenderOutputAction
 
 class JSONRenderAction(JSONAdapter):
     

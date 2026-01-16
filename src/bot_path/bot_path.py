@@ -38,7 +38,7 @@ class BotPath:
                 except Exception as e:
                     logger.debug(f'Failed to load baseActionsPath from {config_path}: {e}')
         
-        return self._python_workspace_root / 'agile_bot' / 'base_actions'
+        return self._python_workspace_root / 'agile_bots' / 'base_actions'
     
     def _load_documentation_path(self) -> Path:
         bot_config_path = self._bot_directory / 'config' / 'bot_config.json'

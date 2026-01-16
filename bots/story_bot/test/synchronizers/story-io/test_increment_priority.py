@@ -1,7 +1,7 @@
 """Test increment priority handling"""
 from pathlib import Path
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io import StoryIODiagram
+from agile_bots.bots.story_bot.src.synchronizers.story_io import StoryIODiagram
 
 # Load story graph with increments
 story_graph_path = Path("demo/mm3e_animations/docs/story_graph.json")

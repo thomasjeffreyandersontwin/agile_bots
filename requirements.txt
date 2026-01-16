@@ -1,7 +1,14 @@
-# Core Python packages - this project uses Python standard library
-# No external dependencies required for core functionality
+# Core Dependencies
 
-# Optional dependencies for clipboard/GUI automation features
-# Uncomment if you need the bot's copy-to-cursor functionality:
+# MCP Server Support (for Story Bot MCP integration)
+fastmcp>=0.2.0
+
+# Natural Language Processing (for code scanners linguistic analysis)
+# Used by vocabulary_helper for verb/noun detection, POS tagging
+nltk>=3.8.0
+
+# Optional: GUI Automation Features
+# Uncomment if you need the bot's copy-to-cursor functionality
+# Note: These are gracefully handled - bot works without them
 # pyperclip>=1.8.2
 # pyautogui>=0.9.54

@@ -17,7 +17,7 @@ parser = argparse.ArgumentParser(description='Load structured.json and render')
 parser.add_argument('structured_path', nargs='?', help='Optional path to structured.json')
 args = parser.parse_args()
 
-from agile_bot.bots.base_bot.src.state.workspace import get_workspace_directory
+from agile_bots.bots.base_bot.src.state.workspace import get_workspace_directory
 workspace_root = get_workspace_directory()
 if args.structured_path:
     structured_file = Path(args.structured_path)

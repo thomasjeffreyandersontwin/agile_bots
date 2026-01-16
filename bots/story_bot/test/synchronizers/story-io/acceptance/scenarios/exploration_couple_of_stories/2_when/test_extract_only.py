@@ -20,7 +20,7 @@ sys.path.insert(0, str(src_dir))
 sys.path.insert(0, str(acceptance_dir.parent / "spec_by_example"))
 sys.path.insert(0, str(scenario_dir.parent))
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
 
 def test_extract_only():
     """Extract story graph from DrawIO file."""

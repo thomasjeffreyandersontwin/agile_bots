@@ -22,8 +22,11 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 
-# No external dependencies required for core functionality
-dependencies = []
+# Core dependencies
+dependencies = [
+    "fastmcp>=0.2.0",  # MCP server support
+    "nltk>=3.8.0",     # Natural language processing for code scanners
+]
 
 [project.optional-dependencies]
 dev = [

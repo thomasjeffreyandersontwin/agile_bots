@@ -8,7 +8,7 @@ from .action_state_manager import ActionStateManager
 from .action_factory import ActionFactory
 if TYPE_CHECKING:
     from .action import Action
-    from agile_bot.src.bot.behavior import Behavior
+    from agile_bots.src.bot.behavior import Behavior
 
 class Actions:
 

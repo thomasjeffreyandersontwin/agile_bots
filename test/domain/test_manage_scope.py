@@ -1,9 +1,9 @@
 
 import pytest
 from pathlib import Path
-from agile_bot.test.domain.bot_test_helper import BotTestHelper
-from agile_bot.src.scope.action_scope import ActionScope
-from agile_bot.src.scanners.story_map import (
+from agile_bots.test.domain.bot_test_helper import BotTestHelper
+from agile_bots.src.scope.action_scope import ActionScope
+from agile_bots.src.scanners.story_map import (
     StoryMap, Epic, SubEpic, StoryGroup, Story, Scenario, ScenarioOutline
 )
 
@@ -161,7 +161,7 @@ class TestFilterScopeByFiles:
     
     def test_file_filter_includes_matching_files(self):
         """FileFilter includes files matching include patterns."""
-        from agile_bot.src.scope import FileFilter
+        from agile_bots.src.scope import FileFilter
         from pathlib import Path
         
         files = [
@@ -186,7 +186,7 @@ class TestFilterScopeByFiles:
         WHEN: filter_files() is called
         THEN: Files matching exclude patterns are removed
         """
-        from agile_bot.src.scope import FileFilter
+        from agile_bots.src.scope import FileFilter
         from pathlib import Path
         
         # GIVEN: A list of files
@@ -215,7 +215,7 @@ class TestFilterScopeByFiles:
         WHEN: filter_files() is called
         THEN: Files must match include AND not match exclude
         """
-        from agile_bot.src.scope import FileFilter
+        from agile_bots.src.scope import FileFilter
         from pathlib import Path
         
         # GIVEN: A list of files
@@ -248,7 +248,7 @@ class TestFilterScopeByFiles:
         WHEN: filter_files() is called
         THEN: All files are returned
         """
-        from agile_bot.src.scope import FileFilter
+        from agile_bots.src.scope import FileFilter
         from pathlib import Path
         
         # GIVEN: A list of files
@@ -275,7 +275,7 @@ class TestFilterScopeByFiles:
         WHEN: filter_files() is called
         THEN: Only the specific file is included
         """
-        from agile_bot.src.scope import FileFilter
+        from agile_bots.src.scope import FileFilter
         from pathlib import Path
         
         # GIVEN: A list of files
@@ -305,7 +305,7 @@ class TestFilterScopeByFiles:
         This test verifies the integration between FileDiscovery and FileFilter,
         which was the core fix for the validation scope bug.
         """
-        from agile_bot.src.scope import FileFilter
+        from agile_bots.src.scope import FileFilter
         from pathlib import Path
         
         # GIVEN: A list of discovered files (simulating FileDiscovery output)
@@ -395,14 +395,14 @@ class TestExecuteActionsWithScope:
         WHEN: Instructions are retrieved
         THEN: Instructions contain scope configuration
         """
-        from agile_bot.src.actions.action_context import ScopeActionContext
-        from agile_bot.src.scope import Scope, StoryGraphFilter
+        from agile_bots.src.actions.action_context import ScopeActionContext
+        from agile_bots.src.scope import Scope, StoryGraphFilter
         
         helper = BotTestHelper(tmp_path)
         helper.bot.behaviors.navigate_to('shape')
         action = helper.bot.behaviors.current.actions.find_by_name('build')
         
-        from agile_bot.src.scope import ScopeType
+        from agile_bots.src.scope import ScopeType
         scope = Scope(workspace_directory=tmp_path)
         scope.filter(type=ScopeType.STORY, value=['Story1', 'Story2'])
         context = ScopeActionContext(scope=scope)
@@ -420,8 +420,8 @@ class TestExecuteActionsWithScope:
         WHEN: Instructions are retrieved
         THEN: No errors occur and scope is processed
         """
-        from agile_bot.src.actions.action_context import ValidateActionContext
-        from agile_bot.src.scope import Scope, StoryGraphFilter
+        from agile_bots.src.actions.action_context import ValidateActionContext
+        from agile_bots.src.scope import Scope, StoryGraphFilter
         
         helper = BotTestHelper(tmp_path)
         
@@ -433,7 +433,7 @@ class TestExecuteActionsWithScope:
         helper.bot.behaviors.navigate_to('exploration')
         action = helper.bot.behaviors.current.actions.find_by_name('validate')
         
-        from agile_bot.src.scope import ScopeType
+        from agile_bots.src.scope import ScopeType
         scope = Scope(workspace_directory=tmp_path)
         scope.filter(type=ScopeType.STORY, value=['Story1'])
         context = ValidateActionContext(scope=scope)
@@ -451,8 +451,8 @@ class TestExecuteActionsWithScope:
         WHEN: Instructions are retrieved
         THEN: No errors occur (render supports ScopeActionContext)
         """
-        from agile_bot.src.actions.action_context import ScopeActionContext
-        from agile_bot.src.scope import Scope, ScopeType
+        from agile_bots.src.actions.action_context import ScopeActionContext
+        from agile_bots.src.scope import Scope, ScopeType
         
         helper = BotTestHelper(tmp_path)
         helper.bot.behaviors.navigate_to('exploration')
@@ -473,7 +473,7 @@ class TestExecuteActionsWithScope:
         WHEN: Context is checked
         THEN: Uses ClarifyActionContext (not ScopeActionContext)
         """
-        from agile_bot.src.actions.action_context import ClarifyActionContext
+        from agile_bots.src.actions.action_context import ClarifyActionContext
         
         helper = BotTestHelper(tmp_path)
         helper.bot.behaviors.navigate_to('shape')
@@ -490,7 +490,7 @@ class TestExecuteActionsWithScope:
         WHEN: Context is checked
         THEN: Uses StrategyActionContext (not ScopeActionContext)
         """
-        from agile_bot.src.actions.action_context import StrategyActionContext
+        from agile_bots.src.actions.action_context import StrategyActionContext
         
         helper = BotTestHelper(tmp_path)
         helper.bot.behaviors.navigate_to('shape')

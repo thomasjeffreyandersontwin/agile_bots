@@ -180,7 +180,7 @@ Rules to follow:
   DON'T: Don't use different terminology or assert things not in specification. Example: assert agent._internal_flag (not in spec - wrong)
 
 - **place_imports_at_top**: Place all imports at top of test file, after docstrings, before code. Group: stdlib, third-party, then local. Example: import json; import pytest; from mymodule import MyClass
-  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bot.bots... import X
+  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bots.bots... import X
   DON'T: Don't place imports inside functions or after code. Example: def test(): from pathlib import Path (wrong - import inside function)
 
 - **object_oriented_test_helpers**: Consolidate tests around object-oriented helpers/factories (e.g., BotTestHelper test hopper) that build complete domain objects with standard data. Example: helper = BotTestHelper(tmp_path); helper.set_state('shape','clarify'); helper.assert_at_behavior_action('shape','clarify'). Avoid scattering many primitive parameters across parametrize blocks or inline setups.
@@ -359,7 +359,7 @@ Rules to follow:
   DON'T: Don't use different terminology or assert things not in specification. Example: assert agent._internal_flag (not in spec - wrong)
 
 - **place_imports_at_top**: Place all imports at top of test file, after docstrings, before code. Group: stdlib, third-party, then local. Example: import json; import pytest; from mymodule import MyClass
-  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bot.bots... import X
+  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bots.bots... import X
   DON'T: Don't place imports inside functions or after code. Example: def test(): from pathlib import Path (wrong - import inside function)
 
 - **object_oriented_test_helpers**: Consolidate tests around object-oriented helpers/factories (e.g., BotTestHelper test hopper) that build complete domain objects with standard data. Example: helper = BotTestHelper(tmp_path); helper.set_state('shape','clarify'); helper.assert_at_behavior_action('shape','clarify'). Avoid scattering many primitive parameters across parametrize blocks or inline setups.
@@ -538,7 +538,7 @@ Rules to follow:
   DON'T: Don't use different terminology or assert things not in specification. Example: assert agent._internal_flag (not in spec - wrong)
 
 - **place_imports_at_top**: Place all imports at top of test file, after docstrings, before code. Group: stdlib, third-party, then local. Example: import json; import pytest; from mymodule import MyClass
-  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bot.bots... import X
+  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bots.bots... import X
   DON'T: Don't place imports inside functions or after code. Example: def test(): from pathlib import Path (wrong - import inside function)
 
 - **object_oriented_test_helpers**: Consolidate tests around object-oriented helpers/factories (e.g., BotTestHelper test hopper) that build complete domain objects with standard data. Example: helper = BotTestHelper(tmp_path); helper.set_state('shape','clarify'); helper.assert_at_behavior_action('shape','clarify'). Avoid scattering many primitive parameters across parametrize blocks or inline setups.
@@ -717,7 +717,7 @@ Rules to follow:
   DON'T: Don't use different terminology or assert things not in specification. Example: assert agent._internal_flag (not in spec - wrong)
 
 - **place_imports_at_top**: Place all imports at top of test file, after docstrings, before code. Group: stdlib, third-party, then local. Example: import json; import pytest; from mymodule import MyClass
-  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bot.bots... import X
+  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bots.bots... import X
   DON'T: Don't place imports inside functions or after code. Example: def test(): from pathlib import Path (wrong - import inside function)
 
 - **object_oriented_test_helpers**: Consolidate tests around object-oriented helpers/factories (e.g., BotTestHelper test hopper) that build complete domain objects with standard data. Example: helper = BotTestHelper(tmp_path); helper.set_state('shape','clarify'); helper.assert_at_behavior_action('shape','clarify'). Avoid scattering many primitive parameters across parametrize blocks or inline setups.
@@ -886,7 +886,7 @@ Rules to follow:
   DON'T: Don't use different terminology or assert things not in specification. Example: assert agent._internal_flag (not in spec - wrong)
 
 - **place_imports_at_top**: Place all imports at top of test file, after docstrings, before code. Group: stdlib, third-party, then local. Example: import json; import pytest; from mymodule import MyClass
-  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bot.bots... import X
+  DO: All imports at top, grouped by type. Example: import json; import pytest; from agile_bots.bots... import X
   DON'T: Don't place imports inside functions or after code. Example: def test(): from pathlib import Path (wrong - import inside function)
 
 - **object_oriented_test_helpers**: Consolidate tests around object-oriented helpers/factories (e.g., BotTestHelper test hopper) that build complete domain objects with standard data. Example: helper = BotTestHelper(tmp_path); helper.set_state('shape','clarify'); helper.assert_at_behavior_action('shape','clarify'). Avoid scattering many primitive parameters across parametrize blocks or inline setups.

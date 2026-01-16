@@ -259,7 +259,7 @@ def main():
     parser.add_argument('structured_path', nargs='?', help='Optional path to structured.json to load')
     args = parser.parse_args()
 
-    from agile_bot.bots.base_bot.src.state.workspace import get_workspace_directory
+    from agile_bots.bots.base_bot.src.state.workspace import get_workspace_directory
     workspace_root = get_workspace_directory()
 
     if args.structured_path:

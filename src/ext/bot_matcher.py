@@ -28,7 +28,7 @@ class BotMatcher:
         return False
 
     def _load_bot_registry(self) -> Dict[str, Dict]:
-        registry_path = self.bot_paths.python_workspace_root / 'agile_bot' / 'bots' / 'registry.json'
+        registry_path = self.bot_paths.python_workspace_root / 'agile_bots' / 'bots' / 'registry.json'
         try:
             content = registry_path.read_text(encoding='utf-8')
             return json.loads(content)
@@ -36,7 +36,7 @@ class BotMatcher:
             return {}
 
     def _load_bot_triggers(self) -> BotTriggers:
-        trigger_file = self.bot_paths.python_workspace_root / 'agile_bot' / 'bots' / self.bot_name / 'trigger_words.json'
+        trigger_file = self.bot_paths.python_workspace_root / 'agile_bots' / 'bots' / self.bot_name / 'trigger_words.json'
         patterns = self._load_patterns_from_file(trigger_file)
         return BotTriggers(patterns=patterns)
 

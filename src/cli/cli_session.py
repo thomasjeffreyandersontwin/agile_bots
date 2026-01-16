@@ -4,8 +4,8 @@ import logging
 from pathlib import Path
 from typing import Any, Dict
 
-from agile_bot.src.cli.adapter_factory import AdapterFactory
-from agile_bot.src.cli.cli_results import CLICommandResponse
+from agile_bots.src.cli.adapter_factory import AdapterFactory
+from agile_bots.src.cli.cli_results import CLICommandResponse
 
 class CLISession:
     
@@ -143,7 +143,7 @@ class CLISession:
             else:
                 result = attr
                 
-                from agile_bot.src.behaviors.behavior import Behavior
+                from agile_bots.src.behaviors.behavior import Behavior
                 is_behavior = isinstance(result, Behavior)
                 
                 if is_behavior:
@@ -154,7 +154,7 @@ class CLISession:
             
             # Special case: if action is 'rules', automatically submit to chat
             if verb == 'rules' and result is not None:
-                from agile_bot.src.instructions.instructions import Instructions
+                from agile_bots.src.instructions.instructions import Instructions
                 if isinstance(result, Instructions):
                     # Submit the RULES instructions using behavior.submitRules()
                     if self.bot.behaviors.current:
@@ -190,7 +190,7 @@ class CLISession:
                     
                     # Special case: if action is 'rules', automatically submit to chat
                     if '.rules' in command.lower():
-                        from agile_bot.src.instructions.instructions import Instructions
+                        from agile_bots.src.instructions.instructions import Instructions
                         if isinstance(result, Instructions):
                             # Submit the RULES instructions using behavior.submitRules()
                             if self.bot.behaviors.current:
@@ -236,7 +236,7 @@ class CLISession:
                         cli_terminated=False
                     )
             else:
-                from agile_bot.src.instructions.instructions import Instructions
+                from agile_bots.src.instructions.instructions import Instructions
                 if isinstance(result, Instructions):
                     adapter = self._get_adapter_for_domain(result)
                     output = adapter.serialize()
@@ -257,7 +257,7 @@ class CLISession:
         adapter = self._get_adapter_for_domain(result)
         output = adapter.serialize()
         
-        from agile_bot.src.instructions.instructions import Instructions
+        from agile_bots.src.instructions.instructions import Instructions
         if isinstance(result, Instructions) and self.mode == 'json':
             import json
             instructions_data = json.loads(output) if isinstance(output, str) else output
@@ -288,7 +288,7 @@ class CLISession:
                 if isinstance(result, dict) and 'status' in result:
                     navigation_succeeded = result['status'] not in ['error', 'at_start', 'at_end']
                 
-                from agile_bot.src.instructions.instructions import Instructions
+                from agile_bots.src.instructions.instructions import Instructions
                 result_is_instructions = isinstance(result, Instructions)
                 
                 if navigation_succeeded and not result_is_instructions:
@@ -315,7 +315,7 @@ class CLISession:
                 if isinstance(result, dict) and 'status' in result:
                     navigation_succeeded = result['status'] not in ['error', 'at_start', 'at_end']
                 
-                from agile_bot.src.instructions.instructions import Instructions
+                from agile_bots.src.instructions.instructions import Instructions
                 result_is_instructions = isinstance(result, Instructions)
                 
                 if navigation_succeeded and not result_is_instructions:

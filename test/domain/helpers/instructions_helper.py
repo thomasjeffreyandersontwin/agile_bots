@@ -16,8 +16,8 @@ class InstructionsTestHelper(BaseHelper):
             validation_rules = instructions['validation_rules']
             assert len(validation_rules) > 0, "Instructions should contain validation rules"
             
-            from agile_bot.src.actions.rules.rule import Rule
-            from agile_bot.test.domain.test_validate_knowledge_and_content_against_rules import validate_violation_structure
+            from agile_bots.src.actions.rules.rule import Rule
+            from agile_bots.test.domain.test_validate_knowledge_and_content_against_rules import validate_violation_structure
             
             for rule in validation_rules:
                 if isinstance(rule, Rule):

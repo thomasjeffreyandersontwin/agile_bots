@@ -1,6 +1,6 @@
 
-from agile_bot.src.actions.tty_action import TTYAction
-from agile_bot.src.actions.strategy.strategy_action import StrategyAction
+from agile_bots.src.actions.tty_action import TTYAction
+from agile_bots.src.actions.strategy.strategy_action import StrategyAction
 
 class TTYStrategyAction(TTYAction):
     
@@ -52,5 +52,5 @@ class TTYStrategyAction(TTYAction):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

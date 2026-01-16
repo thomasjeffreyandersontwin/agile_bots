@@ -86,16 +86,16 @@ class AdapterFactory:
         
         if domain_type in ('dict', 'list', 'str'):
             if channel == 'json':
-                from agile_bot.src.cli.adapters import GenericJSONAdapter
+                from agile_bots.src.cli.adapters import GenericJSONAdapter
                 return GenericJSONAdapter(domain_object)
             elif channel == 'tty':
-                from agile_bot.src.cli.adapters import GenericTTYAdapter
+                from agile_bots.src.cli.adapters import GenericTTYAdapter
                 return GenericTTYAdapter(domain_object)
             elif channel == 'markdown':
-                from agile_bot.src.cli.adapters import GenericMarkdownAdapter
+                from agile_bots.src.cli.adapters import GenericMarkdownAdapter
                 return GenericMarkdownAdapter(domain_object)
             else:
-                from agile_bot.src.cli.adapters import GenericJSONAdapter
+                from agile_bots.src.cli.adapters import GenericJSONAdapter
                 return GenericJSONAdapter(domain_object)
         
         key = (domain_type, channel)

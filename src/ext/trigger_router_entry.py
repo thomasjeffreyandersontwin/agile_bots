@@ -1,12 +1,12 @@
 import json
 import sys
 from pathlib import Path
-from agile_bot.src.ext.trigger_router import TriggerRouter
-from agile_bot.src.bot.workspace import get_bot_directory, get_workspace_directory
+from agile_bots.src.ext.trigger_router import TriggerRouter
+from agile_bots.src.bot.workspace import get_bot_directory, get_workspace_directory
 _here = Path(__file__).resolve()
 _workspace_root = None
 for anc in _here.parents:
-    if anc.name == 'agile_bot':
+    if anc.name == 'agile_bots':
         _workspace_root = anc.parent
         break
 if _workspace_root and str(_workspace_root) not in sys.path:

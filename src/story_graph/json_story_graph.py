@@ -1,7 +1,7 @@
 
 import json
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.story_graph.story_graph import StoryGraph
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.story_graph.story_graph import StoryGraph
 
 class JSONStoryGraph(JSONAdapter):
     

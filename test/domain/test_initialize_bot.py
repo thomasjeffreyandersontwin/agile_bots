@@ -3,10 +3,10 @@ import pytest
 import json
 import os
 from pathlib import Path
-from agile_bot.src.bot.bot import Bot
-from agile_bot.src.bot_path import BotPath
-from agile_bot.src.actions.strategy.strategy_action import StrategyAction
-from agile_bot.test.domain.bot_test_helper import BotTestHelper
+from agile_bots.src.bot.bot import Bot
+from agile_bots.src.bot_path import BotPath
+from agile_bots.src.actions.strategy.strategy_action import StrategyAction
+from agile_bots.test.domain.bot_test_helper import BotTestHelper
 
 
 # ================================================================================
@@ -46,7 +46,7 @@ class TestResolveBotPath:
         """
         helper = BotTestHelper(tmp_path)
         
-        from agile_bot.src.bot.workspace import get_base_actions_directory
+        from agile_bots.src.bot.workspace import get_base_actions_directory
         expected_base_actions = get_base_actions_directory()
         assert helper.bot.bot_paths.base_actions_directory == expected_base_actions
         assert helper.bot.bot_paths.base_actions_directory.exists()
@@ -57,7 +57,7 @@ class TestResolveBotPath:
         
         assert isinstance(helper.bot.bot_paths.python_workspace_root, Path)
         assert helper.bot.bot_paths.python_workspace_root.exists()
-        assert (helper.bot.bot_paths.python_workspace_root / 'agile_bot').exists()
+        assert (helper.bot.bot_paths.python_workspace_root / 'agile_bots').exists()
     
     def test_bot_paths_find_repo_root_method(self, tmp_path):
         """SCENARIO: BotPath.find_repo_root() method returns repository root."""
@@ -67,8 +67,8 @@ class TestResolveBotPath:
         
         assert isinstance(repo_root, Path)
         assert repo_root.exists()
-        assert (repo_root / 'agile_bot').exists()
-        assert (repo_root / 'agile_bot' / 'bots' / 'story_bot').exists()
+        assert (repo_root / 'agile_bots').exists()
+        assert (repo_root / 'agile_bots' / 'bots' / 'story_bot').exists()
     
     def test_bot_paths_raises_error_when_environment_variables_not_set(self, tmp_path):
         """

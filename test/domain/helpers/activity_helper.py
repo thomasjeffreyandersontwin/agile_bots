@@ -134,14 +134,14 @@ class ActivityTestHelper(BaseHelper):
     
     def create_activity_tracker(self, bot_name='story_bot'):
         """Create ActivityTracker instance."""
-        from agile_bot.src.actions.activity_tracker import ActivityTracker
-        from agile_bot.src.bot.bot_paths import BotPaths
+        from agile_bots.src.actions.activity_tracker import ActivityTracker
+        from agile_bots.src.bot.bot_paths import BotPaths
         bot_paths = BotPaths(workspace_path=self.parent.workspace)
         return ActivityTracker(bot_paths=bot_paths, bot_name=bot_name)
     
     def track_activity_start(self, tracker, action_state):
         """Track activity start with tracker."""
-        from agile_bot.src.actions.activity_tracker import ActionState
+        from agile_bots.src.actions.activity_tracker import ActionState
         
         if isinstance(action_state, str):
             parts = action_state.split('.')
@@ -262,14 +262,14 @@ class ActivityTestHelper(BaseHelper):
     
     def given_activity_tracker(self, bot_name='story_bot'):
         """Create activity tracker."""
-        from agile_bot.src.actions.activity_tracker import ActivityTracker
-        from agile_bot.src.bot.bot_paths import BotPaths
+        from agile_bots.src.actions.activity_tracker import ActivityTracker
+        from agile_bots.src.bot.bot_paths import BotPaths
         bot_paths = BotPaths(workspace_path=self.parent.workspace)
         return ActivityTracker(bot_paths=bot_paths, bot_name=bot_name)
     
     def when_activity_tracks_start(self, tracker, action_state):
         """Track activity start."""
-        from agile_bot.src.actions.activity_tracker import ActionState
+        from agile_bots.src.actions.activity_tracker import ActionState
         
         if isinstance(action_state, str):
             parts = action_state.split('.')

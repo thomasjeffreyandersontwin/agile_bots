@@ -79,7 +79,7 @@ def main():
     extracted_json = when_dir / "actual-extracted.json"
     rendered_drawio = when_dir / "actual-rendered.drawio"
     
-    from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
+    from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
     
     diagram = StoryIODiagram()
     diagram.synchronize_outline(

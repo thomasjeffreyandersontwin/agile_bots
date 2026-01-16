@@ -15,7 +15,7 @@ Uses parameterized tests to run same test logic across all 3 channels.
 """
 import pytest
 import sys
-from agile_bot.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
+from agile_bots.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
 
 
 # ============================================================================
@@ -72,7 +72,7 @@ class TestResolveBotPathUsingCLI:
         helper = helper_class(tmp_path)
         
         # Then
-        from agile_bot.src.bot.workspace import get_base_actions_directory
+        from agile_bots.src.bot.workspace import get_base_actions_directory
         expected_base_actions = get_base_actions_directory()
         assert helper.cli_session.bot.bot_paths.base_actions_directory == expected_base_actions
         assert helper.cli_session.bot.bot_paths.base_actions_directory.exists()
@@ -98,7 +98,7 @@ class TestResolveBotPathUsingCLI:
         from pathlib import Path
         assert isinstance(helper.cli_session.bot.bot_paths.python_workspace_root, Path)
         assert helper.cli_session.bot.bot_paths.python_workspace_root.exists()
-        assert (helper.cli_session.bot.bot_paths.python_workspace_root / 'agile_bot').exists()
+        assert (helper.cli_session.bot.bot_paths.python_workspace_root / 'agile_bots').exists()
     
     @pytest.mark.parametrize("helper_class", [
         TTYBotTestHelper,
@@ -124,8 +124,8 @@ class TestResolveBotPathUsingCLI:
         from pathlib import Path
         assert isinstance(repo_root, Path)
         assert repo_root.exists()
-        assert (repo_root / 'agile_bot').exists()
-        assert (repo_root / 'agile_bot' / 'bots' / 'story_bot').exists()
+        assert (repo_root / 'agile_bots').exists()
+        assert (repo_root / 'agile_bots' / 'bots' / 'story_bot').exists()
 
 
 # ============================================================================

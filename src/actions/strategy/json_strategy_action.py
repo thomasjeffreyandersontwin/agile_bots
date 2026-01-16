@@ -1,7 +1,7 @@
 
 import json
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.actions.strategy.strategy_action import StrategyAction
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.actions.strategy.strategy_action import StrategyAction
 
 class JSONStrategyAction(JSONAdapter):
     
@@ -71,7 +71,7 @@ class JSONStrategyAction(JSONAdapter):
         }
         
         if self.action.strategy:
-            from agile_bot.src.actions.strategy.strategy_decision import StrategyDecision
+            from agile_bots.src.actions.strategy.strategy_decision import StrategyDecision
             saved_data = StrategyDecision.load_all(self.action.behavior.bot_paths)
             
             with open(r'c:\dev\augmented-teams\.cursor\debug.log', 'a', encoding='utf-8') as f:

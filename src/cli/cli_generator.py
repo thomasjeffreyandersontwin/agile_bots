@@ -23,7 +23,7 @@ class CliGenerator:
     
     def _create_shell_script(self) -> Path:
         script_name = 'story_cli.sh' if self.bot_name == 'story_bot' else f'{self.bot_name}_cli.sh'
-        script_file = self.workspace_root / 'agile_bot' / script_name
+        script_file = self.workspace_root / 'agile_bots' / script_name
         
         script_content = f"""#!/bin/bash
 
@@ -42,7 +42,7 @@ python -m agile_bot.src.cli.cli_main
     
     def _create_powershell_script(self) -> Path:
         script_name = 'story_cli.ps1' if self.bot_name == 'story_bot' else f'{self.bot_name}_cli.ps1'
-        script_file = self.workspace_root / 'agile_bot' / script_name
+        script_file = self.workspace_root / 'agile_bots' / script_name
         
         script_content = f"""# {self.bot_name.replace('_', ' ').title()} CLI Launcher (Windows/PowerShell)
 

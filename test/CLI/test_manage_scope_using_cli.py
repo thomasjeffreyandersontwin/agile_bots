@@ -13,7 +13,7 @@ Uses parameterized tests to run same test logic across all 3 channels.
 """
 import pytest
 from pathlib import Path
-from agile_bot.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
+from agile_bots.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
 
 
 # ============================================================================

@@ -7,8 +7,8 @@ Tests for User domain component following Mamba BDD patterns.
 from mamba import description, context, it, before
 from expects import expect, equal, be_true, be_false, contain
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_user import User
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_user import User
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
 
 
 def create_user(name='Human'):

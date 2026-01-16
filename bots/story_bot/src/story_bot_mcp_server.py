@@ -26,13 +26,13 @@ if 'WORKING_AREA' not in os.environ:
             if 'WORKING_AREA' in mcp_env:
                 os.environ['WORKING_AREA'] = mcp_env['WORKING_AREA']
 
-from agile_bot.bots.base_bot.src.bot.workspace import (
+from agile_bots.bots.base_bot.src.bot.workspace import (
     get_bot_directory,
     get_workspace_directory,
     get_python_workspace_root
 )
-from agile_bot.bots.base_bot.src.bot.bot import Bot, BotResult
-from agile_bot.bots.base_bot.src.mcp.server_restart import restart_mcp_server
+from agile_bots.bots.base_bot.src.bot.bot import Bot, BotResult
+from agile_bots.bots.base_bot.src.mcp.server_restart import restart_mcp_server
 from fastmcp import FastMCP
 
 logger = logging.getLogger(__name__)

@@ -24,7 +24,7 @@ sys.path.insert(0, str(acceptance_dir.parent / "spec_by_example"))
 sys.path.insert(0, str(scenario_dir.parent))  # Add scenarios directory for drawio_comparison
 
 from drawio_comparison import compare_drawios
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
 
 def count_sub_epics_recursive(item):
     """Recursively count all sub_epics in an epic or sub_epic."""

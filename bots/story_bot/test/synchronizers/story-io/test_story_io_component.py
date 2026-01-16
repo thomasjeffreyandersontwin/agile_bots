@@ -7,8 +7,8 @@ Tests for the base StoryIOComponent class.
 import pytest
 from pathlib import Path
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_component import StoryIOComponent
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_position import Position, Boundary
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_component import StoryIOComponent
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_position import Position, Boundary
 
 
 class TestComponent(StoryIOComponent):

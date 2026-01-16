@@ -12,8 +12,8 @@ import os
 import re
 import sys
 
-# Import utils from agile_bot.src
-from agile_bot.src.utils import build_test_file_link, build_test_class_link, build_test_method_link
+# Import utils from agile_bots.src
+from agile_bots.src.utils import build_test_file_link, build_test_class_link, build_test_method_link
 
 
 def create_scenario_anchor(scenario_name: str) -> str:

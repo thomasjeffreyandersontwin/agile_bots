@@ -2,7 +2,7 @@
 from typing import Optional, Dict, Any, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agile_bot.src.actions.rules.rule import Rule
+    from agile_bots.src.actions.rules.rule import Rule
 
 class Violation:
     

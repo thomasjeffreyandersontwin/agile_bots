@@ -1,7 +1,7 @@
 
 from pathlib import Path
-from agile_bot.src.cli.adapters import MarkdownAdapter
-from agile_bot.src.scope.scope import Scope
+from agile_bots.src.cli.adapters import MarkdownAdapter
+from agile_bots.src.scope.scope import Scope
 
 class MarkdownScope(MarkdownAdapter):
     
@@ -26,10 +26,10 @@ class MarkdownScope(MarkdownAdapter):
         results = self.scope.results
         
         if results is not None:
-            from agile_bot.src.story_graph.story_graph import StoryGraph
+            from agile_bots.src.story_graph.story_graph import StoryGraph
             
             if isinstance(results, StoryGraph):
-                from agile_bot.src.cli.adapter_factory import AdapterFactory
+                from agile_bots.src.cli.adapter_factory import AdapterFactory
                 story_graph_adapter = AdapterFactory.create(results, 'markdown')
                 lines.append(story_graph_adapter.serialize())
             elif isinstance(results, list):
@@ -58,5 +58,5 @@ class MarkdownScope(MarkdownAdapter):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

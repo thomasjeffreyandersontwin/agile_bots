@@ -3,8 +3,8 @@ import json
 import os
 from pathlib import Path
 
-from agile_bot.src.bot.bot import Bot
-from agile_bot.test.domain.helpers import (
+from agile_bots.src.bot.bot import Bot
+from agile_bots.test.domain.helpers import (
     StateTestHelper,
     BehaviorTestHelper,
     NavigationTestHelper,
@@ -45,7 +45,7 @@ class BotTestHelper:
             self.bot_directory.mkdir(parents=True, exist_ok=True)
         else:
             repo_root = Path(__file__).parent.parent.parent.parent
-            self.bot_directory = repo_root / 'agile_bot' / 'bots' / 'story_bot'
+            self.bot_directory = repo_root / 'agile_bots' / 'bots' / 'story_bot'
         
         self.workspace = workspace_directory if workspace_directory is not None else tmp_path / 'workspace'
         self.workspace.mkdir(parents=True, exist_ok=True)

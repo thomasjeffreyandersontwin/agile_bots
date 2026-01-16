@@ -7,11 +7,11 @@ Tests for Increment domain component following Mamba BDD patterns.
 from mamba import description, context, it, before
 from expects import expect, equal, be_true, be_false
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_increment import Increment
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_epic import Epic
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_feature import Feature
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_position import Position, Boundary
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_increment import Increment
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_epic import Epic
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_feature import Feature
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_story import Story
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_position import Position, Boundary
 
 
 def create_increment(name='Increment 1', priority=1):

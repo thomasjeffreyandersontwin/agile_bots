@@ -1,6 +1,6 @@
 
-from agile_bot.src.cli.adapters import TTYAdapter
-from agile_bot.src.scope.scope_command_result import ScopeCommandResult
+from agile_bots.src.cli.adapters import TTYAdapter
+from agile_bots.src.scope.scope_command_result import ScopeCommandResult
 
 class TTYScopeCommandResult(TTYAdapter):
     
@@ -8,7 +8,7 @@ class TTYScopeCommandResult(TTYAdapter):
         self.scope_result = scope_result
     
     def serialize(self) -> str:
-        from agile_bot.src.scope.tty_scope import TTYScope
+        from agile_bots.src.scope.tty_scope import TTYScope
         
         lines = []
         
@@ -27,5 +27,5 @@ class TTYScopeCommandResult(TTYAdapter):
         return '\n'.join(lines)
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

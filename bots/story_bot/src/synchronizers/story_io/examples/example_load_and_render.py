@@ -35,7 +35,7 @@ parser.add_argument('structured_path', nargs='?', help='Optional path to structu
 args = parser.parse_args()
 
 # Resolve workspace from environment (WORKING_AREA preferred)
-from agile_bot.bots.base_bot.src.state.workspace import get_workspace_directory
+from agile_bots.bots.base_bot.src.state.workspace import get_workspace_directory
 workspace_root = get_workspace_directory()
 
 # If a structured_path positional arg was provided, use that instead of workspace-derived path

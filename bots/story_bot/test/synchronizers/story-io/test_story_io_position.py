@@ -7,7 +7,7 @@ Tests for geometric position and boundary domain types.
 from mamba import description, context, it, before
 from expects import expect, equal, be_true, be_false
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_position import Position, Boundary
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_position import Position, Boundary
 
 
 def create_position(x=0.0, y=0.0):

@@ -1,7 +1,7 @@
 
-from agile_bot.src.cli.adapters import TTYAdapter
-from agile_bot.src.cli.base_hierarchical_adapter import BaseBotAdapter
-from agile_bot.src.bot.bot import Bot
+from agile_bots.src.cli.adapters import TTYAdapter
+from agile_bots.src.cli.base_hierarchical_adapter import BaseBotAdapter
+from agile_bots.src.bot.bot import Bot
 
 class TTYBot(BaseBotAdapter, TTYAdapter):
     
@@ -27,7 +27,7 @@ class TTYBot(BaseBotAdapter, TTYAdapter):
     
     @property
     def bot_paths(self):
-        from agile_bot.src.cli.adapter_factory import AdapterFactory
+        from agile_bots.src.cli.adapter_factory import AdapterFactory
         tty_bot_paths = AdapterFactory.create(self.bot.bot_paths, 'tty')
         return tty_bot_paths.serialize()
     
@@ -38,7 +38,7 @@ class TTYBot(BaseBotAdapter, TTYAdapter):
         lines.append(f"{self.add_bold('Current Position:')} {self.bot.progress_path}")
         lines.append("")
         
-        from agile_bot.src.cli.adapter_factory import AdapterFactory
+        from agile_bots.src.cli.adapter_factory import AdapterFactory
         tty_behaviors = AdapterFactory.create(self.bot.behaviors, 'tty')
         lines.append(tty_behaviors.serialize())
         
@@ -46,7 +46,7 @@ class TTYBot(BaseBotAdapter, TTYAdapter):
     
     @property
     def behaviors(self):
-        from agile_bot.src.cli.adapter_factory import AdapterFactory
+        from agile_bots.src.cli.adapter_factory import AdapterFactory
         tty_behaviors = AdapterFactory.create(self.bot.behaviors, 'tty')
         return tty_behaviors.serialize()
     
@@ -95,7 +95,7 @@ class TTYBot(BaseBotAdapter, TTYAdapter):
     
     @property
     def behavior_action_summary(self):
-        from agile_bot.src.cli.adapter_factory import AdapterFactory
+        from agile_bots.src.cli.adapter_factory import AdapterFactory
         tty_behaviors = AdapterFactory.create(self.bot.behaviors, 'tty')
         
         lines = []
@@ -117,7 +117,7 @@ class TTYBot(BaseBotAdapter, TTYAdapter):
         lines.append(self.bot_paths)
         
         if hasattr(self.bot, '_scope'):
-            from agile_bot.src.cli.adapter_factory import AdapterFactory
+            from agile_bots.src.cli.adapter_factory import AdapterFactory
             tty_scope = AdapterFactory.create(self.bot._scope, 'tty')
             lines.append(tty_scope.serialize())
         
@@ -137,5 +137,5 @@ class TTYBot(BaseBotAdapter, TTYAdapter):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

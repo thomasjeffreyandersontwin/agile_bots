@@ -20,7 +20,7 @@ parser = argparse.ArgumentParser(description='Add GM user to first story and re-
 parser.add_argument('--story_graph', help='Optional path to story_graph.json')
 args = parser.parse_args()
 
-from agile_bot.bots.base_bot.src.state.workspace import get_workspace_directory
+from agile_bots.bots.base_bot.src.state.workspace import get_workspace_directory
 workspace_root = get_workspace_directory()
 if args.story_graph:
     story_graph_path = Path(args.story_graph)

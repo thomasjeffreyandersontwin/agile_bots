@@ -1,6 +1,6 @@
 
-from agile_bot.src.cli.adapters import TTYAdapter
-from agile_bot.src.bot_path.bot_path import BotPath
+from agile_bots.src.cli.adapters import TTYAdapter
+from agile_bots.src.bot_path.bot_path import BotPath
 
 class TTYBotPath(TTYAdapter):
     
@@ -47,5 +47,5 @@ class TTYBotPath(TTYAdapter):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

@@ -1,8 +1,8 @@
 
-from agile_bot.src.cli.adapters import MarkdownAdapter
-from agile_bot.src.cli.base_hierarchical_adapter import BaseBehaviorsAdapter, BaseBehaviorAdapter
-from agile_bot.src.behaviors.behavior import Behavior
-from agile_bot.src.behaviors.behaviors import Behaviors
+from agile_bots.src.cli.adapters import MarkdownAdapter
+from agile_bots.src.cli.base_hierarchical_adapter import BaseBehaviorsAdapter, BaseBehaviorAdapter
+from agile_bots.src.behaviors.behavior import Behavior
+from agile_bots.src.behaviors.behaviors import Behaviors
 
 class MarkdownBehaviors(BaseBehaviorsAdapter, MarkdownAdapter):
     
@@ -15,7 +15,7 @@ class MarkdownBehaviors(BaseBehaviorsAdapter, MarkdownAdapter):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)
 
 class MarkdownBehavior(BaseBehaviorAdapter, MarkdownAdapter):
@@ -34,5 +34,5 @@ class MarkdownBehavior(BaseBehaviorAdapter, MarkdownAdapter):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bot.src.utils import parse_command_text
+        from agile_bots.src.utils import parse_command_text
         return parse_command_text(text)

@@ -1,6 +1,6 @@
 
-from agile_bot.src.cli.adapters import JSONAdapter
-from agile_bot.src.instructions.instructions import Instructions
+from agile_bots.src.cli.adapters import JSONAdapter
+from agile_bots.src.instructions.instructions import Instructions
 
 class JSONInstructions(JSONAdapter):
     

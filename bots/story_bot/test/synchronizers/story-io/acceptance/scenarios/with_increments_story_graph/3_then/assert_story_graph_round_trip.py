@@ -23,7 +23,7 @@ sys.path.insert(0, str(src_dir))
 sys.path.insert(0, str(acceptance_dir.parent / "spec_by_example"))
 
 from drawio_comparison import compare_drawios
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
 
 def _assert_jsons_match(expected_path: Path, actual_path: Path, is_increments_mode: bool = False) -> dict:
     """

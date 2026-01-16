@@ -19,7 +19,7 @@ if str(workspace_root) not in sys.path:
 if 'BOT_DIRECTORY' in os.environ:
     bot_directory = Path(os.environ['BOT_DIRECTORY'])
 else:
-    bot_directory = workspace_root / 'agile_bot' / 'bots' / 'story_bot'
+    bot_directory = workspace_root / 'agile_bots' / 'bots' / 'story_bot'
 os.environ['BOT_DIRECTORY'] = str(bot_directory)
 
 if 'WORKING_AREA' not in os.environ:
@@ -39,10 +39,10 @@ if 'WORKING_AREA' not in os.environ:
     if 'WORKING_AREA' not in os.environ:
         os.environ['WORKING_AREA'] = str(workspace_root)
 
-# Import agile_bot modules after environment setup
-from agile_bot.src.bot.bot import Bot
-from agile_bot.src.bot.workspace import get_workspace_directory
-from agile_bot.src.cli.cli_session import CLISession
+# import agile_bots modules after environment setup
+from agile_bots.src.bot.bot import Bot
+from agile_bots.src.bot.workspace import get_workspace_directory
+from agile_bots.src.cli.cli_session import CLISession
 
 def main():
     bot_name = bot_directory.name

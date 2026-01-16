@@ -11,7 +11,7 @@ Story: Get Rules Instructions Through CLI
 Test file: test_display_rules_through_repl.py
 """
 import pytest
-from agile_bot.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
+from agile_bots.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
 
 
 # ============================================================================

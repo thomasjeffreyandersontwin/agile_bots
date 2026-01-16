@@ -20,7 +20,7 @@ story_io_dir = acceptance_dir.parent
 src_dir = story_io_dir.parent
 sys.path.insert(0, str(src_dir))
 
-from agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
+from agile_bots.bots.story_bot.src.synchronizers.story_io.story_io_diagram import StoryIODiagram
 
 def get_story_path(story, path=""):
     """Get a readable path for a story (epic > sub_epic > story)."""
