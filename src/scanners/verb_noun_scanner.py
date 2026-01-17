@@ -1,9 +1,9 @@
-from typing import List, Dict, Any, Optional, Tuple
+﻿from typing import List, Dict, Any, Optional, Tuple
 import logging
-from .story_scanner import StoryScanner
-from .story_map import StoryNode, Epic, SubEpic, Story
-from .violation import Violation
-from .vocabulary_helper import VocabularyHelper
+from story_scanner import StoryScanner
+from story_map import StoryNode, Epic, SubEpic, Story
+from scanners.violation import Violation
+from vocabulary_helper import VocabularyHelper
 
 import nltk
 from nltk import pos_tag, word_tokenize

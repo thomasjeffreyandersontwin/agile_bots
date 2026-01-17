@@ -1,11 +1,11 @@
 from pathlib import Path
 from typing import Dict, Any, List, Optional, Set, TYPE_CHECKING
-from ..bot_path import BotPath
-from .scoping_parameter import ScopingParameter
-from ..story_graph.nodes import StoryMap, Story
+from bot_path import BotPath
+from scope.scoping_parameter import ScopingParameter
+from story_graph.nodes import StoryMap, Story
 
 if TYPE_CHECKING:
-    from ..actions.action_context import ScopeActionContext
+    from actions.action_context import ScopeActionContext
 
 class ActionScope:
 

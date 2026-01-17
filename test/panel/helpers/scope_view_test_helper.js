@@ -24,7 +24,7 @@ class ScopeViewTestHelper {
         const ScopeView = require('../../../src/scope/scope_view');
         const path = require('path');
         const PanelView = require('../../../src/panel/panel_view');
-        const botDir = path.join(this.workspaceDir, 'agile_bot', 'bots', 'story_bot');
+        const botDir = path.join(this.workspaceDir, 'bots', 'story_bot');
         // Initialize singleton CLI
         PanelView.initializeCLI(this.workspaceDir, botDir);
         return new ScopeView(null, null);

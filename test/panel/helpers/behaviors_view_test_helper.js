@@ -25,7 +25,7 @@ class BehaviorsViewTestHelper {
         const path = require('path');
         const BehaviorsView = require('../../../src/behaviors/behaviors_view');
         const PanelView = require('../../../src/panel/panel_view');
-        const botDir = path.join(this.workspaceDir, 'agile_bot', 'bots', this.botName);
+        const botDir = path.join(this.workspaceDir, 'bots', this.botName);
         // Initialize singleton CLI
         PanelView.initializeCLI(this.workspaceDir, botDir);
         return new BehaviorsView(null, null);

@@ -1,9 +1,9 @@
-
+﻿
 from typing import List
 import ast
 import logging
-from .file import File
-from .block import Block
+from file import File
+from block import Block
 
 logger = logging.getLogger(__name__)
 

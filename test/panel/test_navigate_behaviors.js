@@ -78,7 +78,7 @@ class TestNavigateBehaviorAction {
         const html = this.behaviorsHelper.render_html(behaviorsData);
         
         // Assert COMPLETE state is rendered in HTML (not fragments)
-        // This validates entire JSON → HTML transformation
+        // This validates entire JSON â†’ HTML transformation
         this.behaviorsHelper.assert_complete_state_rendered(html, statusResponse);
         
         // Verify shape behavior object is fully rendered
@@ -237,7 +237,7 @@ class TestNavigateBehaviorAction {
 }
 
 // Setup workspace
-const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../../..');
+const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../..');
 
 // Rule: create_parameterized_tests_for_scenarios
 test('TestNavigateBehaviorAction', { concurrency: false, timeout: 60000 }, async (t) => {

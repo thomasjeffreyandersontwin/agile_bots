@@ -1,9 +1,9 @@
-
+﻿
 from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .file import File
-    from .violation import Violation
+    from file import File
+    from violation import Violation
 
 class Block:
     

@@ -1,14 +1,14 @@
-
+﻿
 from typing import List, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 
 if TYPE_CHECKING:
-    from .line import Line
-    from .block import Block
-    from .scope import Scope
-    from .violation import Violation
+    from line import Line
+    from block import Block
+    from scope import Scope
+    from violation import Violation
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class File:
     @property
     def lines(self) -> List['Line']:
         if not self._lines and self._content:
-            from .line import Line
+            from line import Line
             self._lines = [
                 Line(self, i + 1, line_content)
                 for i, line_content in enumerate(self._content.splitlines(keepends=True))
@@ -100,7 +100,7 @@ class File:
             self._content = ''
     
     def _extract_blocks(self):
-        from .block_extractor import BlockExtractor
+        from block_extractor import BlockExtractor
         
         if self._block_extractor is None:
             self._block_extractor = BlockExtractor()

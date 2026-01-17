@@ -242,8 +242,8 @@ class Scope:
             else:
                 filtered_data = graph_data
             
-            from ..story_graph.story_graph import StoryGraph
-            from ..bot_path import BotPath
+            from story_graph.story_graph import StoryGraph
+            from bot_path.bot_path import BotPath
             
             if self.bot_paths:
                 story_graph = StoryGraph(self.bot_paths, self.workspace_directory, require_file=False)

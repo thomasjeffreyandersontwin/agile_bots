@@ -50,13 +50,13 @@ after(() => {
 function setupTestWorkspace() {
     // Use actual workspace root so CLI script can be found
     // Tests create temp dirs for bot state, but workspace must be real repo root
-    const repoRoot = path.join(__dirname, '../../..');
+    const repoRoot = path.join(__dirname, '../..');
     return repoRoot;
 }
 
 function getBotDirectory() {
-    const repoRoot = path.join(__dirname, '../../..');
-    return path.join(repoRoot, 'agile_bot', 'bots', 'story_bot');
+    const repoRoot = path.join(__dirname, '../..');
+    return path.join(repoRoot, 'bots', 'story_bot');
 }
 
 test('TestDisplayBaseInstructions', { concurrency: false }, async (t) => {

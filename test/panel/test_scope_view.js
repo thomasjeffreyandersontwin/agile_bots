@@ -22,8 +22,8 @@ after(() => {
     setTimeout(() => process.exit(0), 100);
 });
 
-const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../../..');
-process.env.BOT_DIRECTORY = path.join(workspaceDir, 'agile_bot', 'bots', 'story_bot');
+const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../..');
+process.env.BOT_DIRECTORY = path.join(workspaceDir, 'bots', 'story_bot');
 
 class TestScopeView {
     constructor(workspaceDir) {
@@ -257,7 +257,7 @@ class TestScopeView {
                     {
                         name: 'Test Epic',
                         links: [
-                            { text: 'docs', url: 'C:\\test\\docs\\stories\\map\\🎯 Test Epic', icon: 'document' }
+                            { text: 'docs', url: 'C:\\test\\docs\\stories\\map\\ðŸŽ¯ Test Epic', icon: 'document' }
                         ],
                         features: []
                     }
@@ -295,7 +295,7 @@ class TestScopeView {
                                     {
                                         name: 'Test Story',
                                         links: [
-                                            { text: 'story', url: 'C:\\test\\docs\\stories\\map\\📝 Test Story.md', icon: 'document' }
+                                            { text: 'story', url: 'C:\\test\\docs\\stories\\map\\ðŸ“ Test Story.md', icon: 'document' }
                                         ],
                                         scenarios: []
                                     }

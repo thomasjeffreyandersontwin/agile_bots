@@ -29,10 +29,10 @@ const { parseHTML, HTMLAssertions } = require('./helpers/html_assertions');
  * Rule: production_code_clean_functions - Small focused function
  */
 function setupTestWorkspace() {
-    const repoRoot = path.join(__dirname, '../../..');
+    const repoRoot = path.join(__dirname, '../..');
     
     // Set BOT_DIRECTORY environment variable for panel views
-    process.env.BOT_DIRECTORY = path.join(repoRoot, 'agile_bot', 'bots', 'story_bot');
+    process.env.BOT_DIRECTORY = path.join(repoRoot, 'bots', 'story_bot');
     
     return repoRoot;
 }

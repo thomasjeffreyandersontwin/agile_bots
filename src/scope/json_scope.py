@@ -1,8 +1,8 @@
-
+﻿
 import json
 from pathlib import Path
-from agile_bots.src.cli.adapters import JSONAdapter
-from agile_bots.src.scope.scope import Scope
+from cli.adapters import JSONAdapter
+from scope.scope import Scope
 
 class JSONScope(JSONAdapter):
     
@@ -44,7 +44,7 @@ class JSONScope(JSONAdapter):
         if self.scope.type.value in ('story', 'showAll'):
             story_graph = self.scope._get_story_graph_results()
             if story_graph:
-                from agile_bots.src.story_graph.json_story_graph import JSONStoryGraph
+                from story_graph.json_story_graph import JSONStoryGraph
                 graph_adapter = JSONStoryGraph(story_graph)
                 content = graph_adapter.to_dict().get('content', [])
                 
@@ -77,7 +77,7 @@ class JSONScope(JSONAdapter):
         docs_stories_map = self.scope.workspace_directory / 'docs' / 'stories' / 'map'
         
         for epic in epics:
-            epic_folder = docs_stories_map / f"🎯 {epic['name']}"
+            epic_folder = docs_stories_map / f"ðŸŽ¯ {epic['name']}"
             if epic_folder.exists() and epic_folder.is_dir():
                 if 'links' not in epic:
                     epic['links'] = []
@@ -93,9 +93,9 @@ class JSONScope(JSONAdapter):
     
     def _enrich_sub_epic_with_links(self, sub_epic: dict, test_dir: Path, docs_stories_map: Path, epic_name: str, parent_path: str = None):
         if parent_path:
-            sub_epic_doc_folder = Path(parent_path) / f"⚙️ {sub_epic['name']}"
+            sub_epic_doc_folder = Path(parent_path) / f"âš™ï¸ {sub_epic['name']}"
         else:
-            sub_epic_doc_folder = docs_stories_map / f"🎯 {epic_name}" / f"⚙️ {sub_epic['name']}"
+            sub_epic_doc_folder = docs_stories_map / f"ðŸŽ¯ {epic_name}" / f"âš™ï¸ {sub_epic['name']}"
         
         if 'links' not in sub_epic:
             sub_epic['links'] = []
@@ -130,7 +130,7 @@ class JSONScope(JSONAdapter):
         if 'links' not in story:
             story['links'] = []
         
-        story_doc_file = parent_doc_folder / f"📝 {story['name']}.md"
+        story_doc_file = parent_doc_folder / f"📝 {story['name']}.md"
         if story_doc_file.exists():
             story['links'].append({
                 'text': 'story',
@@ -161,7 +161,7 @@ class JSONScope(JSONAdapter):
         if story_test_file and test_method:
             test_file_path = test_dir / story_test_file
             if test_file_path.exists():
-                from agile_bots.src.utils import find_test_method_line
+                from utils import find_test_method_line
                 line_number = find_test_method_line(test_file_path, test_method)
                 
                 if line_number:

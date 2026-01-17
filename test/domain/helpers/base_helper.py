@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from agile_bots.test.domain.bot_test_helper import BotTestHelper
+    from domain.bot_test_helper import BotTestHelper
 
 
 class BaseTestHelper:

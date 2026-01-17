@@ -35,8 +35,8 @@ function setupTestWorkspace() {
 }
 
 function getBotDirectory() {
-    const repoRoot = path.join(__dirname, '../../..');
-    return path.join(repoRoot, 'agile_bot', 'bots', 'story_bot');
+    const repoRoot = path.join(__dirname, '../..');
+    return path.join(repoRoot, 'bots', 'story_bot');
 }
 
 test('TestPersistentSession', { concurrency: false }, async (t) => {

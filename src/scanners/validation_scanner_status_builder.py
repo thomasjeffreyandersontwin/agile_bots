@@ -1,7 +1,7 @@
-import logging
+﻿import logging
 from pathlib import Path
 from typing import Dict, Any, List
-from ..actions.validate.validation_stats import ValidationStats
+from actions.validate.validation_stats import ValidationStats
 logger = logging.getLogger(__name__)
 
 MAX_VIOLATION_DENSITY_FOR_GOOD_STATUS = 200

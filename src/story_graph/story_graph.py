@@ -1,11 +1,11 @@
-from pathlib import Path
+﻿from pathlib import Path
 from typing import Dict, Any, Optional, TYPE_CHECKING
 import json
 import logging
-from ..bot_path import BotPath
-from ..utils import read_json_file
+from bot_path import BotPath
+from utils import read_json_file
 if TYPE_CHECKING:
-    from ..build.story_graph_spec import StoryGraphSpec
+    from build.story_graph_spec import StoryGraphSpec
 logger = logging.getLogger(__name__)
 
 class StoryGraph:

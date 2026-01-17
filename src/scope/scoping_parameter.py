@@ -1,4 +1,4 @@
-from typing import Dict, Any, List, Optional, Set
+﻿from typing import Dict, Any, List, Optional, Set
 
 class ScopingParameter:
     def __init__(self, scope: Dict[str, Any]):

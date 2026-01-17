@@ -43,13 +43,13 @@ after(() => {
 function setupTestWorkspace() {
     // Use actual workspace root so CLI script can be found
     // Tests create temp dirs for bot state, but workspace must be real repo root
-    const repoRoot = path.join(__dirname, '../../..');
+    const repoRoot = path.join(__dirname, '../..');
     return repoRoot;
 }
 
 function getBotDirectory() {
-    const repoRoot = path.join(__dirname, '../../..');
-    return path.join(repoRoot, 'agile_bot', 'bots', 'story_bot');
+    const repoRoot = path.join(__dirname, '../..');
+    return path.join(repoRoot, 'bots', 'story_bot');
 }
 
 test('TestDisplayStoryScopeHierarchy', { concurrency: false }, async (t) => {
@@ -115,7 +115,7 @@ test('TestDisplayStoryScopeHierarchy', { concurrency: false }, async (t) => {
             
             // Verify section header with expand icon
             assert(/<span[^>]*class="[^"]*expand-icon[^"]*"[^>]*style="[^"]*margin-right:[^"]*8px[^"]*font-size:[^"]*28px[^"]*"[^>]*>/.test(html));
-            assert(html.includes('▸'));
+            assert(html.includes('â–¸'));
         } finally {
             if (botView) {
                 botView.cleanup();
@@ -163,7 +163,7 @@ test('TestDisplayStoryScopeHierarchy', { concurrency: false }, async (t) => {
                 assert(/<div[^>]*id="epic-[^"]*"[^>]*class="[^"]*collapsible-content[^"]*"[^>]*style="[^"]*display:[^"]*none[^"]*"[^>]*>/.test(html));
                 
                 // Verify epic icon
-                assert(html.includes('💡'));
+                assert(html.includes('ðŸ’¡'));
             } else {
                 // If no content, just verify the section structure exists
                 assert(html.includes('Scope'));
@@ -228,7 +228,7 @@ test('TestFilterStoryScope', { concurrency: false }, async (t) => {
             
             // Verify clear filter button appears when filter is set
             // The button has onclick="event.stopPropagation(); clearScopeFilter();" but may be formatted differently
-            assert(/<button[^>]*onclick="[^"]*clearScopeFilter[^"]*"[^>]*>/.test(filteredHtml) || filteredHtml.includes('✕'));
+            assert(/<button[^>]*onclick="[^"]*clearScopeFilter[^"]*"[^>]*>/.test(filteredHtml) || filteredHtml.includes('âœ•'));
             
             // Verify scope section structure is maintained
             assert(/<div[^>]*class="[^"]*scope-section[^"]*"[^>]*>/.test(filteredHtml));

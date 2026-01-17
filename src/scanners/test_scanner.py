@@ -1,10 +1,10 @@
-"""Base TestScanner class for validating test files."""
+﻿"""Base TestScanner class for validating test files."""
 
 from typing import List, Dict, Any, Optional, Tuple, TYPE_CHECKING
 from pathlib import Path
 import ast
-from .scanner import Scanner
-from .violation import Violation
+from scanners.scanner import Scanner
+from scanners.violation import Violation
 
 if TYPE_CHECKING:
     from pathlib import Path as PathType

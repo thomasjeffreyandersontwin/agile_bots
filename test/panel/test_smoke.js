@@ -94,7 +94,7 @@ class TestPanelSmokeTest {
 }
 
 // Setup workspace
-const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../../..');
+const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../..');
 
 test('TestPanelSmokeTest', { concurrency: false }, async (t) => {
     const suite = new TestPanelSmokeTest(workspaceDir);

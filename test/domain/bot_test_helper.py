@@ -3,8 +3,8 @@ import json
 import os
 from pathlib import Path
 
-from agile_bots.src.bot.bot import Bot
-from agile_bots.test.domain.helpers import (
+from bot.bot import Bot
+from domain.helpers import (
     StateTestHelper,
     BehaviorTestHelper,
     NavigationTestHelper,

@@ -402,7 +402,7 @@ class TestBehaviorsView {
          * THEN: Complete state structure is rendered in HTML
          */
         // Use BotViewTestHelper for CLI interaction
-        const botHelper = new BotViewTestHelper(process.env.TEST_WORKSPACE || path.join(__dirname, '../../..'), 'story_bot');
+        const botHelper = new BotViewTestHelper(process.env.TEST_WORKSPACE || path.join(__dirname, '../..'), 'story_bot');
         const botView = botHelper.createBotView();
         
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -430,7 +430,7 @@ class TestBehaviorsView {
 }
 
 // Setup workspace
-const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../../..');
+const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../..');
 
 // Rule: create_parameterized_tests_for_scenarios
 test('TestBehaviorsView', { concurrency: false, timeout: 60000 }, async (t) => {

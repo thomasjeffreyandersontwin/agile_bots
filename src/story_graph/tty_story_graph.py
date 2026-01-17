@@ -82,5 +82,5 @@ class TTYStoryGraph(TTYAdapter):
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bots.src.utils import parse_command_text
+        from utils import parse_command_text
         return parse_command_text(text)

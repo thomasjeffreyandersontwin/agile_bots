@@ -1,10 +1,10 @@
-
+﻿
 from typing import List, Set, TYPE_CHECKING
 from pathlib import Path
-from .file import File
+from file import File
 
 if TYPE_CHECKING:
-    from .block import Block
+    from block import Block
 
 class Scope:
     

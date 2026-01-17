@@ -5,8 +5,8 @@ This is the base class for all CLI channel helpers (TTY, Pipe, JSON).
 It creates the domain BotTestHelper internally and sets up the CLI session.
 """
 from pathlib import Path
-from agile_bots.src.cli.cli_session import CLISession
-from agile_bots.test.domain.bot_test_helper import BotTestHelper
+from cli.cli_session import CLISession
+from domain.bot_test_helper import BotTestHelper
 
 
 class CLIBotTestHelper:

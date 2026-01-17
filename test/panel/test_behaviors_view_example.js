@@ -148,7 +148,7 @@ class TestDisplayBehaviorHierarchyEdgeCases {
 }
 
 // Setup and teardown - follows unittest pattern
-const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../../..');
+const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../..');
 
 // Rule: create_parameterized_tests_for_scenarios - Explicit test methods
 test('TestDisplayBehaviorHierarchy', { concurrency: false }, async (t) => {

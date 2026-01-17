@@ -14,7 +14,7 @@ These tests focus on CLI-specific concerns:
 Uses parameterized tests to run same test logic across all 3 channels.
 """
 import pytest
-from agile_bots.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
+from CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
 
 
 class TestGetHelpUsingCLI:

@@ -12,7 +12,7 @@ class BotViewTestHelper {
     constructor(workspaceDir, botName = 'story_bot') {
         this.workspaceDir = workspaceDir;
         this.botName = botName;
-        this.botDir = path.join(workspaceDir, 'agile_bot', 'bots', botName);
+        this.botDir = path.join(workspaceDir, 'bots', botName);
         this.webview = this.createMockWebview();
         this.extensionUri = this.createMockExtensionUri();
     }

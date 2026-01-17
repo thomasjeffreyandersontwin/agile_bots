@@ -3,12 +3,12 @@ import pytest
 import json
 import os
 from pathlib import Path
-from agile_bots.src.bot.bot import Bot, BotResult
-from agile_bots.src.behaviors import Behavior
-from agile_bots.src.bot_path import BotPath
+from bot.bot import Bot, BotResult
+from behaviors import Behavior
+from bot_path import BotPath
 # NOTE: This file uses BotTestHelper instead of deprecated functions
 # Removed: bootstrap_env, create_actions_workflow_json (use BotTestHelper)
-from agile_bots.test.domain.bot_test_helper import BotTestHelper
+from domain.bot_test_helper import BotTestHelper
 
 class TestGetHelp:
 
@@ -62,7 +62,7 @@ class TestGetHelp:
         helper.bot.behaviors.navigate_to('shape')
         
         # Get the actual action instance
-        from agile_bots.src.actions.clarify.clarify_action import ClarifyContextAction
+        from actions.clarify.clarify_action import ClarifyContextAction
         behavior_obj = helper.bot.behaviors.current
         action = ClarifyContextAction(behavior=behavior_obj, action_config=None)
         

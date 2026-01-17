@@ -21,7 +21,7 @@ Stories covered:
 - Handle Errors
 """
 import pytest
-from agile_bots.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
+from CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
 
 
 # ============================================================================
@@ -454,7 +454,7 @@ class TestSaveGuardrailsUsingCLI:
         helper.domain.bot.behaviors.navigate_to('shape')
         
         # When - Execute save command (simulated via action context)
-        from agile_bots.src.actions.action_context import ClarifyActionContext
+        from actions.action_context import ClarifyActionContext
         action = helper.domain.bot.behaviors.current.actions.find_by_name('clarify')
         answers_data = {"What is the scope?": "Bot system"}
         context = ClarifyActionContext(answers=answers_data, evidence_provided=None)
@@ -484,7 +484,7 @@ class TestSaveGuardrailsUsingCLI:
         helper.domain.bot.behaviors.navigate_to('shape')
         
         # When - Execute save command
-        from agile_bots.src.actions.action_context import StrategyActionContext
+        from actions.action_context import StrategyActionContext
         action = helper.domain.bot.behaviors.current.actions.find_by_name('strategy')
         decisions_data = {"drill_down": "Deep"}
         context = StrategyActionContext(decisions_made=decisions_data, assumptions_made=None)

@@ -1,7 +1,7 @@
 
 from pathlib import Path
-from agile_bots.src.cli.adapters import TTYAdapter
-from agile_bots.src.scope.scope import Scope
+from cli.adapters import TTYAdapter
+from scope.scope import Scope
 
 class TTYScope(TTYAdapter):
     
@@ -24,10 +24,10 @@ class TTYScope(TTYAdapter):
         results = self.scope.results
         
         if results is not None:
-            from agile_bots.src.story_graph.story_graph import StoryGraph
+            from story_graph.story_graph import StoryGraph
             
             if isinstance(results, StoryGraph):
-                from agile_bots.src.cli.adapter_factory import AdapterFactory
+                from cli.adapter_factory import AdapterFactory
                 storyGrapgAdapter = AdapterFactory.create(results, 'tty')
                 lines.append(storyGrapgAdapter.serialize())
             elif isinstance(results, list):
@@ -52,5 +52,5 @@ class TTYScope(TTYAdapter):
         return '\n'.join(lines)
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
-        from agile_bots.src.utils import parse_command_text
+        from utils import parse_command_text
         return parse_command_text(text)

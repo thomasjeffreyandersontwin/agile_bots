@@ -4,9 +4,9 @@ import json
 import os
 import shutil
 from pathlib import Path
-from agile_bots.src.bot.bot import Bot
-from agile_bots.src.actions.strategy.strategy_action import StrategyAction
-from agile_bots.test.domain.bot_test_helper import BotTestHelper
+from bot.bot import Bot
+from actions.strategy.strategy_action import StrategyAction
+from domain.bot_test_helper import BotTestHelper
 
 
 # ================================================================================
@@ -501,7 +501,7 @@ class TestNavigateSequentially:
         
         # Then: Returns Instructions object
         # bot.current() returns the Instructions object directly
-        from agile_bots.src.instructions.instructions import Instructions
+        from instructions.instructions import Instructions
         assert isinstance(result, (Instructions, dict))
         
         # If it's a dict (error case), check for status
@@ -719,7 +719,7 @@ class TestInjectContextIntoInstructions:
             expected_actions=['clarify', 'strategy', 'build', 'validate', 'render'],
             expected_description="Create a story map that captures the user's journey through epics, features, and stories"
         )
-        from agile_bots.src.actions.action import Action
+        from actions.action import Action
         action = Action(action_name="build", behavior=behavior, action_config=None)  
         
         # When Action loads and merges instructions

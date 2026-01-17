@@ -1,12 +1,12 @@
-"""Scanner for validating ubiquitous language consistency."""
+﻿"""Scanner for validating ubiquitous language consistency."""
 
 from typing import List, Dict, Any, Optional, Set, Tuple
 from pathlib import Path
 import logging
 import ast
 import re
-from .test_scanner import TestScanner
-from .violation import Violation
+from test_scanner import TestScanner
+from scanners.violation import Violation
 
 logger = logging.getLogger(__name__)
 
@@ -137,7 +137,7 @@ class UbiquitousLanguageScanner(TestScanner):
         1. Classes not in domain model
         2. Agent nouns (Handler, Manager, Service, Processor) detected via NLTK
         """
-        from .vocabulary_helper import VocabularyHelper
+        from vocabulary_helper import VocabularyHelper
         
         violations = []
         

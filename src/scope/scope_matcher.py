@@ -60,9 +60,9 @@ def format_node_with_children(node: Dict[str, Any], node_type: str, indent: int,
         emoji_map = {
             'epic': '🎯',
             'sub epic': '⚙️',
-            'story': '📝'
+            'story': '📝'
         }
-        emoji = emoji_map.get(node_type, '•')
+        emoji = emoji_map.get(node_type, 'â€¢')
         lines.append(f"{prefix}{emoji} {name}")
     else:
         lines.append(f"{prefix}[{node_type}] {name}")

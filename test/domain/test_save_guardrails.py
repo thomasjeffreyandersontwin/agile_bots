@@ -11,7 +11,7 @@ These tests use isolated test fixtures and do NOT touch production workspace.
 import pytest
 import json
 from pathlib import Path
-from agile_bots.test.domain.bot_test_helper import BotTestHelper
+from domain.bot_test_helper import BotTestHelper
 
 
 class TestSaveClarificationAnswers:

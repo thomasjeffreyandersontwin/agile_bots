@@ -106,7 +106,7 @@ class BehaviorTestHelper(BaseHelper):
         assert result is not None, "Result should not be None"
         
         # Instructions are returned as Instructions object or dict
-        from agile_bots.src.instructions.instructions import Instructions
+        from instructions.instructions import Instructions
         if isinstance(result, Instructions):
             # Instructions object has _data attribute
             assert hasattr(result, '_data'), \
@@ -274,7 +274,7 @@ class BehaviorTestHelper(BaseHelper):
         
         # If action is 'build', create story graph config structure
         if action_name == 'build':
-            from agile_bots.test.domain.test_build_knowledge import given_setup
+            from domain.test_build_knowledge import given_setup
             kg_dir = given_setup('directory_structure', self.parent.bot_directory, behavior=behavior)
             given_setup('config_and_template', self.parent.bot_directory, kg_dir=kg_dir)
         
@@ -318,7 +318,7 @@ class BehaviorTestHelper(BaseHelper):
         
         # If action is 'build', create story graph config structure
         if action_name == 'build':
-            from agile_bots.test.domain.test_build_knowledge import given_setup
+            from domain.test_build_knowledge import given_setup
             kg_dir = given_setup('directory_structure', self.parent.bot_directory, behavior=behavior)
             given_setup('config_and_template', self.parent.bot_directory, kg_dir=kg_dir)
         
@@ -366,14 +366,14 @@ class BehaviorTestHelper(BaseHelper):
         custom behavior.json files. If you need custom workflows, use production
         behaviors or create test behaviors in temporary directories.
         """
-        from agile_bots.src.bot.bot import Bot
+        from bot.bot import Bot
         
         # Use production behaviors - no need to create behavior.json files
         # Production story_bot already has all behaviors configured
         
         # If build action is involved, create story graph config structure
         if source_action == 'build' or dest_action == 'build':
-            from agile_bots.test.domain.test_build_knowledge import given_setup
+            from domain.test_build_knowledge import given_setup
             kg_dir = given_setup('directory_structure', self.parent.bot_directory, behavior=behavior)
             given_setup('config_and_template', self.parent.bot_directory, kg_dir=kg_dir)
         
@@ -402,14 +402,14 @@ class BehaviorTestHelper(BaseHelper):
         custom behavior.json files. If you need custom workflows, use production
         behaviors or create test behaviors in temporary directories.
         """
-        from agile_bots.src.bot.bot import Bot
+        from bot.bot import Bot
         
         # Use production behaviors - no need to create behavior.json files
         # Production story_bot already has all behaviors configured
         
         # If behavior has 'build' action, create story graph configs
         if action_name == 'build':
-            from agile_bots.test.domain.test_build_knowledge import given_setup
+            from domain.test_build_knowledge import given_setup
             kg_dir = given_setup('directory_structure', self.parent.bot_directory, behavior=behavior)
             given_setup('config_and_template', self.parent.bot_directory, kg_dir=kg_dir)
         

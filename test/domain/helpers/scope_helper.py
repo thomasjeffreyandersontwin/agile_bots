@@ -16,20 +16,20 @@ class ScopeTestHelper(BaseHelper):
             parameters['scope']['value'] = scope_value
 
         if scope_kind == 'build':
-            from agile_bots.src.scope.action_scope import ActionScope
+            from scope.action_scope import ActionScope
             return ActionScope(parameters, self.parent.bot.bot_paths).filter_story_graph(graph)
         if scope_kind == 'validate':
-            from agile_bots.src.actions.validate.validation_scope import ValidationScope
+            from actions.validate.validation_scope import ValidationScope
             return ValidationScope(parameters, self.parent.bot.bot_paths, behavior_name).filter_story_graph(graph)
         if scope_kind in {'action', 'render'}:
-            from agile_bots.src.scope.action_scope import ActionScope
+            from scope.action_scope import ActionScope
             return ActionScope(parameters, self.parent.bot.bot_paths).filter_story_graph(graph)
 
         raise ValueError(f"Unsupported scope_kind '{scope_kind}'")
     
     def filter_story_graph_legacy(self, scope_type: str, scope_value, story_graph: dict) -> dict:
         """Filter story graph using ScopingParameter (legacy method)."""
-        from agile_bots.src.scope.scoping_parameter import ScopingParameter
+        from scope.scoping_parameter import ScopingParameter
         scope = {'type': scope_type}
         if scope_value is not None:
             scope['value'] = scope_value

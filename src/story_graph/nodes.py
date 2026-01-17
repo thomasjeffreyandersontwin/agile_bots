@@ -1,9 +1,9 @@
-from abc import ABC, abstractmethod
+﻿from abc import ABC, abstractmethod
 from typing import List, Iterator, Optional, Dict, Any, Union, TYPE_CHECKING
 from dataclasses import dataclass, field
 from pathlib import Path
 import json
-from .domain import DomainConcept, StoryUser
+from story_graph.domain import DomainConcept, StoryUser
 
 @dataclass
 class StoryNode(ABC):

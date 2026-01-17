@@ -29,13 +29,13 @@ const PanelView = require('../../src/panel/panel_view');
 const InstructionsViewTestHelper = require('./helpers/instructions_view_test_helper');
 const BotViewTestHelper = require('./helpers/bot_view_test_helper');
 
-const workspaceDir = path.resolve(__dirname, '..', '..', '..');
-const botDir = path.join(workspaceDir, 'agile_bot', 'bots', 'story_bot');
+const workspaceDir = path.resolve(__dirname, '..', '..');
+const botDir = path.join(workspaceDir, 'bots', 'story_bot');
 
 class TestGetHelpThroughPanel {
     constructor(workspaceDir) {
         this.workspaceDir = workspaceDir;
-        this.botDir = path.join(workspaceDir, 'agile_bot', 'bots', 'story_bot');
+        this.botDir = path.join(workspaceDir, 'bots', 'story_bot');
         this.instructionsHelper = new InstructionsViewTestHelper(workspaceDir);
         this.botHelper = new BotViewTestHelper(workspaceDir);
     }

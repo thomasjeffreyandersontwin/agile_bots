@@ -106,7 +106,7 @@ class StoryTestHelper(BaseHelper):
     
     def create_story_map(self, story_graph_data: dict = None):
         """Create StoryMap from story graph data."""
-        from agile_bots.src.scanners.story_map import StoryMap
+        from scanners.story_map import StoryMap
         if story_graph_data is None:
             story_graph_data = self.simple_story_graph()
         return StoryMap(story_graph_data)
@@ -450,7 +450,7 @@ class StoryTestHelper(BaseHelper):
     
     def assert_scenario_outlines_match(self, scenario, expected_count=None, expected_names=None):
         """Assert scenario outlines match expected count and names."""
-        from agile_bots.src.scanners.story_map import Story
+        from scanners.story_map import Story
         if isinstance(scenario, Story):
             outlines = scenario.scenario_outlines
         else:
@@ -463,7 +463,7 @@ class StoryTestHelper(BaseHelper):
     
     def assert_story_map_matches(self, story_map_or_epics, epic_name=None):
         """Assert story map matches expected epic."""
-        from agile_bots.src.scanners.story_map import Epic
+        from scanners.story_map import Epic
         
         if isinstance(story_map_or_epics, list):
             epics = story_map_or_epics
@@ -482,7 +482,7 @@ class StoryTestHelper(BaseHelper):
     
     def assert_map_location_matches(self, item, item_type=None, field=None):
         """Assert map location correctness for story map items."""
-        from agile_bots.src.scanners.story_map import Epic, SubEpic, Story, Scenario, ScenarioOutline
+        from scanners.story_map import Epic, SubEpic, Story, Scenario, ScenarioOutline
         
         if item_type is None:
             if isinstance(item, Epic):

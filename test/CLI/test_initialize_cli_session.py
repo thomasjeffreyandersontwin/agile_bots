@@ -15,7 +15,7 @@ Uses parameterized tests to run same test logic across all 3 channels.
 """
 import pytest
 import sys
-from agile_bots.test.CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
+from CLI.helpers import TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper
 
 
 # ============================================================================
@@ -72,7 +72,7 @@ class TestResolveBotPathUsingCLI:
         helper = helper_class(tmp_path)
         
         # Then
-        from agile_bots.src.bot.workspace import get_base_actions_directory
+        from bot.workspace import get_base_actions_directory
         expected_base_actions = get_base_actions_directory()
         assert helper.cli_session.bot.bot_paths.base_actions_directory == expected_base_actions
         assert helper.cli_session.bot.bot_paths.base_actions_directory.exists()

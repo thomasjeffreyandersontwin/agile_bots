@@ -1,10 +1,10 @@
-
+﻿
 from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .scope import Scope
-    from .violation import Violation
-    from agile_bots.src.actions.rules.rule import Rule
+    from scope import Scope
+    from violation import Violation
+    from actions.rules.rule import Rule
 
 class Scan:
     
