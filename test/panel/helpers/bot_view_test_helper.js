@@ -12,9 +12,34 @@ class BotViewTestHelper {
     constructor(workspaceDir, botName = 'story_bot') {
         this.workspaceDir = workspaceDir;
         this.botName = botName;
-        this.botDir = path.join(workspaceDir, 'bots', botName);
+        this.botPath = path.join(workspaceDir, 'bots', botName);
         this.webview = this.createMockWebview();
         this.extensionUri = this.createMockExtensionUri();
+        
+        // Create CLI instance - this test helper owns this process
+        const PanelView = require('../../../src/panel/panel_view');
+        this._cli = new PanelView(this.botPath);
+    }
+    
+    // ========================================================================
+    // LIFECYCLE
+    // ========================================================================
+    
+    /**
+     * Cleanup CLI process - call in after() hook
+     */
+    cleanup() {
+        if (this._cli) {
+            this._cli.cleanup();
+            this._cli = null;
+        }
+    }
+    
+    /**
+     * Get the CLI instance for executing commands
+     */
+    getCLI() {
+        return this._cli;
     }
     
     // ========================================================================
@@ -22,24 +47,15 @@ class BotViewTestHelper {
     // ========================================================================
     
     /**
-     * Create BotView instance with real CLI
-     * @param {Object} [webview] - Optional webview override
-     * @param {Object} [extensionUri] - Optional extensionUri override
-     * @returns {BotView} - BotView instance
+     * Create BotView instance - uses the helper's shared CLI
      */
     createBotView(webview = null, extensionUri = null) {
-        const BotView = require('../../../src/bot/bot_view');
-        const PanelView = require('../../../src/panel/panel_view');
-        
-        // Initialize shared CLI if not already initialized
-        if (!PanelView.getWorkspaceDir()) {
-            PanelView.initializeCLI(this.workspaceDir, this.botDir);
-        }
-        
-        // BotView constructor: (webview, extensionUri)
+        const BotView = require('../../../src/panel/bot_view');
         return new BotView(
-            webview || this.webview,     // webview
-            extensionUri || this.extensionUri  // extensionUri
+            this._cli,  // Use helper's CLI instance
+            null,       // panelVersion
+            webview || this.webview,
+            extensionUri || this.extensionUri
         );
     }
     

@@ -16,21 +16,22 @@ class BotView extends PanelView {
     /**
      * Main panel orchestrator.
      * 
+     * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {string} panelVersion - Panel extension version (optional)
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
      */
-    constructor(panelVersion, webview, extensionUri) {
-        super();
+    constructor(botPathOrCli, panelVersion, webview, extensionUri) {
+        super(botPathOrCli);
         this.panelVersion = panelVersion || null;
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;
         
-        // Initialize domain views - they get data from singleton CLI
-        this.headerView = new BotHeaderView(this.panelVersion, webview, extensionUri);
-        this.behaviorsView = new BehaviorsView(webview, extensionUri);
-        this.scopeSection = new ScopeSection(webview, extensionUri);
-        this.instructionsSection = new InstructionsSection(webview, extensionUri);
+        // Initialize domain views - pass CLI to all child views
+        this.headerView = new BotHeaderView(botPathOrCli, this.panelVersion, webview, extensionUri);
+        this.behaviorsView = new BehaviorsView(botPathOrCli, webview, extensionUri);
+        this.scopeSection = new ScopeSection(botPathOrCli, webview, extensionUri);
+        this.instructionsSection = new InstructionsSection(botPathOrCli, webview, extensionUri);
     }
     
     /**

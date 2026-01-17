@@ -12,13 +12,10 @@ class PathsSection extends PanelView {
     /**
      * Paths section view.
      * 
-     * @param {Object} botJSON - Bot JSON from CLI (contains bot_paths or workspace_directory, bot_directory)
-     * @param {Object} cli - CLI instance (can be null)
-     * @param {string} workspaceDirectory - Workspace directory path
-     * @param {string} botDirectory - Bot directory path
+     * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      */
-    constructor() {
-        super();
+    constructor(botPathOrCli) {
+        super(botPathOrCli);
     }
     
     /**

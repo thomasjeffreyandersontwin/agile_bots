@@ -8,8 +8,28 @@ const assert = require('node:assert');
 const { parseHTML, HTMLAssertions } = require('./html_assertions');
 
 class InstructionsViewTestHelper {
-    constructor(workspaceDir) {
-        this.workspaceDir = workspaceDir;
+    constructor(workspaceDir, botName = 'story_bot') {
+        const path = require('path');
+        this.botPath = path.join(workspaceDir, 'bots', botName);
+        
+        // Create CLI instance - helper owns the process
+        const PanelView = require('../../../src/panel/panel_view');
+        this._cli = new PanelView(this.botPath);
+        
+        // Create view with injected CLI
+        const InstructionsView = require('../../../src/panel/instructions_view');
+        this._view = new InstructionsView(this._cli);
+    }
+    
+    /**
+     * Cleanup CLI process
+     */
+    cleanup() {
+        if (this._cli) {
+            this._cli.cleanup();
+            this._cli = null;
+        }
+        this._view = null;
     }
     
     // ========================================================================
@@ -17,20 +37,11 @@ class InstructionsViewTestHelper {
     // ========================================================================
     
     /**
-     * Create InstructionsView instance
-     * @param {Object} instructionsData - Instructions data from CLI
-     * @param {Object} [webview] - Optional webview mock
-     * @param {Object} [extensionUri] - Optional extension URI
-     * @returns {InstructionsView} - InstructionsView instance
+     * Render instructions HTML
+     * @returns {Promise<string>} - Rendered HTML
      */
-    createInstructionsView() {
-        const InstructionsView = require('../../../src/instructions/instructions_view');
-        const path = require('path');
-        const PanelView = require('../../../src/panel/panel_view');
-        const botDir = path.join(this.workspaceDir, 'bots', 'story_bot');
-        // Initialize singleton CLI
-        PanelView.initializeCLI(this.workspaceDir, botDir);
-        return new InstructionsView(null, null);
+    async render_html() {
+        return await this._view.render();
     }
     
     // ========================================================================

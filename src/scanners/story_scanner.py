@@ -4,28 +4,23 @@ from scanners.scanner import Scanner
 from story_map import StoryMap, StoryNode, StoryGroup
 from domain_concept_node import DomainConceptNode
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import ScanFilesContext
+
 class StoryScanner(Scanner):
     
-    def scan(
-        self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
-        test_files: Optional[List['Path']] = None,
-        code_files: Optional[List['Path']] = None,
-        on_file_scanned: Optional[Any] = None
-    ) -> List[Dict[str, Any]]:
-        if not rule_obj:
-            raise ValueError("rule_obj parameter is required for StoryScanner")
+    def scan_with_context(self, context: 'ScanFilesContext') -> List[Dict[str, Any]]:
+        if not context.rule_obj:
+            raise ValueError("rule_obj is required in context for StoryScanner")
         
         violations = []
-        story_graph_data = story_graph.get('story_graph', story_graph)
+        story_graph_data = context.story_graph.get('story_graph', context.story_graph)
         story_map = StoryMap(story_graph_data)
-        
         
         for epic in story_map.epics():
             for node in story_map.walk(epic):
                 if not isinstance(node, StoryGroup):
-                    node_violations = self.scan_story_node(node, rule_obj)
+                    node_violations = self.scan_story_node(node, context.rule_obj)
                     violations.extend(node_violations)
         
         return violations
@@ -61,4 +56,3 @@ class StoryScanner(Scanner):
     
     def scan_domain_concept(self, node: 'DomainConceptNode', rule_obj: Any) -> List[Dict[str, Any]]:
         return []
-

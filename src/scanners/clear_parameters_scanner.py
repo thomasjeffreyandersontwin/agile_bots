@@ -9,15 +9,9 @@ from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
+
 class ClearParametersScanner(CodeScanner):
-    
-    def __init__(self):
-        super().__init__()
-        self.story_graph = None
-    
-    def scan(self, story_graph: Dict[str, Any], rule_obj: Any = None, test_files: Optional[List['Path']] = None, code_files: Optional[List['Path']] = None, on_file_scanned: Optional[Any] = None) -> List[Dict[str, Any]]:
-        self.story_graph = story_graph
-        return super().scan(story_graph, rule_obj, test_files=test_files, code_files=code_files, on_file_scanned=on_file_scanned)
+    """Scanner for detecting unclear or excessive function parameters."""
     
     ACCEPTABLE_PARAMETER_NAMES = {
         'data',
@@ -30,7 +24,12 @@ class ClearParametersScanner(CodeScanner):
         'self', 'cls',
     }
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file(
+        self, 
+        file_path: Path, 
+        rule_obj: Any = None, 
+        story_graph: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
         violations = []
         
         if not file_path.exists():

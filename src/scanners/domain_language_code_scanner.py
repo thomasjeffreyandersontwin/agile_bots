@@ -10,7 +10,9 @@ from .resources.ast_elements import Classes
 
 logger = logging.getLogger(__name__)
 
+
 class DomainLanguageCodeScanner(CodeScanner):
+    """Scanner for detecting code that doesn't use domain-specific language."""
     
     GENERATE_PATTERNS = [r'^generate_', r'^calculate_']
     
@@ -18,10 +20,6 @@ class DomainLanguageCodeScanner(CodeScanner):
         'Generator', 'Calculator', 'Builder', 'Processor', 
         'Handler', 'Factory', 'Creator', 'Producer', 'Compiler'
     )
-    
-    def __init__(self):
-        super().__init__()
-        self.story_graph = None
     
     def _is_builder_class_with_domain_prefix(self, class_name: Optional[str]) -> bool:
         if not class_name:
@@ -33,10 +31,6 @@ class DomainLanguageCodeScanner(CodeScanner):
                 if prefix:
                     return True
         return False
-    
-    def scan(self, story_graph: Dict[str, Any], rule_obj: Any = None, test_files: Optional[List['Path']] = None, code_files: Optional[List['Path']] = None, on_file_scanned: Optional[Any] = None) -> List[Dict[str, Any]]:
-        self.story_graph = story_graph
-        return super().scan(story_graph, rule_obj, test_files=test_files, code_files=code_files, on_file_scanned=on_file_scanned)
     
     def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         violations = []

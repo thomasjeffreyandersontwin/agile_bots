@@ -8,8 +8,28 @@ const assert = require('node:assert');
 const { parseHTML, HTMLAssertions } = require('./html_assertions');
 
 class ScopeViewTestHelper {
-    constructor(workspaceDir) {
-        this.workspaceDir = workspaceDir;
+    constructor(workspaceDir, botName = 'story_bot') {
+        const path = require('path');
+        this.botPath = path.join(workspaceDir, 'bots', botName);
+        
+        // Create CLI instance - helper owns the process
+        const PanelView = require('../../../src/panel/panel_view');
+        this._cli = new PanelView(this.botPath);
+        
+        // Create view with injected CLI
+        const ScopeView = require('../../../src/panel/scope_view');
+        this._view = new ScopeView(this._cli);
+    }
+    
+    /**
+     * Cleanup CLI process
+     */
+    cleanup() {
+        if (this._cli) {
+            this._cli.cleanup();
+            this._cli = null;
+        }
+        this._view = null;
     }
     
     // ========================================================================
@@ -17,17 +37,11 @@ class ScopeViewTestHelper {
     // ========================================================================
     
     /**
-     * Create ScopeView instance
-     * @returns {ScopeView} - ScopeView instance
+     * Render scope HTML
+     * @returns {Promise<string>} - Rendered HTML
      */
-    createScopeView() {
-        const ScopeView = require('../../../src/scope/scope_view');
-        const path = require('path');
-        const PanelView = require('../../../src/panel/panel_view');
-        const botDir = path.join(this.workspaceDir, 'bots', 'story_bot');
-        // Initialize singleton CLI
-        PanelView.initializeCLI(this.workspaceDir, botDir);
-        return new ScopeView(null, null);
+    async render_html() {
+        return await this._view.render();
     }
     
     // ========================================================================

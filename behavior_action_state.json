@@ -5,6 +5,8 @@
       "Manage Behaviors"
     ]
   },
-  "current_behavior": "story_bot.shape",
-  "current_action": "story_bot.shape.clarify"
+  "current_behavior": "story_bot.discovery",
+  "current_action": "story_bot.discovery.clarify",
+  "timestamp": "2026-01-16T23:27:09.902653",
+  "completed_actions": []
 }

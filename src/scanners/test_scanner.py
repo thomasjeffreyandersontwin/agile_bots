@@ -7,21 +7,16 @@ from scanners.scanner import Scanner
 from scanners.violation import Violation
 
 if TYPE_CHECKING:
-    from pathlib import Path as PathType
+    from scanners.resources.scan_context import ScanFilesContext, FileScanContext, CrossFileScanContext
 
 
 class TestScanner(Scanner):
+    """Base scanner for validating test files.
     
-    def scan(
-        self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
-        test_files: Optional[List['Path']] = None,
-        code_files: Optional[List['Path']] = None,
-        on_file_scanned: Optional[Any] = None
-    ) -> List[Dict[str, Any]]:
-        # Use base Scanner.scan() which combines files and calls scan_file() for each
-        return super().scan(story_graph, rule_obj, test_files, code_files, on_file_scanned=on_file_scanned)
+    TestScanner extends Scanner with:
+    - Test file parsing utilities
+    - Test-specific violation detection
+    """
     
     def _empty_violation_list(self) -> List[Dict[str, Any]]:
         """Helper method for default empty implementations."""
@@ -34,19 +29,6 @@ class TestScanner(Scanner):
         story_graph: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         # Default implementation - subclasses must override
-        return self._empty_violation_list()
-    
-    def scan_cross_file(
-        self,
-        rule_obj: Any = None,
-        test_files: Optional[List[Path]] = None,
-        code_files: Optional[List[Path]] = None,
-        all_test_files: Optional[List[Path]] = None,
-        all_code_files: Optional[List[Path]] = None,
-        status_writer: Optional[Any] = None,
-        max_cross_file_comparisons: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
-        # Default implementation - subclasses override
         return self._empty_violation_list()
     
     def _parse_test_file(self, test_file_path: Path) -> Optional[Tuple[str, ast.AST]]:
@@ -88,4 +70,3 @@ class TestScanner(Scanner):
                     content, tree = parsed
                     parsed_files.append((test_file_path, content, tree))
         return parsed_files
-

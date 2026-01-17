@@ -12,11 +12,12 @@ class ScopeSection extends PanelView {
     /**
      * Scope section view.
      * 
+     * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
      */
-    constructor(webview, extensionUri) {
-        super();
+    constructor(botPathOrCli, webview, extensionUri) {
+        super(botPathOrCli);
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;
     }

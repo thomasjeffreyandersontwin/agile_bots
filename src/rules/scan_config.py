@@ -1,7 +1,10 @@
-﻿"""Configuration object for rule scanning operations."""
-from typing import Dict, List, Optional, Any, Callable
+"""Configuration object for rule scanning operations."""
+from typing import Dict, List, Optional, Any, Callable, TYPE_CHECKING
 from pathlib import Path
 from dataclasses import dataclass, field
+
+if TYPE_CHECKING:
+    from scanners.scan_context import ScanFilesContext, CrossFileScanContext, FileCollection
 
 
 @dataclass
@@ -9,6 +12,11 @@ class ScanConfig:
     """Configuration for scanner execution.
     
     This consolidates scanner parameters to avoid excessive parameter passing.
+    ScanConfig is used at the Rule level to configure overall validation.
+    
+    For scanner-level operations, this can create context objects:
+    - to_scan_files_context(rule_obj): Creates ScanFilesContext for file-by-file scanning
+    - to_cross_file_context(rule_obj): Creates CrossFileScanContext for cross-file scanning
     """
     
     # Core scan data
@@ -66,3 +74,48 @@ class ScanConfig:
         if self._all_code_files is None:
             self._all_code_files = self.files.get('src', [])
         return self._all_code_files
+    
+    def to_scan_files_context(self, rule_obj: Any) -> 'ScanFilesContext':
+        """Create a ScanFilesContext for file-by-file scanning.
+        
+        Args:
+            rule_obj: The rule being validated
+            
+        Returns:
+            ScanFilesContext with files and callbacks from this config
+        """
+        from scanners.scan_context import ScanFilesContext, FileCollection
+        return ScanFilesContext(
+            rule_obj=rule_obj,
+            story_graph=self.story_graph,
+            files=FileCollection(
+                test_files=self.test_files,
+                code_files=self.code_files
+            ),
+            on_file_scanned=self.on_file_scanned
+        )
+    
+    def to_cross_file_context(self, rule_obj: Any) -> 'CrossFileScanContext':
+        """Create a CrossFileScanContext for cross-file scanning.
+        
+        Args:
+            rule_obj: The rule being validated
+            
+        Returns:
+            CrossFileScanContext with changed files, all files, and settings
+        """
+        from scanners.scan_context import CrossFileScanContext, FileCollection
+        return CrossFileScanContext(
+            rule_obj=rule_obj,
+            story_graph=self.story_graph,
+            changed_files=FileCollection(
+                test_files=self.test_files,
+                code_files=self.code_files
+            ),
+            all_files=FileCollection(
+                test_files=self.all_test_files,
+                code_files=self.all_code_files
+            ),
+            status_writer=self.status_writer,
+            max_comparisons=self.max_cross_file_comparisons
+        )

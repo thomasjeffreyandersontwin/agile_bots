@@ -9,8 +9,27 @@ const { parseHTML, HTMLAssertions } = require('./html_assertions');
 
 class BehaviorsViewTestHelper {
     constructor(workspaceDir, botName = 'story_bot') {
-        this.workspaceDir = workspaceDir;
-        this.botName = botName;
+        const path = require('path');
+        this.botPath = path.join(workspaceDir, 'bots', botName);
+        
+        // Create CLI instance - helper owns the process
+        const PanelView = require('../../../src/panel/panel_view');
+        this._cli = new PanelView(this.botPath);
+        
+        // Create view with injected CLI
+        const BehaviorsView = require('../../../src/panel/behaviors_view');
+        this._view = new BehaviorsView(this._cli);
+    }
+    
+    /**
+     * Cleanup CLI process
+     */
+    cleanup() {
+        if (this._cli) {
+            this._cli.cleanup();
+            this._cli = null;
+        }
+        this._view = null;
     }
     
     // ========================================================================
@@ -18,17 +37,19 @@ class BehaviorsViewTestHelper {
     // ========================================================================
     
     /**
-     * Create BehaviorsView instance
-     * @returns {BehaviorsView} - BehaviorsView instance
+     * Render behaviors HTML
+     * @returns {Promise<string>} - Rendered HTML
+     */
+    async render_html() {
+        return await this._view.render();
+    }
+    
+    /**
+     * Get the view instance (for tests that need direct access)
+     * @returns {BehaviorsView}
      */
     createBehaviorsView() {
-        const path = require('path');
-        const BehaviorsView = require('../../../src/behaviors/behaviors_view');
-        const PanelView = require('../../../src/panel/panel_view');
-        const botDir = path.join(this.workspaceDir, 'bots', this.botName);
-        // Initialize singleton CLI
-        PanelView.initializeCLI(this.workspaceDir, botDir);
-        return new BehaviorsView(null, null);
+        return this._view;
     }
     
     // ========================================================================
@@ -81,15 +102,6 @@ class BehaviorsViewTestHelper {
     // ========================================================================
     // ACTION HELPERS - Execute actions
     // ========================================================================
-    
-    /**
-     * Render behaviors view to HTML - uses REAL CLI
-     * @returns {Promise<string>} - Rendered HTML
-     */
-    async render_html() {
-        const view = this.createBehaviorsView();
-        return await view.render();
-    }
     
     // ========================================================================
     // ASSERTION HELPERS - Verify results

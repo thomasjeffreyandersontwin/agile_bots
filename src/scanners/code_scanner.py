@@ -1,38 +1,65 @@
 
 from abc import abstractmethod
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, TYPE_CHECKING
 from pathlib import Path
 import ast
 from scanners.scanner import Scanner
 from scanners.violation import Violation
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import ScanFilesContext, FileScanContext, CrossFileScanContext
+
 class CodeScanner(Scanner):
+    """Base scanner for validating source code files.
     
-    def scan(
-        self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
-        test_files: Optional[List['Path']] = None,
-        code_files: Optional[List['Path']] = None,
-        on_file_scanned: Optional[Any] = None
-    ) -> List[Dict[str, Any]]:
-        if not rule_obj:
-            raise ValueError("rule_obj parameter is required for CodeScanner")
+    CodeScanner extends Scanner with:
+    - Required rule_obj validation
+    - Domain term extraction from story graph
+    - Code snippet extraction for violations
+    """
+    
+    def scan_with_context(self, context: 'ScanFilesContext') -> List[Dict[str, Any]]:
+        """Scan files using a context object.
         
-        violations = super().scan(story_graph, rule_obj, test_files, code_files, on_file_scanned=on_file_scanned)
-        return violations
+        Validates that rule_obj is provided before scanning.
+        """
+        if not context.rule_obj:
+            raise ValueError("rule_obj is required in context for CodeScanner")
+        
+        # Store story_graph so subclasses can access it
+        self.story_graph = context.story_graph
+        
+        return super().scan_with_context(context)
     
-    def scan_file(
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        """Scan a single file using a context object.
+        
+        This is the primary method that subclasses should override.
+        Validates that rule_obj is provided before scanning.
+        
+        For existing scanners that override scan_file(), this provides a bridge
+        by extracting parameters and calling the old method.
+        """
+        if not context.rule_obj:
+            raise ValueError("rule_obj is required in context for CodeScanner")
+        
+        # Store story_graph for subclasses that access it
+        self.story_graph = context.story_graph
+        
+        # Bridge to existing scan_file() implementations
+        # Subclasses should override this method instead
+        return self._scan_file_impl(context.file_path, context.rule_obj, context.story_graph)
+    
+    def _scan_file_impl(
         self,
         file_path: Path,
-        rule_obj: Any = None,
-        story_graph: Optional[Dict[str, Any]] = None
+        rule_obj: Any,
+        story_graph: Optional[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
-        if not rule_obj:
-            raise ValueError("rule_obj parameter is required for CodeScanner")
+        """Internal implementation for file scanning.
         
-        self.story_graph = story_graph
-        
+        Override scan_file_with_context() instead of this method.
+        """
         return []
     
     def _extract_domain_terms(self, story_graph: Dict[str, Any]) -> set:
@@ -150,18 +177,6 @@ class CodeScanner(Scanner):
         
         return False
     
-    def scan_cross_file(
-        self,
-        rule_obj: Any = None,
-        test_files: Optional[List[Path]] = None,
-        code_files: Optional[List[Path]] = None,
-        all_test_files: Optional[List[Path]] = None,
-        all_code_files: Optional[List[Path]] = None,
-        status_writer: Optional[Any] = None,
-        max_cross_file_comparisons: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
-        return []
-    
     def _read_and_parse_file(self, file_path: Path) -> Optional[Tuple[str, List[str], ast.AST]]:
         import logging
         logger = logging.getLogger(__name__)
@@ -252,4 +267,3 @@ class CodeScanner(Scanner):
             line_number=line_number,
             severity=severity
         ).to_dict()
-

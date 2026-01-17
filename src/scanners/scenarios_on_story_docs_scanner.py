@@ -1,8 +1,11 @@
 
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional, Set, TYPE_CHECKING
 from story_scanner import StoryScanner
 from story_map import StoryNode, Story, StoryMap
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import ScanFilesContext
 
 def _get_story_names_from_scope(story_graph: Dict[str, Any]) -> Set[str]:
     scope_config = story_graph.get('_validation_scope', {})
@@ -87,17 +90,9 @@ class ScenariosOnStoryDocsScanner(StoryScanner):
         super().__init__()
         self._in_scope_story_names: Optional[Set[str]] = None
     
-    def scan(
-        self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
-        test_files: Optional[List['Path']] = None,
-        code_files: Optional[List['Path']] = None,
-        on_file_scanned: Optional[Any] = None
-    ) -> List[Dict[str, Any]]:
-        self._in_scope_story_names = _get_story_names_from_scope(story_graph)
-        
-        return super().scan(story_graph, rule_obj, test_files=test_files, code_files=code_files)
+    def scan_with_context(self, context: 'ScanFilesContext') -> List[Dict[str, Any]]:
+        self._in_scope_story_names = _get_story_names_from_scope(context.story_graph)
+        return super().scan_with_context(context)
     
     def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
         violations = []

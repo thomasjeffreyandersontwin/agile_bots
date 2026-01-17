@@ -14,11 +14,12 @@ class InstructionsSection extends PanelView {
     /**
      * Instructions section view.
      * 
+     * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
      */
-    constructor(webview, extensionUri) {
-        super();
+    constructor(botPathOrCli, webview, extensionUri) {
+        super(botPathOrCli);
         this.promptContent = '';
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;

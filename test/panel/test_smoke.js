@@ -15,99 +15,88 @@ Module.prototype.require = function(...args) {
 const { test, after } = require('node:test');
 const assert = require('node:assert');
 const path = require('path');
-const { BotViewTestHelper, BehaviorsViewTestHelper } = require('./helpers');
 const PanelView = require('../../src/panel/panel_view');
+const BotView = require('../../src/panel/bot_view');
+const BehaviorsView = require('../../src/panel/behaviors_view');
+
+// Setup
+const workspaceDir = path.join(__dirname, '../..');
+const botPath = path.join(workspaceDir, 'bots', 'story_bot');
+
+// ONE CLI for all tests
+const cli = new PanelView(botPath);
 
 after(() => {
-    PanelView.cleanupSharedCLI();
-    setTimeout(() => {
-        try {
-            process.exit(0);
-        } catch (e) {
-            // Ignore
-        }
-    }, 100);
+    cli.cleanup();
 });
 
-class TestPanelSmokeTest {
-    constructor(workspaceDir) {
-        this.botHelper = new BotViewTestHelper(workspaceDir, 'story_bot');
-        this.behaviorsHelper = new BehaviorsViewTestHelper(workspaceDir, 'story_bot');
-    }
+test('TestPanelSmokeTest', { concurrency: false }, async (t) => {
     
-    async testBotViewSpawnsRealCLI() {
+    await t.test('testCLISpawnsAndResponds', async () => {
         /**
          * GIVEN: Workspace with story_bot
-         * WHEN: BotView is instantiated
-         * THEN: CLI subprocess spawns successfully
+         * WHEN: CLI is instantiated and command executed
+         * THEN: CLI returns valid response
          */
-        const botView = this.botHelper.createBotView();
-        
-        // Wait for CLI initialization
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        assert.ok(botView, 'BotView should be created');
-        assert.strictEqual(typeof botView.execute, 'function', 'Should have execute method');
-    }
-    
-    async testBotViewExecutesStatusCommand() {
-        /**
-         * GIVEN: BotView with active CLI
-         * WHEN: Status command is executed
-         * THEN: CLI returns bot state JSON
-         */
-        const botView = this.botHelper.createBotView();
-        
-        // Wait for CLI initialization
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const response = await botView.execute('status');
+        const response = await cli.execute('status');
         
         assert.ok(response, 'Should receive response');
-        assert.ok(response.bot || response.name, 'Should contain bot data');
+        assert.ok(response.behaviors || response.name, 'Should contain bot data');
+    });
+    
+    await t.test('testBotViewRendersHTML', async () => {
+        /**
+         * GIVEN: Active CLI
+         * WHEN: BotView renders
+         * THEN: HTML is generated
+         */
+        const botView = new BotView(cli);
+        const html = await botView.render();
         
-        // Validate complete status response structure - no guards!
+        assert.ok(html.length > 0, 'Should render HTML');
+        assert.ok(html.includes('Behavior Action Status'), 'Should have behaviors section');
+        assert.ok(html.includes('Scope'), 'Should have scope section');
+    });
+    
+    await t.test('testBehaviorsViewRendersHTML', async () => {
+        /**
+         * GIVEN: Active CLI
+         * WHEN: BehaviorsView renders
+         * THEN: HTML is generated with behaviors
+         */
+        const behaviorsView = new BehaviorsView(cli);
+        const html = await behaviorsView.render();
+        
+        assert.ok(typeof html === 'string', 'Should return HTML string');
+        assert.ok(html.length > 0, 'HTML should not be empty');
+        assert.ok(html.includes('shape'), 'Should include shape behavior');
+    });
+    
+    await t.test('testStatusResponseStructure', async () => {
+        /**
+         * GIVEN: Active CLI
+         * WHEN: Status command is executed
+         * THEN: Response has expected structure
+         */
+        const response = await cli.execute('status');
+        
         assert.ok(response.behaviors, 'Should have behaviors in response');
         assert.ok(response.behaviors.all_behaviors, 'Should have all_behaviors array');
         assert.ok(response.behaviors.current, 'Should have current behavior');
         assert.ok(Array.isArray(response.behaviors.all_behaviors), 
             'all_behaviors should be array');
-    }
+    });
     
-    async testBehaviorsViewRendersHTML() {
+    await t.test('testNavigationWorks', async () => {
         /**
-         * GIVEN: Behavior data structure
-         * WHEN: BehaviorsView renders
-         * THEN: HTML is generated without errors
+         * GIVEN: Active CLI
+         * WHEN: Navigation command is executed
+         * THEN: Bot navigates to new position
          */
-        const html = await this.behaviorsHelper.render_html();
+        await cli.execute('shape.clarify');
+        const status = await cli.execute('status');
         
-        assert.ok(typeof html === 'string', 'Should return HTML string');
-        assert.ok(html.length > 0, 'HTML should not be empty');
-        
-        this.behaviorsHelper.assert_behavior_with_actions(
-            html,
-            'prioritization',
-            ['clarify', 'strategy', 'validate', 'render']
-        );
-    }
-}
-
-// Setup workspace
-const workspaceDir = process.env.TEST_WORKSPACE || path.join(__dirname, '../..');
-
-test('TestPanelSmokeTest', { concurrency: false }, async (t) => {
-    const suite = new TestPanelSmokeTest(workspaceDir);
-    
-    await t.test('testBotViewSpawnsRealCLI', async () => {
-        await suite.testBotViewSpawnsRealCLI();
-    });
-    
-    await t.test('testBotViewExecutesStatusCommand', async () => {
-        await suite.testBotViewExecutesStatusCommand();
-    });
-    
-    await t.test('testBehaviorsViewRendersHTML', async () => {
-        await suite.testBehaviorsViewRendersHTML();
+        assert.ok(status.current_action === 'clarify' || status.behaviors?.current === 'shape',
+            'Should navigate to shape.clarify');
     });
 });

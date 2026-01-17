@@ -1,8 +1,6 @@
 {
-  "type": "story",
-  "value": [
-    "INvoke"
-  ],
+  "type": "showAll",
+  "value": [],
   "exclude": [],
   "skiprule": []
 }

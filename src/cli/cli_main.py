@@ -1,4 +1,4 @@
-﻿
+
 import sys
 import os
 import json
@@ -129,12 +129,15 @@ def main():
         print("")
     
     if json_mode:
+        # End marker for persistent process communication
+        END_MARKER = '<<<END_OF_RESPONSE>>>'
         try:
             for line in sys.stdin:
                 command = line.strip()
                 if command:
                     response = cli_session.execute_command(command)
                     print(response.output, flush=True)
+                    print(END_MARKER, flush=True)  # Signal end of response
         except (KeyboardInterrupt, EOFError):
             pass
     elif is_piped:

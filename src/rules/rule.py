@@ -1,8 +1,9 @@
-﻿from pathlib import Path
+from pathlib import Path
 from typing import Dict, Any, List, Optional
 from scanners.code_scanner import CodeScanner
 from scanners.scanner_registry import ScannerRegistry
 from scanners.test_scanner import TestScanner
+from scanners.resources.scan_context import ScanFilesContext, CrossFileScanContext, FileCollection
 from utils import read_json_file
 from rules.scan_config import ScanConfig
 
@@ -144,13 +145,16 @@ class Rule:
         return scanner_instance
 
     def _execute_file_by_file_scan(self, scanner_instance, config: ScanConfig):
-        violations_file_by_file = scanner_instance.scan(
-            config.story_graph, 
-            rule_obj=self, 
-            test_files=config.test_files, 
-            code_files=config.code_files, 
+        context = ScanFilesContext(
+            rule_obj=self,
+            story_graph=config.story_graph,
+            files=FileCollection(
+                test_files=config.test_files or [],
+                code_files=config.code_files or []
+            ),
             on_file_scanned=config.on_file_scanned
         )
+        violations_file_by_file = scanner_instance.scan_with_context(context)
         if violations_file_by_file is not None:
             if isinstance(violations_file_by_file, list):
                 self._file_by_file_violations = violations_file_by_file
@@ -162,16 +166,21 @@ class Rule:
             self._file_by_file_violations = []
 
     def _execute_cross_file_scan(self, scanner_instance, config: ScanConfig):
-        if not config.skip_cross_file and self.requires_two_pass_scan and hasattr(scanner_instance, 'scan_cross_file'):
-            violations_cross_file = scanner_instance.scan_cross_file(
-                rule_obj=self, 
-                test_files=config.test_files, 
-                code_files=config.code_files, 
-                all_test_files=config.all_test_files, 
-                all_code_files=config.all_code_files, 
-                status_writer=config.status_writer, 
-                max_cross_file_comparisons=config.max_cross_file_comparisons
+        if not config.skip_cross_file and self.requires_two_pass_scan and hasattr(scanner_instance, 'scan_cross_file_with_context'):
+            context = CrossFileScanContext(
+                rule_obj=self,
+                changed_files=FileCollection(
+                    test_files=config.test_files or [],
+                    code_files=config.code_files or []
+                ),
+                all_files=FileCollection(
+                    test_files=config.all_test_files or config.test_files or [],
+                    code_files=config.all_code_files or config.code_files or []
+                ),
+                status_writer=config.status_writer,
+                max_comparisons=config.max_cross_file_comparisons or 20
             )
+            violations_cross_file = scanner_instance.scan_cross_file_with_context(context)
             if violations_cross_file:
                 self._cross_file_violations = violations_cross_file
 

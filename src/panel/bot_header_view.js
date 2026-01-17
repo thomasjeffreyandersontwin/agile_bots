@@ -12,12 +12,13 @@ class BotHeaderView extends PanelView {
     /**
      * Bot header view.
      * 
+     * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {string} panelVersion - Panel extension version (optional)
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
      */
-    constructor(panelVersion, webview, extensionUri) {
-        super();
+    constructor(botPathOrCli, panelVersion, webview, extensionUri) {
+        super(botPathOrCli);
         this.panelVersion = panelVersion || null;
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;

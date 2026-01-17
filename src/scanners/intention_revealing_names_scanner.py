@@ -10,15 +10,9 @@ from .resources.ast_elements import Functions, Classes
 
 logger = logging.getLogger(__name__)
 
+
 class IntentionRevealingNamesScanner(CodeScanner):
-    
-    def __init__(self):
-        super().__init__()
-        self.story_graph = None
-    
-    def scan(self, story_graph: Dict[str, Any], rule_obj: Any = None, test_files: Optional[List['Path']] = None, code_files: Optional[List['Path']] = None, on_file_scanned: Optional[Any] = None) -> List[Dict[str, Any]]:
-        self.story_graph = story_graph
-        return super().scan(story_graph, rule_obj, test_files=test_files, code_files=code_files, on_file_scanned=on_file_scanned)
+    """Scanner for detecting names that don't reveal intention."""
     
     ACCEPTABLE_DOMAIN_TERMS = {
         'scan', 'scan_test_file', 'scan_code_file', 'scan_cross_file',
