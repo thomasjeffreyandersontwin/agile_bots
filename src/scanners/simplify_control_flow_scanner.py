@@ -1,14 +1,20 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Functions
 
 class SimplifyControlFlowScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -19,20 +25,19 @@ class SimplifyControlFlowScanner(CodeScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            violation = self._check_nesting_depth(function.node, file_path, rule_obj, content)
+            violation = self._check_nesting_depth(function.node, file_path, self.rule, content)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_nesting_depth(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, content: str) -> Optional[Dict[str, Any]]:
+    def _check_nesting_depth(self, func_node: ast.FunctionDef, file_path: Path, content: str) -> Optional[Dict[str, Any]]:
         max_depth = self._get_max_nesting_depth(func_node)
         
         if max_depth > 3:
             line_number = func_node.lineno if hasattr(func_node, 'lineno') else None
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=f'Function "{func_node.name}" has nesting depth of {max_depth} - use guard clauses and extract nested blocks to reduce nesting',
+                                violation_message=f'Function "{func_node.name}" has nesting depth of {max_depth} - use guard clauses and extract nested blocks to reduce nesting',
                 file_path=file_path,
                 line_number=line_number,
                 severity='warning',

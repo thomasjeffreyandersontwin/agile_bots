@@ -6,10 +6,10 @@ from scanners.violation import Violation
 
 class PreferObjectModelOverConfigScanner(CodeScanner):
     
-    def __init__(self, rule_obj=None):
+    def __init__(self, self.rule=None):
         super().__init__()
         self.rule_name = "prefer_object_model_over_config"
-        self.rule_obj = rule_obj
+        self.self.rule = self.rule
         
         self.config_access_patterns = [
             (r'(?<!self)\._config\[', 'Direct access to _config dictionary'),
@@ -27,11 +27,11 @@ class PreferObjectModelOverConfigScanner(CodeScanner):
             r'# scanner ignore',
         ]
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Dict[str, Any] = None) -> List[Violation]:
+    def scan_file(self, file_path: Path = None, story_graph: Dict[str, Any] = None) -> List[Violation]:
         violations = []
         
-        # Use injected rule_obj if provided, otherwise fall back to self.rule_obj
-        effective_rule = rule_obj if rule_obj is not None else self.rule_obj
+        # Use injected self.rule if provided, otherwise fall back to self.self.rule
+        effective_rule = self.rule if self.rule is not None else self.self.rule
         if not effective_rule:
             return violations
         
@@ -121,7 +121,7 @@ class PreferObjectModelOverConfigScanner(CodeScanner):
         return any(re.search(pattern, context) for pattern in object_patterns)
     
     def _create_violation(self, line_num: int, message: str, effective_rule: Any = None) -> Violation:
-        rule_to_use = effective_rule if effective_rule is not None else self.rule_obj
+        rule_to_use = effective_rule if effective_rule is not None else self.self.rule
         return Violation(
             rule=rule_to_use,
             violation_message=message,

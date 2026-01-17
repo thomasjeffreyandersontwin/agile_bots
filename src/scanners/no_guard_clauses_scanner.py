@@ -1,5 +1,5 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
@@ -7,11 +7,17 @@ import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
+
 logger = logging.getLogger(__name__)
 
 class NoGuardClausesScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -20,12 +26,12 @@ class NoGuardClausesScanner(TestScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_guard_clause_patterns(lines, file_path, rule_obj))
-        violations.extend(self._check_ast_guard_clauses(file_path, rule_obj))
+        violations.extend(self._check_guard_clause_patterns(lines, file_path))
+        violations.extend(self._check_ast_guard_clauses(file_path))
         
         return violations
     
-    def _check_guard_clause_patterns(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_guard_clause_patterns(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         guard_patterns = [
@@ -63,7 +69,7 @@ class NoGuardClausesScanner(TestScanner):
                         continue
                     
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Line {line_num}: CRITICAL - {message}. Guard clauses are FORBIDDEN in tests. Assume test code works - if setup is wrong, let the test fail. Remove the guard clause.',
                         location=str(file_path),
                         line_number=line_num,
@@ -74,7 +80,7 @@ class NoGuardClausesScanner(TestScanner):
         
         return violations
     
-    def _check_ast_guard_clauses(self, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_ast_guard_clauses(self, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         try:
@@ -83,14 +89,14 @@ class NoGuardClausesScanner(TestScanner):
             
             for node in ast.walk(tree):
                 if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'):
-                    violations.extend(self._check_function_guard_clauses(node, file_path, rule_obj))
+                    violations.extend(self._check_function_guard_clauses(node, file_path))
         
         except (SyntaxError, UnicodeDecodeError, Exception) as e:
             logger.debug(f'Skipping file {file_path} due to {type(e).__name__}: {e}')
         
         return violations
     
-    def _check_function_guard_clauses(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_function_guard_clauses(self, func_node: ast.FunctionDef, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         for node in ast.walk(func_node):
@@ -105,7 +111,7 @@ class NoGuardClausesScanner(TestScanner):
                 for pattern_check in guard_patterns:
                     if pattern_check(node):
                         violation = Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Line {node.lineno}: CRITICAL - Guard clause detected. Guard clauses are FORBIDDEN in tests. Assume test code works correctly - if setup is wrong, let the test fail. Remove defensive checks.',
                             location=str(file_path),
                             line_number=node.lineno,

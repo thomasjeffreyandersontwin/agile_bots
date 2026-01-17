@@ -7,7 +7,7 @@ import re
 
 class NounRedundancyScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if not hasattr(node, 'name') or not node.name:
@@ -24,7 +24,7 @@ class NounRedundancyScanner(StoryScanner):
             base_name = re.sub(r'\s+(System|Component|Module|Manager|Handler|\d+)$', '', name, flags=re.IGNORECASE)
             if base_name and base_name != name:
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Story element "{name}" may have redundant noun - consider integrating with related concepts instead of using qualifiers',
                     location=node.name,
                     severity='warning'

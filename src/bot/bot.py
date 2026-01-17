@@ -129,13 +129,16 @@ class Bot:
         registered_bots = []
         
         bots_parent_dir = self.bot_paths.bot_directory.parent
+        if not (bots_parent_dir.exists() and bots_parent_dir.is_dir()):
+            return []
         
-        if bots_parent_dir.exists() and bots_parent_dir.is_dir():
-            for bot_dir in bots_parent_dir.iterdir():
-                if bot_dir.is_dir():
-                    bot_config = bot_dir / 'bot_config.json'
-                    if bot_config.exists():
-                        registered_bots.append(bot_dir.name)
+        for bot_dir in bots_parent_dir.iterdir():
+            if not bot_dir.is_dir():
+                continue
+            
+            bot_config = bot_dir / 'bot_config.json'
+            if bot_config.exists():
+                registered_bots.append(bot_dir.name)
         
         return sorted(registered_bots)
     
@@ -629,8 +632,8 @@ class Bot:
             if saved_behavior and saved_action:
                 try:
                     self.execute(saved_behavior, saved_action)
-                except:
-                    pass
+                except Exception as e:
+                    logger.warning(f'Failed to restore saved behavior/action state: {str(e)}')
             
             return submit_result
             

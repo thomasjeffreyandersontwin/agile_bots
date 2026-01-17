@@ -1,12 +1,15 @@
 """Scanner for validating test quality (FIRST principles)."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
@@ -14,7 +17,10 @@ logger = logging.getLogger(__name__)
 
 class TestQualityScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         if not file_path.exists():
@@ -30,8 +36,8 @@ class TestQualityScanner(TestScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_test_independence(tree, content, file_path, rule_obj))
-        violations.extend(self._check_test_names_quality(tree, file_path, rule_obj))
+        violations.extend(self._check_test_independence(tree, content, file_path))
+        violations.extend(self._check_test_names_quality(tree, file_path))
         
         return violations
     
@@ -51,14 +57,14 @@ class TestQualityScanner(TestScanner):
         
         return False
     
-    def _check_test_independence(self, tree: ast.AST, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_test_independence(self, tree: ast.AST, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         for node in ast.walk(tree):
             if isinstance(node, ast.Global):
                 line_number = node.lineno if hasattr(node, 'lineno') else None
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Line {line_number} uses global state - tests should be independent, not share state',
                     location=str(file_path),
                     line_number=line_number,
@@ -68,7 +74,7 @@ class TestQualityScanner(TestScanner):
         
         return violations
     
-    def _check_test_names_quality(self, tree: ast.AST, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_test_names_quality(self, tree: ast.AST, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         generic_names = ['test_1', 'test_2', 'test_basic', 'test_simple', 'test_default']
         
@@ -81,7 +87,7 @@ class TestQualityScanner(TestScanner):
             
             line_number = function.node.lineno if hasattr(function.node, 'lineno') else None
             violation = Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'Test "{function.node.name}" uses generic name - use descriptive name that explains what is being tested',
                 location=str(file_path),
                 line_number=line_number,
@@ -91,7 +97,7 @@ class TestQualityScanner(TestScanner):
         
         return violations
     
-    def scan_story_node(self, node: Any, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: Any) -> List[Dict[str, Any]]:
         # TestQualityScanner focuses on test files, not story graph
         return []
 

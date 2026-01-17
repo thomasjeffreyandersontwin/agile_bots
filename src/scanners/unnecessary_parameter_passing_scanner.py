@@ -1,15 +1,21 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 
 class UnnecessaryParameterPassingScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         if not file_path.exists():
@@ -26,12 +32,12 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         
         classes = Classes(tree)
         for cls in classes.get_many_classes:
-            class_violations = self._check_class(cls.node, file_path, rule_obj, lines, content)
+            class_violations = self._check_class(cls.node, file_path, self.rule, lines, content)
             violations.extend(class_violations)
         
         return violations
     
-    def _check_class(self, class_node: ast.ClassDef, file_path: Path, rule_obj: Any, lines: List[str], content: str) -> List[Dict[str, Any]]:
+    def _check_class(self, class_node: ast.ClassDef, file_path: Path, lines: List[str], content: str) -> List[Dict[str, Any]]:
         violations = []
         
         instance_attrs = self._collect_instance_attributes(class_node)
@@ -39,10 +45,10 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         for node in class_node.body:
             if isinstance(node, ast.FunctionDef):
                 if node.name.startswith('_'):
-                    method_violations = self._check_method_parameters(node, instance_attrs, file_path, rule_obj, lines, content)
+                    method_violations = self._check_method_parameters(node, instance_attrs, file_path, self.rule, lines, content)
                     violations.extend(method_violations)
                 
-                extraction_violations = self._check_property_extraction(node, instance_attrs, file_path, rule_obj, lines, content)
+                extraction_violations = self._check_property_extraction(node, instance_attrs, file_path, self.rule, lines, content)
                 violations.extend(extraction_violations)
         
         return violations
@@ -71,7 +77,7 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         return attrs
     
     def _check_method_parameters(self, method_node: ast.FunctionDef, instance_attrs: set, 
-                                file_path: Path, rule_obj: Any, lines: List[str], content: str) -> List[Dict[str, Any]]:
+                                file_path: Path, lines: List[str], content: str) -> List[Dict[str, Any]]:
         violations = []
         
         if not method_node.name.startswith('_'):
@@ -88,7 +94,7 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
                 if self._parameter_used_like_instance_attr(method_node, arg.arg):
                     line_number = method_node.lineno if hasattr(method_node, 'lineno') else None
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Internal method "{method_node.name}" receives parameter "{arg.arg}" that matches instance attribute. Consider accessing via self.{arg.arg} instead.',
                         location=str(file_path),
                         line_number=line_number,
@@ -112,9 +118,9 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         return True
     
     def _check_property_extraction(self, method_node: ast.FunctionDef, instance_attrs: set,
-                                  file_path: Path, rule_obj: Any, lines: List[str], content: str) -> List[Dict[str, Any]]:
+                                  file_path: Path, lines: List[str], content: str) -> List[Dict[str, Any]]:
         assignments = self._collect_self_attribute_assignments(method_node)
-        return self._find_extraction_violations(method_node, assignments, file_path, rule_obj)
+        return self._find_extraction_violations(method_node, assignments, file_path)
     
     def _collect_self_attribute_assignments(self, method_node: ast.FunctionDef) -> List[dict]:
         assignments = []
@@ -134,16 +140,16 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         return assignments
     
     def _find_extraction_violations(self, method_node: ast.FunctionDef, assignments: List[dict],
-                                   file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+                                   file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         for stmt in method_node.body:
-            violation = self._check_call_for_extraction(stmt, assignments, file_path, rule_obj)
+            violation = self._check_call_for_extraction(stmt, assignments, file_path)
             if violation:
                 violations.append(violation)
         return violations
     
     def _check_call_for_extraction(self, stmt: ast.stmt, assignments: List[dict],
-                                   file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+                                   file_path: Path) -> Optional[Dict[str, Any]]:
         if not isinstance(stmt, ast.Expr) or not isinstance(stmt.value, ast.Call):
             return None
         
@@ -157,7 +163,7 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
                 continue
             for assignment in assignments:
                 if arg.id == assignment['var_name'] and self._is_before_call(assignment, stmt):
-                    return self._create_extraction_violation(assignment, method_name, stmt, file_path, rule_obj)
+                    return self._create_extraction_violation(assignment, method_name, stmt, file_path)
         return None
     
     def _is_private_self_method_call(self, call: ast.Call) -> bool:
@@ -171,10 +177,10 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         return assignment['line'] and hasattr(stmt, 'lineno') and assignment['line'] < stmt.lineno
     
     def _create_extraction_violation(self, assignment: dict, method_name: str, 
-                                     stmt: ast.stmt, file_path: Path, rule_obj: Any) -> Dict[str, Any]:
+                                     stmt: ast.stmt, file_path: Path) -> Dict[str, Any]:
         line_number = stmt.lineno if hasattr(stmt, 'lineno') else None
         return Violation(
-            rule=rule_obj,
+            rule=self.rule,
             violation_message=f'Instance property "self.{assignment["attr_path"]}" is extracted to variable "{assignment["var_name"]}" and passed to internal method "{method_name}". Access via self.{assignment["attr_path"]} directly instead.',
             location=str(file_path),
             line_number=line_number,

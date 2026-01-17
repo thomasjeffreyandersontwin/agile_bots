@@ -6,26 +6,25 @@ from scanners.violation import Violation
 
 class SpecificityScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
-        name = node.name
-        
-        if not name:
+        if not node.name:
             return violations
         
         node_type = self._get_node_type(node)
         
-        violation = self._check_too_generic(name, node, node_type, rule_obj)
+        violation = self._check_too_generic(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_too_specific(name, node, node_type, rule_obj)
+        violation = self._check_too_specific(node, node_type)
         if violation:
             violations.append(violation)
         
         return violations
     
     def _get_node_type(self, node: StoryNode) -> str:
+        name = node.name
         if isinstance(node, Epic):
             return 'epic'
         elif isinstance(node, SubEpic):
@@ -34,7 +33,8 @@ class SpecificityScanner(StoryScanner):
             return 'story'
         return 'unknown'
     
-    def _check_too_generic(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_too_generic(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         name_lower = name.lower()
         words = name_lower.split()
         
@@ -42,7 +42,7 @@ class SpecificityScanner(StoryScanner):
             if len(words) == 2:
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" is too generic - add context (e.g., "Process Order Payment" not "Process Payment")',
                     location=location,
                     severity='error'
@@ -57,7 +57,7 @@ class SpecificityScanner(StoryScanner):
             if re.match(pattern, name_lower):
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" is too generic - add specific context (e.g., "Process Order Payment" not "Process Payment")',
                     location=location,
                     severity='error'
@@ -65,7 +65,8 @@ class SpecificityScanner(StoryScanner):
         
         return None
     
-    def _check_too_specific(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_too_specific(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         id_patterns = [
             r'#\d+',
             r'\d{4,}',
@@ -79,7 +80,7 @@ class SpecificityScanner(StoryScanner):
             if re.search(pattern, name, re.IGNORECASE):
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" is too specific - remove IDs, numbers, or detailed context (e.g., "Process Order Payment" not "User processes payment for order #12345")',
                     location=location,
                     severity='error'
@@ -88,7 +89,7 @@ class SpecificityScanner(StoryScanner):
         if 'for order' in name.lower() or 'for order #' in name.lower():
             location = node.map_location()
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'{node_type.capitalize()} name "{name}" is too specific - remove order references (e.g., "Process Order Payment" not "Process payment for order #12345")',
                 location=location,
                 severity='error'
@@ -97,7 +98,7 @@ class SpecificityScanner(StoryScanner):
         if 'when ' in name.lower() and len(name.split()) > 6:
             location = node.map_location()
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'{node_type.capitalize()} name "{name}" is too specific - remove temporal context (e.g., "Process Order Payment" not "Process payment when customer completes checkout")',
                 location=location,
                 severity='error'
@@ -105,6 +106,6 @@ class SpecificityScanner(StoryScanner):
         
         return None
     
-    def scan_domain_concept(self, node: Any, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: Any) -> List[Dict[str, Any]]:
         return []
 

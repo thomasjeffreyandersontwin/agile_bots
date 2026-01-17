@@ -94,7 +94,7 @@ class ScenariosOnStoryDocsScanner(StoryScanner):
         self._in_scope_story_names = _get_story_names_from_scope(context.story_graph)
         return super().scan_with_context(context)
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -112,7 +112,7 @@ class ScenariosOnStoryDocsScanner(StoryScanner):
             if not has_scenarios and not has_scenario_outlines:
                 location = node.map_location()
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Story "{node.name}" has no scenarios or scenario_outlines in story-graph.json - scenarios should be in JSON (scenarios or scenario_outlines fields)',
                     location=location,
                     severity='error'

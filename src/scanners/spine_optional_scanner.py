@@ -7,14 +7,13 @@ class SpineOptionalScanner(StoryScanner):
     
     def scan(
         self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
+        story_graph: Dict[str, Any] = None,
         test_files: Optional[List['Path']] = None,
         code_files: Optional[List['Path']] = None,
         on_file_scanned: Optional[Any] = None
     ) -> List[Dict[str, Any]]:
-        if not rule_obj:
-            raise ValueError("rule_obj parameter is required for SpineOptionalScanner")
+        if not self.rule:
+            raise ValueError("self.rule parameter is required for SpineOptionalScanner")
         
         violations = []
         from story_map import StoryMap
@@ -23,15 +22,15 @@ class SpineOptionalScanner(StoryScanner):
         for epic in story_map.epics():
             for node in story_map.walk(epic):
                 if isinstance(node, StoryGroup):
-                    group_violations = self._scan_story_group(node, rule_obj)
+                    group_violations = self._scan_story_group(node)
                     violations.extend(group_violations)
         
         return violations
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         return []
     
-    def _scan_story_group(self, story_group: StoryGroup, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _scan_story_group(self, story_group: StoryGroup) -> List[Dict[str, Any]]:
         violations = []
         stories = story_group.children
         
@@ -41,21 +40,21 @@ class SpineOptionalScanner(StoryScanner):
         sequential_stories = [s for s in stories if isinstance(s, Story) and s.sequential_order > 0]
         optional_stories = [s for s in stories if isinstance(s, Story) and s.data.get('optional', False)]
         
-        violation = self._check_sequential_order_gaps(sequential_stories, story_group, rule_obj)
+        violation = self._check_sequential_order_gaps(sequential_stories, story_group)
         if violation:
             violations.append(violation)
         
-        violation = self._check_missing_optional_markers(stories, sequential_stories, rule_obj)
+        violation = self._check_missing_optional_markers(stories, sequential_stories)
         if violation:
             violations.extend(violation)
         
-        violation = self._check_all_stories_mandatory(stories, sequential_stories, optional_stories, story_group, rule_obj)
+        violation = self._check_all_stories_mandatory(stories, sequential_stories, optional_stories, story_group)
         if violation:
             violations.append(violation)
         
         return violations
     
-    def _check_sequential_order_gaps(self, sequential_stories: List[Story], story_group: StoryGroup, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_sequential_order_gaps(self, sequential_stories: List[Story], story_group: StoryGroup) -> Optional[Dict[str, Any]]:
         if len(sequential_stories) < 2:
             return None
         
@@ -66,7 +65,7 @@ class SpineOptionalScanner(StoryScanner):
             if seq_story.sequential_order != expected_order:
                 location = seq_story.map_location('sequential_order')
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Story "{seq_story.name}" has sequential_order {seq_story.sequential_order}, but expected {expected_order} (gap in sequence)',
                     location=location,
                     severity='error'
@@ -75,7 +74,7 @@ class SpineOptionalScanner(StoryScanner):
         
         return None
     
-    def _check_missing_optional_markers(self, all_stories: List[Story], sequential_stories: List[Story], rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_missing_optional_markers(self, all_stories: List[Story], sequential_stories: List[Story]) -> List[Dict[str, Any]]:
         violations = []
         
         if len(sequential_stories) == 0:
@@ -91,7 +90,7 @@ class SpineOptionalScanner(StoryScanner):
             if sequential_order == 0 and not is_optional:
                 location = story.map_location('optional')
                 violations.append(Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Story "{story.name}" has no sequential_order and is not marked as optional - should be marked optional: true if not part of spine',
                     location=location,
                     severity='warning'
@@ -99,14 +98,14 @@ class SpineOptionalScanner(StoryScanner):
         
         return violations
     
-    def _check_all_stories_mandatory(self, all_stories: List[Story], sequential_stories: List[Story], optional_stories: List[Story], story_group: StoryGroup, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_all_stories_mandatory(self, all_stories: List[Story], sequential_stories: List[Story], optional_stories: List[Story], story_group: StoryGroup) -> Optional[Dict[str, Any]]:
         if len(all_stories) < 2:
             return None
         
         if len(sequential_stories) == len(all_stories) and len(optional_stories) == 0:
             location = story_group.map_location()
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'All stories in story group have sequential_order - consider marking some as optional if they are alternatives or enhancements',
                 location=location,
                 severity='warning'

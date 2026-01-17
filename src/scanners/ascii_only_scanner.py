@@ -1,13 +1,19 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 import re
 
 class AsciiOnlyScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -17,13 +23,13 @@ class AsciiOnlyScanner(TestScanner):
         content, lines, tree = parsed
         
         for line_num, line in enumerate(lines, 1):
-            violation = self._check_unicode_characters(line, file_path, line_num, rule_obj)
+            violation = self._check_unicode_characters(line, file_path, line_num)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_unicode_characters(self, line: str, file_path: Path, line_num: int, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_unicode_characters(self, line: str, file_path: Path, line_num: int) -> Optional[Dict[str, Any]]:
         try:
             line.encode('ascii')
         except UnicodeEncodeError:
@@ -40,8 +46,7 @@ class AsciiOnlyScanner(TestScanner):
                     try:
                         content = file_path.read_text(encoding='utf-8')
                         return self._create_violation_with_snippet(
-                            rule_obj=rule_obj,
-                            violation_message=f'Line contains Unicode characters: {", ".join(set(problematic[:3]))} - use ASCII alternatives like [PASS], [ERROR], [FAIL]',
+                                                        violation_message=f'Line contains Unicode characters: {", ".join(set(problematic[:3]))} - use ASCII alternatives like [PASS], [ERROR], [FAIL]',
                             file_path=file_path,
                             line_number=line_num,
                             severity='error',
@@ -54,7 +59,7 @@ class AsciiOnlyScanner(TestScanner):
                     except Exception:
                         location = f"{file_path}:{line_num}"
                         return Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Line contains Unicode characters: {", ".join(set(problematic[:3]))} - use ASCII alternatives like [PASS], [ERROR], [FAIL]',
                             location=location,
                             line_number=line_num,

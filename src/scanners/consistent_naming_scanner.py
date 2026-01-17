@@ -1,9 +1,12 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from collections import defaultdict
 from .resources.ast_elements import Functions, Classes
@@ -12,7 +15,10 @@ logger = logging.getLogger(__name__)
 
 class ConsistentNamingScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -33,11 +39,11 @@ class ConsistentNamingScanner(CodeScanner):
         for cls in classes.get_many_classes:
             class_names.append(cls.node.name)
         
-        violations.extend(self._check_naming_consistency(function_names, class_names, file_path, rule_obj))
+        violations.extend(self._check_naming_consistency(function_names, class_names, file_path))
         
         return violations
     
-    def _check_naming_consistency(self, function_names: List[str], class_names: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_naming_consistency(self, function_names: List[str], class_names: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         if not function_names:
@@ -50,7 +56,7 @@ class ConsistentNamingScanner(CodeScanner):
         
         if has_snake_case and camel_case_count > 1:
             violation = Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'File mixes snake_case and camelCase naming conventions ({camel_case_count} camelCase functions) - use consistent naming style (snake_case for functions)',
                 location=str(file_path),
                 severity='warning'

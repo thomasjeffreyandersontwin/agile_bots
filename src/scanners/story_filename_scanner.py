@@ -8,7 +8,7 @@ import re
 
 class StoryFilenameScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -17,13 +17,14 @@ class StoryFilenameScanner(StoryScanner):
                 return violations
             
             
-            violation = self._check_actor_in_story_name(story_name, node, rule_obj)
+            violation = self._check_actor_in_story_name(node)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_actor_in_story_name(self, story_name: str, node: StoryNode, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_actor_in_story_name(self, node: StoryNode) -> Optional[Dict[str, Any]]:
+        name = node.name
         actor_prefixes = [
             'AI Chat', 'Router', 'Bot Behavior', 'GatherContextAction',
             'Agent', 'System', 'User', 'Admin', 'Customer'
@@ -33,7 +34,7 @@ class StoryFilenameScanner(StoryScanner):
             if story_name.startswith(prefix + ' '):
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Story name "{story_name}" starts with actor prefix "{prefix}" - actor information should be in description/AC, not in story name/filename',
                     location=location,
                     severity='error'

@@ -11,7 +11,10 @@ logger = logging.getLogger(__name__)
 
 class ImportPlacementScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -22,7 +25,7 @@ class ImportPlacementScanner(CodeScanner):
         
         import_section_end = self._find_import_section_end(lines)
         
-        violations.extend(self._check_import_placement(lines, import_section_end, file_path, rule_obj))
+        violations.extend(self._check_import_placement(lines, import_section_end, file_path))
         
         return violations
     
@@ -163,8 +166,7 @@ class ImportPlacementScanner(CodeScanner):
         self, 
         lines: List[str], 
         import_section_end: int,
-        file_path: Path, 
-        rule_obj: Any
+        file_path: Path
     ) -> List[Dict[str, Any]]:
         violations = []
         content = '\n'.join(lines)
@@ -209,8 +211,7 @@ class ImportPlacementScanner(CodeScanner):
                     continue
                 
                 violation = self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message='Import statement found after non-import code. Move all imports to the top of the file.',
+                                        violation_message='Import statement found after non-import code. Move all imports to the top of the file.',
                     file_path=file_path,
                     line_number=line_number_1_indexed,
                     severity='error',

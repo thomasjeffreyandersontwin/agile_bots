@@ -2,6 +2,8 @@
 from cli.adapters import MarkdownAdapter
 from cli.base_hierarchical_adapter import BaseBotAdapter
 from bot.bot import Bot
+import logging
+logger = logging.getLogger(__name__)
 
 class MarkdownBot(BaseBotAdapter, MarkdownAdapter):
     
@@ -19,7 +21,7 @@ class MarkdownBot(BaseBotAdapter, MarkdownAdapter):
             bot_list = ' | '.join(registered_bots)
             lines.append("")
             lines.append(f"**Registered:** {bot_list}")
-            lines.append(f"**To change bots:** `bot <name>`")
+            lines.append("**To change bots:** `bot <name>`")
         return '\n'.join(lines)
     
     @property
@@ -113,8 +115,8 @@ class MarkdownBot(BaseBotAdapter, MarkdownAdapter):
                 markdown_scope = AdapterFactory.create(self.bot._scope, 'markdown')
                 lines.append(markdown_scope.serialize())
                 lines.append("")
-            except (AttributeError, TypeError):
-                pass
+            except (AttributeError, TypeError) as e:
+                logger.warning(f'Failed to serialize scope to markdown: {str(e)}')
         
         if self.bot.behaviors:
             lines.append(self.progress)

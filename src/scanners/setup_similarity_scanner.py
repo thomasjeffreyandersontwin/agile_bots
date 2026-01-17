@@ -15,12 +15,10 @@ class SetupSimilarityScanner(TestScanner):
 
     def scan(
         self,
-        story_graph: Dict[str, Any],
-        rule_obj: Any = None,
+        story_graph: Dict[str, Any] = None,
         test_files: Optional[List["Path"]] = None,
         code_files: Optional[List["Path"]] = None,
-        on_file_scanned: Optional[Any] = None,
-    ) -> List[Dict[str, Any]]:
+        on_file_scanned: Optional[Any] = None) -> List[Dict[str, Any]]:
         violations: List[Dict[str, Any]] = []
         fingerprint_occurrences: Dict[Tuple[str, Tuple[str, ...]], List[Tuple[Path, int, str]]] = defaultdict(list)
         intra_duplicates: List[Dict[str, Any]] = []
@@ -43,15 +41,14 @@ class SetupSimilarityScanner(TestScanner):
                         first_line = sorted(ln_list)[0]
                         intra_duplicates.append(
                             Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=(
                                     f'Test "{func.name}" builds {len(ln_list)} similar setup payloads; '
                                     f"centralize into a shared standard fixture/helper."
                                 ),
                                 line_number=first_line,
                                 location=str(file_path),
-                                severity="warning",
-                            ).to_dict()
+                                severity="warning").to_dict()
                         )
 
         for fp, occs in fingerprint_occurrences.items():
@@ -62,15 +59,14 @@ class SetupSimilarityScanner(TestScanner):
                 for file_path, lineno, func_name in occs[:5]:
                     violations.append(
                         Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=(
                                 f'Setup payload with keys [{key_text}] reused across {len(occs)} tests; '
                                 f"extract to shared standard data/helper instead of ad-hoc dicts."
                             ),
                             line_number=lineno,
                             location=str(file_path),
-                            severity="warning",
-                        ).to_dict()
+                            severity="warning").to_dict()
                     )
 
         violations.extend(intra_duplicates)

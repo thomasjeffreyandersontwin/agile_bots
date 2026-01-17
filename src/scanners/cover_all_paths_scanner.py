@@ -1,14 +1,20 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 class CoverAllPathsScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -37,7 +43,7 @@ class CoverAllPathsScanner(TestScanner):
             
             if found_code_node is None:
                 violations.append(Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test method "{test_method.name}" has no actual test code - tests must exercise behavior paths, not just contain pass statements',
                     location=str(file_path),
                     line_number=test_method.lineno,

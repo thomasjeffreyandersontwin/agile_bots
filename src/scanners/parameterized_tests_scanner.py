@@ -7,14 +7,13 @@ class ParameterizedTestsScanner(Scanner):
     
     def scan(
         self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
+        story_graph: Dict[str, Any] = None,
         test_files: Optional[List['Path']] = None,
         code_files: Optional[List['Path']] = None,
         on_file_scanned: Optional[Any] = None
     ) -> List[Dict[str, Any]]:
-        if not rule_obj:
-            raise ValueError("rule_obj parameter is required for ParameterizedTestsScanner")
+        if not self.rule:
+            raise ValueError("self.rule parameter is required for ParameterizedTestsScanner")
         
         violations = []
         story_map = StoryMap(story_graph)
@@ -26,7 +25,7 @@ class ParameterizedTestsScanner(Scanner):
                         if scenario_outline.examples_rows and len(scenario_outline.examples_rows) > 1:
                             location = scenario_outline.map_location()
                             violations.append(Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=f"Scenario outline '{scenario_outline.name}' has {len(scenario_outline.examples_rows)} examples but may not use @pytest.mark.parametrize",
                                 location=location,
                                 severity='warning'

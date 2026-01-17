@@ -4,6 +4,8 @@ from typing import Dict, Any, List, Optional, Union
 from dataclasses import dataclass, field
 from enum import Enum
 import json
+import logging
+logger = logging.getLogger(__name__)
 
 class ScopeType(Enum):
     ALL = 'all'
@@ -120,45 +122,38 @@ class FileFilter:
             file_str = str(file_path).replace('\\', '/')
             file_path_obj = PurePath(file_str)
             
-            if self.include_patterns:
-                matches_include = False
-                for pattern in self.include_patterns:
-                    pattern_normalized = pattern.replace('\\', '/')
-                    try:
-                        if (file_path_obj.match(pattern_normalized) or
-                            file_path_obj.match(f'**/{pattern_normalized}') or
-                            pattern_normalized in file_str):
-                            matches_include = True
-                            break
-                    except (ValueError, TypeError):
-                        if pattern_normalized in file_str:
-                            matches_include = True
-                            break
-                
-                if not matches_include:
-                    continue
+            if self.include_patterns and not self._matches_include_pattern(file_path_obj, file_str):
+                continue
             
-            if self.exclude_patterns:
-                matches_exclude = False
-                for pattern in self.exclude_patterns:
-                    pattern_normalized = pattern.replace('\\', '/')
-                    try:
-                        if (file_path_obj.match(pattern_normalized) or
-                            file_path_obj.match(f'**/{pattern_normalized}') or
-                            pattern_normalized in file_str):
-                            matches_exclude = True
-                            break
-                    except (ValueError, TypeError):
-                        if pattern_normalized in file_str:
-                            matches_exclude = True
-                            break
-                
-                if matches_exclude:
-                    continue
+            if self.exclude_patterns and self._matches_exclude_pattern(file_path_obj, file_str):
+                continue
             
             filtered.append(file_path)
         
         return filtered
+    
+    def _matches_include_pattern(self, file_path_obj, file_str: str) -> bool:
+        for pattern in self.include_patterns:
+            if self._pattern_matches(file_path_obj, file_str, pattern):
+                return True
+        return False
+    
+    def _matches_exclude_pattern(self, file_path_obj, file_str: str) -> bool:
+        for pattern in self.exclude_patterns:
+            if self._pattern_matches(file_path_obj, file_str, pattern):
+                return True
+        return False
+    
+    def _pattern_matches(self, file_path_obj, file_str: str, pattern: str) -> bool:
+        pattern_normalized = pattern.replace('\\', '/')
+        try:
+            if (file_path_obj.match(pattern_normalized) or
+                file_path_obj.match(f'**/{pattern_normalized}') or
+                pattern_normalized in file_str):
+                return True
+        except (ValueError, TypeError):
+            return pattern_normalized in file_str
+        return False
 
 class Scope:
     
@@ -269,28 +264,35 @@ class Scope:
             has_glob = any(char in path_str for char in ['*', '?', '['])
             
             if has_glob:
-                if not Path(path_str).is_absolute():
-                    pattern = str(self.workspace_directory / path_str)
-                else:
-                    pattern = path_str
-                
-                matched_files = glob_module.glob(pattern, recursive=True)
-                for match in matched_files:
-                    match_path = Path(match)
-                    if match_path.is_file():
-                        all_files.append(match_path)
+                matched_files = self._process_glob_pattern(path_str, glob_module)
+                all_files.extend(matched_files)
             else:
-                file_path = Path(path_str)
-                if not file_path.is_absolute():
-                    file_path = self.workspace_directory / file_path
-                
-                if file_path.exists() and file_path.is_dir():
-                    py_files = list(file_path.rglob('*.py'))
-                    all_files.extend(py_files)
-                elif file_path.exists() and file_path.is_file():
-                    all_files.append(file_path)
+                matched_files = self._process_regular_path(path_str)
+                all_files.extend(matched_files)
         
         return all_files
+    
+    def _process_glob_pattern(self, path_str: str, glob_module) -> List[Path]:
+        if not Path(path_str).is_absolute():
+            pattern = str(self.workspace_directory / path_str)
+        else:
+            pattern = path_str
+        
+        matched_files = glob_module.glob(pattern, recursive=True)
+        return [Path(match) for match in matched_files if Path(match).is_file()]
+    
+    def _process_regular_path(self, path_str: str) -> List[Path]:
+        file_path = Path(path_str)
+        if not file_path.is_absolute():
+            file_path = self.workspace_directory / file_path
+        
+        if file_path.exists() and file_path.is_dir():
+            return list(file_path.rglob('*.py'))
+        
+        if file_path.exists() and file_path.is_file():
+            return [file_path]
+        
+        return []
     
     @property
     def story_graph_filter(self) -> Optional[StoryGraphFilter]:
@@ -379,8 +381,8 @@ class Scope:
                     skiprule = [skiprule] if skiprule else []
                 
                 self.filter(scope_type, value, exclude, skiprule)
-        except (json.JSONDecodeError, IOError, ValueError):
-            pass
+        except (json.JSONDecodeError, IOError, ValueError) as e:
+            logger.warning(f'Failed to load scope from file: {str(e)}')
     
     def apply_to_bot(self):
         """Legacy method - save scope to state file.
@@ -401,5 +403,5 @@ class Scope:
             if 'scope' in state_data:
                 del state_data['scope']
                 state_file.write_text(json.dumps(state_data, indent=2))
-        except (json.JSONDecodeError, IOError):
-            pass
+        except (json.JSONDecodeError, IOError) as e:
+            logger.warning(f'Failed to clear scope from bot state file: {str(e)}')

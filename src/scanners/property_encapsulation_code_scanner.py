@@ -1,15 +1,21 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 
 class PropertyEncapsulationCodeScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -20,12 +26,12 @@ class PropertyEncapsulationCodeScanner(CodeScanner):
         
         classes = Classes(tree)
         for cls in classes.get_many_classes:
-            class_violations = self._check_encapsulation(cls.node, content, file_path, rule_obj)
+            class_violations = self._check_encapsulation(cls.node, content, file_path)
             violations.extend(class_violations)
         
         return violations
     
-    def _check_encapsulation(self, class_node: ast.ClassDef, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_encapsulation(self, class_node: ast.ClassDef, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         class_source = ast.get_source_segment(content, class_node) or ''
         
@@ -39,7 +45,7 @@ class PropertyEncapsulationCodeScanner(CodeScanner):
                             if parent and isinstance(parent, ast.FunctionDef) and parent.name == '__init__':
                                 violations.append(
                                     Violation(
-                                        rule=rule_obj,
+                                        rule=self.rule,
                                         violation_message=f'Class "{class_node.name}" has public field "{field_name}". Use private field (prefix with _) and expose via property if needed.',
                                         location=str(file_path),
                                         line_number=node.lineno,
@@ -54,7 +60,7 @@ class PropertyEncapsulationCodeScanner(CodeScanner):
                         if isinstance(stmt.value, ast.Attribute):
                             violations.append(
                                 Violation(
-                                    rule=rule_obj,
+                                    rule=self.rule,
                                     violation_message=f'Method "{node.name}" in class "{class_node.name}" returns mutable reference. Return defensive copy or use property.',
                                     location=str(file_path),
                                     line_number=stmt.lineno,
@@ -69,7 +75,7 @@ class PropertyEncapsulationCodeScanner(CodeScanner):
                     if len(node.args.args) <= 1:
                         violations.append(
                             Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=f'Method "{node.name}" in class "{class_node.name}" should be a property instead of a method (use @property decorator).',
                                 location=str(file_path),
                                 line_number=node.lineno,

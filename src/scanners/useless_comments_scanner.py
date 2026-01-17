@@ -1,9 +1,12 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 
 logger = logging.getLogger(__name__)
@@ -13,7 +16,10 @@ CONTEXT_LENGTH = 200  # characters of context to examine
 
 class UselessCommentsScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -22,13 +28,13 @@ class UselessCommentsScanner(CodeScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_useless_docstrings(content, file_path, rule_obj))
+        violations.extend(self._check_useless_docstrings(content, file_path))
         
-        violations.extend(self._check_useless_comments(lines, file_path, rule_obj))
+        violations.extend(self._check_useless_comments(lines, file_path))
         
         return violations
     
-    def _check_useless_docstrings(self, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_useless_docstrings(self, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         docstring_pattern = r'"""(.*?)"""'
@@ -41,8 +47,7 @@ class UselessCommentsScanner(CodeScanner):
                 line_number = content[:match.start()].count('\n') + 1
                 end_line = content[:match.end()].count('\n') + 1
                 violation = self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f'Useless docstring that repeats function/class name - delete it or explain WHY, not WHAT',
+                                        violation_message=f'Useless docstring that repeats function/class name - delete it or explain WHY, not WHAT',
                     file_path=file_path,
                     line_number=line_number,
                     severity='error',
@@ -55,7 +60,7 @@ class UselessCommentsScanner(CodeScanner):
         
         return violations
     
-    def _check_useless_comments(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_useless_comments(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         content = '\n'.join(lines)
         
@@ -79,8 +84,7 @@ class UselessCommentsScanner(CodeScanner):
             for pattern in useless_patterns:
                 if re.search(pattern, line_stripped, re.IGNORECASE):
                     violation = self._create_violation_with_snippet(
-                        rule_obj=rule_obj,
-                        violation_message=f'Useless comment: "{line_stripped[:60]}" - delete it or improve the code instead',
+                                                violation_message=f'Useless comment: "{line_stripped[:60]}" - delete it or improve the code instead',
                         file_path=file_path,
                         line_number=line_num,
                         severity='error',

@@ -14,7 +14,7 @@ class ImplementationDetailsScanner(StoryScanner):
         'save', 'write', 'store'
     ]
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if not isinstance(node, Story):
@@ -31,7 +31,7 @@ class ImplementationDetailsScanner(StoryScanner):
                 words = name_lower.split()
                 if verb in words[0] or (len(words) > 1 and verb in words[0:2]):
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Story "{node.name}" appears to be an implementation operation - should be a step within a story that describes user/system outcome',
                         location=node.name,
                         severity='error'

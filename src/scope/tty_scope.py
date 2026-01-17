@@ -23,25 +23,10 @@ class TTYScope(TTYAdapter):
         
         results = self.scope.results
         
-        if results is not None:
-            from story_graph.story_graph import StoryGraph
-            
-            if isinstance(results, StoryGraph):
-                from cli.adapter_factory import AdapterFactory
-                storyGrapgAdapter = AdapterFactory.create(results, 'tty')
-                lines.append(storyGrapgAdapter.serialize())
-            elif isinstance(results, list):
-                if results:
-                    for file_path in sorted(results):
-                        try:
-                            rel_path = file_path.relative_to(self.scope.workspace_directory)
-                            lines.append(f"  - {rel_path}")
-                        except ValueError:
-                            lines.append(f"  - {file_path}")
-                else:
-                    lines.append("  (no files found)")
-        else:
+        if results is None:
             lines.append("  (no scope set)")
+        else:
+            self._add_results_to_lines(lines, results)
         
         lines.append("To change scope (pick ONE - setting a new scope replaces the previous):")
         lines.append("scope all                            # Clear scope, work on entire project")
@@ -50,6 +35,29 @@ class TTYScope(TTYAdapter):
         lines.append(self.subsection_separator())
         
         return '\n'.join(lines)
+    
+    def _add_results_to_lines(self, lines: list, results) -> None:
+        from story_graph.story_graph import StoryGraph
+        
+        if isinstance(results, StoryGraph):
+            from cli.adapter_factory import AdapterFactory
+            story_graph_adapter = AdapterFactory.create(results, 'tty')
+            lines.append(story_graph_adapter.serialize())
+            return
+        
+        if isinstance(results, list):
+            if results:
+                for file_path in sorted(results):
+                    formatted_path = self._format_file_path(file_path)
+                    lines.append(f"  - {formatted_path}")
+            else:
+                lines.append("  (no files found)")
+    
+    def _format_file_path(self, file_path: Path) -> str:
+        try:
+            return str(file_path.relative_to(self.scope.workspace_directory))
+        except ValueError:
+            return str(file_path)
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
         from utils import parse_command_text

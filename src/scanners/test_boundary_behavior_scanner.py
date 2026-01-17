@@ -1,6 +1,6 @@
 """Scanner for validating boundary behavior is tested."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
@@ -8,12 +8,18 @@ import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
+
 logger = logging.getLogger(__name__)
 
 
 class TestBoundaryBehaviorScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -22,11 +28,11 @@ class TestBoundaryBehaviorScanner(TestScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_boundary_tests(content, file_path, rule_obj))
+        violations.extend(self._check_boundary_tests(content, file_path))
         
         return violations
     
-    def _check_boundary_tests(self, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_boundary_tests(self, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         lines = content.split('\n')
         

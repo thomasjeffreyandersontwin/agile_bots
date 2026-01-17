@@ -3,11 +3,11 @@ from typing import List, Dict, Any, Optional
 from domain_scanner import DomainScanner
 from domain_concept_node import DomainConceptNode
 from scanners.violation import Violation
-from vocabulary_helper import VocabularyHelper
+from .vocabulary_helper import VocabularyHelper
 
 class ResourceOrientedDesignScanner(DomainScanner):
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         is_agent, base_verb, suffix = VocabularyHelper.is_agent_noun(node.name)
@@ -19,7 +19,7 @@ class ResourceOrientedDesignScanner(DomainScanner):
             
             violations.append(
                 Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Domain concept "{node.name}" is an agent noun (doer of action) derived from verb "{base_verb}". Name concepts after resources (what they ARE), not actions (what they DO). Consider: "{suggested_name}" as the resource.',
                     location=node.map_location('name'),
                     line_number=None,

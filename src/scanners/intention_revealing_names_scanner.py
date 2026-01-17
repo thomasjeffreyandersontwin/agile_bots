@@ -1,10 +1,13 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Functions, Classes
 
@@ -28,7 +31,10 @@ class IntentionRevealingNamesScanner(CodeScanner):
         'result',
     }
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         if not file_path.exists():
@@ -46,15 +52,15 @@ class IntentionRevealingNamesScanner(CodeScanner):
         
         docstring_ranges = self._get_docstring_ranges(tree)
         
-        violations.extend(self._check_variable_names(tree, file_path, rule_obj, content, domain_terms, docstring_ranges))
+        violations.extend(self._check_variable_names(tree, file_path, self.rule, content, domain_terms, docstring_ranges))
         
-        violations.extend(self._check_function_names(tree, file_path, rule_obj, domain_terms))
+        violations.extend(self._check_function_names(tree, file_path, self.rule, domain_terms))
         
-        violations.extend(self._check_class_names(tree, file_path, rule_obj, domain_terms))
+        violations.extend(self._check_class_names(tree, file_path, self.rule, domain_terms))
         
         return violations
     
-    def _check_variable_names(self, tree: ast.AST, file_path: Path, rule_obj: Any, content: str, domain_terms: set = None, docstring_ranges: List[tuple] = None) -> List[Dict[str, Any]]:
+    def _check_variable_names(self, tree: ast.AST, file_path: Path, content: str, domain_terms: set = None, docstring_ranges: List[tuple] = None) -> List[Dict[str, Any]]:
         violations = []
         
         if domain_terms is None:
@@ -84,7 +90,7 @@ class IntentionRevealingNamesScanner(CodeScanner):
                     if var_name in acceptable_single_letter_names:
                         continue
                     violations.append(self._create_generic_name_violation(
-                        rule_obj, file_path, node, var_name, 'variable', 'single-letter'
+                        self.rule, file_path, node, var_name, 'variable', 'single-letter'
                     ))
                     continue
                 
@@ -94,7 +100,7 @@ class IntentionRevealingNamesScanner(CodeScanner):
                         continue
                     if not self._is_acceptable_in_context(node, tree, content):
                         violations.append(self._create_generic_name_violation(
-                            rule_obj, file_path, node, var_name, 'variable', 'generic'
+                            self.rule, file_path, node, var_name, 'variable', 'generic'
                         ))
                 elif domain_terms:
                     if self._matches_domain_term(var_name, domain_terms):
@@ -104,7 +110,6 @@ class IntentionRevealingNamesScanner(CodeScanner):
     
     def _create_generic_name_violation(
         self, 
-        rule_obj: Any, 
         file_path: Path, 
         node: ast.AST, 
         name: str, 
@@ -126,8 +131,7 @@ class IntentionRevealingNamesScanner(CodeScanner):
         try:
             content = file_path.read_text(encoding='utf-8')
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=message,
+                                violation_message=message,
                 file_path=file_path,
                 line_number=line_number,
                 severity=severity,
@@ -137,7 +141,7 @@ class IntentionRevealingNamesScanner(CodeScanner):
             )
         except Exception:
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=message,
                 location=str(file_path),
                 line_number=line_number,
@@ -182,7 +186,7 @@ class IntentionRevealingNamesScanner(CodeScanner):
         
         return False
     
-    def _check_function_names(self, tree: ast.AST, file_path: Path, rule_obj: Any, domain_terms: set = None) -> List[Dict[str, Any]]:
+    def _check_function_names(self, tree: ast.AST, file_path: Path, domain_terms: set = None) -> List[Dict[str, Any]]:
         violations = []
         
         if domain_terms is None:
@@ -206,12 +210,12 @@ class IntentionRevealingNamesScanner(CodeScanner):
             generic_names = ['process', 'handle', 'do', 'execute', 'run', 'main']
             if func_name_lower in generic_names and len(func_name.split('_')) == 1:
                 violations.append(self._create_generic_name_violation(
-                    rule_obj, file_path, function.node, func_name, 'function', 'generic'
+                    self.rule, file_path, function.node, func_name, 'function', 'generic'
                 ))
         
         return violations
     
-    def _check_class_names(self, tree: ast.AST, file_path: Path, rule_obj: Any, domain_terms: set = None) -> List[Dict[str, Any]]:
+    def _check_class_names(self, tree: ast.AST, file_path: Path, domain_terms: set = None) -> List[Dict[str, Any]]:
         violations = []
         
         if domain_terms is None:
@@ -234,11 +238,11 @@ class IntentionRevealingNamesScanner(CodeScanner):
             generic_names = ['Manager', 'Handler', 'Processor', 'Util', 'Helper', 'Service']
             if class_name in generic_names:
                 violations.append(self._create_generic_name_violation(
-                    rule_obj, file_path, cls.node, class_name, 'class', 'generic', 'error'
+                    self.rule, file_path, cls.node, class_name, 'class', 'generic', 'error'
                 ))
             elif any(class_name.endswith(g) and len(class_name) <= len(g) + 2 for g in generic_names):
                 violations.append(self._create_generic_name_violation(
-                    rule_obj, file_path, cls.node, class_name, 'class', 'generic', 'warning'
+                    self.rule, file_path, cls.node, class_name, 'class', 'generic', 'warning'
                 ))
         
         return violations

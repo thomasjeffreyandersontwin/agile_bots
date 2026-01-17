@@ -1,6 +1,6 @@
 """Scanner for validating test file naming matches sub-epic names."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
@@ -9,12 +9,18 @@ from test_scanner import TestScanner
 from story_map import StoryMap, SubEpic
 from scanners.violation import Violation
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
+
 logger = logging.getLogger(__name__)
 
 
 class TestFileNamingScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         # File existence check not needed - we're checking the file name, not reading content
@@ -26,7 +32,7 @@ class TestFileNamingScanner(TestScanner):
         file_name = file_path.stem  # Without .py extension
         
         violation = self._check_file_name_matches_sub_epic(
-            file_name, sub_epic_names, file_path, rule_obj, story_graph
+            file_name, sub_epic_names, file_path, self.rule, story_graph
         )
         if violation:
             violations.append(violation)
@@ -56,7 +62,7 @@ class TestFileNamingScanner(TestScanner):
         name = re.sub(r'[^a-zA-Z0-9_]', '', name)
         return name.lower()
     
-    def _check_file_name_matches_sub_epic(self, file_name: str, sub_epic_names: List[str], file_path: Path, rule_obj: Any, story_graph: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _check_file_name_matches_sub_epic(self, file_name: str, sub_epic_names: List[str], file_path: Path, story_graph: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         name_without_prefix = file_name[5:] if file_name.startswith('test_') else file_name
         
         name_normalized = self._to_snake_case(name_without_prefix)
@@ -90,7 +96,7 @@ class TestFileNamingScanner(TestScanner):
         
         # No code snippet for file-level violations (no specific line)
         return Violation(
-            rule=rule_obj,
+            rule=self.rule,
             violation_message=f'Test file name "{file_name}" does not match any sub-epic name and test methods do not span multiple sub-epics - file should be named test_<sub_epic_name>.py.{suggestion_text}',
             location=str(file_path),
             severity='error'

@@ -1,16 +1,22 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 
 logger = logging.getLogger(__name__)
 
 class CompleteRefactoringScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -19,11 +25,11 @@ class CompleteRefactoringScanner(CodeScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_fallback_legacy_support(lines, file_path, rule_obj))
+        violations.extend(self._check_fallback_legacy_support(lines, file_path))
         
         return violations
     
-    def _check_fallback_legacy_support(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_fallback_legacy_support(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         fallback_comment_pattern = re.compile(
@@ -46,7 +52,7 @@ class CompleteRefactoringScanner(CodeScanner):
                 
                 if code_line_num:
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Fallback/legacy support code found (comment at line {line_num}, code at line {code_line_num}) - complete refactoring by removing old pattern support',
                         location=str(file_path),
                         line_number=line_num,

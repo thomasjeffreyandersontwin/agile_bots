@@ -1,24 +1,24 @@
 
-from typing import List, Dict, Any, Optional
-from story_scanner import StoryScanner
-from story_map import StoryNode, Story
+from typing import List, Dict, Any
+from scanners.story_scanner import StoryScanner
+from story_graph.nodes import StoryNode, Story
 from scanners.violation import Violation
 from collections import defaultdict
 
 class ACConsolidationScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
             story_data = node.data
             acceptance_criteria = story_data.get('acceptance_criteria', [])
             
-            violations.extend(self._check_duplicate_ac(acceptance_criteria, node, rule_obj))
+            violations.extend(self._check_duplicate_ac(acceptance_criteria, node))
         
         return violations
     
-    def _check_duplicate_ac(self, acceptance_criteria: List[Any], node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_duplicate_ac(self, acceptance_criteria: List[Any], node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         ac_texts = []
@@ -34,7 +34,7 @@ class ACConsolidationScanner(StoryScanner):
             if len(indices) > 1:
                 location = f"{node.map_location()}.acceptance_criteria"
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Duplicate acceptance criteria found at indices {indices} - consolidate duplicate AC',
                     location=location,
                     severity='warning'

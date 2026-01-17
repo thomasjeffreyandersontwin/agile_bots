@@ -20,7 +20,7 @@ class DomainLanguageScanner(DomainScanner):
         r'^calculate\s+',
     ]
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         node_name_lower = node.name.lower()
@@ -28,7 +28,7 @@ class DomainLanguageScanner(DomainScanner):
             if term in node_name_lower and not self._is_domain_specific(node.name):
                 violations.append(
                     Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Domain concept "{node.name}" uses generic term "{term}". Use domain-specific language instead (e.g., "PortfolioData" → "Portfolio", "TargetConfig" → "TargetAllocation").',
                         location=node.map_location('name'),
                         line_number=None,
@@ -47,7 +47,7 @@ class DomainLanguageScanner(DomainScanner):
                     if term in collab_lower and not self._is_domain_specific(collab):
                         violations.append(
                             Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=f'Responsibility "{responsibility_name}" uses generic collaborator "{collab}". Use domain-specific language instead.',
                                 location=node.map_location(f'responsibilities[{i}].collaborators'),
                                 line_number=None,
@@ -60,7 +60,7 @@ class DomainLanguageScanner(DomainScanner):
                 if re.search(pattern, resp_lower):
                     violations.append(
                         Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Responsibility "{responsibility_name}" uses generate/calculate. Use property instead (e.g., "Get recommended trades" not "Generate recommendation").',
                             location=node.map_location(f'responsibilities[{i}].name'),
                             line_number=None,

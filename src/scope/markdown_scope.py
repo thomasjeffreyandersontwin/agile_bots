@@ -25,25 +25,10 @@ class MarkdownScope(MarkdownAdapter):
         
         results = self.scope.results
         
-        if results is not None:
-            from story_graph.story_graph import StoryGraph
-            
-            if isinstance(results, StoryGraph):
-                from cli.adapter_factory import AdapterFactory
-                story_graph_adapter = AdapterFactory.create(results, 'markdown')
-                lines.append(story_graph_adapter.serialize())
-            elif isinstance(results, list):
-                if results:
-                    for file_path in sorted(results):
-                        try:
-                            rel_path = file_path.relative_to(self.scope.workspace_directory)
-                            lines.append(self.format_list_item(str(rel_path)))
-                        except ValueError:
-                            lines.append(self.format_list_item(str(file_path)))
-                else:
-                    lines.append("(no files found)")
-        else:
+        if results is None:
             lines.append("(no scope set)")
+        else:
+            self._add_results_to_lines(lines, results)
         
         lines.append("")
         lines.append("To change scope (pick ONE - setting a new scope replaces the previous):")
@@ -56,6 +41,30 @@ class MarkdownScope(MarkdownAdapter):
         
         return ''.join(lines)
     
+    
+    def _add_results_to_lines(self, lines: list, results) -> None:
+        from story_graph.story_graph import StoryGraph
+        
+        if isinstance(results, StoryGraph):
+            from cli.adapter_factory import AdapterFactory
+            story_graph_adapter = AdapterFactory.create(results, 'markdown')
+            lines.append(story_graph_adapter.serialize())
+            return
+        
+        if isinstance(results, list):
+            if results:
+                for file_path in sorted(results):
+                    formatted_path = self._format_file_path(file_path)
+                    lines.append(self.format_list_item(formatted_path))
+            else:
+                lines.append("(no files found)")
+    
+    def _format_file_path(self, file_path: Path) -> str:
+        try:
+            rel_path = file_path.relative_to(self.scope.workspace_directory)
+            return str(rel_path)
+        except ValueError:
+            return str(file_path)
     
     def parse_command_text(self, text: str) -> tuple[str, str]:
         from utils import parse_command_text

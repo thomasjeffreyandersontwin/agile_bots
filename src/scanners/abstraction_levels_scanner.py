@@ -1,17 +1,23 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
 class AbstractionLevelsScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -22,13 +28,13 @@ class AbstractionLevelsScanner(CodeScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            violation = self._check_mixed_abstraction_levels(function.node, content, file_path, rule_obj)
+            violation = self._check_mixed_abstraction_levels(function.node, content, file_path)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_mixed_abstraction_levels(self, func_node: ast.FunctionDef, content: str, file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_mixed_abstraction_levels(self, func_node: ast.FunctionDef, content: str, file_path: Path) -> Optional[Dict[str, Any]]:
         func_source = ast.get_source_segment(content, func_node) or ''
         func_source_lower = func_source.lower()
         
@@ -39,8 +45,7 @@ class AbstractionLevelsScanner(CodeScanner):
         if has_high_level and has_low_level:
             line_number = func_node.lineno if hasattr(func_node, 'lineno') else None
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=f'Function "{func_node.name}" mixes high-level operations with low-level details - extract low-level details to separate functions',
+                                violation_message=f'Function "{func_node.name}" mixes high-level operations with low-level details - extract low-level details to separate functions',
                 file_path=file_path,
                 line_number=line_number,
                 severity='warning',

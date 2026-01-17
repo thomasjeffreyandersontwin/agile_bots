@@ -1,9 +1,12 @@
 
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional, Set, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 
@@ -11,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 class DependencyChainingCodeScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -22,12 +28,12 @@ class DependencyChainingCodeScanner(CodeScanner):
         
         classes = Classes(tree)
         for cls in classes.get_many_classes:
-            class_violations = self._check_dependency_chaining(cls.node, file_path, rule_obj)
+            class_violations = self._check_dependency_chaining(cls.node, file_path)
             violations.extend(class_violations)
         
         return violations
     
-    def _check_dependency_chaining(self, class_node: ast.ClassDef, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_dependency_chaining(self, class_node: ast.ClassDef, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         init_method = None
@@ -70,8 +76,7 @@ class DependencyChainingCodeScanner(CodeScanner):
                             content = file_path.read_text(encoding='utf-8')
                             violations.append(
                                 self._create_violation_with_snippet(
-                                    rule_obj=rule_obj,
-                                    violation_message=f'Method "{node.name}" in class "{class_node.name}" takes parameter "{param}" that is already injected in __init__. Use self.{param} instead.',
+                                                                        violation_message=f'Method "{node.name}" in class "{class_node.name}" takes parameter "{param}" that is already injected in __init__. Use self.{param} instead.',
                                     file_path=file_path,
                                     line_number=node.lineno,
                                     severity='warning',
@@ -83,7 +88,7 @@ class DependencyChainingCodeScanner(CodeScanner):
                         except Exception:
                             violations.append(
                                 Violation(
-                                    rule=rule_obj,
+                                    rule=self.rule,
                                     violation_message=f'Method "{node.name}" in class "{class_node.name}" takes parameter "{param}" that is already injected in __init__. Use self.{param} instead.',
                                     location=str(file_path),
                                     line_number=node.lineno,
@@ -93,7 +98,7 @@ class DependencyChainingCodeScanner(CodeScanner):
                 
                 if node.name.startswith('_') and not (node.name.startswith('__') and node.name.endswith('__')):
                     violations.extend(self._check_method_calls_for_instance_attrs(
-                        node, class_node.name, file_path, rule_obj, instance_attrs
+                        node, class_node.name, file_path, self.rule, instance_attrs
                     ))
         
         return violations
@@ -120,8 +125,7 @@ class DependencyChainingCodeScanner(CodeScanner):
         return attrs
     
     def _check_method_calls_for_instance_attrs(
-        self, func_node: ast.FunctionDef, class_name: str, file_path: Path, 
-        rule_obj: Any, instance_attrs: Set[str]
+        self, func_node: ast.FunctionDef, class_name: str, file_path: Path, instance_attrs: Set[str]
     ) -> List[Dict[str, Any]]:
         violations = []
         
@@ -131,7 +135,7 @@ class DependencyChainingCodeScanner(CodeScanner):
                     if isinstance(node.func.value, ast.Name) and node.func.value.id == 'self':
                         for arg in node.args:
                             violation = self._check_argument(
-                                arg, node.func.attr, class_name, file_path, rule_obj, instance_attrs, func_node.lineno
+                                arg, node.func.attr, class_name, file_path, self.rule, instance_attrs, func_node.lineno
                             )
                             if violation:
                                 violations.append(violation)
@@ -139,8 +143,7 @@ class DependencyChainingCodeScanner(CodeScanner):
         return violations
     
     def _check_argument(
-        self, arg_node: ast.AST, method_name: str, class_name: str, file_path: Path, 
-        rule_obj: Any, instance_attrs: Set[str], line_num: int
+        self, arg_node: ast.AST, method_name: str, class_name: str, file_path: Path, instance_attrs: Set[str], line_num: int
     ) -> Optional[Dict[str, Any]]:
         if isinstance(arg_node, ast.Attribute):
             if isinstance(arg_node.value, ast.Name) and arg_node.value.id == 'self':
@@ -149,8 +152,7 @@ class DependencyChainingCodeScanner(CodeScanner):
                     try:
                         content = file_path.read_text(encoding='utf-8')
                         return self._create_violation_with_snippet(
-                            rule_obj=rule_obj,
-                            violation_message=f'Passing self.{attr_name} as parameter to {method_name}(). Access it directly in the method through self.{attr_name} instead.',
+                                                        violation_message=f'Passing self.{attr_name} as parameter to {method_name}(). Access it directly in the method through self.{attr_name} instead.',
                             file_path=file_path,
                             line_number=line_num,
                             severity='warning',
@@ -162,7 +164,7 @@ class DependencyChainingCodeScanner(CodeScanner):
                         )
                     except Exception:
                         return Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Line {line_num}: Passing self.{attr_name} as parameter to {method_name}(). Access it directly in the method through self.{attr_name} instead.',
                             location=str(file_path),
                             line_number=line_num,

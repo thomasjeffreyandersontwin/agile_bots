@@ -1,6 +1,6 @@
 """Scanner for validating ubiquitous language consistency."""
 
-from typing import List, Dict, Any, Optional, Set, Tuple
+from typing import List, Dict, Any, Optional, Set, Tuple, TYPE_CHECKING
 from pathlib import Path
 import logging
 import ast
@@ -8,11 +8,17 @@ import re
 from test_scanner import TestScanner
 from scanners.violation import Violation
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
+
 logger = logging.getLogger(__name__)
 
 class UbiquitousLanguageScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -30,7 +36,7 @@ class UbiquitousLanguageScanner(TestScanner):
                 classes_under_test, 
                 domain_entities, 
                 file_path, 
-                rule_obj
+                self.rule
             )
         )
         
@@ -128,8 +134,7 @@ class UbiquitousLanguageScanner(TestScanner):
         self, 
         classes_under_test: List[Tuple[str, int, str]], 
         domain_entities: Set[str],
-        file_path: Path,
-        rule_obj: Any
+        file_path: Path
     ) -> List[Dict[str, Any]]:
         """
         Check if classes being tested are in the domain model.
@@ -137,7 +142,7 @@ class UbiquitousLanguageScanner(TestScanner):
         1. Classes not in domain model
         2. Agent nouns (Handler, Manager, Service, Processor) detected via NLTK
         """
-        from vocabulary_helper import VocabularyHelper
+        from .vocabulary_helper import VocabularyHelper
         
         violations = []
         
@@ -167,7 +172,7 @@ class UbiquitousLanguageScanner(TestScanner):
                         message += f"\n\n```python\n{code_snippet}\n```"
                     
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=message,
                         location=f"{file_path}",
                         line_number=line_num,
@@ -180,7 +185,7 @@ class UbiquitousLanguageScanner(TestScanner):
                         message += f"\n\n```python\n{code_snippet}\n```"
                     
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=message,
                         location=f"{file_path}",
                         line_number=line_num,

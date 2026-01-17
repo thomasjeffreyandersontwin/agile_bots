@@ -7,18 +7,6 @@ from rules.rules_digest_guidance import RulesDigestGuidance
 class RulesAction(Action):
     context_class: Type[ActionContext] = RulesActionContext
 
-    def _load_behavior_guardrails(self, instructions):
-        pass
-
-    def _prepare_instructions(self, instructions, context: RulesActionContext):
-        rules = Rules(behavior=self.behavior, bot_paths=self.behavior.bot_paths)
-        rules_digest = rules.formatted_rules_digest()
-        rule_names = self._get_rule_names(rules)
-        
-        self._add_rules_list_to_display(instructions, rule_names, rules)
-        self._add_user_message(instructions, context.message if hasattr(context, 'message') else None)
-        self._add_rules_context(instructions, rules_digest, rule_names)
-
     def do_execute(self, context: RulesActionContext) -> Dict[str, Any]:
         instructions = self.instructions.copy()
         rules = Rules(behavior=self.behavior, bot_paths=self.behavior.bot_paths)
@@ -43,19 +31,22 @@ class RulesAction(Action):
         rule_map = {rule.name: rule for rule in rules}
         for idx, rule_name in enumerate(rule_names, 1):
             rule = rule_map.get(rule_name)
-            if rule:
-                if hasattr(rule, '_rule_file_path'):
-                    file_path = str(rule._rule_file_path)
-                    file_path = file_path.replace('\\', '/')
-                    instructions.add_display(f"{idx}. {rule_name} ({file_path})")
-                elif hasattr(rule, 'rule_file'):
-                    file_path = rule.rule_file
-                    instructions.add_display(f"{idx}. {rule_name} ({file_path})")
-                else:
-                    instructions.add_display(f"{idx}. {rule_name}")
-            else:
-                instructions.add_display(f"{idx}. {rule_name}")
+            display_line = self._format_rule_display_line(idx, rule_name, rule)
+            instructions.add_display(display_line)
         instructions.add_display("")
+    
+    def _format_rule_display_line(self, idx: int, rule_name: str, rule) -> str:
+        if not rule:
+            return f"{idx}. {rule_name}"
+        
+        if hasattr(rule, '_rule_file_path'):
+            file_path = str(rule._rule_file_path).replace('\\', '/')
+            return f"{idx}. {rule_name} ({file_path})"
+        
+        if hasattr(rule, 'rule_file'):
+            return f"{idx}. {rule_name} ({rule.rule_file})"
+        
+        return f"{idx}. {rule_name}"
     
     def _add_user_message(self, instructions, message: str) -> None:
         if not message:

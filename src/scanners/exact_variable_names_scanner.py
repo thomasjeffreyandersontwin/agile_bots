@@ -1,15 +1,21 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 class ExactVariableNamesScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -23,7 +29,7 @@ class ExactVariableNamesScanner(TestScanner):
         functions = Functions(tree)
         for function in functions.get_many_functions:
             if function.node.name.startswith('test_'):
-                violations.extend(self._check_variable_names(function.node, domain_concepts, file_path, rule_obj))
+                violations.extend(self._check_variable_names(function.node, domain_concepts, file_path))
         
         return violations
     
@@ -39,7 +45,7 @@ class ExactVariableNamesScanner(TestScanner):
                         concepts.append(concept_name.lower())
         return concepts
     
-    def _check_variable_names(self, test_node: ast.FunctionDef, domain_concepts: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_variable_names(self, test_node: ast.FunctionDef, domain_concepts: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         for node in ast.walk(test_node):
@@ -51,7 +57,7 @@ class ExactVariableNamesScanner(TestScanner):
                         if var_name in ['data', 'result', 'value', 'item', 'obj', 'thing']:
                             line_number = target.lineno if hasattr(target, 'lineno') else None
                             violation = Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=f'Variable "{target.id}" uses generic name - use exact domain concept name from scenario.AC',
                                 location=str(file_path),
                                 line_number=line_number,

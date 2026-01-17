@@ -6,22 +6,22 @@ import re
 
 class StorySizingScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, SubEpic):
-            violation = self._check_sub_epic_story_count(node, rule_obj)
+            violation = self._check_sub_epic_story_count(node)
             if violation:
                 violations.append(violation)
         
         elif isinstance(node, Story):
-            violation = self._check_story_acceptance_criteria_count(node, rule_obj)
+            violation = self._check_story_acceptance_criteria_count(node)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_sub_epic_story_count(self, sub_epic: SubEpic, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_sub_epic_story_count(self, sub_epic: SubEpic) -> Optional[Dict[str, Any]]:
         story_groups = sub_epic.data.get('story_groups', [])
         
         if not story_groups:
@@ -41,7 +41,7 @@ class StorySizingScanner(StoryScanner):
         if severity:
             location = sub_epic.map_location()
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'Sub-epic "{sub_epic.name}" has {count} {message}',
                 location=location,
                 severity=severity
@@ -49,7 +49,7 @@ class StorySizingScanner(StoryScanner):
         
         return None
     
-    def _check_story_acceptance_criteria_count(self, story: Story, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_story_acceptance_criteria_count(self, story: Story) -> Optional[Dict[str, Any]]:
         acceptance_criteria = story.data.get('acceptance_criteria', [])
         
         if not acceptance_criteria:
@@ -65,7 +65,7 @@ class StorySizingScanner(StoryScanner):
         if severity:
             location = story.map_location('acceptance_criteria')
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'Story "{story.name}" has {count} {message}',
                 location=location,
                 severity=severity

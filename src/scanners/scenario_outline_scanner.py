@@ -7,7 +7,7 @@ import re
 
 class ScenarioOutlineScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -23,7 +23,7 @@ class ScenarioOutlineScanner(StoryScanner):
                     if not has_examples:
                         location = f"{node.map_location()}.scenarios[{scenario_idx}]"
                         violation = Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message='Scenario Outline used but no Examples table found - Scenario Outlines require Examples table',
                             location=location,
                             severity='error'

@@ -1,4 +1,4 @@
-﻿
+
 from cli.adapters import MarkdownAdapter
 from cli.base_hierarchical_adapter import BaseBehaviorsAdapter, BaseBehaviorAdapter
 from behaviors.behavior import Behavior
@@ -26,7 +26,7 @@ class MarkdownBehavior(BaseBehaviorAdapter, MarkdownAdapter):
         BaseBehaviorAdapter.__init__(self, behavior, 'markdown', is_current)
     
     def format_behavior_name(self) -> str:
-        marker = "Ã¢â€ â€™ " if self.is_current else "  "
+        marker = "→ " if self.is_current else "  "
         return self.format_list_item(f"{marker}{self.behavior.name}")
     
     def serialize(self) -> str:

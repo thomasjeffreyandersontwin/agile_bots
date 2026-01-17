@@ -1,10 +1,13 @@
 
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional, Set, TYPE_CHECKING
 from pathlib import Path
 import ast
 
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 
 class StandardDataReuseScanner(TestScanner):
 
@@ -20,7 +23,10 @@ class StandardDataReuseScanner(TestScanner):
         "output",
     }
 
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations: List[Dict[str, Any]] = []
 
         parsed = self._read_and_parse_file(file_path)
@@ -47,12 +53,11 @@ class StandardDataReuseScanner(TestScanner):
                     if not self._is_uppercase_constant(getattr(node, "targets", [])):
                         violations.append(
                             Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message="Inline dict with standard test data fields - reuse a shared standard data set (e.g., STANDARD_STATE) instead of recreating ad-hoc.",
                                 line_number=node.lineno,
                                 location=str(file_path),
-                                severity="warning",
-                            ).to_dict()
+                                severity="warning").to_dict()
                         )
 
             unique_keysets = {}
@@ -63,12 +68,11 @@ class StandardDataReuseScanner(TestScanner):
                 first_line = lines[0] if lines else func.lineno
                 violations.append(
                     Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message="Test defines multiple ad-hoc data shapes for standard data fields; consolidate to a shared standard data set.",
                         line_number=first_line,
                         location=str(file_path),
-                        severity="warning",
-                    ).to_dict()
+                        severity="warning").to_dict()
                 )
 
         return violations

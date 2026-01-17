@@ -19,7 +19,7 @@ class TechnicalLanguageScanner(StoryScanner):
         'configuration', 'xml', 'json', 'serialize', 'deserialize'
     ]
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if not hasattr(node, 'name') or not node.name:
@@ -30,7 +30,7 @@ class TechnicalLanguageScanner(StoryScanner):
         for verb in self.TECHNICAL_VERBS:
             if verb in name_lower:
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Story element "{node.name}" uses technical implementation verb "{verb}" - use business language focusing on user experience',
                     location=node.name,
                     severity='error'
@@ -41,7 +41,7 @@ class TechnicalLanguageScanner(StoryScanner):
         for phrase in self.TECHNICAL_PHRASES:
             if phrase in name_lower:
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Story element "{node.name}" uses technical implementation phrase "{phrase}" - focus on what user experiences, not how it\'s implemented',
                     location=node.name,
                     severity='error'

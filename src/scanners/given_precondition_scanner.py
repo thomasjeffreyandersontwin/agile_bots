@@ -7,7 +7,7 @@ import re
 
 class GivenPreconditionScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -19,7 +19,7 @@ class GivenPreconditionScanner(StoryScanner):
                 
                 for step_idx, step in enumerate(scenario_steps):
                     if step.startswith('Given') or step.startswith('And'):
-                        violation = self._check_given_is_functionality(step, node, scenario_idx, step_idx, rule_obj)
+                        violation = self._check_given_is_functionality(step, node, scenario_idx, step_idx)
                         if violation:
                             violations.append(violation)
         
@@ -36,7 +36,7 @@ class GivenPreconditionScanner(StoryScanner):
                     steps = [s.strip() for s in scenario_text.split('\n') if s.strip()]
         return steps
     
-    def _check_given_is_functionality(self, step: str, node: StoryNode, scenario_idx: int, step_idx: int, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_given_is_functionality(self, step: str, node: StoryNode, scenario_idx: int, step_idx: int) -> Optional[Dict[str, Any]]:
         step_lower = step.lower()
         
         functionality_patterns = [
@@ -49,7 +49,7 @@ class GivenPreconditionScanner(StoryScanner):
             if re.search(pattern, step_lower):
                 location = f"{node.map_location()}.scenarios[{scenario_idx}].steps[{step_idx}]"
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Given step "{step}" describes functionality - Given should describe preconditions/state, not functionality',
                     location=location,
                     severity='error'

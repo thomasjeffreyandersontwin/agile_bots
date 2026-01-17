@@ -1,17 +1,23 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from scanners.code_scanner import CodeScanner
-from complexity_metrics import ComplexityMetrics
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
+from .complexity_metrics import ComplexityMetrics
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
 class FunctionSizeScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -25,13 +31,13 @@ class FunctionSizeScanner(CodeScanner):
             if function.node.name.startswith('_') and function.node.name != '__init__':
                 continue
             
-            violation = self._check_function_size(function.node, file_path, rule_obj, lines, content)
+            violation = self._check_function_size(function.node, file_path, self.rule, lines, content)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_function_size(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, source_lines: List[str], content: str) -> Optional[Dict[str, Any]]:
+    def _check_function_size(self, func_node: ast.FunctionDef, file_path: Path, source_lines: List[str], content: str) -> Optional[Dict[str, Any]]:
         if not hasattr(func_node, 'end_lineno') or not func_node.end_lineno:
             logger.debug(f'Function node missing end_lineno at {file_path}:{func_node.lineno}')
             return None
@@ -79,7 +85,6 @@ class FunctionSizeScanner(CodeScanner):
         
         if executable_lines > 50:
             violations.append(self._create_violation_with_snippet(
-                rule_obj=rule_obj,
                 violation_message=f'Function "{func_node.name}" is {executable_lines} lines - should be under 50 lines (extract complex logic to helper functions)',
                 file_path=file_path,
                 line_number=line_number,
@@ -90,7 +95,6 @@ class FunctionSizeScanner(CodeScanner):
         
         if cyclomatic > 10:
             violations.append(self._create_violation_with_snippet(
-                rule_obj=rule_obj,
                 violation_message=(
                     f'Function "{func_node.name}" has high cyclomatic complexity ({cyclomatic}) - '
                     f'should be under 10. Extract decision logic to helper functions.'
@@ -104,7 +108,6 @@ class FunctionSizeScanner(CodeScanner):
         
         if cognitive > 15:
             violations.append(self._create_violation_with_snippet(
-                rule_obj=rule_obj,
                 violation_message=(
                     f'Function "{func_node.name}" has high cognitive complexity ({cognitive}) - '
                     f'should be under 15. Reduce nesting and extract complex logic.'
@@ -118,7 +121,6 @@ class FunctionSizeScanner(CodeScanner):
         
         if max_nesting > 4:
             violations.append(self._create_violation_with_snippet(
-                rule_obj=rule_obj,
                 violation_message=(
                     f'Function "{func_node.name}" has deep nesting (depth={max_nesting}) - '
                     f'should be under 4 levels. Extract nested logic to helper functions.'

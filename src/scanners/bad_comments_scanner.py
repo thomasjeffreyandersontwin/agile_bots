@@ -1,16 +1,22 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 
 logger = logging.getLogger(__name__)
 
 class BadCommentsScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -19,15 +25,15 @@ class BadCommentsScanner(CodeScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_commented_code(lines, file_path, rule_obj))
+        violations.extend(self._check_commented_code(lines, file_path))
         
-        violations.extend(self._check_html_in_comments(lines, file_path, rule_obj))
+        violations.extend(self._check_html_in_comments(lines, file_path))
         
-        violations.extend(self._check_misleading_todos(lines, file_path, rule_obj))
+        violations.extend(self._check_misleading_todos(lines, file_path))
         
         return violations
     
-    def _check_commented_code(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_commented_code(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         commented_block_start = None
         
@@ -47,26 +53,25 @@ class BadCommentsScanner(CodeScanner):
                         pass
                     else:
                         if commented_block_start:
-                            violations.append(self._create_commented_code_violation(rule_obj, file_path, commented_block_start))
+                            violations.append(self._create_commented_code_violation(self.rule, file_path, commented_block_start))
                             commented_block_start = None
                 else:
                     commented_block_start = None
             else:
                 if commented_block_start:
-                    violations.append(self._create_commented_code_violation(rule_obj, file_path, commented_block_start))
+                    violations.append(self._create_commented_code_violation(self.rule, file_path, commented_block_start))
                     commented_block_start = None
         
         if commented_block_start:
-            violations.append(self._create_commented_code_violation(rule_obj, file_path, commented_block_start))
+            violations.append(self._create_commented_code_violation(self.rule, file_path, commented_block_start))
         
         return violations
     
-    def _create_commented_code_violation(self, rule_obj: Any, file_path: Path, line_num: int) -> Dict[str, Any]:
+    def _create_commented_code_violation(self, file_path: Path, line_num: int) -> Dict[str, Any]:
         try:
             content = file_path.read_text(encoding='utf-8')
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=f"Has commented-out code - delete it (it's in git history if needed)",
+                                violation_message=f"Has commented-out code - delete it (it's in git history if needed)",
                 file_path=file_path,
                 line_number=line_num,
                 severity='warning',
@@ -78,7 +83,7 @@ class BadCommentsScanner(CodeScanner):
             )
         except Exception:
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f"Line {line_num} has commented-out code - delete it (it's in git history if needed)",
                 location=str(file_path),
                 line_number=line_num,
@@ -150,7 +155,7 @@ class BadCommentsScanner(CodeScanner):
         
         return False
     
-    def _check_html_in_comments(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_html_in_comments(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         html_patterns = [
@@ -167,8 +172,7 @@ class BadCommentsScanner(CodeScanner):
                         try:
                             content = file_path.read_text(encoding='utf-8')
                             violation = self._create_violation_with_snippet(
-                                rule_obj=rule_obj,
-                                violation_message=f'Line contains HTML markup in comment - remove HTML, use plain text',
+                                                                violation_message=f'Line contains HTML markup in comment - remove HTML, use plain text',
                                 file_path=file_path,
                                 line_number=line_num,
                                 severity='error',
@@ -180,7 +184,7 @@ class BadCommentsScanner(CodeScanner):
                             )
                         except Exception:
                             violation = Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=f'Line contains HTML markup in comment - remove HTML, use plain text',
                                 location=str(file_path),
                                 line_number=line_num,
@@ -244,7 +248,7 @@ class BadCommentsScanner(CodeScanner):
         
         return None
     
-    def _check_misleading_todos(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_misleading_todos(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         for line_num, line in enumerate(lines, 1):
@@ -260,8 +264,7 @@ class BadCommentsScanner(CodeScanner):
                         try:
                             content = file_path.read_text(encoding='utf-8')
                             violation = self._create_violation_with_snippet(
-                                rule_obj=rule_obj,
-                                violation_message=f'Misleading TODO comment: "{line.strip()}" - code IS implemented, update or delete TODO',
+                                                                violation_message=f'Misleading TODO comment: "{line.strip()}" - code IS implemented, update or delete TODO',
                                 file_path=file_path,
                                 line_number=line_num,
                                 severity='warning',
@@ -273,7 +276,7 @@ class BadCommentsScanner(CodeScanner):
                             )
                         except Exception:
                             violation = Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=f'Misleading TODO comment: "{line.strip()}" - code IS implemented, update or delete TODO',
                                 location=str(file_path),
                                 line_number=line_num,

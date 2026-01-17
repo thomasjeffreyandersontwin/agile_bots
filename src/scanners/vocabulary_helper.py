@@ -41,22 +41,22 @@ class VocabularyHelper:
     GERUND_SUFFIX = 'ing'
     
     @staticmethod
-    def is_verb(word: str) -> bool:
+    def _has_synsets(word: str, pos) -> bool:
+        """Check if a word has synsets for the given part of speech."""
         try:
             word_lower = word.lower()
-            synsets = wn.synsets(word_lower, pos=wn.VERB)
+            synsets = wn.synsets(word_lower, pos=pos)
             return len(synsets) > 0
         except Exception:
             return False
     
     @staticmethod
+    def is_verb(word: str) -> bool:
+        return VocabularyHelper._has_synsets(word, wn.VERB)
+    
+    @staticmethod
     def is_noun(word: str) -> bool:
-        try:
-            word_lower = word.lower()
-            synsets = wn.synsets(word_lower, pos=wn.NOUN)
-            return len(synsets) > 0
-        except Exception:
-            return False
+        return VocabularyHelper._has_synsets(word, wn.NOUN)
     
     @staticmethod
     def is_agent_noun(word: str) -> tuple[bool, Optional[str], Optional[str]]:

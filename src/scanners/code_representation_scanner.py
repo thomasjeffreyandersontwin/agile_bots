@@ -14,7 +14,7 @@ class CodeRepresentationScanner(DomainScanner):
         'abstract',
     ]
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         node_name_lower = node.name.lower()
@@ -22,7 +22,7 @@ class CodeRepresentationScanner(DomainScanner):
             if pattern in node_name_lower:
                 violations.append(
                     Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Domain concept "{node.name}" uses abstract terminology. Domain models should represent code closely - refactor code if needed.',
                         location=node.map_location('name'),
                         line_number=None,
@@ -41,7 +41,7 @@ class CodeRepresentationScanner(DomainScanner):
                     if pattern in collab_lower:
                         violations.append(
                             Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message=f'Responsibility "{responsibility_name}" uses abstract collaborator "{collab.strip()}". Use concrete domain concepts that exist in code.',
                                 location=node.map_location(f'responsibilities[{i}].collaborators'),
                                 line_number=None,

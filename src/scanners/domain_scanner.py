@@ -9,14 +9,13 @@ class DomainScanner(Scanner):
     
     def scan(
         self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
+        story_graph: Dict[str, Any] = None,
         test_files: Optional[List['Path']] = None,
         code_files: Optional[List['Path']] = None,
         on_file_scanned: Optional[Any] = None
     ) -> List[Dict[str, Any]]:
-        if not rule_obj:
-            raise ValueError("rule_obj parameter is required for DomainScanner")
+        if not self.rule:
+            raise ValueError("self.rule parameter is required for DomainScanner")
         
         violations = []
         story_graph_data = story_graph.get('story_graph', story_graph)
@@ -27,7 +26,7 @@ class DomainScanner(Scanner):
                 epic.data.get('domain_concepts', []),
                 epic.epic_idx,
                 None,
-                rule_obj
+                self.rule
             )
             violations.extend(epic_violations)
             
@@ -37,7 +36,7 @@ class DomainScanner(Scanner):
                         node.data.get('domain_concepts', []),
                         epic.epic_idx,
                         getattr(node, 'sub_epic_path', None),
-                        rule_obj
+                        self.rule
                     )
                     violations.extend(sub_epic_violations)
         
@@ -47,8 +46,7 @@ class DomainScanner(Scanner):
         self,
         domain_concepts: List[Dict[str, Any]],
         epic_idx: int,
-        sub_epic_path: Optional[List[int]],
-        rule_obj: Any
+        sub_epic_path: Optional[List[int]]
     ) -> List[Dict[str, Any]]:
         violations = []
         
@@ -60,12 +58,12 @@ class DomainScanner(Scanner):
                 concept_idx
             )
             
-            concept_violations = self.scan_domain_concept(domain_concept_node, rule_obj)
+            concept_violations = self.scan_domain_concept(domain_concept_node)
             violations.extend(concept_violations)
         
         return violations
     
     @abstractmethod
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         pass
 

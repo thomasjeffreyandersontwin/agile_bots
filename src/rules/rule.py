@@ -64,7 +64,7 @@ class Rule:
     def scanner(self):
         if not self._scanner:
             return None
-        return self._scanner()
+        return self._scanner(rule=self)
 
     @property
     def scanner_class(self) -> Optional[type]:
@@ -146,7 +146,6 @@ class Rule:
 
     def _execute_file_by_file_scan(self, scanner_instance, config: ScanConfig):
         context = ScanFilesContext(
-            rule_obj=self,
             story_graph=config.story_graph,
             files=FileCollection(
                 test_files=config.test_files or [],
@@ -168,7 +167,7 @@ class Rule:
     def _execute_cross_file_scan(self, scanner_instance, config: ScanConfig):
         if not config.skip_cross_file and self.requires_two_pass_scan and hasattr(scanner_instance, 'scan_cross_file_with_context'):
             context = CrossFileScanContext(
-                rule_obj=self,
+                story_graph=config.story_graph,
                 changed_files=FileCollection(
                     test_files=config.test_files or [],
                     code_files=config.code_files or []

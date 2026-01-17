@@ -1,17 +1,23 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
 class SeparateConcernsScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -22,14 +28,14 @@ class SeparateConcernsScanner(CodeScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            violation = self._check_mixed_concerns(function.node, content, file_path, rule_obj)
+            violation = self._check_mixed_concerns(function.node, content, file_path)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_mixed_concerns(self, func_node: ast.FunctionDef, content: str, file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
-        from complexity_metrics import ComplexityMetrics
+    def _check_mixed_concerns(self, func_node: ast.FunctionDef, content: str, file_path: Path) -> Optional[Dict[str, Any]]:
+        from .complexity_metrics import ComplexityMetrics
         
         responsibilities = ComplexityMetrics.detect_responsibilities(func_node)
         
@@ -53,8 +59,7 @@ class SeparateConcernsScanner(CodeScanner):
                     f'Separate {resp1} from {resp2} - pure logic should be separate from side effects.'
                 )
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=violation_message,
+                                        violation_message=violation_message,
                     file_path=file_path,
                     line_number=line_number,
                     severity='error',
@@ -68,8 +73,7 @@ class SeparateConcernsScanner(CodeScanner):
                 f'Consider splitting into separate functions, each with a single responsibility.'
             )
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=violation_message,
+                                violation_message=violation_message,
                 file_path=file_path,
                 line_number=line_number,
                 severity='warning',

@@ -1,10 +1,13 @@
 
-from typing import List, Dict, Any, Optional, Set
+from typing import List, Dict, Any, Optional, Set, TYPE_CHECKING
 from pathlib import Path
 import ast
 
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 
 class FullResultAssertionsScanner(TestScanner):
 
@@ -31,7 +34,10 @@ class FullResultAssertionsScanner(TestScanner):
         "event",
     }
 
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations: List[Dict[str, Any]] = []
 
         parsed = self._read_and_parse_file(file_path)
@@ -49,12 +55,11 @@ class FullResultAssertionsScanner(TestScanner):
                     if self._is_single_field_assert(node.test, alias_targets):
                         violations.append(
                             Violation(
-                                rule=rule_obj,
+                                rule=self.rule,
                                 violation_message="Assertion checks a single field of a complex result - assert the full object (or dataclass equality) using standard data.",
                                 line_number=node.lineno,
                                 location=str(file_path),
-                                severity="warning",
-                            ).to_dict()
+                                severity="warning").to_dict()
                         )
 
         return violations

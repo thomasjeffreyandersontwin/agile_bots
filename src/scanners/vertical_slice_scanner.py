@@ -6,23 +6,22 @@ from scanners.violation import Violation
 
 class VerticalSliceScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         return violations
     
     def scan(
         self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
+        story_graph: Dict[str, Any] = None,
         test_files: Optional[List['Path']] = None,
         code_files: Optional[List['Path']] = None,
         on_file_scanned: Optional[Any] = None
     ) -> List[Dict[str, Any]]:
         violations = []
         
-        if not rule_obj:
-            raise ValueError("rule_obj parameter is required")
+        if not self.rule:
+            raise ValueError("self.rule parameter is required")
         
         increments = story_graph.get('increments', [])
         
@@ -32,7 +31,7 @@ class VerticalSliceScanner(StoryScanner):
             if len(increment_epics) == 1:
                 location = f"increments[{increment_idx}]"
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Increment "{increment.get("name", f"Increment {increment_idx+1}")}" spans only 1 epic - increments should be vertical slices spanning multiple epics',
                     location=location,
                     severity='error'

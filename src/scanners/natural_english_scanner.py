@@ -20,7 +20,7 @@ class NaturalEnglishScanner(DomainScanner):
         r'\[1\.\.n\]',
     ]
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         for i, responsibility_data in enumerate(node.responsibilities):
@@ -29,7 +29,7 @@ class NaturalEnglishScanner(DomainScanner):
                 if re.search(pattern, responsibility_name):
                     violations.append(
                         Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Responsibility "{responsibility_name}" uses technical notation. Use natural English instead (e.g., "Get portfolio" not "Get portfolio [0..1]").',
                             location=node.map_location(f'responsibilities[{i}].name'),
                             line_number=None,

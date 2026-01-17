@@ -1,17 +1,23 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 
 logger = logging.getLogger(__name__)
 
 class MeaningfulContextScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -20,13 +26,13 @@ class MeaningfulContextScanner(CodeScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_magic_numbers(lines, file_path, rule_obj))
+        violations.extend(self._check_magic_numbers(lines, file_path))
         
-        violations.extend(self._check_numbered_variables(content, file_path, rule_obj))
+        violations.extend(self._check_numbered_variables(content, file_path))
         
         return violations
     
-    def _check_magic_numbers(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_magic_numbers(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         content = '\n'.join(lines)
         
@@ -61,8 +67,7 @@ class MeaningfulContextScanner(CodeScanner):
                             continue
                     
                     violation = self._create_violation_with_snippet(
-                        rule_obj=rule_obj,
-                        violation_message=f'Line {line_num} contains magic number - replace with named constant',
+                                                violation_message=f'Line {line_num} contains magic number - replace with named constant',
                         file_path=file_path,
                         line_number=line_num,
                         severity='warning',
@@ -77,14 +82,14 @@ class MeaningfulContextScanner(CodeScanner):
         
         return violations
     
-    def _check_numbered_variables(self, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_numbered_variables(self, content: str, file_path: Path) -> List[Dict[str, Any]]:
         try:
             tree = ast.parse(content, filename=str(file_path))
         except (SyntaxError, ValueError) as e:
             logger.debug(f'AST parsing failed for {file_path}, skipping numbered variable check: {type(e).__name__}: {e}')
             return []
         
-        checker = NumberedVariableChecker(content, file_path, rule_obj, self._create_violation_with_snippet)
+        checker = NumberedVariableChecker(content, file_path, self.rule, self._create_violation_with_snippet)
         
         for node in ast.walk(tree):
             checker.check_node(node)
@@ -103,10 +108,10 @@ class NumberedVariableChecker:
         re.compile(r'^(version|v)\d+$'),
     ]
     
-    def __init__(self, content: str, file_path: Path, rule_obj: Any, create_violation_fn):
+    def __init__(self, content: str, file_path: Path, create_violation_fn):
         self.content = content
         self.file_path = file_path
-        self.rule_obj = rule_obj
+        self.self.rule = self.rule
         self.create_violation_fn = create_violation_fn
         self.violations = []
     
@@ -160,7 +165,7 @@ class NumberedVariableChecker:
             return
         
         self.violations.append(self.create_violation_fn(
-            rule_obj=self.rule_obj,
+            self.rule=self.self.rule,
             violation_message=f'Line {lineno} uses numbered variable "{var_name}" - use meaningful descriptive name',
             file_path=self.file_path,
             line_number=lineno,

@@ -1,17 +1,23 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
 class ArrangeActAssertScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -23,24 +29,24 @@ class ArrangeActAssertScanner(TestScanner):
         functions = Functions(tree)
         for function in functions.get_many_functions:
             if function.node.name.startswith('test_'):
-                violation = self._check_aaa_structure(function.node, content, file_path, rule_obj)
+                violation = self._check_aaa_structure(function.node, content, file_path)
                 if violation:
                     violations.append(violation)
         
         return violations
     
-    def _check_aaa_structure(self, test_node: ast.FunctionDef, content: str, file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_aaa_structure(self, test_node: ast.FunctionDef, content: str, file_path: Path) -> Optional[Dict[str, Any]]:
         violations = []
         
         sections = self._detect_aaa_sections_ast(test_node, content)
         
         has_actual_code = self._has_actual_code(test_node)
         
-        structure_violation = self._validate_aaa_structure(sections, test_node, file_path, rule_obj)
+        structure_violation = self._validate_aaa_structure(sections, test_node, file_path)
         if structure_violation:
             violations.append(structure_violation)
         
-        order_violation = self._validate_aaa_order(sections, test_node, file_path, rule_obj)
+        order_violation = self._validate_aaa_order(sections, test_node, file_path)
         if order_violation:
             violations.append(order_violation)
         
@@ -48,7 +54,6 @@ class ArrangeActAssertScanner(TestScanner):
             line_number = test_node.lineno if hasattr(test_node, 'lineno') else None
             try:
                 violations.append(self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
                     violation_message=f'Test "{test_node.name}" has AAA structure but no actual code - tests must call production code, not just contain comments and pass statements',
                     file_path=file_path,
                     line_number=line_number,
@@ -59,7 +64,7 @@ class ArrangeActAssertScanner(TestScanner):
                 ))
             except Exception:
                 violations.append(Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test "{test_node.name}" has AAA structure but no actual code - tests must call production code, not just contain comments and pass statements',
                     location=str(file_path),
                     line_number=line_number,
@@ -136,7 +141,7 @@ class ArrangeActAssertScanner(TestScanner):
         return None
     
     def _validate_aaa_structure(self, sections: Dict[str, List[ast.stmt]], test_node: ast.FunctionDef, 
-                                file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+                                file_path: Path) -> Optional[Dict[str, Any]]:
         has_arrange = len(sections['arrange']) > 0
         has_act = len(sections['act']) > 0
         has_assert = len(sections['assert']) > 0
@@ -174,7 +179,6 @@ class ArrangeActAssertScanner(TestScanner):
             try:
                 content = file_path.read_text(encoding='utf-8')
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
                     violation_message=f'Test "{test_node.name}" does not follow Arrange-Act-Assert structure - add # Given/When/Then comments or use given_*/when_*/then_* method names',
                     file_path=file_path,
                     line_number=line_number,
@@ -185,7 +189,7 @@ class ArrangeActAssertScanner(TestScanner):
                 )
             except Exception:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test "{test_node.name}" does not follow Arrange-Act-Assert structure - add # Given/When/Then comments or use given_*/when_*/then_* method names',
                     location=str(file_path),
                     line_number=line_number,
@@ -195,7 +199,7 @@ class ArrangeActAssertScanner(TestScanner):
         return None
     
     def _validate_aaa_order(self, sections: Dict[str, List[ast.stmt]], test_node: ast.FunctionDef,
-                           file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+                           file_path: Path) -> Optional[Dict[str, Any]]:
         arrange_lines = [stmt.lineno for stmt in sections['arrange'] if hasattr(stmt, 'lineno')]
         act_lines = [stmt.lineno for stmt in sections['act'] if hasattr(stmt, 'lineno')]
         assert_lines = [stmt.lineno for stmt in sections['assert'] if hasattr(stmt, 'lineno')]
@@ -213,7 +217,6 @@ class ArrangeActAssertScanner(TestScanner):
             try:
                 content = file_path.read_text(encoding='utf-8')
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
                     violation_message=f'Test "{test_node.name}" has Arrange section mixed with Act section - Arrange should come before Act',
                     file_path=file_path,
                     line_number=line_number,
@@ -224,7 +227,7 @@ class ArrangeActAssertScanner(TestScanner):
                 )
             except Exception:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test "{test_node.name}" has Arrange section mixed with Act section - Arrange should come before Act',
                     location=str(file_path),
                     line_number=line_number,
@@ -236,7 +239,6 @@ class ArrangeActAssertScanner(TestScanner):
             try:
                 content = file_path.read_text(encoding='utf-8')
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
                     violation_message=f'Test "{test_node.name}" has Act section mixed with Assert section - Act should come before Assert',
                     file_path=file_path,
                     line_number=line_number,
@@ -247,7 +249,7 @@ class ArrangeActAssertScanner(TestScanner):
                 )
             except Exception:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test "{test_node.name}" has Act section mixed with Assert section - Act should come before Assert',
                     location=str(file_path),
                     line_number=line_number,

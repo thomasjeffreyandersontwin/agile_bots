@@ -1,13 +1,19 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from collections import defaultdict
 
 class ConsistentVocabularyScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -18,7 +24,7 @@ class ConsistentVocabularyScanner(TestScanner):
         
         domain_terms = self._extract_domain_terms(story_graph)
         
-        violations.extend(self._check_vocabulary_consistency(content, domain_terms, file_path, rule_obj))
+        violations.extend(self._check_vocabulary_consistency(content, domain_terms, file_path))
         
         return violations
     
@@ -38,7 +44,7 @@ class ConsistentVocabularyScanner(TestScanner):
         
         return list(set(terms))
     
-    def _check_vocabulary_consistency(self, content: str, domain_terms: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_vocabulary_consistency(self, content: str, domain_terms: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         content_lower = content.lower()
@@ -54,7 +60,7 @@ class ConsistentVocabularyScanner(TestScanner):
                 for synonym in synonyms:
                     if synonym in content_lower and domain_term not in content_lower:
                         violation = Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Test uses "{synonym}" instead of domain term "{domain_term}" - use consistent vocabulary',
                             location=str(file_path),
                             severity='warning'

@@ -12,8 +12,7 @@ class DeadCodeScanner(CodeScanner):
     
     def scan(
         self, 
-        story_graph: Dict[str, Any], 
-        rule_obj: Any = None,
+        story_graph: Dict[str, Any] = None,
         test_files: Optional[List[Path]] = None,
         code_files: Optional[List[Path]] = None,
         on_file_scanned: Optional[Any] = None
@@ -65,7 +64,7 @@ class DeadCodeScanner(CodeScanner):
                 continue
             
             violation = Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f"Unused {node_type} '{simple_name}' - consider removing dead code",
                 location=str(file_path),
                 line_number=line_num,
@@ -74,14 +73,13 @@ class DeadCodeScanner(CodeScanner):
             violations.append(violation)
             
             if on_file_scanned:
-                on_file_scanned(file_path, [violation], rule_obj)
+                on_file_scanned(file_path, [violation])
         
         return violations
     
     def scan_file(
         self,
-        file_path: Path,
-        rule_obj: Any = None,
+        file_path: Path = None,
         story_graph: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         violations = []
@@ -100,8 +98,7 @@ class DeadCodeScanner(CodeScanner):
                     continue
                 
                 violation = self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f"Private method '{method_name}' in class '{class_name}' is never called - consider removing dead code",
+                                        violation_message=f"Private method '{method_name}' in class '{class_name}' is never called - consider removing dead code",
                     file_path=file_path,
                     line_number=line_num,
                     severity='warning',
@@ -209,8 +206,7 @@ class DeadCodeScanner(CodeScanner):
         return False
     
     def scan_cross_file(
-        self,
-        rule_obj: Any = None,
+        self = None,
         test_files: Optional[List[Path]] = None,
         code_files: Optional[List[Path]] = None,
         all_test_files: Optional[List[Path]] = None,
@@ -223,8 +219,7 @@ class DeadCodeScanner(CodeScanner):
         
         return self.scan(
             story_graph={},
-            rule_obj=rule_obj,
-            test_files=all_tests,
+                        test_files=all_tests,
             code_files=all_code,
             on_file_scanned=None
         )

@@ -3,7 +3,7 @@ import logging
 from story_scanner import StoryScanner
 from story_map import StoryNode, Epic, SubEpic, Story
 from scanners.violation import Violation
-from vocabulary_helper import VocabularyHelper
+from .vocabulary_helper import VocabularyHelper
 
 import nltk
 from nltk import pos_tag, word_tokenize
@@ -28,49 +28,48 @@ except LookupError:
 
 class VerbNounScanner(StoryScanner):
     
-    def scan_domain_concept(self, node: Any, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: Any) -> List[Dict[str, Any]]:
         return []
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
-        name = node.name
-        
-        if not name:
+        if not node.name:
             return violations
         
         node_type = self._get_node_type(node)
         
-        violation = self._check_verb_noun_order(name, node, node_type, rule_obj)
+        violation = self._check_verb_noun_order(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_gerund_ending(name, node, node_type, rule_obj)
+        violation = self._check_gerund_ending(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_noun_verb_noun_pattern(name, node, node_type, rule_obj)
+        violation = self._check_noun_verb_noun_pattern(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_noun_verb_pattern(name, node, node_type, rule_obj)
+        violation = self._check_noun_verb_pattern(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_actor_prefix(name, node, node_type, rule_obj)
+        violation = self._check_actor_prefix(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_noun_only(name, node, node_type, rule_obj)
+        violation = self._check_noun_only(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_third_person_singular(name, node, node_type, rule_obj)
+        violation = self._check_third_person_singular(node, node_type)
         if violation:
             violations.append(violation)
         
         return violations
     
     def _get_node_type(self, node: StoryNode) -> str:
+        name = node.name
         if isinstance(node, Epic):
             return 'epic'
         elif isinstance(node, SubEpic):
@@ -115,7 +114,8 @@ class VerbNounScanner(StoryScanner):
         except Exception:
             return False
     
-    def _check_verb_noun_order(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_verb_noun_order(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         try:
             tokens, tags = self._get_tokens_and_tags(name)
             
@@ -133,7 +133,8 @@ class VerbNounScanner(StoryScanner):
         
         return None
     
-    def _check_gerund_ending(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_gerund_ending(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         try:
             tokens, tags = self._get_tokens_and_tags(name)
             
@@ -143,7 +144,7 @@ class VerbNounScanner(StoryScanner):
             if tags[0][1] == "VBG":
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" uses gerund (-ing) form - use present tense verb (e.g., "Places Order" not "Placing Order")',
                     location=location,
                     severity='error'
@@ -154,7 +155,8 @@ class VerbNounScanner(StoryScanner):
         
         return None
     
-    def _check_third_person_singular(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_third_person_singular(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         try:
             tokens, tags = self._get_tokens_and_tags(name)
             
@@ -167,7 +169,7 @@ class VerbNounScanner(StoryScanner):
                 
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" uses third-person singular verb form ("{first_word}") - use base verb form instead (e.g., "{base_form} Multiple Tokens" not "{first_word} Multiple Tokens")',
                     location=location,
                     severity='error'
@@ -208,7 +210,8 @@ class VerbNounScanner(StoryScanner):
             return base.capitalize()
         return base
     
-    def _check_noun_verb_noun_pattern(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_noun_verb_noun_pattern(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         try:
             tokens, tags = self._get_tokens_and_tags(name)
             
@@ -226,7 +229,7 @@ class VerbNounScanner(StoryScanner):
                 if VocabularyHelper.is_actor_or_role(words[0]):
                     location = node.map_location()
                     return Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'{node_type.capitalize()} name "{name}" uses noun-verb-noun pattern (actor prefix) - use verb-noun format without actor (e.g., "Places Order" not "Customer places order")',
                         location=location,
                         severity='error'
@@ -237,7 +240,8 @@ class VerbNounScanner(StoryScanner):
         
         return None
     
-    def _check_noun_verb_pattern(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_noun_verb_pattern(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         try:
             tokens, tags = self._get_tokens_and_tags(name)
             
@@ -298,7 +302,7 @@ class VerbNounScanner(StoryScanner):
             if (self._is_noun(first_tag) or self._is_proper_noun(first_tag)) and self._is_verb(second_tag):
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" uses noun-verb pattern - use verb-noun format (e.g., "Places Order" not "Order places")',
                     location=location,
                     severity='error'
@@ -309,7 +313,8 @@ class VerbNounScanner(StoryScanner):
         
         return None
     
-    def _check_actor_prefix(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_actor_prefix(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         name_lower = name.lower().strip()
         words = name_lower.split()
         
@@ -372,7 +377,7 @@ class VerbNounScanner(StoryScanner):
         if VocabularyHelper.is_actor_or_role(first_word):
             location = node.map_location()
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'{node_type.capitalize()} name "{name}" contains actor prefix (e.g., "Customer") - use verb-noun format without actor',
                 location=location,
                 severity='error'
@@ -380,7 +385,8 @@ class VerbNounScanner(StoryScanner):
         
         return None
     
-    def _check_noun_only(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_noun_only(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         try:
             tokens, tags = self._get_tokens_and_tags(name)
             
@@ -514,14 +520,14 @@ class VerbNounScanner(StoryScanner):
             if not has_verb:
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" appears to be noun-only - use verb-noun format (e.g., "Places Order" not "Order Management")',
                     location=location,
                     severity='error'
                 ).to_dict()
         
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f'Error analyzing verb-noun pattern for {node_type} "{name}": {str(e)}')
         
         return None
 

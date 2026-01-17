@@ -24,7 +24,7 @@ class PropertyEncapsulationScanner(DomainScanner):
         r'^derive\s+',
     ]
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         for i, responsibility_data in enumerate(node.responsibilities):
@@ -35,7 +35,7 @@ class PropertyEncapsulationScanner(DomainScanner):
                 if re.search(pattern, resp_lower):
                     violations.append(
                         Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Responsibility "{responsibility_name}" exposes internal structure. Use property encapsulation instead (e.g., "Get holdings: Holdings" not "Get holdings list: List").',
                             location=node.map_location(f'responsibilities[{i}].name'),
                             line_number=None,
@@ -48,7 +48,7 @@ class PropertyEncapsulationScanner(DomainScanner):
                 if re.search(pattern, resp_lower):
                     violations.append(
                         Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Responsibility "{responsibility_name}" uses calculate/compute instead of property. Use "Get X" instead of "Calculate X" to hide calculation timing.',
                             location=node.map_location(f'responsibilities[{i}].name'),
                             line_number=None,

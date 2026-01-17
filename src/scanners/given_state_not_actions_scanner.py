@@ -7,7 +7,7 @@ import re
 
 class GivenStateNotActionsScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -19,7 +19,7 @@ class GivenStateNotActionsScanner(StoryScanner):
                 
                 for step_idx, step in enumerate(scenario_steps):
                     if step.startswith('Given') or step.startswith('And'):
-                        violation = self._check_given_is_action(step, node, scenario_idx, step_idx, rule_obj)
+                        violation = self._check_given_is_action(step, node, scenario_idx, step_idx)
                         if violation:
                             violations.append(violation)
         
@@ -55,7 +55,7 @@ class GivenStateNotActionsScanner(StoryScanner):
         
         return steps
     
-    def _check_given_is_action(self, step: str, node: StoryNode, scenario_idx: int, step_idx: int, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_given_is_action(self, step: str, node: StoryNode, scenario_idx: int, step_idx: int) -> Optional[Dict[str, Any]]:
         action_verbs = [
             'invokes', 'invoked', 'calls', 'called', 'executes', 'executed',
             'clicks', 'clicked', 'sends', 'sent', 'triggers', 'triggered',
@@ -73,7 +73,7 @@ class GivenStateNotActionsScanner(StoryScanner):
                 if re.search(rf'\b{verb}\b', step_lower):
                     location = f"{node.map_location()}.scenarios[{scenario_idx}].steps[{step_idx}]"
                     return Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Given step "{step}" contains action verb "{verb}" - Given should describe state, not actions. Use When for actions.',
                         location=location,
                         severity='error'

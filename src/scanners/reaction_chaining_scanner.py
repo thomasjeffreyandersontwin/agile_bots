@@ -5,7 +5,7 @@ from scanners.violation import Violation
 
 class ReactionChainingScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -15,13 +15,13 @@ class ReactionChainingScanner(StoryScanner):
                 if not isinstance(ac, str):
                     continue
                 
-                violation = self._check_reaction_chaining(ac, node, idx, rule_obj)
+                violation = self._check_reaction_chaining(ac, node, idx)
                 if violation:
                     violations.append(violation)
         
         return violations
     
-    def _check_reaction_chaining(self, ac: str, story: Story, ac_index: int, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_reaction_chaining(self, ac: str, story: Story, ac_index: int) -> Optional[Dict[str, Any]]:
         lines = [line.strip() for line in ac.split('\n') if line.strip()]
         
         if len(lines) < 2:
@@ -35,7 +35,7 @@ class ReactionChainingScanner(StoryScanner):
                 if next_line.startswith('when ') and self._is_system_action(next_line):
                     location = story.map_location(f'acceptance_criteria[{ac_index}]')
                     return Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Story "{story.name}" AC #{ac_index + 1} has separate WHEN/THEN for sequential system actions (should use AND to chain reactions)',
                         location=location,
                         severity='warning'
@@ -49,7 +49,7 @@ class ReactionChainingScanner(StoryScanner):
                 if and_chain_count > 4:
                     location = story.map_location(f'acceptance_criteria[{ac_index}]')
                     return Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Story "{story.name}" AC #{ac_index + 1} has excessive And chain ({and_chain_count} reactions, should be max 4)',
                         location=location,
                         severity='warning'

@@ -6,7 +6,7 @@ from scanners.violation import Violation
 
 class ScenarioSpecificGivenScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -22,7 +22,7 @@ class ScenarioSpecificGivenScanner(StoryScanner):
                     if not first_step.startswith('Given'):
                         location = f"{node.map_location()}.scenarios[{scenario_idx}]"
                         violation = Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Scenario does not start with Given step - scenario-specific setup should start with Given, not When',
                             location=location,
                             severity='error'

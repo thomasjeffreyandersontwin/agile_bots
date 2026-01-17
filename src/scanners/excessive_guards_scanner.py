@@ -1,9 +1,12 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions, IfStatements
 
 logger = logging.getLogger(__name__)
@@ -33,7 +36,10 @@ class ExcessiveGuardsScanner(CodeScanner):
     When in doubt, it assumes guards are legitimate (safe default).
     """
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -50,12 +56,12 @@ class ExcessiveGuardsScanner(CodeScanner):
             if function.name.startswith('_') and function.name != '__init__':
                 continue
             
-            func_violations = self._check_function_guards(function.node, file_path, rule_obj, lines, content)
+            func_violations = self._check_function_guards(function.node, file_path, self.rule, lines, content)
             violations.extend(func_violations)
         
         return violations
     
-    def _check_function_guards(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, source_lines: List[str], content: str) -> List[Dict[str, Any]]:
+    def _check_function_guards(self, func_node: ast.FunctionDef, file_path: Path, source_lines: List[str], content: str) -> List[Dict[str, Any]]:
         violations = []
         
         # Extract parameter defaults to identify truly optional parameters
@@ -64,7 +70,7 @@ class ExcessiveGuardsScanner(CodeScanner):
         if_statements = IfStatements(func_node)
         for if_stmt in if_statements.get_many_if_statements:
             if self._is_guard_clause(if_stmt.node, source_lines):
-                violation = self._check_guard_pattern(if_stmt.node, file_path, rule_obj, source_lines, content, func_node, optional_params)
+                violation = self._check_guard_pattern(if_stmt.node, file_path, self.rule, source_lines, content, func_node, optional_params)
                 if violation:
                     violations.append(violation)
         
@@ -140,9 +146,9 @@ class ExcessiveGuardsScanner(CodeScanner):
         
         return False
     
-    def _get_violation_message(self, rule_obj: Any, message_key: str, line_number: int, **format_args) -> str:
-        if rule_obj and hasattr(rule_obj, 'rule_content'):
-            violation_messages = rule_obj.rule_content.get('violation_messages', {})
+    def _get_violation_message(self, message_key: str, line_number: int, **format_args) -> str:
+        if self.rule and hasattr(self.rule, 'rule_content'):
+            violation_messages = self.rule.rule_content.get('violation_messages', {})
             if message_key in violation_messages:
                 template = violation_messages[message_key]
                 return template.format(line=line_number, **format_args)
@@ -335,7 +341,7 @@ class ExcessiveGuardsScanner(CodeScanner):
             return False
         return target.attr.startswith('_')
     
-    def _check_guard_pattern(self, guard_node: ast.If, file_path: Path, rule_obj: Any, source_lines: List[str], content: str, func_node: ast.FunctionDef = None, optional_params: set = None) -> Optional[Dict[str, Any]]:
+    def _check_guard_pattern(self, guard_node: ast.If, file_path: Path, source_lines: List[str], content: str, func_node: ast.FunctionDef = None, optional_params: set = None) -> Optional[Dict[str, Any]]:
         test = guard_node.test
         
         if optional_params is None:
@@ -373,8 +379,7 @@ class ExcessiveGuardsScanner(CodeScanner):
                     for comparator in test.comparators:
                         if isinstance(comparator, ast.Constant) and comparator.value is None:
                             return self._create_violation_with_snippet(
-                                rule_obj=rule_obj,
-                                violation_message=self._get_violation_message(rule_obj, 'none_check_guard', guard_node.lineno),
+                                                                violation_message=self._get_violation_message(self.rule, 'none_check_guard', guard_node.lineno),
                                 file_path=file_path,
                                 line_number=guard_node.lineno,
                                 severity='warning',
@@ -383,8 +388,7 @@ class ExcessiveGuardsScanner(CodeScanner):
                             )
                         if isinstance(comparator, ast.NameConstant) and comparator.value is None:
                             return self._create_violation_with_snippet(
-                                rule_obj=rule_obj,
-                                violation_message=self._get_violation_message(rule_obj, 'none_check_guard', guard_node.lineno),
+                                                                violation_message=self._get_violation_message(self.rule, 'none_check_guard', guard_node.lineno),
                                 file_path=file_path,
                                 line_number=guard_node.lineno,
                                 severity='warning',
@@ -402,8 +406,7 @@ class ExcessiveGuardsScanner(CodeScanner):
             if func_node and self._variable_could_be_empty(var_name, func_node, guard_node):
                 return None
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=self._get_violation_message(rule_obj, 'truthiness_check_guard', guard_node.lineno, var=var_name),
+                                violation_message=self._get_violation_message(self.rule, 'truthiness_check_guard', guard_node.lineno, var=var_name),
                 file_path=file_path,
                 line_number=guard_node.lineno,
                 severity='warning',
@@ -421,8 +424,7 @@ class ExcessiveGuardsScanner(CodeScanner):
                 if func_node and self._variable_could_be_empty(var_name, func_node, guard_node):
                     return None
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=self._get_violation_message(rule_obj, 'truthiness_check_guard_not', guard_node.lineno, var=var_name),
+                                        violation_message=self._get_violation_message(self.rule, 'truthiness_check_guard_not', guard_node.lineno, var=var_name),
                     file_path=file_path,
                     line_number=guard_node.lineno,
                     severity='warning',

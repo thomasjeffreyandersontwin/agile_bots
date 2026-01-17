@@ -1,10 +1,13 @@
 
-from typing import List, Dict, Any, Optional, Tuple, Set
+from typing import List, Dict, Any, Optional, Tuple, Set, TYPE_CHECKING
 from pathlib import Path
 import ast
 from datetime import datetime
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 import hashlib
 from difflib import SequenceMatcher
@@ -102,7 +105,10 @@ class DuplicationScanner(CodeScanner):
         except Exception as e:
             logger.debug(f"Cache write failed for {file_path}: {e}")
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         _safe_print(f"[DuplicationScanner.scan_code_file] Called for: {file_path}")
@@ -139,7 +145,7 @@ class DuplicationScanner(CodeScanner):
             for node in tree.body:
                 extract_functions_from_node(node, None)
             
-            func_violations = self._check_duplicate_functions(functions, file_path, rule_obj, lines)
+            func_violations = self._check_duplicate_functions(functions, file_path, self.rule, lines)
             violations.extend(func_violations)
             
             elapsed = (datetime.now() - file_start_time).total_seconds()
@@ -147,7 +153,7 @@ class DuplicationScanner(CodeScanner):
                 _safe_print(f"TIMEOUT: File scan exceeded {FILE_SCAN_TIMEOUT}s: {file_path} (stopping early)")
                 return violations
             
-            block_violations = self._check_duplicate_code_blocks(functions, lines, file_path, rule_obj)
+            block_violations = self._check_duplicate_code_blocks(functions, lines, file_path)
             violations.extend(block_violations)
             
             file_elapsed = (datetime.now() - file_start_time).total_seconds()
@@ -175,7 +181,7 @@ class DuplicationScanner(CodeScanner):
             traceback.print_exc()
             raise
     
-    def _check_duplicate_functions(self, functions: List[tuple], file_path: Path, rule_obj: Any, lines: List[str] = None) -> List[Dict[str, Any]]:
+    def _check_duplicate_functions(self, functions: List[tuple], file_path: Path, lines: List[str] = None) -> List[Dict[str, Any]]:
         violations = []
         
         body_hashes = {}
@@ -203,7 +209,7 @@ class DuplicationScanner(CodeScanner):
                     continue
                 
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Duplicate code detected: functions {", ".join(func_names)} have identical bodies - extract to shared function',
                     location=str(file_path),
                     line_number=line_numbers[0],
@@ -315,7 +321,7 @@ class DuplicationScanner(CodeScanner):
                     return True
         return False
     
-    def _check_duplicate_code_blocks(self, functions: List[tuple], lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_duplicate_code_blocks(self, functions: List[tuple], lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         all_blocks = []
@@ -549,7 +555,7 @@ class DuplicationScanner(CodeScanner):
             )
             
             violation = Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=violation_message,
                 location=str(file_path),
                 line_number=primary_block['start_line'],
@@ -1811,8 +1817,7 @@ class DuplicationScanner(CodeScanner):
         return nearby_files
     
     def scan_cross_file(
-        self,
-        rule_obj: Any = None,
+        self = None,
         test_files: Optional[List[Path]] = None,
         code_files: Optional[List[Path]] = None,
         all_test_files: Optional[List[Path]] = None,
@@ -2072,7 +2077,7 @@ class DuplicationScanner(CodeScanner):
                     )
                     
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=violation_message,
                         location=str(file1),
                         line_number=start1,

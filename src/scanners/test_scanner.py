@@ -8,27 +8,20 @@ from scanners.violation import Violation
 
 if TYPE_CHECKING:
     from scanners.resources.scan_context import ScanFilesContext, FileScanContext, CrossFileScanContext
+    from actions.rules.rule import Rule
 
 
 class TestScanner(Scanner):
-    """Base scanner for validating test files.
     
-    TestScanner extends Scanner with:
-    - Test file parsing utilities
-    - Test-specific violation detection
-    """
+    def __init__(self, rule: 'Rule'):
+        super().__init__(rule)
     
     def _empty_violation_list(self) -> List[Dict[str, Any]]:
-        """Helper method for default empty implementations."""
         return []
     
-    def scan_file(
-        self,
-        file_path: Path,
-        rule_obj: Any = None,
-        story_graph: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
-        # Default implementation - subclasses must override
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        if not context.exists:
+            return self._empty_violation_list()
         return self._empty_violation_list()
     
     def _parse_test_file(self, test_file_path: Path) -> Optional[Tuple[str, ast.AST]]:

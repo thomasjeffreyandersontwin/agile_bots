@@ -6,7 +6,7 @@ from scanners.violation import Violation
 
 class DependencyChainingScanner(DomainScanner):
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         has_instantiation = False
@@ -36,7 +36,7 @@ class DependencyChainingScanner(DomainScanner):
                         if self._might_be_sub_collaborator(collab, instantiation_collaborators):
                             violations.append(
                                 Violation(
-                                    rule=rule_obj,
+                                    rule=self.rule,
                                     violation_message=f'Responsibility "{responsibility_name}" may be accessing sub-collaborator "{collab}" directly. Access through owning object instead.',
                                     location=node.map_location(f'responsibilities[{i}].collaborators'),
                                     line_number=None,

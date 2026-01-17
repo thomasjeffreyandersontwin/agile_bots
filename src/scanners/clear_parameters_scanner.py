@@ -1,11 +1,14 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 from .resources.ast_elements import Functions
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 
 logger = logging.getLogger(__name__)
 
@@ -24,12 +27,10 @@ class ClearParametersScanner(CodeScanner):
         'self', 'cls',
     }
     
-    def scan_file(
-        self, 
-        file_path: Path, 
-        rule_obj: Any = None, 
-        story_graph: Optional[Dict[str, Any]] = None
-    ) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         if not file_path.exists():
@@ -50,7 +51,7 @@ class ClearParametersScanner(CodeScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            violation = self._check_parameters(function.node, file_path, rule_obj, domain_terms, content)
+            violation = self._check_parameters(function.node, file_path, self.rule, domain_terms, content)
             if violation:
                 violations.append(violation)
         
@@ -71,7 +72,7 @@ class ClearParametersScanner(CodeScanner):
         
         return False
     
-    def _check_parameters(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, domain_terms: set = None, content: str = None) -> Optional[Dict[str, Any]]:
+    def _check_parameters(self, func_node: ast.FunctionDef, file_path: Path, domain_terms: set = None, content: str = None) -> Optional[Dict[str, Any]]:
         if domain_terms is None:
             domain_terms = set()
         
@@ -79,8 +80,7 @@ class ClearParametersScanner(CodeScanner):
         if len(func_node.args.args) > max_params:
             line_number = func_node.lineno if hasattr(func_node, 'lineno') else None
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=f'Function "{func_node.name}" has {len(func_node.args.args)} parameters - consider using existing domain objects with properties instead of passing primitives. Extend domain objects (Behaviors, Behavior, Actions, RenderSpec, etc.) with properties that encapsulate the needed data rather than creating new parameter objects.',
+                                violation_message=f'Function "{func_node.name}" has {len(func_node.args.args)} parameters - consider using existing domain objects with properties instead of passing primitives. Extend domain objects (Behaviors, Behavior, Actions, RenderSpec, etc.) with properties that encapsulate the needed data rather than creating new parameter objects.',
                 file_path=file_path,
                 line_number=line_number,
                 severity='warning',
@@ -111,8 +111,7 @@ class ClearParametersScanner(CodeScanner):
             if arg_name_lower in vague_names:
                 line_number = func_node.lineno if hasattr(func_node, 'lineno') else None
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f'Function "{func_node.name}" has vague parameter name "{arg.arg}" - use descriptive name',
+                                        violation_message=f'Function "{func_node.name}" has vague parameter name "{arg.arg}" - use descriptive name',
                     file_path=file_path,
                     line_number=line_number,
                     severity='warning',

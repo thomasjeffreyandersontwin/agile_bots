@@ -1,9 +1,12 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Functions
 
@@ -17,7 +20,10 @@ class NaturalEnglishCodeScanner(CodeScanner):
         r'_\d+$',
     ]
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -28,26 +34,25 @@ class NaturalEnglishCodeScanner(CodeScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            violation = self._check_natural_english(function.node, file_path, rule_obj, content)
+            violation = self._check_natural_english(function.node, file_path, self.rule, content)
             if violation:
                 violations.append(violation)
         
         for node in ast.walk(tree):
             if isinstance(node, ast.Name):
-                violation = self._check_variable_name(node, file_path, rule_obj, content)
+                violation = self._check_variable_name(node, file_path, self.rule, content)
                 if violation:
                     violations.append(violation)
         
         return violations
     
-    def _check_natural_english(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, content: str) -> Optional[Dict[str, Any]]:
+    def _check_natural_english(self, func_node: ast.FunctionDef, file_path: Path, content: str) -> Optional[Dict[str, Any]]:
         func_name = func_node.name
         
         for pattern in self.TECHNICAL_NOTATION_PATTERNS:
             if re.search(pattern, func_name):
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f'Function "{func_name}" uses technical notation. Use natural English instead (e.g., "may_find" not "find_optional").',
+                                        violation_message=f'Function "{func_name}" uses technical notation. Use natural English instead (e.g., "may_find" not "find_optional").',
                     file_path=file_path,
                     line_number=func_node.lineno,
                     severity='warning',
@@ -57,14 +62,13 @@ class NaturalEnglishCodeScanner(CodeScanner):
         
         return None
     
-    def _check_variable_name(self, name_node: ast.Name, file_path: Path, rule_obj: Any, content: str) -> Optional[Dict[str, Any]]:
+    def _check_variable_name(self, name_node: ast.Name, file_path: Path, content: str) -> Optional[Dict[str, Any]]:
         var_name = name_node.id
         
         for pattern in self.TECHNICAL_NOTATION_PATTERNS:
             if re.search(pattern, var_name):
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f'Variable "{var_name}" uses technical notation. Use natural English instead.',
+                                        violation_message=f'Variable "{var_name}" uses technical notation. Use natural English instead.',
                     file_path=file_path,
                     line_number=name_node.lineno if hasattr(name_node, 'lineno') else None,
                     severity='info',

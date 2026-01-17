@@ -18,7 +18,7 @@ class DomainGroupingScanner(DomainScanner):
         r'\bdata\s+access\b',
     ]
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         node_name_lower = node.name.lower()
@@ -26,7 +26,7 @@ class DomainGroupingScanner(DomainScanner):
             if re.search(pattern, node_name_lower):
                 violations.append(
                     Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Domain concept "{node.name}" uses technical layer terminology. Group by domain area instead.',
                         location=node.map_location('name'),
                         line_number=None,

@@ -48,27 +48,6 @@ class CursorCommandGenerator(BaseBehaviorsAdapter):
             )
         return self._data_collector
     
-    def _build_wrapped_hierarchy(self):
-        current_behavior_name = (
-            self.behaviors.current.name
-            if self.behaviors.current
-            else None
-        )
-        sorted_behaviors = sorted(list(self.behaviors), key=lambda b: b.order)
-
-        for behavior in sorted_behaviors:
-            is_current = behavior.name == current_behavior_name
-            cursor_behavior = CursorBehaviorWrapper(
-                behavior,
-                self.workspace_root,
-                self.bot_location,
-                self.bot_name,
-                is_current,
-                self.bot,
-                self
-            )
-            self._behavior_adapters.append(cursor_behavior)
-    
     def _ensure_commands_directory(self) -> Path:
         commands_dir = self.workspace_root / '.cursor' / 'commands'
         commands_dir.mkdir(parents=True, exist_ok=True)
@@ -175,6 +154,17 @@ class CursorCommandGenerator(BaseBehaviorsAdapter):
                     lines.append(f"- {action_name}")
         
         return "\n".join(lines)
+    
+    def _format_action_line(self, action_name: str) -> str:
+        if not self.data_collector:
+            return f"- {action_name}"
+        
+        action_desc = self.data_collector.get_action_description(action_name)
+        if not action_desc:
+            return f"- {action_name}"
+        
+        short_desc = action_desc.split('\n')[0].split('.')[0]
+        return f"- {action_name} - {short_desc}"
     
     def _write_command_file(self, file_path: Path, command: str) -> Path:
         file_path.write_text(command, encoding='utf-8')

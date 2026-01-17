@@ -1,10 +1,13 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 
@@ -32,7 +35,10 @@ class DomainLanguageCodeScanner(CodeScanner):
                     return True
         return False
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         if not file_path.exists():
@@ -52,13 +58,13 @@ class DomainLanguageCodeScanner(CodeScanner):
         
         classes = Classes(tree)
         for cls in classes.get_many_classes:
-            class_violations = self._check_domain_language(cls.node, file_path, rule_obj, domain_terms, generic_names)
+            class_violations = self._check_domain_language(cls.node, file_path, self.rule, domain_terms, generic_names)
             violations.extend(class_violations)
             
             for child in cls.node.body:
                 if isinstance(child, ast.FunctionDef):
                     func_violations = self._check_function_domain_language(
-                        child, file_path, rule_obj, domain_terms, generic_names,
+                        child, file_path, self.rule, domain_terms, generic_names,
                         enclosing_class=cls.node.name
                     )
                     violations.extend(func_violations)
@@ -66,14 +72,14 @@ class DomainLanguageCodeScanner(CodeScanner):
         for node in ast.iter_child_nodes(tree):
             if isinstance(node, ast.FunctionDef):
                 func_violations = self._check_function_domain_language(
-                    node, file_path, rule_obj, domain_terms, generic_names,
+                    node, file_path, self.rule, domain_terms, generic_names,
                     enclosing_class=None
                 )
                 violations.extend(func_violations)
         
         return violations
     
-    def _check_domain_language(self, class_node: ast.ClassDef, file_path: Path, rule_obj: Any, 
+    def _check_domain_language(self, class_node: ast.ClassDef, file_path: Path, 
                                domain_terms: set, generic_names: set) -> List[Dict[str, Any]]:
         violations = []
         class_name = class_node.name
@@ -85,7 +91,7 @@ class DomainLanguageCodeScanner(CodeScanner):
             sample_terms = sorted(list(domain_terms))[:10]
             violations.append(
                 Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=(
                         f'Class "{class_name}" doesn\'t match domain terms. '
                         f'Use domain-specific language from specification: {", ".join(sample_terms)}...'
@@ -98,7 +104,7 @@ class DomainLanguageCodeScanner(CodeScanner):
         
         return violations
     
-    def _check_function_domain_language(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any,
+    def _check_function_domain_language(self, func_node: ast.FunctionDef, file_path: Path,
                                       domain_terms: set, generic_names: set, 
                                       enclosing_class: Optional[str] = None) -> List[Dict[str, Any]]:
         violations = []
@@ -111,7 +117,7 @@ class DomainLanguageCodeScanner(CodeScanner):
                 if re.search(pattern, func_name_lower):
                     violations.append(
                         Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Function "{func_node.name}" uses generate/calculate. Use property instead (e.g., "recommended_trades" not "generate_recommendation").',
                             location=str(file_path),
                             line_number=func_node.lineno,
@@ -124,7 +130,7 @@ class DomainLanguageCodeScanner(CodeScanner):
                 sample_terms = sorted(list(domain_terms))[:10]
                 violations.append(
                     Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=(
                             f'Function "{func_node.name}" doesn\'t match domain terms. '
                             f'Use domain-specific language from specification: {", ".join(sample_terms)}...'
@@ -144,7 +150,7 @@ class DomainLanguageCodeScanner(CodeScanner):
                 sample_terms = sorted(list(domain_terms))[:10]
                 violations.append(
                     Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=(
                             f'Function "{func_node.name}" uses parameter name "{arg.arg}" that doesn\'t match domain terms. '
                             f'Use domain-specific language: {", ".join(sample_terms)}...'

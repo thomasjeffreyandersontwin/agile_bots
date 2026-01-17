@@ -7,7 +7,7 @@ import re
 
 class ScenariosCoverAllCasesScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -31,7 +31,7 @@ class ScenariosCoverAllCasesScanner(StoryScanner):
                 
                 if not has_happy_path:
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message='Story has no happy path scenario - add a scenario covering the normal success case',
                         location=node.map_location(),
                         severity='error'
@@ -40,7 +40,7 @@ class ScenariosCoverAllCasesScanner(StoryScanner):
                 
                 if not has_edge_case and len(scenarios) > 1:
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message='Story has no edge case scenario - add scenarios covering boundary values and edge conditions',
                         location=node.map_location(),
                         severity='warning'
@@ -49,7 +49,7 @@ class ScenariosCoverAllCasesScanner(StoryScanner):
                 
                 if not has_error_case and len(scenarios) > 1:
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message='Story has no error case scenario - add scenarios covering invalid inputs and error conditions',
                         location=node.map_location(),
                         severity='warning'

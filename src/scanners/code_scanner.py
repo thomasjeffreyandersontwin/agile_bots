@@ -8,59 +8,21 @@ from scanners.violation import Violation
 
 if TYPE_CHECKING:
     from scanners.resources.scan_context import ScanFilesContext, FileScanContext, CrossFileScanContext
+    from actions.rules.rule import Rule
 
 class CodeScanner(Scanner):
-    """Base scanner for validating source code files.
     
-    CodeScanner extends Scanner with:
-    - Required rule_obj validation
-    - Domain term extraction from story graph
-    - Code snippet extraction for violations
-    """
+    def __init__(self, rule: 'Rule'):
+        super().__init__(rule)
+        self.story_graph = None
     
     def scan_with_context(self, context: 'ScanFilesContext') -> List[Dict[str, Any]]:
-        """Scan files using a context object.
-        
-        Validates that rule_obj is provided before scanning.
-        """
-        if not context.rule_obj:
-            raise ValueError("rule_obj is required in context for CodeScanner")
-        
-        # Store story_graph so subclasses can access it
         self.story_graph = context.story_graph
-        
         return super().scan_with_context(context)
     
     def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
-        """Scan a single file using a context object.
-        
-        This is the primary method that subclasses should override.
-        Validates that rule_obj is provided before scanning.
-        
-        For existing scanners that override scan_file(), this provides a bridge
-        by extracting parameters and calling the old method.
-        """
-        if not context.rule_obj:
-            raise ValueError("rule_obj is required in context for CodeScanner")
-        
-        # Store story_graph for subclasses that access it
         self.story_graph = context.story_graph
-        
-        # Bridge to existing scan_file() implementations
-        # Subclasses should override this method instead
-        return self._scan_file_impl(context.file_path, context.rule_obj, context.story_graph)
-    
-    def _scan_file_impl(
-        self,
-        file_path: Path,
-        rule_obj: Any,
-        story_graph: Optional[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        """Internal implementation for file scanning.
-        
-        Override scan_file_with_context() instead of this method.
-        """
-        return []
+        return self._empty_violation_list()
     
     def _extract_domain_terms(self, story_graph: Dict[str, Any]) -> set:
         domain_terms = self._get_common_domain_terms()
@@ -166,7 +128,6 @@ class CodeScanner(Scanner):
             return False
         
         name_lower = name.lower()
-        
         name_words = self._extract_words_from_text(name)
         
         for domain_term in domain_terms:
@@ -229,7 +190,6 @@ class CodeScanner(Scanner):
     
     def _create_violation_with_snippet(
         self, 
-        rule_obj: Any,
         violation_message: str,
         file_path: Path,
         line_number: Optional[int] = None,
@@ -241,8 +201,6 @@ class CodeScanner(Scanner):
         context_before: int = 2,
         max_lines: int = 50
     ) -> Dict[str, Any]:
-        from scanners.violation import Violation
-        
         code_snippet = ""
         if content is not None:
             if ast_node is not None or start_line is not None:
@@ -261,7 +219,7 @@ class CodeScanner(Scanner):
             final_message = violation_message
         
         return Violation(
-            rule=rule_obj,
+            rule=self.rule,
             violation_message=final_message,
             location=str(file_path),
             line_number=line_number,

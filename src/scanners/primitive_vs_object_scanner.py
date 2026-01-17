@@ -1,11 +1,14 @@
 """Scanner for validating objects are preferred over primitives in method signatures."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Functions
 
@@ -30,7 +33,10 @@ class PrimitiveVsObjectScanner(CodeScanner):
         r'_email$',
     ]
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -41,10 +47,10 @@ class PrimitiveVsObjectScanner(CodeScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            func_violations = self._check_function_parameters(function.node, content, file_path, rule_obj)
+            func_violations = self._check_function_parameters(function.node, content, file_path)
             violations.extend(func_violations)
             
-            return_violation = self._check_return_type(function.node, content, file_path, rule_obj)
+            return_violation = self._check_return_type(function.node, content, file_path)
             if return_violation:
                 violations.append(return_violation)
         
@@ -64,7 +70,7 @@ class PrimitiveVsObjectScanner(CodeScanner):
         
         return False
     
-    def _check_function_parameters(self, func_node: ast.FunctionDef, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_function_parameters(self, func_node: ast.FunctionDef, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         if self._is_presentation_boundary(func_node.name, content, func_node):
@@ -84,19 +90,19 @@ class PrimitiveVsObjectScanner(CodeScanner):
                 if type_name and type_name in self.PRIMITIVE_TYPES:
                     if self._suggests_object_should_be_passed(arg.arg):
                         violations.append(self._create_primitive_violation(
-                            rule_obj, file_path, func_node, arg, type_name,
+                            self.rule, file_path, func_node, arg, type_name,
                             f'Function "{func_node.name}" takes primitive "{arg.arg}: {type_name}" - consider passing domain object instead'
                         ))
             
             elif self._suggests_object_should_be_passed(arg.arg):
                 violations.append(self._create_primitive_violation(
-                    rule_obj, file_path, func_node, arg, None,
+                    self.rule, file_path, func_node, arg, None,
                     f'Function "{func_node.name}" takes "{arg.arg}" which suggests a primitive ID - consider passing domain object instead'
                 ))
         
         return violations
     
-    def _check_return_type(self, func_node: ast.FunctionDef, content: str, file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_return_type(self, func_node: ast.FunctionDef, content: str, file_path: Path) -> Optional[Dict[str, Any]]:
         if self._is_presentation_boundary(func_node.name, content, func_node):
             return None
         
@@ -109,7 +115,7 @@ class PrimitiveVsObjectScanner(CodeScanner):
                 
                 if any(pattern in func_name_lower for pattern in object_return_patterns):
                     return self._create_primitive_violation(
-                        rule_obj, file_path, func_node, None, return_type_name,
+                        self.rule, file_path, func_node, None, return_type_name,
                         f'Function "{func_node.name}" returns "{return_type_name}" - consider returning domain object instead'
                     )
         
@@ -137,7 +143,6 @@ class PrimitiveVsObjectScanner(CodeScanner):
     
     def _create_primitive_violation(
         self,
-        rule_obj: Any,
         file_path: Path,
         func_node: ast.FunctionDef,
         arg: Optional[ast.arg],
@@ -149,8 +154,7 @@ class PrimitiveVsObjectScanner(CodeScanner):
         try:
             content = file_path.read_text(encoding='utf-8')
             return self._create_violation_with_snippet(
-                rule_obj=rule_obj,
-                violation_message=message,
+                                violation_message=message,
                 file_path=file_path,
                 line_number=line_number,
                 severity='warning',
@@ -160,7 +164,7 @@ class PrimitiveVsObjectScanner(CodeScanner):
             )
         except Exception:
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=message,
                 line_number=line_number,
                 location=str(file_path),

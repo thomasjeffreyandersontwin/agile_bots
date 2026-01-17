@@ -1,5 +1,5 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
@@ -7,11 +7,17 @@ import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
+
 logger = logging.getLogger(__name__)
 
 class RealImplementationsScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -21,17 +27,17 @@ class RealImplementationsScanner(TestScanner):
         content, lines, tree = parsed
         
         method_violations = self._check_test_methods_call_production_code(
-            content, lines, file_path, rule_obj, story_graph
+            content, lines, file_path, self.rule, story_graph
         )
         violations.extend(method_violations)
         
-        fake_violations = self._check_fake_implementations(lines, file_path, rule_obj)
+        fake_violations = self._check_fake_implementations(lines, file_path)
         violations.extend(fake_violations)
         
         return violations
     
     def _check_test_methods_call_production_code(
-        self, content: str, lines: List[str], file_path: Path, rule_obj: Any, story_graph: Dict[str, Any]
+        self, content: str, lines: List[str], file_path: Path, story_graph: Dict[str, Any]
     ) -> List[Dict[str, Any]]:
         violations = []
         
@@ -59,7 +65,7 @@ class RealImplementationsScanner(TestScanner):
         if test_classes and not test_methods:
             for test_class in test_classes:
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=(
                         f"Test class '{test_class.name}' (line {test_class.lineno}) has no test methods. "
                         f"Test classes must contain test methods that call production code. "
@@ -78,7 +84,7 @@ class RealImplementationsScanner(TestScanner):
         
         if not has_any_imports and test_methods:
             violation = Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=(
                     f"Test file has no imports from production code. "
                     f"Tests must import production code from src folder (or relative imports). "
@@ -99,7 +105,7 @@ class RealImplementationsScanner(TestScanner):
             
             if is_empty:
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=(
                         f"Test method '{method_name}' (line {method_line}) is empty or only contains TODO comments. "
                         f"Tests must call production code directly from src folder, even if the code doesn't exist yet. "
@@ -116,7 +122,7 @@ class RealImplementationsScanner(TestScanner):
             
             if not has_production_calls and not has_production_imports:
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=(
                         f"Test method '{method_name}' (line {method_line}) does not call production code from src folder. "
                         f"Tests must import and call production code directly. If the code doesn't exist, the test should "
@@ -441,7 +447,7 @@ class RealImplementationsScanner(TestScanner):
         
         return False
     
-    def _check_fake_implementations(self, lines: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_fake_implementations(self, lines: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         fake_patterns = [
@@ -466,7 +472,7 @@ class RealImplementationsScanner(TestScanner):
             for pattern in fake_patterns:
                 if re.search(pattern, line, re.IGNORECASE):
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Line {line_num} uses fake/stub implementation - tests should call real production code directly',
                         location=str(file_path),
                         line_number=line_num,

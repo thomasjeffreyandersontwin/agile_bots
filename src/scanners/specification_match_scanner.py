@@ -1,18 +1,24 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
 class SpecificationMatchScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -21,18 +27,18 @@ class SpecificationMatchScanner(TestScanner):
         
         content, lines, tree = parsed
         
-        violations.extend(self._check_test_method_names(tree, file_path, rule_obj))
+        violations.extend(self._check_test_method_names(tree, file_path))
         
-        violations.extend(self._check_variable_names(tree, content, file_path, rule_obj))
+        violations.extend(self._check_variable_names(tree, content, file_path))
         
-        violations.extend(self._check_assertions(tree, content, file_path, rule_obj))
+        violations.extend(self._check_assertions(tree, content, file_path))
         
         if story_graph:
-            violations.extend(self._check_specification_matches(tree, content, file_path, rule_obj, story_graph))
+            violations.extend(self._check_specification_matches(tree, content, file_path, self.rule, story_graph))
         
         return violations
     
-    def _check_test_method_names(self, tree: ast.AST, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_test_method_names(self, tree: ast.AST, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         vague_patterns = [
@@ -53,7 +59,7 @@ class SpecificationMatchScanner(TestScanner):
                 
                 if is_vague and not is_thin_wrapper:
                     violations.append(self._create_violation_with_line_number(
-                        rule_obj, file_path, function.node,
+                        self.rule, file_path, function.node,
                         f'Test method "{function.node.name}" has vague name - should clearly describe behavior from specification scenario'
                     ))
         
@@ -70,7 +76,6 @@ class SpecificationMatchScanner(TestScanner):
     
     def _create_violation_with_line_number(
         self,
-        rule_obj: Any,
         file_path: Path,
         node: ast.AST,
         message: str,
@@ -84,7 +89,7 @@ class SpecificationMatchScanner(TestScanner):
         line_number = node.lineno if hasattr(node, 'lineno') else None
         
         violation_dict = Violation(
-            rule=rule_obj,
+            rule=self.rule,
             violation_message=message,
             location=str(file_path),
             line_number=line_number,
@@ -100,7 +105,7 @@ class SpecificationMatchScanner(TestScanner):
         
         return violation_dict
     
-    def _check_variable_names(self, tree: ast.AST, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_variable_names(self, tree: ast.AST, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         generic_names = ['data', 'result', 'value', 'item', 'obj', 'thing', 'name', 'root', 'path', 'config']
@@ -119,7 +124,7 @@ class SpecificationMatchScanner(TestScanner):
                             if var_name.lower() in generic_names:
                                 if not self._is_in_helper_call(child, test_method):
                                     violations.append(self._create_violation_with_line_number(
-                                        rule_obj, file_path, child,
+                                        self.rule, file_path, child,
                                         f'Line {child.lineno if hasattr(child, "lineno") else "?"} uses generic variable name "{var_name}" - use exact variable names from specification'
                                     ))
         
@@ -138,7 +143,7 @@ class SpecificationMatchScanner(TestScanner):
                     return True
         return False
     
-    def _check_assertions(self, tree: ast.AST, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_assertions(self, tree: ast.AST, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         implementation_patterns = [
@@ -161,7 +166,7 @@ class SpecificationMatchScanner(TestScanner):
                     for pattern in implementation_patterns:
                         if re.search(pattern, assertion_line, re.IGNORECASE):
                             violations.append(self._create_violation_with_line_number(
-                                rule_obj, file_path, child,
+                                self.rule, file_path, child,
                                 f'Line {child.lineno if hasattr(child, "lineno") else "?"} assertion checks implementation detail - verify exactly what specification states, no more, no less'
                             ))
                             break
@@ -174,8 +179,7 @@ class SpecificationMatchScanner(TestScanner):
             return lines[line_num - 1]
         return ""
     
-    def _check_specification_matches(self, tree: ast.AST, content: str, file_path: Path, 
-                                    rule_obj: Any, story_graph: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def _check_specification_matches(self, tree: ast.AST, content: str, file_path: Path, story_graph: Dict[str, Any]) -> List[Dict[str, Any]]:
         violations = []
         
         test_methods = []
@@ -191,14 +195,14 @@ class SpecificationMatchScanner(TestScanner):
             matching_story = self._find_matching_story(scenario, test_method.name, story_graph)
             
             if matching_story:
-                variable_matches = self._check_variable_matches(test_method, matching_story, domain_terms, rule_obj, file_path)
+                variable_matches = self._check_variable_matches(test_method, matching_story, domain_terms, self.rule, file_path)
                 violations.extend(variable_matches)
                 
-                assertion_matches = self._check_assertion_matches(test_method, matching_story, rule_obj, file_path)
+                assertion_matches = self._check_assertion_matches(test_method, matching_story, self.rule, file_path)
                 violations.extend(assertion_matches)
             elif scenario:
                 violations.append(self._create_violation_with_line_number(
-                    rule_obj, file_path, test_method,
+                    self.rule, file_path, test_method,
                     f'Test "{test_method.name}" has scenario but no matching story found in specification. '
                     f'Scenario: {scenario[:100]}...'
                 ))
@@ -353,7 +357,7 @@ class SpecificationMatchScanner(TestScanner):
         return False
     
     def _check_variable_matches(self, test_method: ast.FunctionDef, story: Dict[str, Any], 
-                                domain_terms: set, rule_obj: Any, file_path: Path) -> List[Dict[str, Any]]:
+                                domain_terms: set, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         variable_names = []
@@ -384,7 +388,7 @@ class SpecificationMatchScanner(TestScanner):
             if not matches_domain_term:
                 sample_terms = sorted(list(domain_terms))[:10]
                 violations.append(self._create_violation_with_line_number(
-                    rule_obj, file_path, test_method,
+                    self.rule, file_path, test_method,
                     f'Variable "{var_name}" in test "{test_method.name}" doesn\'t match domain terms. '
                     f'Use terms from specification: {", ".join(sample_terms)}...',
                     'info'
@@ -392,8 +396,7 @@ class SpecificationMatchScanner(TestScanner):
         
         return violations
     
-    def _check_assertion_matches(self, test_method: ast.FunctionDef, story: Dict[str, Any], 
-                                 rule_obj: Any, file_path: Path) -> List[Dict[str, Any]]:
+    def _check_assertion_matches(self, test_method: ast.FunctionDef, story: Dict[str, Any], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         acceptance_criteria = story.get('acceptance_criteria', [])
@@ -440,13 +443,13 @@ class SpecificationMatchScanner(TestScanner):
         
         if total_assertions == 0 and len(acceptance_criteria) > 0:
             violations.append(self._create_violation_with_line_number(
-                rule_obj, file_path, test_method,
+                self.rule, file_path, test_method,
                 f'Test "{test_method.name}" has no assertions but story has {len(acceptance_criteria)} acceptance criteria. '
                 f'Add assertions to verify acceptance criteria.'
             ))
         
         return violations
     
-    def scan_story_node(self, node: Any, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: Any) -> List[Dict[str, Any]]:
         return []
 

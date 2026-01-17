@@ -8,7 +8,7 @@ import re
 
 class IncrementFolderStructureScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Epic):
@@ -19,7 +19,7 @@ class IncrementFolderStructureScanner(StoryScanner):
             has_stories_with_scenarios = self._epic_has_stories_with_scenarios(node)
             
             if has_stories_with_scenarios:
-                violation = self._check_epic_folder_structure(node, rule_obj)
+                violation = self._check_epic_folder_structure(node)
                 if violation:
                     violations.append(violation)
         
@@ -34,7 +34,7 @@ class IncrementFolderStructureScanner(StoryScanner):
                     return True
         return False
     
-    def _check_epic_folder_structure(self, node: StoryNode, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_epic_folder_structure(self, node: StoryNode) -> Optional[Dict[str, Any]]:
         epic_name = node.name
         expected_folder = f"🎯 {epic_name}"
         

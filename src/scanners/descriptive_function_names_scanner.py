@@ -1,15 +1,21 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 class DescriptiveFunctionNamesScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -21,13 +27,13 @@ class DescriptiveFunctionNamesScanner(TestScanner):
         functions = Functions(tree)
         for function in functions.get_many_functions:
             if not function.node.name.startswith('test_'):
-                violation = self._check_descriptive_name(function.node, file_path, rule_obj)
+                violation = self._check_descriptive_name(function.node, file_path)
                 if violation:
                     violations.append(violation)
         
         return violations
     
-    def _check_descriptive_name(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_descriptive_name(self, func_node: ast.FunctionDef, file_path: Path) -> Optional[Dict[str, Any]]:
         func_name_lower = func_node.name.lower()
         func_name_original = func_node.name
         
@@ -62,8 +68,7 @@ class DescriptiveFunctionNamesScanner(TestScanner):
             line_number = func_node.lineno if hasattr(func_node, 'lineno') else None
             if content:
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f'Helper function "{func_node.name}" uses vague/abbreviated name - use descriptive name that reveals purpose',
+                                        violation_message=f'Helper function "{func_node.name}" uses vague/abbreviated name - use descriptive name that reveals purpose',
                     file_path=file_path,
                     line_number=line_number,
                     severity='error',
@@ -73,7 +78,7 @@ class DescriptiveFunctionNamesScanner(TestScanner):
                 )
             else:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Helper function "{func_node.name}" uses vague/abbreviated name - use descriptive name that reveals purpose',
                     location=str(file_path),
                     line_number=line_number,
@@ -106,8 +111,7 @@ class DescriptiveFunctionNamesScanner(TestScanner):
             line_number = func_node.lineno if hasattr(func_node, 'lineno') else None
             if content:
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f'Helper function "{func_node.name}" contains cryptic abbreviations or acronyms ({", ".join(cryptic_acronyms)}) - use full descriptive words',
+                                        violation_message=f'Helper function "{func_node.name}" contains cryptic abbreviations or acronyms ({", ".join(cryptic_acronyms)}) - use full descriptive words',
                     file_path=file_path,
                     line_number=line_number,
                     severity='warning',
@@ -117,7 +121,7 @@ class DescriptiveFunctionNamesScanner(TestScanner):
                 )
             else:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Helper function "{func_node.name}" contains cryptic abbreviations or acronyms ({", ".join(cryptic_acronyms)}) - use full descriptive words',
                     location=str(file_path),
                     line_number=line_number,

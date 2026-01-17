@@ -1,9 +1,12 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 
@@ -11,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 class DelegationCodeScanner(CodeScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -22,18 +28,18 @@ class DelegationCodeScanner(CodeScanner):
         
         classes = Classes(tree)
         for cls in classes.get_many_classes:
-            class_violations = self._check_delegation(cls.node, content, file_path, rule_obj)
+            class_violations = self._check_delegation(cls.node, content, file_path)
             violations.extend(class_violations)
         
         return violations
     
-    def _check_delegation(self, class_node: ast.ClassDef, content: str, file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_delegation(self, class_node: ast.ClassDef, content: str, file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         is_collection_class = self._is_collection_class(class_node.name)
         
         for method in self._get_methods(class_node):
             method_violations = self._check_method_for_loops(
-                method, class_node, is_collection_class, content, file_path, rule_obj
+                method, class_node, is_collection_class, content, file_path, self.rule
             )
             violations.extend(method_violations)
         
@@ -46,7 +52,7 @@ class DelegationCodeScanner(CodeScanner):
     
     def _check_method_for_loops(self, method: ast.FunctionDef, class_node: ast.ClassDef,
                                 is_collection_class: bool, content: str, 
-                                file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+                                file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         for stmt in ast.walk(method):
             if not self._is_self_attribute_loop(stmt):
@@ -58,7 +64,7 @@ class DelegationCodeScanner(CodeScanner):
             
             if self._is_collection_name(collection_name):
                 violations.append(self._create_delegation_violation(
-                    method.name, class_node.name, collection_name, stmt.lineno, file_path, rule_obj
+                    method.name, class_node.name, collection_name, stmt.lineno, file_path, self.rule
                 ))
         return violations
     
@@ -86,9 +92,9 @@ class DelegationCodeScanner(CodeScanner):
         return attr_lower == f"_{class_lower}" or attr_lower == class_lower or attr_stripped == class_lower
     
     def _create_delegation_violation(self, method_name: str, class_name: str, collection_name: str,
-                                     line_number: int, file_path: Path, rule_obj: Any) -> Dict[str, Any]:
+                                     line_number: int, file_path: Path) -> Dict[str, Any]:
         return Violation(
-            rule=rule_obj,
+            rule=self.rule,
             violation_message=f'Method "{method_name}" in class "{class_name}" iterates through "{collection_name}" instead of delegating to collection class. Delegate to collection class instead.',
             location=str(file_path),
             line_number=line_number,

@@ -1,18 +1,24 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
 class BusinessReadableTestNamesScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -24,18 +30,18 @@ class BusinessReadableTestNamesScanner(TestScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            self._check_test_function_node(function.node, file_path, rule_obj, domain_language, violations)
+            self._check_test_function_node(function.node, file_path, self.rule, domain_language, violations)
         
         return violations
     
-    def _check_test_function_node(self, node: Any, file_path: Path, rule_obj: Any, domain_language: set, violations: list) -> None:
+    def _check_test_function_node(self, node: Any, file_path: Path, domain_language: set, violations: list) -> None:
         if not isinstance(node, ast.FunctionDef):
             return
         
         if not node.name.startswith('test_'):
             return
         
-        violation = self._check_business_readable(node.name, file_path, node, rule_obj, domain_language)
+        violation = self._check_business_readable(node.name, file_path, node, self.rule, domain_language)
         if violation:
             violations.append(violation)
     
@@ -109,7 +115,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
         words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
         return set(words)
     
-    def _check_business_readable(self, test_name: str, file_path: Path, node: ast.FunctionDef, rule_obj: Any, domain_language: set) -> Optional[Dict[str, Any]]:
+    def _check_business_readable(self, test_name: str, file_path: Path, node: ast.FunctionDef, domain_language: set) -> Optional[Dict[str, Any]]:
         name_without_prefix = test_name[5:] if test_name.startswith('test_') else test_name
         
         test_words = self._extract_words_from_text(name_without_prefix)
@@ -141,8 +147,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
                     line_number = node.lineno if hasattr(node, 'lineno') else None
                     if content:
                         return self._create_violation_with_snippet(
-                            rule_obj=rule_obj,
-                            violation_message=f'Test name "{test_name}" contains technical jargon "{term}" - use business-readable domain language instead',
+                                                        violation_message=f'Test name "{test_name}" contains technical jargon "{term}" - use business-readable domain language instead',
                             file_path=file_path,
                             line_number=line_number,
                             severity='error',
@@ -152,7 +157,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
                         )
                     else:
                         return Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Test name "{test_name}" contains technical jargon "{term}" - use business-readable domain language instead',
                             location=str(file_path),
                             line_number=line_number,
@@ -168,8 +173,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
                 line_number = node.lineno if hasattr(node, 'lineno') else None
                 if content:
                     return self._create_violation_with_snippet(
-                        rule_obj=rule_obj,
-                        violation_message=f'Test name "{test_name}" contains abbreviations - use full business-readable words',
+                                                violation_message=f'Test name "{test_name}" contains abbreviations - use full business-readable words',
                         file_path=file_path,
                         line_number=line_number,
                         severity='warning',
@@ -179,7 +183,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
                     )
                 else:
                     return Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Test name "{test_name}" contains abbreviations - use full business-readable words',
                         location=str(file_path),
                         line_number=line_number,
@@ -191,8 +195,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
             line_number = node.lineno if hasattr(node, 'lineno') else None
             if content:
                 return self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=f'Test name "{test_name}" is too vague - add context about what happens and when',
+                                        violation_message=f'Test name "{test_name}" is too vague - add context about what happens and when',
                     file_path=file_path,
                     line_number=line_number,
                     severity='warning',
@@ -202,7 +205,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
                 )
             else:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test name "{test_name}" is too vague - add context about what happens and when',
                     location=str(file_path),
                     line_number=line_number,
@@ -273,8 +276,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
         return code_snippet
     
     def _create_violation_with_snippet(
-        self, 
-        rule_obj: Any,
+        self,
         violation_message: str,
         file_path: Path,
         line_number: Optional[int] = None,
@@ -304,7 +306,7 @@ class BusinessReadableTestNamesScanner(TestScanner):
             final_message = violation_message
         
         return Violation(
-            rule=rule_obj,
+            rule=self.rule,
             violation_message=final_message,
             location=str(file_path),
             line_number=line_number,

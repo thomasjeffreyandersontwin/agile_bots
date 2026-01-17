@@ -1,10 +1,13 @@
 
-from typing import List, Dict, Any, Optional, Set, Tuple
+from typing import List, Dict, Any, Optional, Set, Tuple, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 class GivenWhenThenHelpersScanner(TestScanner):
@@ -19,7 +22,10 @@ class GivenWhenThenHelpersScanner(TestScanner):
         r'verify_\w+',
     ]
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -34,7 +40,7 @@ class GivenWhenThenHelpersScanner(TestScanner):
         for function in functions.get_many_functions:
             if function.node.name.startswith('test_'):
                 test_violations = self._check_test_method(
-                    function.node, content, file_path, rule_obj, helper_functions, tree
+                    function.node, content, file_path, self.rule, helper_functions, tree
                 )
                 violations.extend(test_violations)
         
@@ -83,8 +89,7 @@ class GivenWhenThenHelpersScanner(TestScanner):
         except (SyntaxError, UnicodeDecodeError):
             return None
     
-    def _check_test_method(self, test_node: ast.FunctionDef, content: str, file_path: Path, 
-                          rule_obj: Any, helper_functions: Set[str], tree: ast.AST) -> List[Dict[str, Any]]:
+    def _check_test_method(self, test_node: ast.FunctionDef, content: str, file_path: Path, helper_functions: Set[str], tree: ast.AST) -> List[Dict[str, Any]]:
         violations = []
         
         test_lines = content.split('\n')
@@ -102,7 +107,7 @@ class GivenWhenThenHelpersScanner(TestScanner):
                     block_text += '\n...'
                 
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=(
                         f'Lines {block_start}-{block_end}: Multiple inline steps ({len(block_lines)} lines) '
                         f'should be extracted into a Given/When/Then helper function. '
@@ -222,8 +227,7 @@ class GivenWhenThenHelpersScanner(TestScanner):
         return None, [], False, 0
     
     def scan_cross_file(
-        self,
-        rule_obj: Any = None,
+        self = None,
         test_files: Optional[List[Path]] = None,
         code_files: Optional[List[Path]] = None,
         all_test_files: Optional[List[Path]] = None,
@@ -255,7 +259,7 @@ class GivenWhenThenHelpersScanner(TestScanner):
             if len(definitions) > 1:
                 files_list = ', '.join([f"{Path(f).name}:{line}" for f, line in definitions])
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=(
                         f'Helper function "{func_name}" is defined in {len(definitions)} different files. '
                         f'Consolidate into a shared helper file based on reuse scope. '

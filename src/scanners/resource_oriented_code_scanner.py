@@ -1,13 +1,16 @@
 
-from typing import List, Dict, Any, Optional, Set, Tuple
+from typing import List, Dict, Any, Optional, Set, Tuple, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
-from vocabulary_helper import VocabularyHelper
+from .vocabulary_helper import VocabularyHelper
 
 logger = logging.getLogger(__name__)
 
@@ -53,26 +56,20 @@ class ResourceOrientedCodeScanner(CodeScanner):
         'Manager',
     }
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         return []
     
-    def scan_cross_file(
-        self,
-        rule_obj: Any = None,
-        test_files: Optional[List[Path]] = None,
-        code_files: Optional[List[Path]] = None,
-        all_test_files: Optional[List[Path]] = None,
-        all_code_files: Optional[List[Path]] = None,
-        status_writer: Optional[Any] = None,
-        max_cross_file_comparisons: Optional[int] = None
-    ) -> List[Dict[str, Any]]:
+    def scan_cross_file_with_context(self, context: 'CrossFileScanContext') -> List[Dict[str, Any]]:
         violations = []
         
         all_files = []
-        if code_files:
-            all_files.extend(code_files)
-        if test_files:
-            all_files.extend(test_files)
+        if context.all_files.code_files:
+            all_files.extend(context.all_files.code_files)
+        if context.all_files.test_files:
+            all_files.extend(context.all_files.test_files)
         
         if not all_files:
             return violations
@@ -111,7 +108,7 @@ class ResourceOrientedCodeScanner(CodeScanner):
             if not self._is_owned_by_domain_object(loader_class_name, loader_node, all_files, all_classes):
                 suggested_name = loader_class_name[:-len(suffix)] if loader_class_name.endswith(suffix) else loader_class_name
                 violation = Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Class "{loader_class_name}" is an agent noun (doer of action) but is not owned by a domain object. Use resource-oriented design instead (e.g., make it a property of a domain object like "{suggested_name}").',
                     location=str(loader_file),
                     line_number=loader_node.lineno,

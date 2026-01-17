@@ -7,7 +7,7 @@ import re
 
 class PlainEnglishScenariosScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
         
         if isinstance(node, Story):
@@ -17,15 +17,15 @@ class PlainEnglishScenariosScanner(StoryScanner):
             for scenario_idx, scenario in enumerate(scenarios):
                 scenario_text = self._get_scenario_text(scenario)
                 
-                violation = self._check_variables(scenario_text, node, scenario_idx, rule_obj)
+                violation = self._check_variables(scenario_text, node, scenario_idx)
                 if violation:
                     violations.append(violation)
                 
-                violation = self._check_scenario_outline(scenario_text, node, scenario_idx, rule_obj)
+                violation = self._check_scenario_outline(scenario_text, node, scenario_idx)
                 if violation:
                     violations.append(violation)
                 
-                violation = self._check_examples_table(scenario, node, scenario_idx, rule_obj)
+                violation = self._check_examples_table(scenario, node, scenario_idx)
                 if violation:
                     violations.append(violation)
         
@@ -36,11 +36,11 @@ class PlainEnglishScenariosScanner(StoryScanner):
             return scenario.get('scenario', '') or scenario.get('name', '') or str(scenario)
         return str(scenario)
     
-    def _check_variables(self, scenario_text: str, node: StoryNode, scenario_idx: int, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_variables(self, scenario_text: str, node: StoryNode, scenario_idx: int) -> Optional[Dict[str, Any]]:
         if re.search(r'<[^>]+>', scenario_text):
             location = f"{node.map_location()}.scenarios[{scenario_idx}]"
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'Scenario contains variable placeholder (e.g., "<variable>") - use plain English instead',
                 location=location,
                 severity='error'
@@ -49,7 +49,7 @@ class PlainEnglishScenariosScanner(StoryScanner):
         if re.search(r'"[<][^>]+[>]"', scenario_text):
             location = f"{node.map_location()}.scenarios[{scenario_idx}]"
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=f'Scenario contains quoted placeholder (e.g., "<variable>") - use plain English instead',
                 location=location,
                 severity='error'
@@ -57,11 +57,11 @@ class PlainEnglishScenariosScanner(StoryScanner):
         
         return None
     
-    def _check_scenario_outline(self, scenario_text: str, node: StoryNode, scenario_idx: int, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_scenario_outline(self, scenario_text: str, node: StoryNode, scenario_idx: int) -> Optional[Dict[str, Any]]:
         if 'Scenario Outline:' in scenario_text or 'Scenario Outline' in scenario_text:
             location = f"{node.map_location()}.scenarios[{scenario_idx}]"
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message='Scenario uses Scenario Outline - use plain English scenarios instead',
                 location=location,
                 severity='error'
@@ -69,12 +69,12 @@ class PlainEnglishScenariosScanner(StoryScanner):
         
         return None
     
-    def _check_examples_table(self, scenario: Dict[str, Any], node: StoryNode, scenario_idx: int, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_examples_table(self, scenario: Dict[str, Any], node: StoryNode, scenario_idx: int) -> Optional[Dict[str, Any]]:
         if isinstance(scenario, dict):
             if 'examples' in scenario or 'Examples:' in str(scenario):
                 location = f"{node.map_location()}.scenarios[{scenario_idx}]"
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message='Scenario contains Examples table - use plain English scenarios instead',
                     location=location,
                     severity='error'

@@ -1,9 +1,12 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 
@@ -17,7 +20,10 @@ class DomainGroupingCodeScanner(CodeScanner):
         r'\bdto\b',
     ]
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         if not file_path.exists():
@@ -28,7 +34,7 @@ class DomainGroupingCodeScanner(CodeScanner):
             if re.search(pattern, file_path_str, re.IGNORECASE):
                 violations.append(
                     Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'File path "{file_path}" uses technical layer terminology. Organize by domain area instead.',
                         location=str(file_path),
                         line_number=None,
@@ -45,13 +51,13 @@ class DomainGroupingCodeScanner(CodeScanner):
         
         classes = Classes(tree)
         for cls in classes.get_many_classes:
-            violation = self._check_class_name(cls.node, file_path, rule_obj)
+            violation = self._check_class_name(cls.node, file_path)
             if violation:
                 violations.append(violation)
         
         return violations
     
-    def _check_class_name(self, class_node: ast.ClassDef, file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_class_name(self, class_node: ast.ClassDef, file_path: Path) -> Optional[Dict[str, Any]]:
         class_name_lower = class_node.name.lower()
         
         for pattern in self.TECHNICAL_LAYER_PATTERNS:
@@ -59,8 +65,7 @@ class DomainGroupingCodeScanner(CodeScanner):
                 try:
                     content = file_path.read_text(encoding='utf-8')
                     return self._create_violation_with_snippet(
-                        rule_obj=rule_obj,
-                        violation_message=f'Class "{class_node.name}" uses technical layer terminology. Group by domain area instead.',
+                                                violation_message=f'Class "{class_node.name}" uses technical layer terminology. Group by domain area instead.',
                         file_path=file_path,
                         line_number=class_node.lineno,
                         severity='info',
@@ -70,7 +75,7 @@ class DomainGroupingCodeScanner(CodeScanner):
                     )
                 except Exception:
                     return Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Class "{class_node.name}" uses technical layer terminology. Group by domain area instead.',
                         location=str(file_path),
                         line_number=class_node.lineno,

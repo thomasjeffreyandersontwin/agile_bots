@@ -6,7 +6,7 @@ from scanners.violation import Violation
 
 class DelegationScanner(DomainScanner):
     
-    def scan_domain_concept(self, node: DomainConceptNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_domain_concept(self, node: DomainConceptNode) -> List[Dict[str, Any]]:
         violations = []
         
         for i, responsibility_data in enumerate(node.responsibilities):
@@ -18,7 +18,7 @@ class DelegationScanner(DomainScanner):
                 if not self._is_collection_class(node.name):
                     violations.append(
                         Violation(
-                            rule=rule_obj,
+                            rule=self.rule,
                             violation_message=f'Responsibility "{responsibility_name}" may be doing what a collection class should do. Consider delegating to collection class.',
                             location=node.map_location(f'responsibilities[{i}].name'),
                             line_number=None,

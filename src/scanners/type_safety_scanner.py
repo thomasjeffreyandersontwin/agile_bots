@@ -1,10 +1,13 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from scanners.code_scanner import CodeScanner
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from scanners.violation import Violation
 from .resources.ast_elements import Functions
 
@@ -25,7 +28,10 @@ class TypeSafetyScanner(CodeScanner):
         'story_graph', 'rule_content', 'config',
     }
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -39,12 +45,12 @@ class TypeSafetyScanner(CodeScanner):
         
         functions = Functions(tree)
         for function in functions.get_many_functions:
-            func_violations = self._check_function_type_safety(function.node, file_path, rule_obj, content)
+            func_violations = self._check_function_type_safety(function.node, file_path, self.rule, content)
             violations.extend(func_violations)
         
         return violations
     
-    def _check_function_type_safety(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, content: str) -> List[Dict[str, Any]]:
+    def _check_function_type_safety(self, func_node: ast.FunctionDef, file_path: Path, content: str) -> List[Dict[str, Any]]:
         violations = []
         
         func_name = func_node.name
@@ -56,18 +62,18 @@ class TypeSafetyScanner(CodeScanner):
             if func_name not in ('do_execute', '_execute', '_process', '_handle'):
                 return violations
         
-        param_violations = self._check_parameter_types(func_node, file_path, rule_obj, content)
+        param_violations = self._check_parameter_types(func_node, file_path, self.rule, content)
         violations.extend(param_violations)
         
-        return_violations = self._check_return_type(func_node, file_path, rule_obj, content)
+        return_violations = self._check_return_type(func_node, file_path, self.rule, content)
         violations.extend(return_violations)
         
-        get_violations = self._check_parameters_get_pattern(func_node, file_path, rule_obj, content)
+        get_violations = self._check_parameters_get_pattern(func_node, file_path, self.rule, content)
         violations.extend(get_violations)
         
         return violations
     
-    def _check_parameter_types(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, content: str) -> List[Dict[str, Any]]:
+    def _check_parameter_types(self, func_node: ast.FunctionDef, file_path: Path, content: str) -> List[Dict[str, Any]]:
         violations = []
         
         for arg in func_node.args.args:
@@ -82,13 +88,12 @@ class TypeSafetyScanner(CodeScanner):
             annotation = arg.annotation
             if annotation and self._is_dict_any_annotation(annotation):
                 message = self._get_violation_message(
-                    rule_obj, 'dict_any_parameter', func_node.lineno,
+                    self.rule, 'dict_any_parameter', func_node.lineno,
                     method=func_node.name, param=param_name
                 )
                 violations.append(
                     self._create_violation_with_snippet(
-                        rule_obj=rule_obj,
-                        violation_message=message,
+                                                violation_message=message,
                         file_path=file_path,
                         line_number=func_node.lineno,
                         severity='warning',
@@ -101,7 +106,7 @@ class TypeSafetyScanner(CodeScanner):
         
         return violations
     
-    def _check_return_type(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, content: str) -> List[Dict[str, Any]]:
+    def _check_return_type(self, func_node: ast.FunctionDef, file_path: Path, content: str) -> List[Dict[str, Any]]:
         violations = []
         
         returns = func_node.returns
@@ -110,13 +115,12 @@ class TypeSafetyScanner(CodeScanner):
                 return violations
             
             message = self._get_violation_message(
-                rule_obj, 'dict_any_return', func_node.lineno,
+                self.rule, 'dict_any_return', func_node.lineno,
                 method=func_node.name
             )
             violations.append(
                 self._create_violation_with_snippet(
-                    rule_obj=rule_obj,
-                    violation_message=message,
+                                        violation_message=message,
                     file_path=file_path,
                     line_number=func_node.lineno,
                     severity='warning',
@@ -128,7 +132,7 @@ class TypeSafetyScanner(CodeScanner):
         
         return violations
     
-    def _check_parameters_get_pattern(self, func_node: ast.FunctionDef, file_path: Path, rule_obj: Any, content: str) -> List[Dict[str, Any]]:
+    def _check_parameters_get_pattern(self, func_node: ast.FunctionDef, file_path: Path, content: str) -> List[Dict[str, Any]]:
         violations = []
         found_lines = set()
         
@@ -143,11 +147,11 @@ class TypeSafetyScanner(CodeScanner):
                                 if line_no not in found_lines:
                                     found_lines.add(line_no)
                                     message = self._get_violation_message(
-                                        rule_obj, 'parameters_get_pattern', line_no
+                                        self.rule, 'parameters_get_pattern', line_no
                                     )
                                     violations.append(
                                         Violation(
-                                            rule=rule_obj,
+                                            rule=self.rule,
                                             violation_message=message,
                                             location=str(file_path),
                                             line_number=line_no,
@@ -186,9 +190,9 @@ class TypeSafetyScanner(CodeScanner):
         
         return False
     
-    def _get_violation_message(self, rule_obj: Any, message_key: str, line_number: int, **format_args) -> str:
-        if rule_obj and hasattr(rule_obj, 'rule_content'):
-            violation_messages = rule_obj.rule_content.get('violation_messages', {})
+    def _get_violation_message(self, message_key: str, line_number: int, **format_args) -> str:
+        if self.rule and hasattr(self.rule, 'rule_content'):
+            violation_messages = self.rule.rule_content.get('violation_messages', {})
             if message_key in violation_messages:
                 template = violation_messages[message_key]
                 return template.format(line=line_number, **format_args)

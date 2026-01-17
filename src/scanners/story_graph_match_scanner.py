@@ -1,18 +1,24 @@
 """Scanner for validating test structure matches story graph exactly."""
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Classes
 
 logger = logging.getLogger(__name__)
 
 class StoryGraphMatchScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -23,7 +29,7 @@ class StoryGraphMatchScanner(TestScanner):
         
         story_names = self._extract_story_names(story_graph)
         
-        violations.extend(self._check_test_classes_match_stories(tree, story_names, file_path, rule_obj))
+        violations.extend(self._check_test_classes_match_stories(tree, story_names, file_path))
         
         return violations
     
@@ -42,7 +48,7 @@ class StoryGraphMatchScanner(TestScanner):
                             story_names.append(story_name)
         return story_names
     
-    def _check_test_classes_match_stories(self, tree: ast.AST, story_names: List[str], file_path: Path, rule_obj: Any) -> List[Dict[str, Any]]:
+    def _check_test_classes_match_stories(self, tree: ast.AST, story_names: List[str], file_path: Path) -> List[Dict[str, Any]]:
         violations = []
         
         classes = Classes(tree)
@@ -55,7 +61,7 @@ class StoryGraphMatchScanner(TestScanner):
                 if not matches:
                     line_number = cls.node.lineno if hasattr(cls.node, 'lineno') else None
                     violation = Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
 
 ## Rules Available (25 total)
 

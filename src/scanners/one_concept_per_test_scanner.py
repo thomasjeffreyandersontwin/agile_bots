@@ -1,18 +1,24 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
 import logging
 from test_scanner import TestScanner
 from scanners.violation import Violation
+
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
 from .resources.ast_elements import Functions
 
 logger = logging.getLogger(__name__)
 
 class OneConceptPerTestScanner(TestScanner):
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         parsed = self._read_and_parse_file(file_path)
@@ -24,13 +30,13 @@ class OneConceptPerTestScanner(TestScanner):
         functions = Functions(tree)
         for function in functions.get_many_functions:
             if function.node.name.startswith('test_'):
-                violation = self._check_one_concept(function.node, file_path, content, rule_obj)
+                violation = self._check_one_concept(function.node, file_path, content)
                 if violation:
                     violations.append(violation)
         
         return violations
     
-    def _check_one_concept(self, test_node: ast.FunctionDef, file_path: Path, content: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_one_concept(self, test_node: ast.FunctionDef, file_path: Path, content: str) -> Optional[Dict[str, Any]]:
         violations = []
         
         test_name = test_node.name.lower()
@@ -45,7 +51,7 @@ class OneConceptPerTestScanner(TestScanner):
                 if len(words) > 8:
                     line_number = test_node.lineno if hasattr(test_node, 'lineno') else None
                     violations.append(Violation(
-                        rule=rule_obj,
+                        rule=self.rule,
                         violation_message=f'Test "{test_node.name}" appears to test multiple concepts - split into separate tests, one concept per test',
                         location=str(file_path),
                         line_number=line_number,
@@ -57,7 +63,7 @@ class OneConceptPerTestScanner(TestScanner):
         if len(concepts) > 1:
             line_number = test_node.lineno if hasattr(test_node, 'lineno') else None
             violations.append(Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=(
                     f'Test "{test_node.name}" tests multiple concepts detected: {", ".join(concepts)}. '
                     f'Split into separate tests, one concept per test.'
@@ -71,7 +77,7 @@ class OneConceptPerTestScanner(TestScanner):
         if scenario and self._has_multiple_scenarios(scenario):
             line_number = test_node.lineno if hasattr(test_node, 'lineno') else None
             violations.append(Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=(
                     f'Test "{test_node.name}" docstring contains multiple scenarios. '
                     f'Each test should focus on a single scenario.'
@@ -85,7 +91,7 @@ class OneConceptPerTestScanner(TestScanner):
         if len(assertion_groups) > 3:
             line_number = test_node.lineno if hasattr(test_node, 'lineno') else None
             violations.append(Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=(
                     f'Test "{test_node.name}" has {len(assertion_groups)} distinct assertion groups - '
                     f'suggests multiple concepts being tested. Split into separate tests.'

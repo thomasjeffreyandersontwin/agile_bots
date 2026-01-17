@@ -5,30 +5,29 @@ from scanners.violation import Violation
 
 class GenericCapabilityScanner(StoryScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         violations = []
-        name = node.name
-        
-        if not name:
+        if not node.name:
             return violations
         
         node_type = self._get_node_type(node)
         
-        violation = self._check_capability_verbs(name, node, node_type, rule_obj)
+        violation = self._check_capability_verbs(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_passive_states(name, node, node_type, rule_obj)
+        violation = self._check_passive_states(node, node_type)
         if violation:
             violations.append(violation)
         
-        violation = self._check_generic_technical_verbs(name, node, node_type, rule_obj)
+        violation = self._check_generic_technical_verbs(node, node_type)
         if violation:
             violations.append(violation)
         
         return violations
     
     def _get_node_type(self, node: StoryNode) -> str:
+        name = node.name
         if isinstance(node, Epic):
             return 'epic'
         elif isinstance(node, SubEpic):
@@ -41,8 +40,7 @@ class GenericCapabilityScanner(StoryScanner):
         self, 
         name: str, 
         node: StoryNode, 
-        node_type: str, 
-        rule_obj: Any,
+        node_type: str,
         verb_list: List[str],
         verb_category: str,
         message_template: str
@@ -53,7 +51,7 @@ class GenericCapabilityScanner(StoryScanner):
         if words and words[0] in verb_list:
             location = node.map_location()
             return Violation(
-                rule=rule_obj,
+                rule=self.rule,
                 violation_message=message_template.format(
                     node_type=node_type.capitalize(),
                     name=name,
@@ -66,17 +64,20 @@ class GenericCapabilityScanner(StoryScanner):
         
         return None
     
-    def _check_capability_verbs(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_capability_verbs(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         capability_verbs = ['exposes', 'provides', 'contains', 'represents', 'implements', 'supports']
         message = '{node_type} name "{name}" uses capability verb "{verb}" - describe what system DOES (behaviors), not what system IS (capabilities). Use specific actions with actors (e.g., "User invokes tool" not "Exposes tool")'
-        return self._check_verb_pattern(name, node, node_type, rule_obj, capability_verbs, 'capability', message)
+        return self._check_verb_pattern(node, node_type, self.rule, capability_verbs, 'capability', message)
     
-    def _check_passive_states(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_passive_states(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         passive_patterns = ['tracks', 'maintains', 'stores', 'holds', 'keeps']
         message = '{node_type} name "{name}" uses passive state verb "{verb}" - use active behaviors instead (e.g., "User updates order count" not "Tracks order count")'
-        return self._check_verb_pattern(name, node, node_type, rule_obj, passive_patterns, 'passive state', message)
+        return self._check_verb_pattern(node, node_type, self.rule, passive_patterns, 'passive state', message)
     
-    def _check_generic_technical_verbs(self, name: str, node: StoryNode, node_type: str, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_generic_technical_verbs(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
+        name = node.name
         generic_technical_verbs = ['invokes', 'invoke', 'calls', 'call', 'executes', 'execute', 'triggers', 'trigger']
         technical_nouns = ['api', 'endpoint', 'service', 'method', 'function', 'handler', 'route', 'url']
         
@@ -94,7 +95,7 @@ class GenericCapabilityScanner(StoryScanner):
             if has_technical_noun:
                 location = node.map_location()
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'{node_type.capitalize()} name "{name}" uses generic technical verb "{first_word}" without describing outcome - describe what actually happens, not the technical mechanism (e.g., "Processes Payment" not "Invokes Payment API")',
                     location=location,
                     severity='error'

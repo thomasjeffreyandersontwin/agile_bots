@@ -1,5 +1,5 @@
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 import ast
 import re
@@ -7,12 +7,18 @@ from test_scanner import TestScanner
 from story_map import StoryNode
 from scanners.violation import Violation
 
+if TYPE_CHECKING:
+    from scanners.resources.scan_context import FileScanContext
+
 class ClassBasedOrganizationScanner(TestScanner):
     
-    def scan_story_node(self, node: StoryNode, rule_obj: Any) -> List[Dict[str, Any]]:
+    def scan_story_node(self, node: StoryNode) -> List[Dict[str, Any]]:
         return []
     
-    def scan_file(self, file_path: Path, rule_obj: Any = None, story_graph: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
+    def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
+        file_path = context.file_path
+        story_graph = context.story_graph
+
         violations = []
         
         if not file_path.exists():
@@ -20,7 +26,7 @@ class ClassBasedOrganizationScanner(TestScanner):
         
         sub_epic_names = self._extract_sub_epic_names(story_graph)
         file_name = file_path.stem
-        violation = self._check_file_name_matches_sub_epic(file_name, sub_epic_names, file_path, rule_obj, story_graph)
+        violation = self._check_file_name_matches_sub_epic(file_name, sub_epic_names, file_path, self.rule, story_graph)
         if violation:
             violations.append(violation)
         
@@ -35,7 +41,7 @@ class ClassBasedOrganizationScanner(TestScanner):
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):
                 if node.name.startswith('Test'):
-                    violation = self._check_class_name_matches_story(node.name, story_names, file_path, rule_obj)
+                    violation = self._check_class_name_matches_story(node.name, story_names, file_path)
                     if violation:
                         violations.append(violation)
                     
@@ -43,7 +49,7 @@ class ClassBasedOrganizationScanner(TestScanner):
                         if isinstance(item, ast.FunctionDef):
                             if item.name.startswith('test_'):
                                 violation = self._check_method_name_matches_scenario(
-                                    item.name, node.name, story_names, story_graph, file_path, rule_obj
+                                    item.name, node.name, story_names, story_graph, file_path, self.rule
                                 )
                                 if violation:
                                     violations.append(violation)
@@ -70,7 +76,7 @@ class ClassBasedOrganizationScanner(TestScanner):
                 if story_name:
                     result.append(story_name)
     
-    def _check_class_name_matches_story(self, class_name: str, story_names: List[str], file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+    def _check_class_name_matches_story(self, class_name: str, story_names: List[str], file_path: Path) -> Optional[Dict[str, Any]]:
         story_name_from_class = class_name[4:] if class_name.startswith('Test') else class_name
         
         expected_story_name = self._pascal_to_story_name(story_name_from_class)
@@ -80,7 +86,7 @@ class ClassBasedOrganizationScanner(TestScanner):
         if not matches:
             if self._is_abbreviated(class_name, story_names):
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test class "{class_name}" appears abbreviated - should match story name exactly (Test<ExactStoryName>)',
                     location=str(file_path),
                     severity='error'
@@ -88,7 +94,7 @@ class ClassBasedOrganizationScanner(TestScanner):
             
             if self._is_generic(class_name):
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test class "{class_name}" uses generic name - should match story name exactly',
                     location=str(file_path),
                     severity='error'
@@ -97,7 +103,7 @@ class ClassBasedOrganizationScanner(TestScanner):
         return None
     
     def _check_method_name_matches_scenario(self, method_name: str, class_name: str, story_names: List[str], 
-                                           story_graph: Dict[str, Any], file_path: Path, rule_obj: Any) -> Optional[Dict[str, Any]]:
+                                           story_graph: Dict[str, Any], file_path: Path) -> Optional[Dict[str, Any]]:
         scenario_name_from_method = method_name[5:] if method_name.startswith('test_') else method_name
         
         if len(scenario_name_from_method) < 20:
@@ -105,14 +111,14 @@ class ClassBasedOrganizationScanner(TestScanner):
             
             if expected_name:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test method "{method_name}" appears abbreviated - should match scenario name exactly. Expected name based on epic/story: "{expected_name}"',
                     location=str(file_path),
                     severity='error'
                 ).to_dict()
             else:
                 return Violation(
-                    rule=rule_obj,
+                    rule=self.rule,
                     violation_message=f'Test method "{method_name}" appears abbreviated - should match scenario name exactly',
                     location=str(file_path),
                     severity='error'
@@ -293,7 +299,7 @@ class ClassBasedOrganizationScanner(TestScanner):
         name = re.sub(r'[^a-zA-Z0-9_]', '', name)
         return name.lower()
     
-    def _check_file_name_matches_sub_epic(self, file_name: str, sub_epic_names: List[str], file_path: Path, rule_obj: Any, story_graph: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    def _check_file_name_matches_sub_epic(self, file_name: str, sub_epic_names: List[str], file_path: Path, story_graph: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         name_without_prefix = file_name[5:] if file_name.startswith('test_') else file_name
         
         name_normalized = self._to_snake_case(name_without_prefix)
@@ -326,7 +332,7 @@ class ClassBasedOrganizationScanner(TestScanner):
             suggestion_text = f" Suggested names: {suggestion_list}"
         
         return Violation(
-            rule=rule_obj,
+            rule=self.rule,
             violation_message=f'Test file name "{file_name}" does not match any sub-epic name and test methods do not span multiple sub-epics - file should be named test_<sub_epic_name>.py.{suggestion_text}',
             location=str(file_path),
             severity='error'

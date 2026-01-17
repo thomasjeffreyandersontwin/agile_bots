@@ -13,23 +13,11 @@ if TYPE_CHECKING:
     from .resources.scan_context import ScanContext, FileScanContext, ScanFilesContext, CrossFileScanContext
 
 class Scanner(ABC):
-    """Base scanner class using context objects for clean parameter passing.
     
-    Scanner methods use context objects:
-    - scan_with_context(ScanFilesContext): Scan multiple files
-    - scan_file_with_context(FileScanContext): Scan a single file (override this)
-    - scan_cross_file_with_context(CrossFileScanContext): Cross-file analysis
-    """
+    def __init__(self, rule: 'Rule'):
+        self.rule = rule
     
     def scan_with_context(self, context: 'ScanFilesContext') -> List[Dict[str, Any]]:
-        """Scan files for violations.
-        
-        Args:
-            context: ScanFilesContext containing files, rule, and callbacks
-            
-        Returns:
-            List of violation dictionaries
-        """
         from .resources.scan_context import FileScanContext
         
         violations = []
@@ -38,7 +26,6 @@ class Scanner(ABC):
         for file_path in all_files:
             if file_path and file_path.exists() and file_path.is_file():
                 file_context = FileScanContext(
-                    rule_obj=context.rule_obj,
                     story_graph=context.story_graph,
                     file_path=file_path
                 )
@@ -49,7 +36,7 @@ class Scanner(ABC):
                     violations.extend(file_violations_list)
                 
                 if context.on_file_scanned:
-                    context.on_file_scanned(file_path, file_violations_list, context.rule_obj)
+                    context.on_file_scanned(file_path, file_violations_list, self.rule)
         
         return violations
     
@@ -57,29 +44,11 @@ class Scanner(ABC):
         return []
     
     def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
-        """Scan a single file for violations using a context object.
-        
-        Subclasses should override this method to implement file scanning logic.
-        
-        Args:
-            context: FileScanContext containing file path, rule, and story graph
-            
-        Returns:
-            List of violation dictionaries
-        """
         if not context.exists:
             return self._empty_violation_list()
         return self._empty_violation_list()
     
     def scan_cross_file_with_context(self, context: 'CrossFileScanContext') -> List[Dict[str, Any]]:
-        """Scan for cross-file violations.
-        
-        Args:
-            context: CrossFileScanContext containing changed files, all files, and config
-            
-        Returns:
-            List of violation dictionaries
-        """
         return self._empty_violation_list()
     
     def _is_test_file(self, file_path: 'Path') -> bool:
