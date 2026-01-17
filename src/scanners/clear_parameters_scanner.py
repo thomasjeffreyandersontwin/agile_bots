@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class ClearParametersScanner(CodeScanner):
-    """Scanner for detecting unclear or excessive function parameters."""
     
     ACCEPTABLE_PARAMETER_NAMES = {
         'data',

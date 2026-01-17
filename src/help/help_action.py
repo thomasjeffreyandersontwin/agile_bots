@@ -210,13 +210,11 @@ class HelpAction(Action):
         return params
     
     def _get_scope_description(self, action_name: str) -> str:
-        """Get scope description based on action."""
         if action_name == 'validate':
             return "Scope structure: {'type': 'story'|'epic'|'increment'|'all'|'files', 'value': <names|priorities|files>, 'exclude': <patterns>}"
         return "Scope structure: {'type': 'story'|'epic'|'increment'|'all', 'value': <names|priorities>}"
     
     def _get_parameter_description(self, action_name: str, param_name: str) -> str:
-        """Get parameter description by delegating to domain objects."""
         from actions.clarify.requirements_clarifications import RequirementsClarifications
         from actions.strategy.strategy_decision import StrategyDecision
         

@@ -13,24 +13,27 @@ try:
 except LookupError:
     try:
         nltk.download('wordnet', quiet=True)
-    except:
-        pass
+    except Exception as e:
+        import sys
+        print(f"Warning: Failed to download NLTK wordnet: {e}", file=sys.stderr)
 
 try:
     nltk.data.find('tokenizers/punkt_tab')
 except LookupError:
     try:
         nltk.download('punkt_tab', quiet=True)
-    except:
-        pass
+    except Exception as e:
+        import sys
+        print(f"Warning: Failed to download NLTK punkt_tab: {e}", file=sys.stderr)
 
 try:
     nltk.data.find('taggers/averaged_perceptron_tagger_eng')
 except LookupError:
     try:
         nltk.download('averaged_perceptron_tagger_eng', quiet=True)
-    except:
-        pass
+    except Exception as e:
+        import sys
+        print(f"Warning: Failed to download NLTK averaged_perceptron_tagger_eng: {e}", file=sys.stderr)
 
 socket.setdefaulttimeout(_original_timeout)
 
@@ -42,7 +45,6 @@ class VocabularyHelper:
     
     @staticmethod
     def _has_synsets(word: str, pos) -> bool:
-        """Check if a word has synsets for the given part of speech."""
         try:
             word_lower = word.lower()
             synsets = wn.synsets(word_lower, pos=pos)

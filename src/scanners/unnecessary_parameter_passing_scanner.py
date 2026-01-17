@@ -14,10 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class UnnecessaryParameterPassingScanner(CodeScanner):
-    """
-    Detects when parameters are passed to internal methods unnecessarily.
-    Instance properties should be accessed directly via self instead of being passed as parameters.
-    """
 
     def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:
         file_path = context.file_path
@@ -62,7 +58,6 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         return violations
     
     def _get_instance_variables(self, class_node: ast.ClassDef) -> set:
-        """Extract instance variables from class (self.var_name patterns)."""
         instance_vars = set()
         
         for node in ast.walk(class_node):
@@ -83,6 +78,10 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         """Check if method parameters match instance variables."""
         violations = []
         
+        # Skip magic methods - they have special parameter semantics
+        if method_node.name.startswith('__') and method_node.name.endswith('__'):
+            return violations
+        
         # Get parameter names (excluding self, cls, args, kwargs)
         param_names = []
         for arg in method_node.args.args:
@@ -91,9 +90,18 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         
         # Check if any parameters match instance variable names
         for param_name in param_names:
+            # Skip generic common parameter names that often have different semantics
+            if param_name in ('name', 'instructions', 'rule', 'rules', 'story_graph', 'context', 'data'):
+                continue
+            
             # Check for exact match or close match with instance vars
             for inst_var in instance_vars:
                 if self._names_match(param_name, inst_var):
+                    # Skip if the instance var has a suffix suggesting different semantic meaning
+                    # e.g., behavior_name (string) vs behavior (object)
+                    if self._has_semantic_difference(param_name, inst_var):
+                        continue
+                    
                     # This parameter name matches an instance variable
                     violation = self._create_violation_with_snippet(
                         violation_message=f'Method "{method_node.name}" in class "{class_name}" receives parameter "{param_name}" that matches instance variable "self.{inst_var}". Access self.{inst_var} directly instead of passing as parameter.',
@@ -109,8 +117,18 @@ class UnnecessaryParameterPassingScanner(CodeScanner):
         
         return violations
     
+    def _has_semantic_difference(self, param_name: str, inst_var_name: str) -> bool:
+        """Check if names suggest semantically different things."""
+        # If one has '_name' suffix and the other doesn't, they're likely different
+        # (e.g., behavior_name vs behavior)
+        param_has_name = param_name.endswith('_name')
+        inst_has_name = inst_var_name.endswith('_name')
+        if param_has_name != inst_has_name:
+            return True
+        
+        return False
+    
     def _names_match(self, param_name: str, inst_var_name: str) -> bool:
-        """Check if parameter name matches instance variable name."""
         # Exact match
         if param_name == inst_var_name:
             return True

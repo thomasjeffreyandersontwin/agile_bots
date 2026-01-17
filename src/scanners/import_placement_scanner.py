@@ -23,11 +23,35 @@ class ImportPlacementScanner(CodeScanner):
         
         content, lines, tree = parsed
         
+        # Skip bootstrap files that need to set up environment before importing
+        if self._is_bootstrap_file(lines):
+            return violations
+        
         import_section_end = self._find_import_section_end(lines)
         
         violations.extend(self._check_import_placement(lines, import_section_end, file_path))
         
         return violations
+    
+    def _is_bootstrap_file(self, lines: List[str]) -> bool:
+        """Check if this is a bootstrap file that needs to configure environment before imports."""
+        content = '\n'.join(lines)
+        
+        # Look for patterns indicating bootstrap/initialization code before imports
+        bootstrap_patterns = [
+            'sys.path.insert',
+            'sys.path.append',
+            'os.environ',
+            '# Bootstrap',
+            '# Minimal bootstrapping',
+            '# Configure'
+        ]
+        
+        # Check if there's environment setup followed by delayed imports
+        has_env_setup = any(pattern in content for pattern in bootstrap_patterns)
+        has_delayed_import_comment = 'Now import' in content or 'import src modules' in content or 'will use the environment' in content
+        
+        return has_env_setup and has_delayed_import_comment
     
     def _find_import_section_end(self, lines: List[str]) -> int:
         import_section_end = 0

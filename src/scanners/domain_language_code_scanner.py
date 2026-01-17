@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class DomainLanguageCodeScanner(CodeScanner):
-    """Scanner for detecting code that doesn't use domain-specific language."""
     
     GENERATE_PATTERNS = [r'^generate_', r'^calculate_']
     

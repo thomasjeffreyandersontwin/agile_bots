@@ -1,4 +1,4 @@
-﻿
+
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 
@@ -72,7 +72,6 @@ class MarkdownAdapter(TextAdapter):
     def serialize(self) -> str:
         pass
     
-    @abstractmethod
     def parse_command_text(self, text: str) -> tuple[str, str]:
         from agile_bot.src.utils import parse_command_text
         return parse_command_text(text)

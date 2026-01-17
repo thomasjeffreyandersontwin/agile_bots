@@ -208,6 +208,9 @@ class DuplicationScanner(CodeScanner):
                 if all(self._is_simple_delegation(node) for node in func_nodes):
                     continue
                 
+                if all(self._is_trivial_stub(node) for node in func_nodes):
+                    continue
+                
                 violation = Violation(
                     rule=self.rule,
                     violation_message=f'Duplicate code detected: functions {", ".join(func_names)} have identical bodies - extract to shared function',
@@ -253,6 +256,32 @@ class DuplicationScanner(CodeScanner):
             return False
         
         return self._is_delegation_return_value(stmt.value)
+    
+    def _is_trivial_stub(self, func_node: ast.FunctionDef) -> bool:
+        """Check if function is a trivial stub that just returns a simple constant."""
+        executable_body = [stmt for stmt in func_node.body if not self._is_docstring_or_comment(stmt, func_node)]
+        if len(executable_body) != 1:
+            return False
+        
+        stmt = executable_body[0]
+        if not isinstance(stmt, ast.Return):
+            return False
+        
+        # Check if returns a simple constant (string, number, None, empty list/dict/set/tuple)
+        if isinstance(stmt.value, ast.Constant):
+            # Empty strings, empty collections, None, 0, False are trivial
+            value = stmt.value.value
+            if value in ("", None, 0, False):
+                return True
+        
+        # Empty collection literals
+        if isinstance(stmt.value, (ast.List, ast.Dict, ast.Set, ast.Tuple)):
+            if hasattr(stmt.value, 'elts') and len(stmt.value.elts) == 0:
+                return True
+            if hasattr(stmt.value, 'keys') and len(stmt.value.keys) == 0:
+                return True
+        
+        return False
     
     def _is_delegation_return_value(self, value: ast.expr) -> bool:
         if isinstance(value, ast.Call):
@@ -305,12 +334,21 @@ class DuplicationScanner(CodeScanner):
         for decorator in func_node.decorator_list:
             if isinstance(decorator, ast.Name) and decorator.id == 'property':
                 return True
-            if isinstance(decorator, ast.Attribute):
-                if decorator.attr not in ('setter', 'deleter'):
-                    if hasattr(decorator, 'value') and isinstance(decorator.value, ast.Name):
-                        if decorator.value.id == 'property':
-                            return True
+            if self._is_property_attribute_decorator(decorator):
+                return True
         return False
+    
+    def _is_property_attribute_decorator(self, decorator: ast.AST) -> bool:
+        """Check if decorator is a property attribute decorator."""
+        if not isinstance(decorator, ast.Attribute):
+            return False
+        if decorator.attr in ('setter', 'deleter'):
+            return False
+        if not hasattr(decorator, 'value'):
+            return False
+        if not isinstance(decorator.value, ast.Name):
+            return False
+        return decorator.value.id == 'property'
     
     def _is_simple_self_return(self, func_node: ast.FunctionDef) -> bool:
         if len(func_node.body) > 2:
@@ -355,70 +393,89 @@ class DuplicationScanner(CodeScanner):
                     not (block1['end_line'] < block2['start_line'] or block2['end_line'] < block1['start_line'])):
                     continue
                 
-                try:
-                    ast_similarity = self._compare_ast_blocks(block1['ast_nodes'], block2['ast_nodes'])
-                except Exception as e:
-                    _safe_print(f"Error comparing AST blocks: {e}")
-                    ast_similarity = 0.0
+                ast_similarity, normalized_similarity, content_similarity = self._calculate_block_similarities(block1, block2)
                 
-                try:
-                    normalized_similarity = SequenceMatcher(None, block1['normalized'], block2['normalized']).ratio()
-                except Exception as e:
-                    _safe_print(f"Error comparing normalized blocks: {e}")
-                    normalized_similarity = 0.0
+                max_similarity = self._determine_max_similarity(ast_similarity, content_similarity, normalized_similarity, SIMILARITY_THRESHOLD)
                 
-                try:
-                    preview1_normalized = ' '.join(block1['preview'].split())
-                    preview2_normalized = ' '.join(block2['preview'].split())
-                    content_similarity = SequenceMatcher(None, preview1_normalized, preview2_normalized).ratio()
-                except Exception as e:
-                    _safe_print(f"Error comparing content blocks: {e}")
-                    content_similarity = 0.0
-                
-                max_similarity = 0.0
-                if ast_similarity >= 0.85 and content_similarity >= 0.50:
-                    max_similarity = max(ast_similarity, content_similarity)
-                elif ast_similarity >= 0.80 and content_similarity >= 0.70:
-                    max_similarity = max(ast_similarity, content_similarity)
-                elif max(ast_similarity, content_similarity) >= 0.90 and min(ast_similarity, content_similarity) >= 0.60:
-                    max_similarity = max(ast_similarity, content_similarity)
-                elif ast_similarity >= SIMILARITY_THRESHOLD:
-                    max_similarity = ast_similarity
-                else:
+                if max_similarity == 0.0:
                     similarity_scores.append((ast_similarity, content_similarity, max(ast_similarity, content_similarity)))
                     continue
                 
                 similarity_scores.append((ast_similarity, content_similarity, max_similarity))
                 
                 if max_similarity >= SIMILARITY_THRESHOLD:
-                    if self._is_interface_method(block1['func_name']) or self._is_interface_method(block2['func_name']):
+                    if self._should_skip_duplicate_pair(block1, block2):
                         continue
                     
-                    if self._is_mostly_helper_calls(block1['ast_nodes']) or self._is_mostly_helper_calls(block2['ast_nodes']):
-                        continue
-                    
-                    if self._is_helper_function(block1['func_name']) and self._is_helper_function(block2['func_name']):
-                        continue
-                    
-                    if self._operates_on_different_domains(block1, block2):
-                        continue
-                    
-                    if self._calls_different_methods(block1['ast_nodes'], block2['ast_nodes']):
-                        continue
-                    
-                    if self._is_sequential_appends_with_different_content(block1['ast_nodes'], block2['ast_nodes']):
-                        continue
-                    
-                    should_report = False
-                    
-                    if block1['func_name'] != block2['func_name']:
-                        should_report = True
-                    elif abs(block1['start_line'] - block2['start_line']) > 10:
-                        should_report = True
-                    
-                    if should_report:
+                    if self._should_report_duplicate(block1, block2):
                         duplicate_pairs.append((i, j, max_similarity))
                         _safe_print(f"[DuplicationScanner] Found duplicate pair: block {i} (line {block1['start_line']}) vs block {j} (line {block2['start_line']}), similarity={max_similarity:.2f}")
+        
+    def _calculate_block_similarities(self, block1: Dict, block2: Dict) -> Tuple[float, float, float]:
+        """Calculate AST, normalized, and content similarities between two blocks."""
+        try:
+            ast_similarity = self._compare_ast_blocks(block1['ast_nodes'], block2['ast_nodes'])
+        except Exception as e:
+            _safe_print(f"Error comparing AST blocks: {e}")
+            ast_similarity = 0.0
+        
+        try:
+            normalized_similarity = SequenceMatcher(None, block1['normalized'], block2['normalized']).ratio()
+        except Exception as e:
+            _safe_print(f"Error comparing normalized blocks: {e}")
+            normalized_similarity = 0.0
+        
+        try:
+            preview1_normalized = ' '.join(block1['preview'].split())
+            preview2_normalized = ' '.join(block2['preview'].split())
+            content_similarity = SequenceMatcher(None, preview1_normalized, preview2_normalized).ratio()
+        except Exception as e:
+            _safe_print(f"Error comparing content blocks: {e}")
+            content_similarity = 0.0
+        
+        return ast_similarity, normalized_similarity, content_similarity
+    
+    def _determine_max_similarity(self, ast_sim: float, content_sim: float, normalized_sim: float, threshold: float) -> float:
+        """Determine the maximum similarity score based on multiple metrics."""
+        if ast_sim >= 0.85 and content_sim >= 0.50:
+            return max(ast_sim, content_sim)
+        if ast_sim >= 0.80 and content_sim >= 0.70:
+            return max(ast_sim, content_sim)
+        if max(ast_sim, content_sim) >= 0.90 and min(ast_sim, content_sim) >= 0.60:
+            return max(ast_sim, content_sim)
+        if ast_sim >= threshold:
+            return ast_sim
+        return 0.0
+    
+    def _should_skip_duplicate_pair(self, block1: Dict, block2: Dict) -> bool:
+        """Check if a duplicate pair should be skipped based on various filters."""
+        if self._is_interface_method(block1['func_name']) or self._is_interface_method(block2['func_name']):
+            return True
+        
+        if self._is_mostly_helper_calls(block1['ast_nodes']) or self._is_mostly_helper_calls(block2['ast_nodes']):
+            return True
+        
+        if self._is_helper_function(block1['func_name']) and self._is_helper_function(block2['func_name']):
+            return True
+        
+        if self._operates_on_different_domains(block1, block2):
+            return True
+        
+        if self._calls_different_methods(block1['ast_nodes'], block2['ast_nodes']):
+            return True
+        
+        if self._is_sequential_appends_with_different_content(block1['ast_nodes'], block2['ast_nodes']):
+            return True
+        
+        return False
+    
+    def _should_report_duplicate(self, block1: Dict, block2: Dict) -> bool:
+        """Determine if a duplicate should be reported."""
+        if block1['func_name'] != block2['func_name']:
+            return True
+        if abs(block1['start_line'] - block2['start_line']) > 10:
+            return True
+        return False
         
         _safe_print(f"[DuplicationScanner] Compared {comparison_count} block pairs")
         _safe_print(f"[DuplicationScanner] Found {len(duplicate_pairs)} duplicate pairs (threshold: {SIMILARITY_THRESHOLD})")
@@ -714,9 +771,7 @@ class DuplicationScanner(CodeScanner):
     
     def _extract_subtrees_from_function(self, func_node: ast.FunctionDef, min_nodes: int, max_nodes: int) -> List[ast.AST]:
         subtrees = []
-        
-        control_structures = (ast.If, ast.For, ast.While, ast.Try, ast.With, 
-                             ast.AsyncFor, ast.AsyncWith)
+        control_structures = (ast.If, ast.For, ast.While, ast.Try, ast.With, ast.AsyncFor, ast.AsyncWith)
         
         def extract_from_node(node):
             if isinstance(node, control_structures):
@@ -724,28 +779,32 @@ class DuplicationScanner(CodeScanner):
                 if min_nodes <= num_nodes <= max_nodes:
                     subtrees.append(node)
             
-            if hasattr(node, 'body') and isinstance(node.body, list):
-                for child in node.body:
-                    extract_from_node(child)
-            
-            if hasattr(node, 'orelse') and isinstance(node.orelse, list):
-                for child in node.orelse:
-                    extract_from_node(child)
-            
-            if hasattr(node, 'handlers') and isinstance(node.handlers, list):
-                for handler in node.handlers:
-                    if hasattr(handler, 'body') and isinstance(handler.body, list):
-                        for child in handler.body:
-                            extract_from_node(child)
-            
-            if hasattr(node, 'finalbody') and isinstance(node.finalbody, list):
-                for child in node.finalbody:
-                    extract_from_node(child)
+            self._extract_from_node_children(node, extract_from_node)
         
         for stmt in func_node.body:
             extract_from_node(stmt)
         
         return subtrees
+    
+    def _extract_from_node_children(self, node: ast.AST, extract_fn):
+        """Recursively extract from child nodes."""
+        if hasattr(node, 'body') and isinstance(node.body, list):
+            for child in node.body:
+                extract_fn(child)
+        
+        if hasattr(node, 'orelse') and isinstance(node.orelse, list):
+            for child in node.orelse:
+                extract_fn(child)
+        
+        if hasattr(node, 'handlers') and isinstance(node.handlers, list):
+            for handler in node.handlers:
+                if hasattr(handler, 'body') and isinstance(handler.body, list):
+                    for child in handler.body:
+                        extract_fn(child)
+        
+        if hasattr(node, 'finalbody') and isinstance(node.finalbody, list):
+            for child in node.finalbody:
+                extract_fn(child)
     
     def _is_contained_in_subtree(self, block_statements: List[ast.stmt], subtrees: List[ast.AST]) -> bool:
         if not block_statements or not subtrees:
@@ -768,38 +827,54 @@ class DuplicationScanner(CodeScanner):
             return stmt.end_lineno
         
         if isinstance(stmt, ast.If):
-            end_line = stmt.lineno
-            if stmt.body:
-                end_line = max(end_line, self._get_body_end_line(stmt.body))
-            if stmt.orelse:
-                end_line = max(end_line, self._get_body_end_line(stmt.orelse))
-            return end_line
-        elif isinstance(stmt, (ast.For, ast.While, ast.AsyncFor)):
-            end_line = stmt.lineno
-            if stmt.body:
-                end_line = max(end_line, self._get_body_end_line(stmt.body))
-            if stmt.orelse:
-                end_line = max(end_line, self._get_body_end_line(stmt.orelse))
-            return end_line
-        elif isinstance(stmt, ast.Try):
-            end_line = stmt.lineno
-            if stmt.body:
-                end_line = max(end_line, self._get_body_end_line(stmt.body))
-            if stmt.orelse:
-                end_line = max(end_line, self._get_body_end_line(stmt.orelse))
-            if stmt.finalbody:
-                end_line = max(end_line, self._get_body_end_line(stmt.finalbody))
-            for handler in stmt.handlers:
-                if handler.body:
-                    end_line = max(end_line, self._get_body_end_line(handler.body))
-            return end_line
-        elif isinstance(stmt, (ast.With, ast.AsyncWith)):
-            end_line = stmt.lineno
-            if stmt.body:
-                end_line = max(end_line, self._get_body_end_line(stmt.body))
-            return end_line
+            return self._get_if_end_line(stmt)
+        if isinstance(stmt, (ast.For, ast.While, ast.AsyncFor)):
+            return self._get_loop_end_line(stmt)
+        if isinstance(stmt, ast.Try):
+            return self._get_try_end_line(stmt)
+        if isinstance(stmt, (ast.With, ast.AsyncWith)):
+            return self._get_with_end_line(stmt)
         
         return stmt.lineno if hasattr(stmt, 'lineno') else 0
+    
+    def _get_if_end_line(self, stmt: ast.If) -> int:
+        """Get end line for If statement."""
+        end_line = stmt.lineno
+        if stmt.body:
+            end_line = max(end_line, self._get_body_end_line(stmt.body))
+        if stmt.orelse:
+            end_line = max(end_line, self._get_body_end_line(stmt.orelse))
+        return end_line
+    
+    def _get_loop_end_line(self, stmt) -> int:
+        """Get end line for loop statement."""
+        end_line = stmt.lineno
+        if stmt.body:
+            end_line = max(end_line, self._get_body_end_line(stmt.body))
+        if stmt.orelse:
+            end_line = max(end_line, self._get_body_end_line(stmt.orelse))
+        return end_line
+    
+    def _get_try_end_line(self, stmt: ast.Try) -> int:
+        """Get end line for Try statement."""
+        end_line = stmt.lineno
+        if stmt.body:
+            end_line = max(end_line, self._get_body_end_line(stmt.body))
+        if stmt.orelse:
+            end_line = max(end_line, self._get_body_end_line(stmt.orelse))
+        if stmt.finalbody:
+            end_line = max(end_line, self._get_body_end_line(stmt.finalbody))
+        for handler in stmt.handlers:
+            if handler.body:
+                end_line = max(end_line, self._get_body_end_line(handler.body))
+        return end_line
+    
+    def _get_with_end_line(self, stmt) -> int:
+        """Get end line for With statement."""
+        end_line = stmt.lineno
+        if stmt.body:
+            end_line = max(end_line, self._get_body_end_line(stmt.body))
+        return end_line
     
     def _get_body_end_line(self, body: List[ast.stmt]) -> int:
         if not body:
@@ -828,8 +903,24 @@ class DuplicationScanner(CodeScanner):
         if not statements:
             return False
         
+        helper_count, total_count = self._count_helper_statements(statements)
+        
+        if total_count == 0:
+            return True
+        
+        return (helper_count / total_count) >= 0.6
+    
+    def _count_helper_statements(self, statements: List[ast.stmt]) -> Tuple[int, int]:
+        """Count helper calls vs total statements."""
         helper_count = 0
         total_count = 0
+        helper_patterns = [
+            'given_', 'when_', 'then_',
+            'create_', 'build_', 'make_', 'generate_',
+            'verify_', 'assert_', 'check_', 'ensure_',
+            'setup_', 'bootstrap_', 'initialize_',
+            'get_', 'load_', 'fetch_'
+        ]
         
         for stmt in statements:
             if self._is_docstring_or_comment(stmt):
@@ -837,39 +928,27 @@ class DuplicationScanner(CodeScanner):
             
             total_count += 1
             
-            is_helper = False
-            
-            if isinstance(stmt, ast.Assign):
-                if isinstance(stmt.value, ast.Call):
-                    func_name = self._get_function_name(stmt.value.func)
-                    if func_name:
-                        is_helper = any(func_name.startswith(pattern) for pattern in [
-                            'given_', 'when_', 'then_',
-                            'create_', 'build_', 'make_', 'generate_',
-                            'verify_', 'assert_', 'check_', 'ensure_',
-                            'setup_', 'bootstrap_', 'initialize_',
-                            'get_', 'load_', 'fetch_'
-                        ])
-            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                func_name = self._get_function_name(stmt.value.func)
-                if func_name:
-                    is_helper = any(func_name.startswith(pattern) for pattern in [
-                        'given_', 'when_', 'then_',
-                        'create_', 'build_', 'make_', 'generate_',
-                        'verify_', 'assert_', 'check_', 'ensure_',
-                        'setup_', 'bootstrap_', 'initialize_',
-                        'get_', 'load_', 'fetch_'
-                    ])
-            elif isinstance(stmt, ast.Assert):
-                is_helper = True
-            
-            if is_helper:
+            if self._is_helper_statement(stmt, helper_patterns):
                 helper_count += 1
         
-        if total_count == 0:
+        return helper_count, total_count
+    
+    def _is_helper_statement(self, stmt: ast.stmt, helper_patterns: List[str]) -> bool:
+        """Check if statement is a helper call."""
+        if isinstance(stmt, ast.Assert):
             return True
         
-        return (helper_count / total_count) >= 0.6
+        if isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call):
+            func_name = self._get_function_name(stmt.value.func)
+            if func_name and any(func_name.startswith(pattern) for pattern in helper_patterns):
+                return True
+        
+        if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            func_name = self._get_function_name(stmt.value.func)
+            if func_name and any(func_name.startswith(pattern) for pattern in helper_patterns):
+                return True
+        
+        return False
     
     def _is_only_helper_calls(self, statements: List[ast.stmt]) -> bool:
         helper_patterns = [
@@ -881,25 +960,27 @@ class DuplicationScanner(CodeScanner):
         ]
         
         for stmt in statements:
-            if isinstance(stmt, ast.Assign):
-                if isinstance(stmt.value, ast.Call):
-                    func_name = self._get_function_name(stmt.value.func)
-                    if func_name:
-                        if not self._check_helper_pattern_match(func_name, helper_patterns):
-                            return False
-                else:
-                    return False
-            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                func_name = self._get_function_name(stmt.value.func)
-                if func_name:
-                    if not self._check_helper_pattern_match(func_name, helper_patterns):
-                        return False
-            elif isinstance(stmt, ast.Assert):
-                continue
-            else:
+            if not self._is_valid_helper_only_statement(stmt, helper_patterns):
                 return False
         
         return True
+    
+    def _is_valid_helper_only_statement(self, stmt: ast.stmt, helper_patterns: List[str]) -> bool:
+        """Check if statement is valid for helper-only context."""
+        if isinstance(stmt, ast.Assert):
+            return True
+        
+        if isinstance(stmt, ast.Assign):
+            if not isinstance(stmt.value, ast.Call):
+                return False
+            func_name = self._get_function_name(stmt.value.func)
+            return func_name and self._check_helper_pattern_match(func_name, helper_patterns)
+        
+        if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            func_name = self._get_function_name(stmt.value.func)
+            return func_name and self._check_helper_pattern_match(func_name, helper_patterns)
+        
+        return False
     
     def _check_helper_pattern_match(self, func_name: str, helper_patterns: List[str]) -> bool:
         return any(func_name.startswith(pattern) for pattern in helper_patterns)
@@ -942,40 +1023,61 @@ class DuplicationScanner(CodeScanner):
     def _count_actual_code_statements(self, statements: List[ast.stmt]) -> int:
         count = 0
         for stmt in statements:
-            if self._is_docstring_or_comment(stmt):
+            if self._is_docstring_or_comment(stmt) or isinstance(stmt, ast.Pass):
                 continue
             
-            if isinstance(stmt, ast.Pass):
-                continue
-            
-            if isinstance(stmt, (ast.Assign, ast.AnnAssign, ast.AugAssign, 
-                                 ast.Expr, ast.Return, ast.Raise, ast.Assert,
-                                 ast.Delete, ast.Import, ast.ImportFrom,
-                                 ast.Global, ast.Nonlocal)):
-                count += 1
-            
-            elif isinstance(stmt, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
-                if hasattr(stmt, 'body'):
-                    count += self._count_actual_code_statements(stmt.body)
-                if hasattr(stmt, 'orelse') and stmt.orelse:
-                    count += self._count_actual_code_statements(stmt.orelse)
-                if hasattr(stmt, 'handlers'):
-                    for handler in stmt.handlers:
-                        count += self._count_actual_code_statements(handler.body)
-                if hasattr(stmt, 'finalbody') and stmt.finalbody:
-                    count += self._count_actual_code_statements(stmt.finalbody)
-            
-            elif isinstance(stmt, (ast.AsyncFor, ast.AsyncWith)):
-                if hasattr(stmt, 'body'):
-                    count += self._count_actual_code_statements(stmt.body)
+            count += self._count_statement_and_children(stmt)
         
         return count
     
+    def _count_statement_and_children(self, stmt: ast.stmt) -> int:
+        """Count a statement and recursively count its children."""
+        if isinstance(stmt, (ast.Assign, ast.AnnAssign, ast.AugAssign, ast.Expr, ast.Return, 
+                            ast.Raise, ast.Assert, ast.Delete, ast.Import, ast.ImportFrom,
+                            ast.Global, ast.Nonlocal)):
+            return 1
+        
+        if isinstance(stmt, (ast.If, ast.For, ast.While, ast.With, ast.Try)):
+            return self._count_control_flow_statement(stmt)
+        
+        if isinstance(stmt, (ast.AsyncFor, ast.AsyncWith)):
+            return self._count_async_statement(stmt)
+        
+        return 0
+    
+    def _count_control_flow_statement(self, stmt) -> int:
+        """Count code in control flow statement."""
+        count = 0
+        if hasattr(stmt, 'body'):
+            count += self._count_actual_code_statements(stmt.body)
+        if hasattr(stmt, 'orelse') and stmt.orelse:
+            count += self._count_actual_code_statements(stmt.orelse)
+        if hasattr(stmt, 'handlers'):
+            for handler in stmt.handlers:
+                count += self._count_actual_code_statements(handler.body)
+        if hasattr(stmt, 'finalbody') and stmt.finalbody:
+            count += self._count_actual_code_statements(stmt.finalbody)
+        return count
+    
+    def _count_async_statement(self, stmt) -> int:
+        """Count code in async statement."""
+        if hasattr(stmt, 'body'):
+            return self._count_actual_code_statements(stmt.body)
+        return 0
+    
     def _is_string_formatting_pattern(self, statements: List[ast.stmt]) -> bool:
-        """Check if this is primarily string formatting/building operations"""
         if not statements:
             return False
         
+        string_ops, total_count = self._count_string_operations(statements)
+        
+        if total_count == 0:
+            return False
+        
+        return (string_ops / total_count) >= 0.6
+    
+    def _count_string_operations(self, statements: List[ast.stmt]) -> Tuple[int, int]:
+        """Count string operations vs total statements."""
         string_ops = 0
         total_count = 0
         
@@ -985,28 +1087,27 @@ class DuplicationScanner(CodeScanner):
             
             total_count += 1
             
-            # Check for f-strings, format calls, % formatting
-            if isinstance(stmt, ast.Assign):
-                if isinstance(stmt.value, ast.JoinedStr):  # f-string
-                    string_ops += 1
-                elif isinstance(stmt.value, ast.Call):
-                    if isinstance(stmt.value.func, ast.Attribute):
-                        if stmt.value.func.attr in ('format', 'join'):
-                            string_ops += 1
-                elif isinstance(stmt.value, ast.BinOp):
-                    if isinstance(stmt.value.op, (ast.Add, ast.Mod)):  # + or %
-                        string_ops += 1
-            
-            # String method calls
-            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                if isinstance(stmt.value.func, ast.Attribute):
-                    if stmt.value.func.attr in ('format', 'join', 'replace', 'strip', 'split'):
-                        string_ops += 1
+            if self._is_string_operation_statement(stmt):
+                string_ops += 1
         
-        if total_count == 0:
-            return False
+        return string_ops, total_count
+    
+    def _is_string_operation_statement(self, stmt: ast.stmt) -> bool:
+        if isinstance(stmt, ast.Assign):
+            if isinstance(stmt.value, ast.JoinedStr):
+                return True
+            if isinstance(stmt.value, ast.Call) and isinstance(stmt.value.func, ast.Attribute):
+                if stmt.value.func.attr in ('format', 'join'):
+                    return True
+            if isinstance(stmt.value, ast.BinOp) and isinstance(stmt.value.op, (ast.Add, ast.Mod)):
+                return True
         
-        return (string_ops / total_count) >= 0.6
+        if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            if isinstance(stmt.value.func, ast.Attribute):
+                if stmt.value.func.attr in ('format', 'join', 'replace', 'strip', 'split'):
+                    return True
+        
+        return False
     
     def _is_mostly_assertions(self, statements: List[ast.stmt]) -> bool:
         if not statements:
@@ -1032,6 +1133,16 @@ class DuplicationScanner(CodeScanner):
         if not statements:
             return False
         
+        helper_count, assertion_count, other_count = self._classify_test_statements(statements)
+        
+        total = helper_count + assertion_count + other_count
+        if total == 0:
+            return False
+        
+        test_pattern_ratio = (helper_count + assertion_count) / total
+        return test_pattern_ratio >= 0.75 and other_count <= 1
+    
+    def _classify_test_statements(self, statements: List[ast.stmt]) -> Tuple[int, int, int]:
         helper_count = 0
         assertion_count = 0
         other_count = 0
@@ -1042,33 +1153,52 @@ class DuplicationScanner(CodeScanner):
             
             if isinstance(stmt, ast.Assert):
                 assertion_count += 1
-            elif isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call):
-                func_name = self._get_function_name(stmt.value.func)
-                if func_name and self._is_helper_function(func_name):
-                    helper_count += 1
-                else:
-                    other_count += 1
-            elif isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                func_name = self._get_function_name(stmt.value.func)
-                if func_name and self._is_helper_function(func_name):
+            elif self._is_call_statement(stmt):
+                if self._is_helper_call_statement(stmt):
                     helper_count += 1
                 else:
                     other_count += 1
             else:
                 other_count += 1
         
-        total = helper_count + assertion_count + other_count
-        if total == 0:
-            return False
-        
-        test_pattern_ratio = (helper_count + assertion_count) / total
-        return test_pattern_ratio >= 0.75 and other_count <= 1
+        return helper_count, assertion_count, other_count
+    
+    def _is_call_statement(self, stmt: ast.stmt) -> bool:
+        """Check if statement is a call (assign or expr)."""
+        if isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call):
+            return True
+        if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            return True
+        return False
+    
+    def _is_helper_call_statement(self, stmt: ast.stmt) -> bool:
+        """Check if call statement is a helper function."""
+        if isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.Call):
+            func_name = self._get_function_name(stmt.value.func)
+            return func_name and self._is_helper_function(func_name)
+        if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            func_name = self._get_function_name(stmt.value.func)
+            return func_name and self._is_helper_function(func_name)
+        return False
     
     def _is_sequential_output_building(self, statements: List[ast.stmt]) -> bool:
-        """Check if this is just sequential appends/extends to any list (common output building)"""
         if not statements or len(statements) < 3:
             return False
         
+        append_count, total_count, has_loop_with_appends = self._analyze_output_building(statements)
+        
+        if total_count == 0:
+            return False
+        
+        # Pattern 1: 70%+ direct appends
+        if (append_count / total_count) >= 0.7:
+            return True
+        
+        # Pattern 2: Has a loop with appends + some surrounding appends (help text pattern)
+        return has_loop_with_appends and append_count >= 2
+    
+    def _analyze_output_building(self, statements: List[ast.stmt]) -> Tuple[int, int, bool]:
+        """Analyze statements for output building patterns."""
         append_count = 0
         total_count = 0
         has_loop_with_appends = False
@@ -1079,92 +1209,39 @@ class DuplicationScanner(CodeScanner):
             
             total_count += 1
             
-            # Check for direct append/extend calls
-            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                if isinstance(stmt.value.func, ast.Attribute):
-                    method_name = stmt.value.func.attr
-                    if method_name in ('append', 'extend'):
-                        append_count += 1
+            if self._is_append_statement(stmt):
+                append_count += 1
             
-            # Check for loops that contain appends (help text formatting pattern)
-            if isinstance(stmt, ast.For):
-                # Count as output building if the loop body contains appends
-                loop_has_appends = False
-                for node in ast.walk(stmt):
-                    if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
-                        if isinstance(node.value.func, ast.Attribute):
-                            if node.value.func.attr in ('append', 'extend'):
-                                loop_has_appends = True
-                                break
-                
-                if loop_has_appends:
-                    has_loop_with_appends = True
-                    append_count += 1  # Count the loop itself as output building
+            if isinstance(stmt, ast.For) and self._loop_contains_appends(stmt):
+                has_loop_with_appends = True
+                append_count += 1
         
-        if total_count == 0:
+        return append_count, total_count, has_loop_with_appends
+    
+    def _is_append_statement(self, stmt: ast.stmt) -> bool:
+        """Check if statement is an append/extend call."""
+        if not isinstance(stmt, ast.Expr):
             return False
-        
-        # Pattern 1: 70%+ direct appends
-        if (append_count / total_count) >= 0.7:
-            return True
-        
-        # Pattern 2: Has a loop with appends + some surrounding appends (help text pattern)
-        if has_loop_with_appends and append_count >= 2:
-            return True
-        
+        if not isinstance(stmt.value, ast.Call):
+            return False
+        if not isinstance(stmt.value.func, ast.Attribute):
+            return False
+        return stmt.value.func.attr in ('append', 'extend')
+    
+    def _loop_contains_appends(self, stmt: ast.For) -> bool:
+        """Check if loop contains append operations."""
+        for node in ast.walk(stmt):
+            if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
+                if isinstance(node.value.func, ast.Attribute):
+                    if node.value.func.attr in ('append', 'extend'):
+                        return True
         return False
     
     def _is_logging_or_output_pattern(self, statements: List[ast.stmt]) -> bool:
-        """Check if this is primarily logging, printing, or string output"""
         if not statements:
             return False
         
-        output_count = 0
-        total_count = 0
-        
-        for stmt in statements:
-            if self._is_docstring_or_comment(stmt):
-                continue
-            
-            total_count += 1
-            
-            # Check for logging calls
-            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                if isinstance(stmt.value.func, ast.Attribute):
-                    method_name = stmt.value.func.attr
-                    obj_name = None
-                    if isinstance(stmt.value.func.value, ast.Name):
-                        obj_name = stmt.value.func.value.id
-                    
-                    # Logging patterns
-                    if obj_name in ('logger', 'log', 'logging'):
-                        output_count += 1
-                        continue
-                    
-                    # Common logging methods
-                    if method_name in ('debug', 'info', 'warning', 'error', 'critical', 'log', 'exception'):
-                        output_count += 1
-                        continue
-                    
-                    # Print-like functions
-                    if method_name in ('write', 'writeline', 'writelines', 'flush'):
-                        output_count += 1
-                        continue
-                
-                # Direct print calls
-                if isinstance(stmt.value.func, ast.Name):
-                    func_name = stmt.value.func.id
-                    if func_name in ('print', '_safe_print', 'safe_print'):
-                        output_count += 1
-                        continue
-            
-            # Check for assignments to string/list that are clearly output building
-            if isinstance(stmt, ast.Assign):
-                # String concatenation patterns
-                if isinstance(stmt.value, ast.BinOp):
-                    if isinstance(stmt.value.op, ast.Add):
-                        # Check if it's string addition
-                        output_count += 0.5  # Half credit for string building
+        output_count, total_count = self._count_output_statements(statements)
         
         if total_count == 0:
             return False
@@ -1172,48 +1249,56 @@ class DuplicationScanner(CodeScanner):
         # If 60%+ is logging/output, exclude it
         return (output_count / total_count) >= 0.6
     
-    def _is_list_building_pattern(self, statements: List[ast.stmt]) -> bool:
-        if not statements:
-            return False
-        
-        list_building_count = 0
+    def _count_output_statements(self, statements: List[ast.stmt]) -> Tuple[float, int]:
+        """Count output/logging statements vs total."""
+        output_count = 0.0
         total_count = 0
-        has_append = False
-        sequential_appends = 0
         
         for stmt in statements:
             if self._is_docstring_or_comment(stmt):
                 continue
             
             total_count += 1
+            output_count += self._get_output_score(stmt)
+        
+        return output_count, total_count
+    
+    def _get_output_score(self, stmt: ast.stmt) -> float:
+        """Get output score for statement (0, 0.5, or 1)."""
+        if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
+            if self._is_logging_call(stmt.value):
+                return 1.0
+        
+        if isinstance(stmt, ast.Assign) and isinstance(stmt.value, ast.BinOp):
+            if isinstance(stmt.value.op, ast.Add):
+                return 0.5  # Half credit for string building
+        
+        return 0.0
+    
+    def _is_logging_call(self, call: ast.Call) -> bool:
+        """Check if call is a logging/output operation."""
+        if isinstance(call.func, ast.Attribute):
+            method_name = call.func.attr
+            obj_name = call.func.value.id if isinstance(call.func.value, ast.Name) else None
             
-            is_list_building = False
-            
-            if isinstance(stmt, ast.Expr) and isinstance(stmt.value, ast.Call):
-                if isinstance(stmt.value.func, ast.Attribute):
-                    method_name = stmt.value.func.attr
-                    if method_name in ('extend', 'append'):
-                        is_list_building = True
-                        has_append = True
-                        sequential_appends += 1
-            
-            # Check for list comprehensions or list assignments
-            if isinstance(stmt, ast.Assign):
-                if isinstance(stmt.value, (ast.List, ast.ListComp)):
-                    is_list_building = True
-            
-            # Check for appends inside if/else blocks
-            if isinstance(stmt, ast.If):
-                for substmt in ast.walk(stmt):
-                    if isinstance(substmt, ast.Expr) and isinstance(substmt.value, ast.Call):
-                        if isinstance(substmt.value.func, ast.Attribute):
-                            if substmt.value.func.attr in ('extend', 'append'):
-                                list_building_count += 1
-                                has_append = True
-                                break
-            
-            if is_list_building:
-                list_building_count += 1
+            if obj_name in ('logger', 'log', 'logging'):
+                return True
+            if method_name in ('debug', 'info', 'warning', 'error', 'critical', 'log', 'exception'):
+                return True
+            if method_name in ('write', 'writeline', 'writelines', 'flush'):
+                return True
+        
+        if isinstance(call.func, ast.Name):
+            if call.func.id in ('print', '_safe_print', 'safe_print'):
+                return True
+        
+        return False
+    
+    def _is_list_building_pattern(self, statements: List[ast.stmt]) -> bool:
+        if not statements:
+            return False
+        
+        list_building_count, sequential_appends, has_append, total_count = self._analyze_list_building(statements)
         
         if total_count == 0:
             return False
@@ -1228,28 +1313,75 @@ class DuplicationScanner(CodeScanner):
         
         return (list_building_count / total_count) >= 0.7
     
+    def _analyze_list_building(self, statements: List[ast.stmt]) -> Tuple[int, int, bool, int]:
+        """Analyze statements for list building patterns."""
+        list_building_count = 0
+        sequential_appends = 0
+        has_append = False
+        total_count = 0
+        
+        for stmt in statements:
+            if self._is_docstring_or_comment(stmt):
+                continue
+            
+            total_count += 1
+            
+            if self._is_list_building_statement(stmt):
+                list_building_count += 1
+                if self._is_append_or_extend_call(stmt):
+                    has_append = True
+                    sequential_appends += 1
+            
+            if isinstance(stmt, ast.If) and self._if_contains_appends(stmt):
+                list_building_count += 1
+                has_append = True
+        
+        return list_building_count, sequential_appends, has_append, total_count
+    
+    def _is_list_building_statement(self, stmt: ast.stmt) -> bool:
+        """Check if statement is list building."""
+        if self._is_append_or_extend_call(stmt):
+            return True
+        if isinstance(stmt, ast.Assign) and isinstance(stmt.value, (ast.List, ast.ListComp)):
+            return True
+        return False
+    
+    def _is_append_or_extend_call(self, stmt: ast.stmt) -> bool:
+        """Check if statement is append/extend call."""
+        if not isinstance(stmt, ast.Expr):
+            return False
+        if not isinstance(stmt.value, ast.Call):
+            return False
+        if not isinstance(stmt.value.func, ast.Attribute):
+            return False
+        return stmt.value.func.attr in ('extend', 'append')
+    
+    def _if_contains_appends(self, stmt: ast.If) -> bool:
+        """Check if If statement contains appends."""
+        for substmt in ast.walk(stmt):
+            if isinstance(substmt, ast.Expr) and isinstance(substmt.value, ast.Call):
+                if isinstance(substmt.value.func, ast.Attribute):
+                    if substmt.value.func.attr in ('extend', 'append'):
+                        return True
+        return False
+    
     def _is_simple_property(self, func_node: ast.FunctionDef) -> bool:
         if not func_node.decorator_list:
             return False
         
-        has_property_decorator = False
-        for decorator in func_node.decorator_list:
-            if isinstance(decorator, ast.Name) and decorator.id == 'property':
-                has_property_decorator = True
-                break
-            elif isinstance(decorator, ast.Attribute):
-                if decorator.attr in ('setter', 'deleter'):
-                    has_property_decorator = True
-                    break
-        
-        if not has_property_decorator:
+        if not self._has_any_property_decorator(func_node):
             return False
         
         executable_body = [stmt for stmt in func_node.body if not self._is_docstring_or_comment(stmt, func_node)]
-        
-        if len(executable_body) <= 2:
-            return True
-        
+        return len(executable_body) <= 2
+    
+    def _has_any_property_decorator(self, func_node: ast.FunctionDef) -> bool:
+        """Check if function has any property-related decorator."""
+        for decorator in func_node.decorator_list:
+            if isinstance(decorator, ast.Name) and decorator.id == 'property':
+                return True
+            if isinstance(decorator, ast.Attribute) and decorator.attr in ('setter', 'deleter'):
+                return True
         return False
     
     def _is_simple_constructor(self, func_node: ast.FunctionDef) -> bool:
@@ -1258,36 +1390,42 @@ class DuplicationScanner(CodeScanner):
         
         executable_body = [stmt for stmt in func_node.body if not self._is_docstring_or_comment(stmt, func_node)]
         
+        self_assignments, other_statements = self._count_constructor_statements(executable_body)
+        
+        total = self_assignments + other_statements
+        return total > 0 and (self_assignments / total) >= 0.8
+    
+    def _count_constructor_statements(self, executable_body: List[ast.stmt]) -> Tuple[int, int]:
+        """Count self assignments vs other statements in constructor."""
         self_assignments = 0
         other_statements = 0
         
         for stmt in executable_body:
-            if isinstance(stmt, (ast.Assign, ast.AnnAssign)):
-                if isinstance(stmt, ast.Assign):
-                    targets = stmt.targets
-                else:
-                    targets = [stmt.target]
-                
-                all_self_attrs = True
-                for target in targets:
-                    if not (isinstance(target, ast.Attribute) and 
-                           isinstance(target.value, ast.Name) and 
-                           target.value.id == 'self'):
-                        all_self_attrs = False
-                        break
-                
-                if all_self_attrs:
-                    self_assignments += 1
-                else:
-                    other_statements += 1
+            if self._is_self_assignment_statement(stmt):
+                self_assignments += 1
             else:
                 other_statements += 1
         
-        total = self_assignments + other_statements
-        if total > 0 and (self_assignments / total) >= 0.8:
-            return True
+        return self_assignments, other_statements
+    
+    def _is_self_assignment_statement(self, stmt: ast.stmt) -> bool:
+        if not isinstance(stmt, (ast.Assign, ast.AnnAssign)):
+            return False
         
-        return False
+        targets = stmt.targets if isinstance(stmt, ast.Assign) else [stmt.target]
+        
+        for target in targets:
+            if not self._is_self_attribute_target(target):
+                return False
+        
+        return True
+    
+    def _is_self_attribute_target(self, target: ast.expr) -> bool:
+        if not isinstance(target, ast.Attribute):
+            return False
+        if not isinstance(target.value, ast.Name):
+            return False
+        return target.value.id == 'self'
     
     def _extract_domain_entities(self, block: Dict[str, Any]) -> Set[str]:
         func_name = block['func_name'].lower()
@@ -1309,38 +1447,52 @@ class DuplicationScanner(CodeScanner):
         domain_patterns1 = self._extract_domain_entities(block1)
         domain_patterns2 = self._extract_domain_entities(block2)
         
-        if domain_patterns1 and domain_patterns2:
-            if domain_patterns1 != domain_patterns2:
-                func1 = block1['func_name']
-                func2 = block2['func_name']
-                if abs(len(func1) - len(func2)) <= 3:
-                    crud_ops = ['create', 'read', 'get', 'update', 'delete', 'remove', 
-                               'save', 'load', 'fetch', 'set', 'find', 'search']
-                    func1_lower = func1.lower()
-                    func2_lower = func2.lower()
-                    
-                    for op in crud_ops:
-                        if func1_lower.startswith(op) and func2_lower.startswith(op):
-                            return True
+        if self._has_different_domain_crud_operations(domain_patterns1, domain_patterns2, block1, block2):
+            return True
         
-        # Check if they're iterating over different collections
+        if self._has_different_iteration_targets(block1, block2):
+            return True
+        
+        if self._has_different_list_targets(block1, block2):
+            return True
+        
+        return False
+    
+    def _has_different_domain_crud_operations(self, domain1: Set[str], domain2: Set[str], 
+                                             block1: Dict, block2: Dict) -> bool:
+        """Check if blocks have different domain CRUD operations."""
+        if not (domain1 and domain2 and domain1 != domain2):
+            return False
+        
+        func1, func2 = block1['func_name'], block2['func_name']
+        if abs(len(func1) - len(func2)) > 3:
+            return False
+        
+        crud_ops = ['create', 'read', 'get', 'update', 'delete', 'remove', 
+                   'save', 'load', 'fetch', 'set', 'find', 'search']
+        func1_lower, func2_lower = func1.lower(), func2.lower()
+        
+        for op in crud_ops:
+            if func1_lower.startswith(op) and func2_lower.startswith(op):
+                return True
+        return False
+    
+    def _has_different_iteration_targets(self, block1: Dict, block2: Dict) -> bool:
+        """Check if blocks iterate over different collections."""
         collections1 = self._extract_iteration_targets(block1.get('ast_nodes', []))
         collections2 = self._extract_iteration_targets(block2.get('ast_nodes', []))
         
         if collections1 and collections2:
-            # If they iterate over completely different collections, they're in different domains
-            if not collections1.intersection(collections2):
-                return True
-        
-        # Check if they're building different list types
+            return not collections1.intersection(collections2)
+        return False
+    
+    def _has_different_list_targets(self, block1: Dict, block2: Dict) -> bool:
+        """Check if blocks build different lists."""
         list_targets1 = self._extract_list_building_targets(block1.get('ast_nodes', []))
         list_targets2 = self._extract_list_building_targets(block2.get('ast_nodes', []))
         
         if list_targets1 and list_targets2:
-            # If they're building different lists, they're likely parallel implementations
-            if not list_targets1.intersection(list_targets2):
-                return True
-        
+            return not list_targets1.intersection(list_targets2)
         return False
     
     def _calls_different_methods(self, block1_nodes: List[ast.stmt], block2_nodes: List[ast.stmt]) -> bool:
@@ -1368,24 +1520,30 @@ class DuplicationScanner(CodeScanner):
         method_calls = []
         
         for node in nodes:
-            if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
-                call = node.value
-                if isinstance(call.func, ast.Attribute):
-                    method_calls.append(call.func.attr)
-                elif isinstance(call.func, ast.Name):
-                    method_calls.append(call.func.id)
-            elif isinstance(node, ast.Assign):
-                if isinstance(node.value, ast.Call):
-                    call = node.value
-                    if isinstance(call.func, ast.Attribute):
-                        method_calls.append(call.func.attr)
-                    elif isinstance(call.func, ast.Name):
-                        method_calls.append(call.func.id)
+            call_name = self._get_call_name_from_node(node)
+            if call_name:
+                method_calls.append(call_name)
         
         return method_calls
     
+    def _get_call_name_from_node(self, node: ast.stmt) -> Optional[str]:
+        """Extract call name from statement node."""
+        call = None
+        if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
+            call = node.value
+        elif isinstance(node, ast.Assign) and isinstance(node.value, ast.Call):
+            call = node.value
+        
+        if not call:
+            return None
+        
+        if isinstance(call.func, ast.Attribute):
+            return call.func.attr
+        if isinstance(call.func, ast.Name):
+            return call.func.id
+        return None
+    
     def _extract_iteration_targets(self, nodes: List[ast.stmt]) -> Set[str]:
-        """Extract the names of collections being iterated over (e.g., 'behaviors', 'actions')"""
         targets = set()
         
         for node in nodes:
@@ -1402,7 +1560,6 @@ class DuplicationScanner(CodeScanner):
         return targets
     
     def _extract_list_building_targets(self, nodes: List[ast.stmt]) -> Set[str]:
-        """Extract the names of lists being built (e.g., 'behavior_names', 'action_names')"""
         targets = set()
         
         for node in nodes:
@@ -1425,7 +1582,6 @@ class DuplicationScanner(CodeScanner):
         return targets
     
     def _is_sequential_appends_with_different_content(self, block1_nodes: List[ast.stmt], block2_nodes: List[ast.stmt]) -> bool:
-        """Check if both blocks are just sequential appends but with different string content"""
         
         # Extract append content from block 1
         appends1 = []

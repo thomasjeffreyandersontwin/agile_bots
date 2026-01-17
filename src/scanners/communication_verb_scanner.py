@@ -33,37 +33,43 @@ class CommunicationVerbScanner(StoryScanner):
         return 'unknown'
     
     def _check_communication_verbs(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
-        name = node.name
         communication_verbs = ['showing', 'displaying', 'visualizing', 'presenting', 'rendering']
-        
-        name_lower = name.lower()
-        words = name_lower.split()
-        
-        for word in words:
-            if word in communication_verbs:
-                location = node.map_location()
-                return Violation(
-                    rule=self.rule,
-                    violation_message=f'{node_type.capitalize()} name "{name}" uses communication verb "{word}" - use outcome verbs instead (e.g., "Creates Animation" not "Showing Animation")',
-                    location=location,
-                    severity='error'
-                ).to_dict()
-        
-        return None
+        return self._check_verb_usage(
+            node, 
+            node_type, 
+            communication_verbs, 
+            'communication',
+            'Creates Animation" not "Showing Animation'
+        )
     
     def _check_enablement_verbs(self, node: StoryNode, node_type: str) -> Optional[Dict[str, Any]]:
-        name = node.name
         enablement_verbs = ['providing', 'enabling', 'allowing', 'supporting', 'facilitating']
-        
+        return self._check_verb_usage(
+            node, 
+            node_type, 
+            enablement_verbs, 
+            'enablement',
+            'Creates Configuration" not "Providing Configuration'
+        )
+    
+    def _check_verb_usage(
+        self, 
+        node: StoryNode, 
+        node_type: str, 
+        verb_list: List[str], 
+        verb_category: str,
+        example: str
+    ) -> Optional[Dict[str, Any]]:
+        name = node.name
         name_lower = name.lower()
         words = name_lower.split()
         
         for word in words:
-            if word in enablement_verbs:
+            if word in verb_list:
                 location = node.map_location()
                 return Violation(
                     rule=self.rule,
-                    violation_message=f'{node_type.capitalize()} name "{name}" uses enablement verb "{word}" - use outcome verbs instead (e.g., "Creates Configuration" not "Providing Configuration")',
+                    violation_message=f'{node_type.capitalize()} name "{name}" uses {verb_category} verb "{word}" - use outcome verbs instead (e.g., "{example}")',
                     location=location,
                     severity='error'
                 ).to_dict()

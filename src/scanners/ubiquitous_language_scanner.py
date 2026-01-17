@@ -43,10 +43,6 @@ class UbiquitousLanguageScanner(TestScanner):
         return violations
     
     def _extract_domain_entities_from_story_graph(self, story_graph: Dict[str, Any]) -> Set[str]:
-        """
-        Extract domain entity names (nouns/classes) from story graph.
-        Look in domain_concepts sections for entity names.
-        """
         if not story_graph:
             return set()
         
@@ -59,7 +55,6 @@ class UbiquitousLanguageScanner(TestScanner):
         return entities
     
     def _extract_from_node(self, node: Dict[str, Any], entities: Set[str]):
-        """Recursively extract domain concepts from any node."""
         domain_concepts = node.get('domain_concepts', [])
         for concept in domain_concepts:
             if isinstance(concept, dict):
@@ -89,10 +84,6 @@ class UbiquitousLanguageScanner(TestScanner):
         return ''.join(convert_word(word) for word in concept_name.split())
     
     def _extract_classes_under_test(self, tree: ast.AST, content: str, lines: List[str]) -> List[Tuple[str, int, str]]:
-        """
-        Extract all class instantiations and imports from test file.
-        Returns list of (class_name, line_number, code_snippet)
-        """
         classes_used = []
         
         class ClassVisitor(ast.NodeVisitor):
@@ -116,7 +107,6 @@ class UbiquitousLanguageScanner(TestScanner):
                 self.generic_visit(node)
             
             def _get_code_snippet(self, lines: List[str], line_num: int, context: int = 2) -> str:
-                """Get code snippet around the line."""
                 start = max(0, line_num - context - 1)
                 end = min(len(lines), line_num + context)
                 return '\n'.join(lines[start:end])

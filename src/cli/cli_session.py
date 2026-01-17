@@ -167,15 +167,7 @@ class CLISession:
     def _check_rules_auto_submit(self, verb: str, result) -> CLICommandResponse:
         if verb != 'rules' or result is None:
             return None
-        
-        from instructions.instructions import Instructions
-        if not isinstance(result, Instructions):
-            return None
-        
-        submit_result = self._submit_rules_to_chat()
-        if submit_result.get('status') == 'success' and self.mode != 'json':
-            return self._format_rules_submit_response(submit_result)
-        return None
+        return self._handle_rules_submission(result)
     
     def _submit_rules_to_chat(self) -> dict:
         if self.bot.behaviors.current:
@@ -209,7 +201,9 @@ class CLISession:
     def _check_routed_rules_submit(self, command: str, result) -> CLICommandResponse:
         if '.rules' not in command.lower():
             return None
-        
+        return self._handle_rules_submission(result)
+    
+    def _handle_rules_submission(self, result) -> CLICommandResponse:
         from instructions.instructions import Instructions
         if not isinstance(result, Instructions):
             return None
@@ -378,7 +372,6 @@ class CLISession:
         raise ValueError(f"Unknown command: {command}")
     
     def _prepare_action_context(self, action, args: str):
-        """Prepare action context with optional arguments."""
         from ..actions.action_context import ActionContext
         context = action.context_class() if hasattr(action, 'context_class') else ActionContext()
         
@@ -388,7 +381,6 @@ class CLISession:
         return context
     
     def _build_instructions_from_dict(self, instructions_dict, action):
-        """Build Instructions object from result dictionary."""
         from ..instructions.instructions import Instructions
         
         if not isinstance(instructions_dict, dict):
@@ -411,7 +403,6 @@ class CLISession:
         return instructions
     
     def _execute_non_workflow_action(self, action, action_name: str, args: str):
-        """Execute non-workflow action and return instructions."""
         try:
             context = self._prepare_action_context(action, args)
             result = action.execute(context)
@@ -430,7 +421,6 @@ class CLISession:
             }
     
     def _handle_action_shortcut(self, action_name: str, args: str) -> Any:
-        """Handle shortcut command for executing an action."""
         if not self.bot.behaviors.current:
             return {
                 'status': 'error',
@@ -487,4 +477,5 @@ class CLISession:
                     print(f"Error: {e}", file=sys.stderr)
                     
         except KeyboardInterrupt:
-            pass
+            print("\n\nExiting CLI...")
+            sys.exit(0)

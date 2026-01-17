@@ -35,8 +35,8 @@ if 'WORKING_AREA' not in os.environ:
                 mcp_env = bot_config['mcp']['env']
                 if 'WORKING_AREA' in mcp_env:
                     os.environ['WORKING_AREA'] = mcp_env['WORKING_AREA']
-        except:
-            pass
+        except Exception as e:
+            print(f"Warning: Failed to load WORKING_AREA from bot config: {e}", file=sys.stderr)
     
     if 'WORKING_AREA' not in os.environ:
         os.environ['WORKING_AREA'] = str(workspace_root)
@@ -139,7 +139,8 @@ def main():
                     print(response.output, flush=True)
                     print(END_MARKER, flush=True)  # Signal end of response
         except (KeyboardInterrupt, EOFError):
-            pass
+            # Clean exit on user interrupt or EOF in JSON mode
+            sys.exit(0)
     elif is_piped:
         try:
             command = sys.stdin.read().strip()

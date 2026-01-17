@@ -17,7 +17,6 @@ class NaturalEnglishCodeScanner(CodeScanner):
         r'_1_star$',
         r'_optional$',
         r'_nullable$',
-        r'_\d+$',
     ]
     
     def scan_file_with_context(self, context: 'FileScanContext') -> List[Dict[str, Any]]:

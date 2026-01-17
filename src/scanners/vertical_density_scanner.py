@@ -6,7 +6,6 @@ from scanners.resources.scan_context import ScanContext
 
 
 class VerticalDensityScanner(CodeScanner):
-    """Detects when code lacks proper vertical density."""
 
     def scan(self, context: ScanContext) -> list[Violation]:
         return []

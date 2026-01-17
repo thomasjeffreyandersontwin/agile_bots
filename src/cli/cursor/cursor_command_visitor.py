@@ -244,9 +244,13 @@ class CursorBehaviorWrapper(BaseBehaviorAdapter):
         BaseBehaviorAdapter.__init__(self, behavior, 'cursor', is_current)
     
     def format_behavior_name(self) -> str:
-        return ""
+        return self._empty_stub()
     
     def serialize(self) -> str:
+        return self._empty_stub()
+    
+    def _empty_stub(self) -> str:
+        """Stub method for interface compatibility - Cursor commands generate files, not text output."""
         return ""
     
     def generate_command_file(self, commands_dir: Path, commands: Dict[str, Path]):

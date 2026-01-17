@@ -6,7 +6,6 @@ from scanners.resources.scan_context import ScanContext
 
 
 class DomainGroupingCodeScanner(CodeScanner):
-    """Detects when code is not grouped by domain."""
 
     def scan(self, context: ScanContext) -> list[Violation]:
         return []

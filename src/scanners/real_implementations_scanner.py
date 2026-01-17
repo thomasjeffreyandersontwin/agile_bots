@@ -255,10 +255,10 @@ class RealImplementationsScanner(TestScanner):
         if isinstance(imp, ast.ImportFrom):
             module = imp.module or ''
             return module.split('.')[0] in test_infra_modules if module else False
-        elif isinstance(imp, ast.Import):
-            for alias in imp.names:
-                if alias.name.split('.')[0] in test_infra_modules:
-                    return True
+        
+        if isinstance(imp, ast.Import):
+            return any(alias.name.split('.')[0] in test_infra_modules for alias in imp.names)
+        
         return False
     
     def _is_empty_or_todo_only(self, method: ast.FunctionDef, source_lines: List[str]) -> bool:
@@ -312,44 +312,66 @@ class RealImplementationsScanner(TestScanner):
         self, method: ast.FunctionDef, imports: List[ast.Import | ast.ImportFrom],
         src_locations: List[str], project_path: Path, file_path: Path = None, tree: ast.AST = None
     ) -> bool:
-        calls = []
-        for node in ast.walk(method):
-            if isinstance(node, ast.Call):
-                calls.append(node)
+        calls = [node for node in ast.walk(method) if isinstance(node, ast.Call)]
         
         if not calls:
             return False
         
         for call in calls:
-            if isinstance(call.func, ast.Name):
-                func_name = call.func.id
-                if self._is_production_function(func_name, imports, src_locations, project_path):
-                    return True
-                if file_path and tree:
-                    if self._helper_calls_production_code(func_name, file_path, tree, src_locations, project_path):
-                        return True
-            elif isinstance(call.func, ast.Attribute):
-                if isinstance(call.func.value, ast.Name):
-                    obj_name = call.func.value.id
-                    if self._is_production_function(obj_name, imports, src_locations, project_path):
-                        return True
-                    if hasattr(call.func, 'attr'):
-                        attr_name = call.func.attr
-                        if self._is_production_function(attr_name, imports, src_locations, project_path):
-                            return True
-                elif isinstance(call.func.value, ast.Attribute):
-                    root = call.func.value
-                    while isinstance(root, ast.Attribute):
-                        root = root.value
-                    if isinstance(root, ast.Name):
-                        if self._is_production_function(root.id, imports, src_locations, project_path):
-                            return True
-                        if hasattr(call.func, 'attr'):
-                            attr_name = call.func.attr
-                            if self._is_production_function(attr_name, imports, src_locations, project_path):
-                                return True
+            if self._call_references_production_code(call, imports, src_locations, project_path, file_path, tree):
+                return True
         
         return False
+    
+    def _call_references_production_code(self, call: ast.Call, imports, src_locations: List[str],
+                                        project_path: Path, file_path: Path, tree: ast.AST) -> bool:
+        """Check if a call references production code."""
+        if isinstance(call.func, ast.Name):
+            return self._check_name_call_production(call.func.id, imports, src_locations, project_path, file_path, tree)
+        
+        if isinstance(call.func, ast.Attribute):
+            return self._check_attribute_call_production(call.func, imports, src_locations, project_path)
+        
+        return False
+    
+    def _check_name_call_production(self, func_name: str, imports, src_locations: List[str],
+                                   project_path: Path, file_path: Path, tree: ast.AST) -> bool:
+        """Check if name call is production code."""
+        if self._is_production_function(func_name, imports, src_locations, project_path):
+            return True
+        if file_path and tree:
+            if self._helper_calls_production_code(func_name, file_path, tree, src_locations, project_path):
+                return True
+        return False
+    
+    def _check_attribute_call_production(self, func_attr: ast.Attribute, imports, 
+                                        src_locations: List[str], project_path: Path) -> bool:
+        """Check if attribute call is production code."""
+        if isinstance(func_attr.value, ast.Name):
+            obj_name = func_attr.value.id
+            if self._is_production_function(obj_name, imports, src_locations, project_path):
+                return True
+            if hasattr(func_attr, 'attr'):
+                if self._is_production_function(func_attr.attr, imports, src_locations, project_path):
+                    return True
+        
+        if isinstance(func_attr.value, ast.Attribute):
+            root_name = self._get_attribute_root_name(func_attr.value)
+            if root_name:
+                if self._is_production_function(root_name, imports, src_locations, project_path):
+                    return True
+                if hasattr(func_attr, 'attr'):
+                    if self._is_production_function(func_attr.attr, imports, src_locations, project_path):
+                        return True
+        
+        return False
+    
+    def _get_attribute_root_name(self, attr_node: ast.Attribute) -> Optional[str]:
+        """Get the root name from a chain of attributes."""
+        root = attr_node
+        while isinstance(root, ast.Attribute):
+            root = root.value
+        return root.id if isinstance(root, ast.Name) else None
     
     def _helper_calls_production_code(
         self, helper_name: str, file_path: Path, tree: ast.AST,
@@ -363,35 +385,52 @@ class RealImplementationsScanner(TestScanner):
                 break
         
         if helper_func:
-            helper_imports = self._find_imports(tree)
-            has_prod_imports = self._has_production_code_imports(helper_imports, src_locations, project_path)
-            
-            has_prod_calls = self._has_production_code_calls(
-                helper_func, helper_imports, src_locations, project_path, file_path, tree
-            )
-            
-            if has_prod_imports or has_prod_calls:
+            if self._helper_function_has_production_code(helper_func, tree, src_locations, project_path, file_path, helper_name):
                 return True
-            
-            for node in ast.walk(helper_func):
-                if isinstance(node, ast.Call):
-                    if isinstance(node.func, ast.Name):
-                        called_func_name = node.func.id
-                        if self._helper_calls_production_code(
-                            called_func_name, file_path, tree, src_locations, project_path
-                        ):
-                            return True
         
+        if self._imported_helper_has_production_code(tree, helper_name, project_path, src_locations):
+            return True
+        
+        return False
+    
+    def _helper_function_has_production_code(self, helper_func: ast.FunctionDef, tree: ast.AST,
+                                            src_locations: List[str], project_path: Path,
+                                            file_path: Path, helper_name: str) -> bool:
+        """Check if helper function contains production code."""
+        helper_imports = self._find_imports(tree)
+        
+        if self._has_production_code_imports(helper_imports, src_locations, project_path):
+            return True
+        
+        if self._has_production_code_calls(helper_func, helper_imports, src_locations, project_path, file_path, tree):
+            return True
+        
+        for node in ast.walk(helper_func):
+            if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                if self._helper_calls_production_code(node.func.id, file_path, tree, src_locations, project_path):
+                    return True
+        
+        return False
+    
+    def _imported_helper_has_production_code(self, tree: ast.AST, helper_name: str,
+                                            project_path: Path, src_locations: List[str]) -> bool:
+        """Check if imported helper has production code."""
         imports = self._find_imports(tree)
+        
         for imp in imports:
-            if isinstance(imp, ast.ImportFrom):
-                if imp.module and 'test' in imp.module.lower() and 'helper' in imp.module.lower():
-                    for alias in imp.names:
-                        if alias.asname == helper_name or alias.name == helper_name:
-                            helper_file = self._find_helper_file(imp.module, project_path)
-                            if helper_file and helper_file.exists():
-                                if self._file_has_production_code_calls(helper_file, src_locations, project_path):
-                                    return True
+            if not isinstance(imp, ast.ImportFrom):
+                continue
+            if not imp.module:
+                continue
+            if not ('test' in imp.module.lower() and 'helper' in imp.module.lower()):
+                continue
+            
+            for alias in imp.names:
+                if alias.asname == helper_name or alias.name == helper_name:
+                    helper_file = self._find_helper_file(imp.module, project_path)
+                    if helper_file and helper_file.exists():
+                        if self._file_has_production_code_calls(helper_file, src_locations, project_path):
+                            return True
         
         return False
     

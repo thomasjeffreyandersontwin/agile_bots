@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="story-map" name="Story Map">
-        <mxGraphModel dx="4697" dy="822" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4000" pageHeight="3000" background="#ffffff" math="0" shadow="0">
+        <mxGraphModel dx="5592" dy="1784" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4000" pageHeight="3000" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -545,11 +545,17 @@
                 <mxCell id="382" value="To From Diff for violations like git&amp;nbsp; or cursor has&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-2730" y="762.4999999999999" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="383" value="autro test all violation fixes and fix&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" vertex="1" parent="1">
+                <mxCell id="383" value="autro test all violation fixes and fix&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-2536.25" y="659.9999999999999" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="384" value="validate&amp;nbsp; submit--&amp;gt; ins to check for running process&amp;nbsp;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" vertex="1" parent="1">
+                <mxCell id="384" value="validate&amp;nbsp; submit--&amp;gt; ins to check for running process&amp;nbsp;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-2442.5" y="534.9999999999999" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="385" value="autro test all violation fixes and fix&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" vertex="1" parent="1">
+                    <mxGeometry x="-2601.25" y="584.9999999999999" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="386" value="ignore folders for each or all scanners&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" vertex="1" parent="1">
+                    <mxGeometry x="-2591.25" y="594.9999999999999" width="50" height="50" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

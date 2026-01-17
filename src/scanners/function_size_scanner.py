@@ -6,7 +6,6 @@ from scanners.resources.scan_context import ScanContext
 
 
 class FunctionSizeScanner(CodeScanner):
-    """Detects when functions are too large or unfocused."""
 
     def scan(self, context: ScanContext) -> list[Violation]:
         return []

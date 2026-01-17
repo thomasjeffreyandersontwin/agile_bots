@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 class IntentionRevealingNamesScanner(CodeScanner):
-    """Scanner for detecting names that don't reveal intention."""
     
     ACCEPTABLE_DOMAIN_TERMS = {
         'scan', 'scan_test_file', 'scan_code_file', 'scan_cross_file',

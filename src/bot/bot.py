@@ -212,14 +212,6 @@ class Bot:
             }
     
     def _clear_scope_and_return_result(self, message: str):
-        """Helper to clear scope, save, and return success result.
-        
-        Args:
-            message: Success message to include in result
-            
-        Returns:
-            ScopeCommandResult with success status
-        """
         self._scope.clear()
         self._scope.save()
         from scope.scope_command_result import ScopeCommandResult
@@ -230,7 +222,6 @@ class Bot:
         )
     
     def _normalize_scope_filter(self, scope_filter: str) -> str:
-        """Normalize scope filter by removing quotes and 'set ' prefix."""
         scope_filter_lower = scope_filter.lower().strip()
         if scope_filter_lower.startswith('set '):
             scope_filter = scope_filter[4:].strip()
@@ -243,7 +234,6 @@ class Bot:
         return scope_filter.strip()
     
     def _determine_scope_type(self, prefix: str):
-        """Determine ScopeType from prefix string."""
         from scope.scope import ScopeType
         
         if prefix in ('file', 'files'):
@@ -256,12 +246,10 @@ class Bot:
             return ScopeType.STORY
     
     def _looks_like_file_path(self, values: list) -> bool:
-        """Check if values look like file paths."""
         import os
         return any(os.path.isabs(v) or '\\' in v or '/' in v for v in values)
     
     def _parse_delimited_scope(self, scope_filter: str):
-        """Parse scope filter with = or : delimiter."""
         delimiter = '=' if '=' in scope_filter else ':'
         prefix, value_part = scope_filter.split(delimiter, 1)
         
@@ -278,7 +266,6 @@ class Bot:
         return scope_type, prefix, scope_values
     
     def _parse_spaced_scope(self, scope_filter: str):
-        """Parse scope filter with space separator."""
         parts = scope_filter.split(None, 1)
         potential_prefix = parts[0].lower()
         
@@ -297,7 +284,6 @@ class Bot:
             return self._determine_scope_type('story'), 'story', scope_values
     
     def _parse_undelimited_scope(self, scope_filter: str):
-        """Parse scope filter without delimiters - auto-detect."""
         scope_values = [v.strip() for v in scope_filter.split(',') if v.strip()]
         
         if self._looks_like_file_path(scope_values):
@@ -306,7 +292,6 @@ class Bot:
             return self._determine_scope_type('story'), 'story', scope_values
     
     def scope(self, scope_filter: Optional[str] = None):
-        """Set or get scope filter for the bot."""
         from scope.scope import ScopeType
         
         if scope_filter is None:
@@ -384,16 +369,6 @@ class Bot:
         }
 
     def _navigate_and_save(self, behavior, action_name: str, message_prefix: str = "Moved to") -> Dict[str, Any]:
-        """Helper to navigate to an action and save state.
-        
-        Args:
-            behavior: The behavior containing the action
-            action_name: Name of action to navigate to
-            message_prefix: Prefix for success message (default: "Moved to")
-            
-        Returns:
-            Success status dict with navigation details
-        """
         behavior.actions.navigate_to(action_name)
         self.behaviors.save_state()
         return {
@@ -599,20 +574,6 @@ class Bot:
             }
     
     def submit_behavior_rules(self, behavior_name: str) -> Dict[str, Any]:
-        """Get rules for a behavior and submit them to AI chat.
-        
-        This is a convenience method that:
-        1. Saves current position
-        2. Navigates to behavior
-        3. Submits rules using behavior.submitRules()
-        4. Restores previous position
-        
-        Args:
-            behavior_name: Name of the behavior to get rules for
-            
-        Returns:
-            Status dict with success message and submission details
-        """
         saved_behavior = self.behaviors.current.name if self.behaviors.current else None
         saved_action = self.behaviors.current.actions.current_action_name if self.behaviors.current else None
         
@@ -645,16 +606,6 @@ class Bot:
             }
     
     def submit_instructions(self, instructions, behavior_name: str = None, action_name: str = None) -> Dict[str, Any]:
-        """Submit given Instructions object to AI chat.
-        
-        Args:
-            instructions: Instructions object with display_content to submit
-            behavior_name: Optional behavior name (for reporting, will be inferred if not provided)
-            action_name: Optional action name (for reporting, will be inferred if not provided)
-            
-        Returns:
-            Status dict with success message, behavior/action info, and submission details
-        """
         display_content = instructions.display_content
         if not display_content:
             return {
@@ -712,15 +663,6 @@ class Bot:
         }
     
     def submit_current_action(self) -> Dict[str, Any]:
-        """Submit current action instructions to AI agent.
-        
-        Gets the current action's instructions (including display_content with all 
-        behavior instructions, action instructions, base instructions, and guardrails),
-        copies them to clipboard, and opens Cursor chat.
-        
-        Returns:
-            Status dict with success message, current context, and instructions content
-        """
         current_behavior = self.behaviors.current
         if not current_behavior:
             return {

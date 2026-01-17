@@ -6,7 +6,6 @@ from scanners.resources.scan_context import ScanContext
 
 
 class SingleResponsibilityScanner(CodeScanner):
-    """Detects when functions violate single responsibility principle."""
 
     def scan(self, context: ScanContext) -> list[Violation]:
         return []

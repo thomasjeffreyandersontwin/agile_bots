@@ -119,7 +119,6 @@ class ResourceOrientedCodeScanner(CodeScanner):
         return violations
     
     def _is_domain_entity(self, file_path: Path, class_node: ast.ClassDef) -> bool:
-        """Check if a class is a domain entity (dataclass in domain.py or similar domain model file)."""
         # Check if it's in a domain model file
         if 'domain' in file_path.name.lower():
             # Check if it has @dataclass decorator
