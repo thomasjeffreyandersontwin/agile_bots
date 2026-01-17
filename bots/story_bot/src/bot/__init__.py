@@ -1,2 +1,0 @@
-# Story Bot specific actions
-

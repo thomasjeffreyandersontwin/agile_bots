@@ -1,9 +1,9 @@
 {
   "name": "render_walkthrough_realizations",
-  "type": "synchronizer",
+  "type": "template",
   "path": "docs/crc",
   "input": "story-graph.json",
-  "synchronizer": "agile_bot.bots.story_bot.src.synchronizers.walkthrough.walkthrough_synchronizer.WalkthroughRealizationsSynchronizer",
+  "template": "walkthrough-realizations-template.md",
   "output": "walkthrough-realizations.md",
   "instructions": "Transform the realization scenarios from story-graph.json into a walkthrough realizations markdown document. Extract realization scenarios from domain_concepts in all epics and sub_epics. Each realization includes scope, scenario description, walks with object flows, and model updates. Generate comprehensive walkthrough documentation showing object interactions, method calls, parameters, return values, and validation results."
 }

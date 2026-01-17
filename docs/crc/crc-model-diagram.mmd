@@ -1,17 +1,112 @@
 classDiagram
     namespace actions {
+        class ActionDataSubSection {
+            +wraps_action_json()
+            +displays_action_properties()
+        }
+        class ActionStateManager {
+            +get_state_file_path()
+            +load_or_create_state()
+            +save_state()
+            +load_state()
+            +find_action_index()
+            +filter_completed_actions()
+        }
+        class ActionsView {
+            +wraps_actions_json()
+            +displays_action_names_list()
+            +navigates_to_action()
+            +displays_status_indicators()
+            +executes_action()
+            +displays_completion_progress()
+        }
         class Base Action {
             +inject_instructions()
             +load_relevant_content_+_inject_into_instructions()
             +save_content_changes()
         }
-        class Behavior Action State {
-            +track_current_action()
-            +track_completed_actions()
-            +determine_next_action()
-            +pause_workflow()
-            +resume_workflow()
+        class JSONAction {
+            +serialize_action_to_json_dict()
+            +include_action_metadata()
+            +wraps_domain_action()
         }
+        class MarkdownAction {
+            +serialize_action_to_markdown()
+            +format_action_documentation()
+            +wraps_domain_action()
+        }
+        class TTYAction {
+            +serialize_action_to_tty()
+            +format_action_line()
+            +wraps_domain_action()
+        }
+    }
+
+    namespace actions.build {
+        class BuildDataSubSection {
+            +wraps_build_json()
+            +displays_knowledge_graph_spec()
+            +displays_graph_structure()
+            +displays_builder_instructions()
+            +opens_graph_file()
+        }
+        class BuildInstructionsSection {
+            +wraps_build_subsection()
+        }
+        class BuildKnowledgeAction {
+            +inject_knowledge_graph_template()
+            +inject_builder_instructions()
+            +save_knowledge_graph()
+        }
+        class JSONBuildKnowledge {
+            +serialize_build_action_to_json()
+            +include_build_metadata()
+            +wraps_domain_action()
+        }
+        class MarkdownBuildKnowledge {
+            +serialize_build_action_to_markdown()
+            +format_build_documentation()
+            +wraps_domain_action()
+        }
+        class TTYBuildKnowledge {
+            +serialize_build_action_to_tty()
+            +format_build_status()
+            +wraps_domain_action()
+        }
+    }
+
+    namespace actions.clarify {
+        class ClarifyDataSubSection {
+            +wraps_key_questions_json()
+            +displays_key_questions()
+            +updates_evidence()
+            +edits_answer()
+        }
+        class ClarifyInstructionsSection {
+            +wraps_clarify_subsection()
+        }
+        class GatherContextAction {
+            +inject_gather_context_instructions()
+            +inject_questions_and_evidence()
+        }
+        class JSONGatherContext {
+            +serialize_clarify_action_to_json()
+            +include_questions_and_evidence()
+            +wraps_domain_action()
+        }
+        class MarkdownGatherContext {
+            +serialize_clarify_action_to_markdown()
+            +format_questions_list()
+            +wraps_domain_action()
+        }
+        class TTYGatherContext {
+            +serialize_clarify_action_to_tty()
+            +format_key_questions()
+            +wraps_domain_action()
+        }
+    }
+
+    namespace actions.render {
         class Content {
             +render_outputs()
             +synchronize_formats()
@@ -19,36 +114,26 @@ classDiagram
             +load_rendered_content()
             +present_rendered_content()
         }
-        class Guardrails {
-            +provide_required_context()
-            +guide_planning_decisions()
-            +define_recommended_human_activity()
+        class JSONRenderOutput {
+            +serialize_render_action_to_json()
+            +include_render_spec()
+            +wraps_domain_action()
         }
-        class Workflow State {
-            +track_current_action()
-            +track_completed_actions()
-            +determine_next_action()
-            +pause_workflow()
-            +resume_workflow()
+        class MarkdownRenderOutput {
+            +serialize_render_action_to_markdown()
+            +format_render_documentation()
+            +wraps_domain_action()
         }
-    }
-
-    namespace actions.build {
-        class BuildKnowledgeAction {
-            +inject_knowledge_graph_template()
-            +inject_builder_instructions()
-            +save_knowledge_graph()
+        class RenderDataSubSection {
+            +wraps_render_json()
+            +displays_render_spec()
+            +displays_templates()
+            +displays_render_instructions()
+            +opens_template_file()
         }
-    }
-
-    namespace actions.clarify {
-        class GatherContextAction {
-            +inject_gather_context_instructions()
-            +inject_questions_and_evidence()
+        class RenderInstructionsSection {
+            +wraps_render_subsection()
         }
-    }
-
-    namespace actions.render {
         class RenderOutputAction {
             +inject_render_output_instructions()
             +inject_templates()
@@ -59,6 +144,11 @@ classDiagram
             +render_complex_output()
             +render_outputs_using_components_in_context()
         }
+        class TTYRenderOutput {
+            +serialize_render_action_to_tty()
+            +format_render_status()
+            +wraps_domain_action()
+        }
         class Template {
             +define_output_structure()
             +transform_content()
@@ -66,7 +156,122 @@ classDiagram
         }
     }
 
-    namespace actions.rules {
+    namespace actions.strategy {
+        class JSONStrategy {
+            +serialize_strategy_action_to_json()
+            +include_criteria_and_assumptions()
+            +wraps_domain_action()
+        }
+        class MarkdownStrategy {
+            +serialize_strategy_action_to_markdown()
+            +format_strategy_documentation()
+            +wraps_domain_action()
+        }
+        class StrategyAction {
+            +inject_strategy_instructions()
+            +inject_decision_criteria_and_assumptions()
+        }
+        class StrategyDataSubSection {
+            +wraps_strategy_json()
+            +displays_decision_criteria()
+            +displays_assumptions()
+            +edits_decision_criterion()
+            +edits_assumption()
+        }
+        class StrategyInstructionsSection {
+            +wraps_strategy_subsection()
+        }
+        class TTYStrategy {
+            +serialize_strategy_action_to_tty()
+            +format_decision_criteria()
+            +wraps_domain_action()
+        }
+    }
+
+    namespace actions.validate {
+        class JSONValidateRules {
+            +serialize_validate_action_to_json()
+            +include_violations_and_fixes()
+            +wraps_domain_action()
+        }
+        class MarkdownValidateRules {
+            +serialize_validate_action_to_markdown()
+            +format_validation_report()
+            +wraps_domain_action()
+        }
+        class TTYValidateRules {
+            +serialize_validate_action_to_tty()
+            +format_validation_results()
+            +wraps_domain_action()
+        }
+        class ValidateDataSubSection {
+            +wraps_validate_json()
+            +displays_rules()
+            +displays_rule_descriptions()
+            +displays_rule_examples()
+            +opens_rule_file()
+        }
+        class ValidateInstructionsSection {
+            +wraps_validate_subsection()
+        }
+        class ValidateRulesAction {
+            +inject_common_bot_rules()
+            +inject_behavior_specific_rules()
+            +load_+_inject_content_for_validation()
+        }
+    }
+
+    namespace behaviors {
+        class ---------------------------
+        class Behavior {
+            +name()
+            +description()
+            +goal()
+            +folder()
+            +is_completed()
+            +actions_workflow()
+            +action_names()
+            +validation_type()
+            +currentaction()
+            +guardrails()
+            +content()
+            +rules()
+            +actions()
+        }
+        class BehaviorsView {
+            +wraps_behaviors_json()
+            +displays_behavior_names_list()
+            +navigates_to_behavior()
+            +toggles_collapsed()
+            +displays_tooltip()
+            +displays_actions()
+            +executes_behavior()
+            +displays_completion_progress()
+            +displays_navigation()
+        }
+        class Guardrails {
+            +provide_required_context()
+            +guide_strategy_decisions()
+            +define_recommended_human_activity()
+        }
+        class JSONBehavior {
+            +serialize_behavior_to_json_dict()
+            +include_behavior_metadata()
+            +include_actions()
+            +wraps_domain_behavior()
+        }
+        class MarkdownBehavior {
+            +serialize_behavior_to_markdown()
+            +format_behavior_documentation()
+            +format_actions()
+            +wraps_domain_behavior()
+        }
+        class NavigationView {
+            +wraps_current_action_json()
+            +reruns_action()
+            +navigates_to_next_action()
+            +navigates_to_prev_action()
+        }
         class Rule {
             +validate_content()
             +find_behavior_specific_rules_from_context()
@@ -77,233 +282,96 @@ classDiagram
             +provide_examples_-_dont()
             +specialized_examples()
         }
-        class ValidateRulesAction {
-            +inject_common_bot_rules()
-            +inject_behavior_specific_rules()
-            +load_+_inject_content_for_validation()
-        }
-    }
-
-    namespace actions.strategy {
-        class PlanningAction {
-            +inject_planning_instructions()
-            +inject_decision_criteria_and_assumptions()
-        }
-    }
-
-    namespace actions.validate {
-        class CorrectBotAction {
-            +inject_correct_bot_instructions()
-            +load_+_inject_diagnostics_results()
-        }
-    }
-
-    namespace agile_bot.bots.base_bot.src.synchronizers {
-        class Synchronizer {
-            +synchronizes_formats()
-            +extracts_from_source()
-            +renders_to_target()
-            +validates_sync()
-            +get_source_format()
-            +get_target_format()
-            +get_extractor()
-            +get_renderer()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.story_bot_cli {
-        class StoryBotCLI {
-            +bootstraps_environment()
-            +delegates_to_basebotcli()
-            +executes_cli()
-            +get_bot_directory()
-            +get_workspace_directory()
-            +get_bot_name()
-            +get_bot_config_path()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.story_bot_mcp_server {
-        class ActionStateManager {
-            +closes_current_action()
-            +loads_action_state()
-            +determines_next_action()
-            +transitions_to_next_action()
-            +detects_behavior_completion()
-            +transitions_to_next_behavior()
-            +returns_transition_result()
-            +handles_out-of-order_confirmation()
-            +validates_human_confirmation()
-            +persists_confirmation()
-            +get_state_file()
-            +get_current_action()
-            +get_next_action()
-            +get_behavior_complete()
-            +get_out_of_order_confirmations()
-        }
-        class BehaviorToolGenerator {
-            +generates_behavior_tool_function()
-            +routes_to_behavior()
-            +routes_to_action()
-            +executes_action()
-            +returns_result()
-            +handles_missing_action()
-            +loads_action_state()
-            +get_tool_name()
-            +get_tool_description()
-            +get_trigger_patterns()
-        }
-        class StoryBotMCPServer {
-            +bootstraps_environment()
-            +creates_bot_instance()
-            +creates_fastmcp_server()
-            +registers_bot_tool()
-            +registers_behavior_tools()
-            +registers_utility_tools()
-            +delegates_to_bot()
-            +runs_mcp_server()
-            +get_bot_directory()
-            +get_workspace_directory()
-            +get_bot()
-            +get_server()
-        }
-        class WorkingDirectoryManager {
-            +gets_working_directory()
-            +sets_working_directory()
-            +validates_path()
-            +updates_environment()
-            +updates_bot_config()
-            +persists_to_config()
-            +returns_previous_directory()
-            +get_working_directory()
-            +get_previous_directory()
-            +get_persisted()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.synchronizers.domain_model.domain_model_synchronizer {
-        class DomainModelSynchronizer : Synchronizer {
-            +syncs_crc_text_with_story_graph()
-            +extracts_domain_concepts()
-            +renders_domain_concepts()
-            +validates_crc_format()
-            +preserves_module_paths()
-            +get_crc_path()
-            +get_story_graph_path()
-            +get_domain_concepts()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_epic {
-        class StoryIOEpic {
-            +owns_features()
-            +calculates_total_stories()
-            +renders_epic_section()
-            +validates_epic_structure()
-            +get_name()
-            +get_description()
-            +get_features()
-            +get_total_stories()
-            +get_sequential_order()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_feature {
-        class StoryIOFeature {
-            +owns_stories()
-            +calculates_story_count()
-            +renders_feature_section()
-            +validates_feature_structure()
-            +get_name()
-            +get_description()
-            +get_stories()
-            +get_story_count()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_increment {
-        class StoryIOIncrement {
-            +owns_story_assignments()
-            +manages_priorities()
-            +calculates_capacity()
-            +renders_increment_view()
-            +validates_increment_structure()
-            +get_number()
-            +get_name()
-            +get_stories()
-            +get_capacity()
-            +get_priority_order()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_renderer {
-        class StoryIORenderer {
-            +renders_epic_cells()
-            +renders_feature_cells()
-            +renders_story_cells()
-            +renders_increment_lanes()
-            +calculates_layout()
-            +formats_xml()
-            +get_cell_style()
-            +get_layout_config()
-            +get_xml_formatter()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_story {
-        class StoryIOStory {
-            +owns_acceptance_criteria()
-            +owns_increment_assignment()
-            +renders_story_card()
-            +validates_story_format()
-            +calculates_position()
-            +get_name()
-            +get_description()
-            +get_acceptance_criteria()
-            +get_increment()
-            +get_priority()
-            +get_position()
-        }
-    }
-
-    namespace agile_bot.bots.story_bot.src.synchronizers.story_io.story_io_synchronizer {
-        class StoryIOSynchronizer : Synchronizer {
-            +syncs_story_graph_with_drawio()
-            +extracts_stories_from_drawio()
-            +renders_stories_to_drawio()
-            +manages_story_positions()
-            +updates_increments()
-            +validates_story_structure()
-            +get_story_graph_path()
-            +get_drawio_path()
-            +get_increments()
-            +get_epics()
-            +get_stories()
+        class TTYBehavior {
+            +serialize_behavior_to_tty()
+            +format_behavior_line()
+            +format_actions()
+            +wraps_domain_behavior()
         }
     }
 
     namespace bot {
+        class AvailableBotsView {
+            +wraps_bot_registry_json()
+            +displays_available_bots()
+            +selects_bot()
+        }
         class Base Bot {
             +executes_actions()
+            +execute_behavior()
+            +execute_current_action()
+            +navigate_and_execute()
+            +validate_behavior_exists()
+            +validate_action_exists()
             +track_activity()
             +route_to_behaviors_and_actions()
             +persist_content()
             +manage_project_state()
             +render()
+            +get_scope()
+            +get_status()
+            +navigate_next()
+            +navigate_back()
+            +get_bot_path()
+            +get_help()
+            +exit()
         }
-        class Behavior {
-            +perform_configured_actions()
-            +invoke_on_trigger_words()
-            +inject_instructions()
-            +provide_guardrails()
-            +provide_rules()
-            +provide_content_specs()
-            +gets_action_by_name()
-            +gets_actions_in_sequence()
+        class BotHeaderView {
+            +wraps_bot_json()
+            +displays_image()
+            +displays_title()
+            +displays_version_number()
+            +refreshes_panel()
         }
-        class Behavior Workflow {
-            +determine_next_action()
-            +track_state()
+        class BotView {
+            +wraps_bot_json()
+            +displays_botheaderview()
+            +displays_pathssection()
+            +displays_behaviorsview()
+            +displays_scopesection()
+            +displays_instructionssection()
+        }
+        class JSONBot {
+            +execute_behavior_by_name()
+            +execute_current_action()
+            +navigate_and_execute()
+            +validate_behavior_exists()
+            +validate_action_exists()
+            +serialize_bot_to_json()
+            +include_bot_metadata()
+            +behaviors()
+            +get_status()
+            +get_scope()
+            +navigate_next()
+            +navigate_back()
+            +get_bot_path()
+            +get_help()
+            +exit()
+            +wraps_domain_bot()
+        }
+        class MarkdownBot {
+            +execute_behavior_by_name()
+            +execute_current_action()
+            +navigate_and_execute()
+            +validate_behavior_exists()
+            +validate_action_exists()
+            +serialize_bot_to_markdown()
+            +format_bot_documentation()
+            +behaviors()
+            +get_status()
+            +get_scope()
+            +navigate_next()
+            +navigate_back()
+            +get_bot_path()
+            +get_help()
+            +exit()
+            +wraps_domain_bot()
+        }
+        class PathsSection {
+            +wraps_bot_paths_json()
+            +displays_bot_directory()
+            +edits_workspace_directory()
+            +displays_available_bots()
         }
         class Specific Bot {
             +provide_behavior_config()
@@ -313,306 +381,886 @@ classDiagram
             +provide_synchronizer()
             +provide_trigger_words()
         }
-    }
-
-    namespace display_panel.extension {
-        class BehaviorActionSection {
-            +wraps_behaviors()
-            +renders_behavior_action_tree()
-            +shows_current_action_indicator()
-            +shows_completed_status_indicator()
-            +shows_pending_indicator()
-            +handles_navigation_to_previous_action()
-            +handles_navigation_to_next_action()
-            +handles_rerun_current_action()
-            +handles_behavior_click_to_execute()
-            +handles_action_click_to_execute()
-            +expands_and_collapses_behaviors()
-            +expands_and_collapses_actions()
-            +updates_action_status_indicators()
-        }
-        class BotInformationSection {
-            +wraps_bot_metadata()
-            +displays_bot_name()
-            +displays_workspace_path()
-            +displays_bot_directory_path()
-            +displays_company_icon()
-            +displays_panel_version()
-            +renders_bot_selection()
-            +handles_workspace_path_edits()
-            +handles_bot_switching()
-            +expands_and_collapses_section()
-            +truncates_long_paths_with_ellipsis()
-            +shows_full_path_in_tooltip()
-        }
-        class BotPanel {
-            +wraps_active_bot()
-            +contains_available_bots()
-            +contains_sections()
-            +renders_panel_html()
-            +handles_user_messages()
-            +manages_panel_lifecycle()
-            +refreshes_display()
-            +opens_files_in_editor()
-        }
-        class BotRegistry {
-            +stores_available_bot_configurations()
-            +validates_bot_names()
-            +provides_bot_cli_paths()
-        }
-        class CliOutputAdapter {
-            +parses_cli_json_output()
-            +adapts_cli_data_to_panel_format()
-            +extracts_behavior_hierarchy()
-            +extracts_scope_information()
-            +extracts_instructions_data()
-        }
-        class HtmlRenderer {
-            +renders_complete_panel_html()
-            +renders_bot_information_section()
-            +renders_behavior_action_section()
-            +renders_scope_section()
-            +renders_instructions_section()
-            +generates_javascript_for_webview_interactions()
-            +escapes_html_entities()
-        }
-        class InstructionsSection {
-            +wraps_current_instructions()
-            +renders_base_instructions()
-            +renders_clarify_instructions()
-            +renders_strategy_instructions()
-            +renders_build_instructions()
-            +renders_validate_instructions()
-            +renders_render_instructions()
-            +renders_raw_instructions_format()
-            +handles_instruction_submission_to_ai_chat()
-            +handles_user_edits_to_questions()
-            +handles_user_edits_to_assumptions()
-            +validates_instructions_selected()
-            +expands_and_collapses_section()
-        }
-        class ScopeSection {
-            +wraps_story_graph_scope()
-            +wraps_file_scope()
-            +renders_story_hierarchy()
-            +renders_file_list()
-            +handles_story_search()
-            +handles_file_pattern_search()
-            +expands_and_collapses_story_nodes()
-            +opens_story_graph_json()
-            +opens_story_map_diagram()
-            +opens_epic_folder()
-            +opens_sub-epic_folder()
-            +opens_test_file_at_class()
-            +opens_test_file_at_scenario()
-            +displays_hierarchical_matches()
-            +clears_search()
-        }
-        class StatusDataProvider {
-            +fetches_cli_status_via_python_subprocess()
-            +switches_current_bot()
-            +updates_workspace_path()
-            +executes_cli_commands()
-            +loads_bot_registry_from_json()
-            +provides_available_bot_names()
-        }
-    }
-
-    namespace ext {
-        class Router {
-            +match_trigger_patterns()
-            +route_to_mcp_bot_tool()
-            +route_to_behavior_tool()
-            +route_to_action_tool()
-            +forward_to_behavior()
-            +forward_to_action()
-            +forward_to_current_behavior_and_action()
-        }
-    }
-
-    namespace repl_cli {
-        class REPLSession {
-            +runs_repl_loop()
-            +reads_input_from_stdin_or_terminal()
-            +parses_command_input()
-            +routes_commands_to_cli_bot()
-            +displays_status_and_results()
-            +has_cli_bot()
-        }
-    }
-
-    namespace repl_cli.cli_bot {
-        class CLIAction {
-            +get_name:_str()
-            +get_description:_str()
-            +is_current:_bool()
-            +is_completed:_bool()
-            +executes:_actionresult()
-            +wraps_domain_action()
-        }
-        class CLIActions {
-            +get_all:_list[cliaction]()
-            +get_current:_cliaction()
-            +find_by_name:_cliaction()
-            +wraps_domain_actions()
-        }
-        class CLIBehavior {
-            +get_name:_str()
-            +get_description:_str()
-            +get_actions:_cliactions()
-            +is_current:_bool()
-            +wraps_domain_behavior()
-        }
-        class CLIBehaviors {
-            +get_all:_list[clibehavior]()
-            +get_current:_clibehavior()
-            +find_by_name:_clibehavior()
-            +wraps_domain_behaviors()
-        }
-        class CLIBot {
-            +get_name:_str()
-            +get_workspace_directory:_path()
-            +get_behaviors:_clibehaviors()
-            +get_status_text:_str()
+        class TTYBot {
+            +execute_behavior_by_name()
+            +execute_current_action()
+            +navigate_and_execute()
+            +validate_behavior_exists()
+            +validate_action_exists()
+            +serialize_entire_bot_to_tty()
+            +bot_header()
+            +behaviors()
+            +get_status()
+            +get_scope()
+            +navigate_next()
+            +navigate_back()
+            +get_bot_path()
+            +get_help()
+            +exit()
             +wraps_domain_bot()
         }
     }
 
-    namespace workflow {
-        class BehaviorGraphBuilder {
-            +read_behavior_workflow_definitions()
-            +create_langgraph_stategraph()
-            +build_node_instances_from_actions()
-            +connect_nodes_based_on_workflow_order()
+    namespace bot_path {
+        class BotPath {
+            +get_bot_directory()
+            +get_workspace_directory()
+            +get_behaviors_directory()
+            +get_config_path()
+            +get_all_paths()
         }
-        class BotLangActionNode {
-            +wrap_action.execute(context)_method()
-            +implement_two-pass_pattern()
-            +support_execution_modes()
-            +provide_langgraph_entry_point()
+        class JSONBotPath {
+            +serialize_bot_path_to_json()
+            +include_all_paths()
+            +wraps_domain_bot_path()
         }
-        class BotLangFlow {
-            +execute_nodes_in_sequence()
-            +handle_conditional_branching()
-            +support_loops_and_iterations()
-            +pause_at_interactive_points()
-            +resume_from_checkpoint()
+        class MarkdownBotPath {
+            +serialize_bot_path_to_markdown()
+            +format_paths_section()
+            +wraps_domain_bot_path()
         }
-        class BotLangFlowRunner {
-            +load_botlangflow_python_files()
-            +compile_graph_with_checkpointer()
-            +execute_workflow_graph()
-            +resume_from_checkpoint()
+        class TTYBotPath {
+            +serialize_bot_path_to_tty()
+            +format_path_display()
+            +format_all_paths()
+            +wraps_domain_bot_path()
         }
-        class BotLangState {
-            +contain_story_graph()
-            +contain_clarification_data()
-            +contain_strategy_data()
-            +contain_context_files()
-            +contain_files_dictionary()
-            +contain_workspace_directory()
-            +contain_workflow_execution_state()
+    }
+
+    namespace cli {
+        class CLISession {
+            +runs_cli_loop()
+            +reads_input_from_stdin_or_terminal()
+            +determine_channel_adapter()
+            +read_and_execute_command()
+            +parse_command()
+            +route_to_bot_domain_methods()
+            +serializes_via_channel_adapter()
+            +displays_serialized_output()
         }
-        class BotMode {
-            +determine_ai_interaction()
-            +control_pause_points()
+        class ChannelAdapter (Abstract) {
+            +serialize_domain_object_to_format()
+            +deserialize_format_to_domain_object()
         }
-        class Checkpoint {
-            +save_workflow_state()
-            +restore_workflow_state()
-            +track_execution_history()
-            +enable_resume_capability()
+        class JSONAdapter {
+            +serialize_to_json_dict()
+            +deserialize_json_dict()
+            +convert_to_json_string()
+            +parse_json_string()
+            +validate_json_structure()
+        }
+        class JSONProgressAdapter {
+            +include_progress_fields()
+            +include_completion_markers()
+        }
+        class MarkdownAdapter {
+            +serialize_to_markdown()
+            +deserialize_markdown()
+            +parse_markdown_sections()
+            +format_header()
+            +format_list_item()
+            +format_code_block()
+        }
+        class MarkdownProgressAdapter {
+            +render_progress_marker()
+            +format_progress_line()
+        }
+        class TTYAdapter {
+            +serialize_to_tty_text()
+            +deserialize_tty_text()
+            +add_color()
+            +format_indentation()
+        }
+        class TTYProgressAdapter {
+            +format_line_with_marker()
+            +render_marker()
+        }
+        class TextAdapter {
+            +parse_command_text()
+        }
+    }
+
+    namespace exit_result {
+        class ExitResult {
+            +get_exit_code()
+            +get_exit_message()
+            +get_should_cleanup()
+        }
+        class JSONExitResult {
+            +serialize_exit_result_to_json()
+            +include_exit_code()
+            +include_exit_message()
+            +wraps_domain_exit_result()
+        }
+        class MarkdownExitResult {
+            +serialize_exit_result_to_markdown()
+            +format_exit_documentation()
+            +wraps_domain_exit_result()
+        }
+        class TTYExitResult {
+            +serialize_exit_result_to_tty()
+            +format_exit_message()
+            +wraps_domain_exit_result()
+        }
+    }
+
+    namespace help {
+        class ### status
+        class JSONHelp {
+            +serialize_help_to_json()
+            +include_help_sections()
+            +wraps_domain_help()
+        }
+        class JSONStatus {
+            +serialize_status_to_json()
+            +include_progress_path()
+            +include_stage_name()
+            +include_current_behavior()
+            +include_current_action()
+            +wraps_domain_status()
+        }
+        class MarkdownHelp {
+            +serialize_help_to_markdown()
+            +format_help_sections()
+            +wraps_domain_help()
+        }
+        class MarkdownStatus {
+            +serialize_status_to_markdown()
+            +format_progress_section()
+            +format_workflow_state()
+            +wraps_domain_status()
+        }
+        class Status {
+            +get_progress_path()
+            +get_stage_name()
+            +get_current_behavior_name()
+            +get_current_action_name()
+            +get_has_current_behavior()
+            +get_has_current_action()
+        }
+        class TTYHelp {
+            +serialize_help_to_tty()
+            +format_help_sections()
+            +wraps_domain_help()
+        }
+        class TTYStatus {
+            +serialize_status_to_tty()
+            +format_progress_line()
+            +format_hierarchical_status()
+            +wraps_domain_status()
+        }
+    }
+
+    namespace instructions {
+        class BaseInstructionsSubSection {
+            +wraps_instructions_json()
+            +displays_behavior_name()
+            +displays_action_name()
+            +displays__instructions()
+        }
+        class InstructionsSection {
+            +wraps_instructions_json()
+            +wraps_action_json()
+            +displays_base_instructions_subsection()
+            +displays_raw_format_subsection()
+            +submits_to_ai_chat()
+        }
+        class JSONInstructions {
+            +serialize_instructions_to_json()
+            +include_instruction_sections()
+            +wraps_domain_instructions()
+        }
+        class MarkdownInstructions {
+            +serialize_instructions_to_markdown()
+            +format_instruction_sections()
+            +wraps_domain_instructions()
+        }
+        class RawFormatSubSection {
+            +wraps_instructions_json()
+            +displays_raw_instructions()
+        }
+        class TTYInstructions {
+            +serialize_instructions_to_tty()
+            +format_instruction_sections()
+            +wraps_domain_instructions()
+        }
+    }
+
+    namespace navigation {
+        class JSONNavigation {
+            +serialize_navigation_to_json()
+            +include_previous_action()
+            +include_next_action()
+            +include_navigation_state()
+            +wraps_domain_navigation()
+        }
+        class MarkdownNavigation {
+            +serialize_navigation_to_markdown()
+            +format_navigation_section()
+            +wraps_domain_navigation()
+        }
+        class NavigationResult {
+            +get_previous_action()
+            +get_next_action()
+            +get_can_navigate_back()
+            +get_can_navigate_next()
+            +get_navigation_path()
+        }
+        class TTYNavigation {
+            +serialize_navigation_to_tty()
+            +format_navigation_options()
+            +format_navigation_path()
+            +wraps_domain_navigation()
+        }
+    }
+
+    namespace panel {
+        class PanelHeader {
+            +displays_header_image()
+            +displays_title()
+        }
+        class PanelView (Base) {
+            +wraps_json_data()
+            +spawns_subprocess()
+            +sends_command_to_cli()
+            +receives_json_from_cli()
+            +parses_json()
+            +provides_element_id()
+            +renders_to_html()
+        }
+        class SectionView {
+            +renders_section_header()
+            +toggles_collapsed_state()
+            +may_contain_subsections()
+        }
+        class SubSectionView {
+            +toggles_collapsed_state()
+        }
+    }
+
+    namespace scope {
+        class JSONScope {
+            +serialize_scope_to_json()
+            +include_filter()
+            +include_results()
+            +include_filter_metadata()
+            +wraps_domain_scope()
+        }
+        class MarkdownScope {
+            +serialize_scope_to_markdown()
+            +format_filter_section()
+            +format_results_list()
+            +format_filter_documentation()
+            +wraps_domain_scope()
+        }
+        class Scope {
+            +get_filter()
+            +set_filter()
+            +get_results()
+            +apply_filter_to_behaviors()
+            +apply_filter_to_stories()
+            +clear_filter()
+            +get_filter_count()
+            +get_is_active()
+        }
+        class ScopeView {
+            +wraps_scope_json()
+            +displays_current_filter()
+            +edits_filter()
+            +displays_filtered_results()
+            +clears_filter()
+            +displays_filter_status()
+        }
+        class TTYScope {
+            +serialize_scope_to_tty()
+            +format_filter_display()
+            +format_results_list()
+            +format_filter_status()
+            +wraps_domain_scope()
+        }
+    }
+
+    namespace story_graph.acceptance_criteria {
+        class AcceptanceCriteria {
+            +get_steps()
+        }
+        class AcceptanceCriteriaView {
+            +wraps_acceptance_criteria_json()
+            +displays_criteria_name()
+            +displays_criteria_icon()
+            +displays_steps_as_checklist()
+        }
+        class JSONAcceptanceCriteria {
+            +include_steps()
+            +wraps_domain_acceptance_criteria()
+        }
+        class MarkdownAcceptanceCriteria {
+            +format_criteria_as_checklist()
+            +format_steps_list()
+            +wraps_domain_acceptance_criteria()
+        }
+        class TTYAcceptanceCriteria {
+            +format_steps()
+            +format_criteria_list()
+            +wraps_domain_acceptance_criteria()
+        }
+    }
+
+    namespace story_graph.domain {
+        class Collaborator {
+            +get_name()
+            +from_string()
+            +to_string()
+        }
+        class DomainConcept {
+            +get_name()
+            +get_responsibilities()
+            +from_dict()
+            +to_dict()
+        }
+        class DomainModule {
+            +contains_domain_objects()
+            +get_submodules()
+            +get_parent_module()
+        }
+        class JSONDomainConcept {
+            +serialize_domain_concept_to_json()
+            +include_responsibilities()
+            +wraps_domain_concept()
+        }
+        class MarkdownDomainConcept {
+            +serialize_domain_concept_to_markdown()
+            +format_crc_table()
+            +format_responsibilities_section()
+            +wraps_domain_concept()
+        }
+        class Responsibility {
+            +get_name()
+            +get_collaborators()
+            +from_dict()
+            +to_dict()
+        }
+        class TTYDomainConcept {
+            +serialize_domain_concept_to_tty()
+            +format_responsibilities()
+            +format_crc_card()
+            +wraps_domain_concept()
+        }
+    }
+
+    namespace story_graph.epic {
+        class Epic {
+            +test_file_property()
+            +get_all_stories()
+            +get_domain_concepts()
+        }
+        class EpicView {
+            +wraps_epic_json()
+            +displays_epic_name()
+            +displays_epic_icon()
+            +displays_sub_epics()
+            +opens_epic_folder()
+            +opens_epic_test_file()
+        }
+        class JSONEpic {
+            +include_domain_concepts()
+            +wraps_domain_epic()
+        }
+        class MarkdownEpic {
+            +format_domain_concepts_table()
+            +wraps_domain_epic()
+        }
+        class TTYEpic {
+            +format_domain_concepts()
+            +wraps_domain_epic()
+        }
+    }
+
+    namespace story_graph.nodes {
+        class JSONStoryNode {
+            +serialize_node_to_json()
+            +include_name()
+            +include_sequential_order()
+            +include_children()
+            +add_child()
+            +add_child_at_position()
+            +delete_child()
+            +delete_this_node()
+            +delete_with_children()
+            +update_name()
+            +move_to_parent()
+            +move_after_target()
+            +move_before_target()
+            +reorder_children()
+            +automatically_refresh_story_graph()
+            +wraps_domain_story_node()
+        }
+        class MarkdownStoryNode {
+            +serialize_node_to_markdown()
+            +format_node_header()
+            +format_children_list()
+            +wraps_domain_story_node()
+        }
+        class StoryNode (Base) {
+            +serializes()
+            +get/update_name()
+            +get_node_type()
+            +get_node_id()
+            +get_parent()
+            +get_sequential_order()
+            +contains_children()
+            +delete_self()
+            +delete_with_children()
+            +get/update_test()
+        }
+        class StoryNodeChildren {
+            +get_children()
+            +find_child_by_name()
+            +delete_child()
+        }
+        class StoryNodeNavigator {
+            +build_node_id_from_hierarchy_path()
+            +get_parent()
+            +move_to_parent()
+            +move_after()
+            +move_before()
+            +determineorder()
+        }
+        class StoryNodeSerializer {
+            +file()
+            +create_node()
+            +load_node()
+            +update_node()
+            +delete_node()
+            +from_json()
+            +to_json()
+        }
+        class StoryNodeView {
+            +wraps_story_node_json()
+            +toggles_collapsed()
+            +add_child_node()
+            +add_child_at_position()
+            +delete_this_node()
+            +delete_with_children()
+            +update_node_name()
+            +move_to_parent()
+            +move_after_target()
+            +move_before_target()
+            +drag_and_drop()
+            +reorder_children()
+            +automatically_refresh_story_graph()
+        }
+        class TTYStoryNode {
+            +serialize_node_to_tty()
+            +format_name()
+            +format_sequential_order()
+            +format_children()
+            +add_child()
+            +add_child_at_position()
+            +delete_child()
+            +delete_this_node()
+            +delete_with_children()
+            +update_name()
+            +move_to_parent()
+            +move_after_target()
+            +move_before_target()
+            +reorder_children()
+            +automatically_refresh_story_graph()
+            +wraps_domain_story_node()
+        }
+    }
+
+    namespace story_graph.scenario {
+        class JSONScenario {
+            +include_steps()
+            +include_test_method()
+            +wraps_domain_scenario()
+        }
+        class MarkdownScenario {
+            +format_gherkin_scenario()
+            +format_steps_as_given/when/then()
+            +wraps_domain_scenario()
+        }
+        class Scenario {
+            +test_method_property()
+            +get_test_method()
+            +get_default_test_method()
+            +get_steps()
+        }
+        class ScenarioView {
+            +wraps_scenario_json()
+            +displays_scenario_name()
+            +displays_scenario_icon()
+            +opens_test_at_scenario()
+        }
+        class TTYScenario {
+            +format_steps()
+            +format_test_method()
+            +wraps_domain_scenario()
+        }
+    }
+
+    namespace story_graph.scenario_outline {
+        class JSONScenarioOutline {
+            +include_steps()
+            +include_examples()
+            +include_test_method()
+            +wraps_domain_scenario_outline()
+        }
+        class MarkdownScenarioOutline {
+            +format_gherkin_scenario_outline()
+            +format_steps_as_given/when/then()
+            +format_examples_table()
+            +wraps_domain_scenario_outline()
+        }
+        class ScenarioOutline {
+            +test_method_property()
+            +get_test_method()
+            +get_default_test_method()
+            +get_examples()
+            +get_steps()
+        }
+        class ScenarioOutlineView {
+            +wraps_scenario_outline_json()
+            +displays_scenario_outline_name()
+            +displays_scenario_outline_icon()
+            +displays_examples_table()
+            +opens_test_at_scenario_outline()
+        }
+        class TTYScenarioOutline {
+            +format_steps()
+            +format_examples()
+            +format_test_method()
+            +wraps_domain_scenario_outline()
+        }
+    }
+
+    namespace story_graph.step {
+        class JSONStep {
+            +include_step_text()
+            +wraps_domain_step()
+        }
+        class MarkdownStep {
+            +format_step_as_gherkin()
+            +wraps_domain_step()
+        }
+        class Step {
+            +get_text()
+        }
+        class StepView {
+            +wraps_step_json()
+            +displays_step_text()
+            +displays_step_icon()
+        }
+        class TTYStep {
+            +format_step_text()
+            +format_step_keyword()
+            +wraps_domain_step()
+        }
+    }
+
+    namespace story_graph.story {
+        class JSONStory {
+            +include_users()
+            +include_test_metadata()
+            +wraps_domain_story()
+        }
+        class MarkdownStory {
+            +format_story_card()
+            +format_users_section()
+            +wraps_domain_story()
+        }
+        class Story {
+            +test_class_property()
+            +get_test_class()
+            +get_default_test_class()
+            +get_story_type()
+            +get_users()
+            +get_scenarios()
+            +get_scenario_outlines()
+            +get_acceptance_criteria()
+        }
+        class StoryView {
+            +wraps_story_json()
+            +displays_story_name()
+            +displays_story_icon()
+            +displays_scenarios()
+            +opens_test_at_class()
+        }
+        class TTYStory {
+            +format_users()
+            +format_test_metadata()
+            +wraps_domain_story()
+        }
+    }
+
+    namespace story_graph.story_group {
+        class StoryGroup
+    }
+
+    namespace story_graph.story_map {
+        class JSONStoryMap {
+            +serialize_story_map_to_json()
+            +include_story_graph()
+            +include_all_epics()
+            +wraps_domain_story_map()
+        }
+        class MarkdownStoryMap {
+            +serialize_story_map_to_markdown()
+            +format_epic_hierarchy()
+            +format_story_index()
+            +wraps_domain_story_map()
+        }
+        class StoryMap {
+            +load_from_bot_directory()
+            +load_from_story_graph()
+            +walk_nodes()
+            +get_all_stories()
+            +get_all_scenarios()
+            +get_all_domain_concepts()
+            +find_by_name()
+            +find_node_by_path()
+            +get_story_graph_dict()
+            +get_epics()
+            +save_to_story_graph()
+            +reload_from_story_graph()
+            +validate_graph_structure()
+        }
+        class StoryMapView {
+            +wraps_story_map_json()
+            +displays_epic_hierarchy()
+            +searches_stories()
+            +opens_story_graph_file()
+            +opens_story_map_file()
+        }
+        class TTYStoryMap {
+            +serialize_story_map_to_tty()
+            +format_epics_list()
+            +format_story_hierarchy()
+            +walk_and_format_nodes()
+            +wraps_domain_story_map()
+        }
+    }
+
+    namespace story_graph.story_user {
+        class JSONStoryUser {
+            +serialize_user_to_json()
+            +include_user_name()
+            +include_user_list()
+            +wraps_domain_story_user()
+        }
+        class MarkdownStoryUser {
+            +serialize_user_to_markdown()
+            +format_user_badge()
+            +format_user_list()
+            +wraps_domain_story_user()
+        }
+        class StoryUser {
+            +get_name()
+            +from_string()
+            +from_list()
+            +to_string()
+        }
+        class StoryUserView {
+            +wraps_story_user_json()
+            +displays_user_name()
+            +displays_user_icon()
+            +filters_stories_by_user()
+        }
+        class TTYStoryUser {
+            +serialize_user_to_tty()
+            +format_user_name()
+            +format_user_list()
+            +wraps_domain_story_user()
+        }
+    }
+
+    namespace story_graph.sub_epic {
+        class SubEpic {
+            +test_file_property()
+        }
+        class SubEpicView {
+            +wraps_sub_epic_json()
+            +displays_sub_epic_name()
+            +displays_sub_epic_icon()
+            +displays_nested_sub_epics()
+            +displays_stories()
+            +opens_sub_epic_folder()
+            +opens_sub_epic_test_file()
+        }
+    }
+
+    namespace story_graph.test {
+        class JSONTest {
+            +serialize_test_to_json()
+            +include_test_file()
+            +include_test_class()
+            +include_test_method()
+            +wraps_domain_test()
+        }
+        class MarkdownTest {
+            +serialize_test_to_markdown()
+            +format_test_link()
+            +wraps_domain_test()
+        }
+        class TTYTest {
+            +serialize_test_to_tty()
+            +format_test_file()
+            +format_test_class()
+            +format_test_method()
+            +wraps_domain_test()
+        }
+        class Test {
+            +get_test_file()
+            +get_test_class()
+            +get_test_method()
+            +get_default_test_class()
+            +get_default_test_method()
+            +build_from_story_node()
+        }
+        class TestView {
+            +wraps_test_json()
+            +displays_test_file()
+            +displays_test_class()
+            +displays_test_method()
+            +opens_test_file()
+            +opens_test_at_class()
+            +opens_test_at_method()
         }
     }
 
     
     %% Associations
     Base Bot --> Behavior : uses
-    Base Bot --> Router : uses
     Base Bot --> Content : uses
+    Base Bot --> Status : uses
+    Base Bot --> NavigationResult : uses
+    Base Bot --> BotPath : uses
+    Base Bot --> ExitResult : uses
     Specific Bot --> Behavior : uses
-    BotLangActionNode --> BotMode : uses
-    BehaviorGraphBuilder --> Behavior : uses
-    BehaviorGraphBuilder --> BotLangState : uses
-    BehaviorGraphBuilder --> BotLangActionNode : uses
-    BotLangFlowRunner --> BotLangFlow : uses
-    BotLangFlowRunner --> Checkpoint : uses
-    BotLangFlowRunner --> BotLangActionNode : uses
-    BotLangFlowRunner --> BotLangState : uses
-    StoryBotMCPServer --> Behavior : uses
-    BehaviorToolGenerator --> Behavior : uses
-    ActionStateManager --> Behavior : uses
-    Synchronizer --> Renderer : uses
-    StoryIOEpic --> Template : uses
-    StoryIOFeature --> Template : uses
-    StoryIOStory --> Template : uses
-    StoryIOIncrement --> Template : uses
-    Router --> Base Bot : uses
-    Router --> Behavior : uses
-    Workflow State --> Behavior : uses
-    Checkpoint --> BotLangState : uses
-    Checkpoint --> BotLangFlowRunner : uses
-    Checkpoint --> BotLangFlow : uses
-    BotMode --> BotLangActionNode : uses
-    BotLangFlow --> BotLangActionNode : uses
-    BotLangFlow --> BotLangFlowRunner : uses
-    BotLangFlow --> BotLangState : uses
-    BotLangFlow --> BotMode : uses
-    BotLangFlow --> Checkpoint : uses
-    Behavior Action State --> Behavior : uses
-    Behavior --> Rule : uses
+    BotView --> BotHeaderView : uses
+    BotView --> PathsSection : uses
+    BotView --> BehaviorsView : uses
+    BotView --> InstructionsSection : uses
+    PathsSection --> AvailableBotsView : uses
+    Behavior --> Guardrails : uses
     Behavior --> Content : uses
+    Rule --> Behavior : uses
+    Rule --> Base Bot : uses
+    TTYBehavior --> Behavior : uses
+    JSONBehavior --> Behavior : uses
+    JSONBehavior --> Status : uses
+    MarkdownBehavior --> Behavior : uses
+    BehaviorsView --> Behavior : uses
+    BehaviorsView --> ActionsView : uses
+    BehaviorsView --> Status : uses
+    BehaviorsView --> NavigationView : uses
     Base Action --> Behavior : uses
     Base Action --> Content : uses
-    BotPanel --> BotRegistry : uses
-    BotPanel --> BotInformationSection : uses
-    BotPanel --> BehaviorActionSection : uses
-    BotPanel --> ScopeSection : uses
-    BotPanel --> InstructionsSection : uses
-    BotPanel --> HtmlRenderer : uses
-    BotPanel --> StatusDataProvider : uses
-    BotInformationSection --> BotRegistry : uses
-    BotInformationSection --> StatusDataProvider : uses
-    BehaviorActionSection --> Behavior : uses
-    BehaviorActionSection --> StatusDataProvider : uses
-    InstructionsSection --> Behavior : uses
-    HtmlRenderer --> BotPanel : uses
-    HtmlRenderer --> BotInformationSection : uses
-    HtmlRenderer --> BehaviorActionSection : uses
-    HtmlRenderer --> ScopeSection : uses
-    HtmlRenderer --> InstructionsSection : uses
-    StatusDataProvider --> BotRegistry : uses
-    REPLSession --> CLIBot : uses
-    CLIBot --> CLIBehaviors : uses
-    CLIBot --> CLIBehavior : uses
-    CLIBot --> CLIActions : uses
-    CLIBot --> CLIAction : uses
-    CLIBehaviors --> CLIBehavior : uses
-    CLIBehavior --> CLIActions : uses
-    CLIBehavior --> Behavior : uses
-    CLIActions --> CLIAction : uses
-    Behavior Workflow --> Behavior : uses
-    GatherContextAction --> Behavior : uses
-    GatherContextAction --> Guardrails : uses
-    PlanningAction --> Behavior : uses
-    PlanningAction --> Guardrails : uses
+    JSONAction --> Status : uses
+    ActionsView --> Status : uses
+    InstructionsSection --> BaseInstructionsSubSection : uses
+    InstructionsSection --> RawFormatSubSection : uses
     BuildKnowledgeAction --> Behavior : uses
     BuildKnowledgeAction --> Content : uses
-    Content --> Template : uses
-    Content --> Renderer : uses
-    Content --> Synchronizer : uses
+    TTYBuildKnowledge --> BuildKnowledgeAction : uses
+    TTYBuildKnowledge --> Status : uses
+    JSONBuildKnowledge --> BuildKnowledgeAction : uses
+    MarkdownBuildKnowledge --> BuildKnowledgeAction : uses
+    BuildInstructionsSection --> BuildDataSubSection : uses
+    GatherContextAction --> Behavior : uses
+    GatherContextAction --> Guardrails : uses
+    TTYGatherContext --> GatherContextAction : uses
+    JSONGatherContext --> GatherContextAction : uses
+    MarkdownGatherContext --> GatherContextAction : uses
+    ClarifyInstructionsSection --> ClarifyDataSubSection : uses
     RenderOutputAction --> Behavior : uses
     RenderOutputAction --> Content : uses
     RenderOutputAction --> Renderer : uses
     RenderOutputAction --> Template : uses
+    TTYRenderOutput --> RenderOutputAction : uses
+    JSONRenderOutput --> RenderOutputAction : uses
+    MarkdownRenderOutput --> RenderOutputAction : uses
     Renderer --> Template : uses
     Renderer --> Content : uses
     Template --> Content : uses
     Template --> Behavior : uses
+    Content --> Template : uses
+    Content --> Renderer : uses
+    RenderInstructionsSection --> RenderDataSubSection : uses
     ValidateRulesAction --> Base Bot : uses
     ValidateRulesAction --> Behavior : uses
     ValidateRulesAction --> Content : uses
-    Rule --> Behavior : uses
-    Rule --> Base Bot : uses
-    CorrectBotAction --> Behavior : uses
-    CorrectBotAction --> Content : uses
+    TTYValidateRules --> ValidateRulesAction : uses
+    JSONValidateRules --> ValidateRulesAction : uses
+    MarkdownValidateRules --> ValidateRulesAction : uses
+    ValidateInstructionsSection --> ValidateDataSubSection : uses
+    StrategyAction --> Behavior : uses
+    StrategyAction --> Guardrails : uses
+    TTYStrategy --> StrategyAction : uses
+    JSONStrategy --> StrategyAction : uses
+    MarkdownStrategy --> StrategyAction : uses
+    StrategyInstructionsSection --> StrategyDataSubSection : uses
+    TTYScope --> Scope : uses
+    JSONScope --> Scope : uses
+    MarkdownScope --> Scope : uses
+    TTYStatus --> Status : uses
+    JSONStatus --> Status : uses
+    MarkdownStatus --> Status : uses
+    TTYNavigation --> NavigationResult : uses
+    JSONNavigation --> NavigationResult : uses
+    MarkdownNavigation --> NavigationResult : uses
+    TTYBotPath --> BotPath : uses
+    JSONBotPath --> BotPath : uses
+    MarkdownBotPath --> BotPath : uses
+    TTYExitResult --> ExitResult : uses
+    JSONExitResult --> ExitResult : uses
+    MarkdownExitResult --> ExitResult : uses
+    DomainConcept --> DomainConcept : uses
+    Responsibility --> Responsibility : uses
+    Collaborator --> Collaborator : uses
+    TTYDomainConcept --> DomainConcept : uses
+    JSONDomainConcept --> DomainConcept : uses
+    MarkdownDomainConcept --> DomainConcept : uses
+    StoryNode (Base) --> StoryNodeSerializer : uses
+    StoryNode (Base) --> StoryNodeNavigator : uses
+    StoryNode (Base) --> StoryNodeChildren : uses
+    StoryNode (Base) --> Test : uses
+    StoryMap --> StoryMap : uses
+    TTYStoryMap --> StoryMap : uses
+    JSONStoryMap --> StoryMap : uses
+    MarkdownStoryMap --> StoryMap : uses
+    StoryMapView --> EpicView : uses
+    TTYEpic --> Epic : uses
+    JSONEpic --> Epic : uses
+    MarkdownEpic --> Epic : uses
+    EpicView --> SubEpicView : uses
+    SubEpicView --> SubEpicView : uses
+    SubEpicView --> StoryView : uses
+    TTYStory --> Story : uses
+    JSONStory --> Story : uses
+    MarkdownStory --> Story : uses
+    StoryView --> ScenarioView : uses
+    TTYScenario --> Scenario : uses
+    JSONScenario --> Scenario : uses
+    MarkdownScenario --> Scenario : uses
+    TTYScenarioOutline --> ScenarioOutline : uses
+    JSONScenarioOutline --> ScenarioOutline : uses
+    MarkdownScenarioOutline --> ScenarioOutline : uses
+    TTYAcceptanceCriteria --> AcceptanceCriteria : uses
+    JSONAcceptanceCriteria --> AcceptanceCriteria : uses
+    MarkdownAcceptanceCriteria --> AcceptanceCriteria : uses
+    TTYStep --> Step : uses
+    JSONStep --> Step : uses
+    MarkdownStep --> Step : uses
+    TTYTest --> Test : uses
+    JSONTest --> Test : uses
+    MarkdownTest --> Test : uses
+    StoryUser --> StoryUser : uses
+    TTYStoryUser --> StoryUser : uses
+    JSONStoryUser --> StoryUser : uses
+    MarkdownStoryUser --> StoryUser : uses
+    StoryUserView --> StoryUser : uses
+    SectionView --> PanelHeader : uses
+    SectionView --> SubSectionView : uses
+    MarkdownAdapter --> Content : uses

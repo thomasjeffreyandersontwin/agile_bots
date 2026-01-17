@@ -21,7 +21,11 @@
         "name": "strategy",
         "order": 2,
         "next_action": "validate",
-        "instructions": []
+        "instructions": [
+          "prioritization: build story graph increments section by organizing stories into delivery increments",
+          "Follow agile_bot/bots/story_bot/behaviors/prioritization/content/story_graph/build_story_graph_increments.json",
+          "Update story-graph.json with increment definitions including priority, name, and assigned stories"
+        ]
       },
       {
         "name": "validate",

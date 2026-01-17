@@ -3,7 +3,7 @@
   "type": "synchronizer",
   "path": "docs/crc",
   "input": "story-graph.json",
-  "synchronizer": "agile_bot.bots.story_bot.src.synchronizers.domain_model.domain_model_synchronizer.DomainModelDescriptionSynchronizer",
+  "synchronizer": "synchronizers.domain_model.DomainModelDescriptionSynchronizer",
   "output": "crc-model-description.md",
   "instructions": "Transform the domain_concepts from story-graph.json into a CRC model description markdown document. Extract domain_concepts from all epics and sub_epics in story-graph.json. The description should use natural language that domain experts understand, explaining what each CRC card represents in the business domain, describing responsibilities and collaborators between concepts, and using examples to illustrate CRC concepts."
 }

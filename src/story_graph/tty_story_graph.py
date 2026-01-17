@@ -1,6 +1,6 @@
 
-from agile_bots.src.cli.adapters import TTYAdapter
-from agile_bots.src.story_graph.story_graph import StoryGraph
+from cli.adapters import TTYAdapter
+from story_graph.story_graph import StoryGraph
 
 class TTYStoryGraph(TTYAdapter):
     

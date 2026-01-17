@@ -3,7 +3,7 @@
   "type": "synchronizer",
   "path": "docs/crc",
   "input": "story-graph.json",
-  "synchronizer": "agile_bot.bots.story_bot.src.synchronizers.domain_model.domain_model_synchronizer.DomainModelDiagramSynchronizer",
+  "synchronizer": "synchronizers.domain_model.DomainModelDiagramSynchronizer",
   "output": "crc-model-diagram.mmd",
   "instructions": "Transform the domain_concepts from story-graph.json into a CRC model diagram Mermaid file. Extract domain_concepts from all epics and sub_epics in story-graph.json. Generate Mermaid diagrams from the extracted domain_concepts structure showing CRC cards with responsibilities and collaborators. IMPORTANT: Each sub-epic represents a namespace. Domain concepts are grouped by their namespace (sub-epic name). Class names are prefixed with their namespace using the format 'Namespace::ClassName'. If a namespace name conflicts with a class name (same name), the namespace is prefixed with an underscore (e.g., '_Namespace::ClassName'). Concepts at the epic level are assigned to the first sub-epic's namespace (or epic name if no sub-epics exist)."
 }

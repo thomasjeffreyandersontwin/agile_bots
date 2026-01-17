@@ -2,64 +2,62 @@
 
 ## Increment 1: User Manually Drops Config In to AI Chat
 
-- MCP Server Generator --> Generate Bot Tools
+- Generate Bot Tools
 
 ## Increment 2: Simplest MCP
 
-- MCP Server Generator --> Generate MCP Bot Server
-- MCP Server Generator --> Generate Behavior Action Tools
+- Generate MCP Bot Server
+- Generate Behavior Action Tools
 - Deploy MCP BOT Server
 - Inject Validation Rules for Validate Rules Action
-- MCP Server Generator --> Restart MCP Server To Load Code Changes
-- AI Chat --> Invoke Bot Tool
+- Restart MCP Server To Load Code Changes
+- Invoke Bot Tool
 
 ## Increment 3: Workflow
 
-- MCP Server Generator --> Generate Behavior Tools
-- MCP Server Generator --> Generate MCP Bot Server
+- Generate Behavior Tools
+- Generate MCP Bot Server
 - Inject Knowledge Graph Template and Builder Instructions
 - Track Activity for Build Knowledge Action
 - Proceed To Render Output
-- Bot Behavior --> Track Activity for Gather Context Action
-- Bot Behavior --> Proceed To Decide Planning
+- Track Activity for Gather Context Action
+- Proceed To Decide Planning
 - Load Render Configurations
 - Inject Template Instructions
 - Inject Synchronizer Instructions
 - Track Activity for Render Output Action
 - Track Activity for Validate Rules Action
-- Bot Behavior --> Initialize Project Location
-- Bot Behavior --> Close Current Action
-- Bot Behavior --> Execute Behavior
-- Bot Behavior --> Find Behavior Folder
-- AI Chat --> Forward To Current Action
-- AI Chat --> Forward To Current Behavior and Current Action
-- Bot Behavior --> Invoke Behavior Actions in Workflow Order
-- Bot Behavior --> Invoke Behavior in Workflow Order
-- Bot Behavior --> Track Activity For Workspace
+- Initialize Project Location
+- Close Current Action
+- Execute Behavior
+- Find Behavior Folder
+- Forward To Current Action
+- Forward To Current Behavior and Current Action
+- Invoke Behavior Actions in Workflow Order
+- Invoke Behavior in Workflow Order
+- Track Activity For Workspace
 
 ## Increment 4: CLI
 
-- MCP Server Generator --> Generate BOT CLI code
-- MCP Server Generator --> Generate Cursor Command Files
-- Human --> Invoke Bot CLI
-- Human --> Invoke Bot Behavior CLI
-- Human --> Invoke Bot Behavior Action CLI
-- Human --> Get Help for Command Line Functions
+- Generate REPL Command Definitions
+- Generate CLI Entry Point
+- Generate Cursor Commands
+- Generate Help Documentation
 
 ## Increment 6: Inject / Store Content
 
 - Load Story Graph Into Memory
 - Update Existing Knowledge Graph
 - Save Final Assumptions and Decisions
-- Bot Behavior --> Store Clarification Data
-- Bot Behavior --> Inject Guardrails As Part Of Clarify Requirements
-- Bot Behavior --> Store Context Files
+- Store Clarification Data
+- Inject Guardrails As Part Of Clarify Requirements
+- Store Context Files
 - Stores Activity for Initialize Project Action
-- Bot Behavior --> Guards Prevent Writes Without Project
-- Bot Behavior --> Initialize Project Creates Context Folder
-- Bot Behavior --> Inject Next Behavior Reminder
-- Bot Behavior --> Input File Copied To Context Folder
-- Bot Behavior --> Load And Merge Behavior Action Instructions
+- Guards Prevent Writes Without Project
+- Initialize Project Creates Context Folder
+- Inject Next Behavior Reminder
+- Input File Copied To Context Folder
+- Load And Merge Behavior Action Instructions
 
 ## Increment 7: Code Scanner
 
@@ -67,25 +65,25 @@
 - Discovers Scanners
 - Run Scanners against Knowledge Graph
 - Track Activity for Validate Rules Action
-- Bot Behavior --> Handle Validate Rules Exceptions
-- Bot Behavior --> Run All Scanners
-- Bot Behavior --> Run Scanners Against Test Code
-- Bot Behavior --> Run Scanners Against Code
-- Bot Behavior --> Load Rules Collection
-- Bot Behavior --> Find Rule By Name
-- Bot Behavior --> Iterate Rules
-- Bot Behavior --> Load Rule From File
-- Bot Behavior --> Load Scanner For Rule
-- Bot Behavior --> Get Rule Properties
-- Bot Behavior --> Create Validation Scope
-- Bot Behavior --> Load Scanner Class
-- Bot Behavior --> Load Scanner Classes
-- Bot Behavior --> Perform Incremental Validation
+- Handle Validate Rules Exceptions
+- Run All Scanners
+- Run Scanners Against Test Code
+- Run Scanners Against Code
+- Load Rules Collection
+- Find Rule By Name
+- Iterate Rules
+- Load Rule From File
+- Load Scanner For Rule
+- Get Rule Properties
+- Create Validation Scope
+- Load Scanner Class
+- Load Scanner Classes
+- Perform Incremental Validation
 - Scope Based Parameter Handling
-- Bot Behavior --> Validation With All Parameter Combinations
-- Bot Behavior --> Inject Rules Into AI Chat Message
-- Bot Behavior --> Example Story
-- Bot Behavior --> Another Story
+- Validation With All Parameter Combinations
+- Inject Rules Into AI Chat Message
+- Example Story
+- Another Story
 
 ## Increment 8: Refactoring
 
@@ -108,14 +106,13 @@
 - CLI Type Safe Action Context
 - CLI Context Builder Parses Typed Context
 - CLI Parser Generator Creates Action Parsers
-- Bot Developer --> Bootstrap Workspace
-- MCP Server Generator --> Generate Help
-- MCP Server Generator --> Generate Cursor Awareness Files
-- MCP Server Generator --> Generate Help Parameters From Action Context Classes
+- Bootstrap Workspace
+- Generate Help
+- Generate Cursor Awareness Files
+- Generate Help Parameters From Action Context Classes
 - Insert Context Into Instructions
 - Inject Status Update Breadcrumbs Into Instructions
 - Load Bot Configuration
-- Load Behavior Configuration
 - Load Bot Behaviors
 - Load Actions
 - Load Base Action Configuration
@@ -130,13 +127,157 @@
 
 ## Increment 9: LangGraph Orchestration
 
-- MCP Server Generator --> Generate Base Action Node
-- MCP Server Generator --> Generate Behavior Graph Builder
-- MCP Server Generator --> Generate LangGraph Runner
-- MCP Server Generator --> Generate State Adapter
-- Behavior Graph Builder --> Build Workflow Graph from Behavior
-- Human --> Route to LangGraph Workflow
-- LangGraphRunner --> Execute Workflow Nodes
-- LangGraphRunner --> Manage Checkpoints
-- ActionNode --> Handle Execution Modes
-- Human --> Resume Workflow from Checkpoint
+- Route to Default Behavior Action
+- Route to BotLangFlow
+- Invoke BotLangActionNode
+- Prepare Action Instructions
+- Process Bot Behavor Action Instructions Automatically
+- Process Behavor Action Instructions Through AI Chat
+- Confirm Behavor Action Instruction Response
+- Return to chat and pause for human-in-the-loop Node
+- Handle Execution Modes
+- Resume BotLangFlow from Checkpoint
+
+## Increment 10: REPL CLI
+
+- Launch REPL Loop
+- Detect TTY Input
+- Support Pipe Automation Mode
+- Support Dot Notation Commands
+- Display Fresh Start
+- Display Existing State
+- Show Current Position In Workflow Breadcrumbs
+- Show Available Behaviors and Actions
+- Navigate To Behavior
+- Navigate To Action
+- Navigate Within Behavior
+- Confirm Advances Across Behaviors
+- Request Help
+- Request Status
+- Auto-Run Instructions On Navigate
+- Confirm Action Completion Through CLI
+- Auto-Confirm Action After Instructions Complete
+- Advance To Next Action
+- Loop Back To Display State
+- Exit REPL
+- Provide Context For Instructions
+- Provide Story Scope Context For Instructions
+- Provide File Scope Context For Instructions
+- Store Scope Context
+- Show Current Behavior Action Help
+- Generate REPL Command Definitions
+- Generate CLI Entry Point
+- Generate Cursor Commands
+- Generate Help Documentation
+- Execute Current Action
+- Parse Command Input
+- Retrieve and Display Bot Behavior Action Instructions
+- Display Action Output
+- Prompt For Basic Parameters
+- Prompt For Story Scope Parameters
+- Prompt For File Scope Parameters
+
+## Increment 11: Managing the Story Graph
+
+### Manage Story Scope (Direct)
+- Create Scope
+- Filter Scope By Stories
+- Filter Scope By Files
+- Persist Scope
+- Clear Scope
+- Execute Actions With Scope
+- Navigate Story Graph
+
+### Manage Story Scope Through Panel
+- Filter Story Scope
+- Show All Scope Through Panel
+- Display Story Scope Hierarchy
+- Panel.Manage Story Scope.Filter File Scope
+- Open Story Files
+
+### Manage Story Scope Using REPL
+- Filter Work Using Knowledge Graph Scope in CLI
+- Filter Work Using Files Scope in CLI
+- Enforce Mutually Exclusive Scope Types
+- View Current Scope in CLI
+- Clear Scope Through CLI
+
+### Manage File Scope (Direct)
+- Direct.Manage File Scope.Filter File Scope
+- Direct.Manage File Scope.Get All Files For Behavior
+- Direct.Manage File Scope.Add Filter Part To File Scope
+- Direct.Manage File Scope.Remove Filter Part From File Scope
+
+### Manage File Scope Through Panel
+- Panel.Manage File Scope.Filter File Scope
+- Panel.Manage File Scope.Display All Files For Behavior
+- Panel.Manage File Scope.Add Filter Part To File Scope
+- Panel.Manage File Scope.Remove Filter Part From File Scope
+
+### Manage File Scope Using REPL
+- REPL.Manage File Scope.Filter File Scope
+- REPL.Manage File Scope.Display All Files For Behavior
+- REPL.Manage File Scope.Add Filter Part To File Scope
+- REPL.Manage File Scope.Remove Filter Part From File Scope
+
+### Edit Story Graph (Direct)
+- Direct.Edit Story Graph.Add Child Story Node To Parent
+- Direct.Edit Story Graph.Delete Story Node From Parent
+- Direct.Edit Story Graph.Update Story Node name
+- Direct.Edit Story Graph.Move Story Node
+- Direct.Edit Story Graph.Submit Action Scoped To Story Scope
+- Update Story Graph Changes
+
+### Edit Story Graph In Panel
+- Panel.Edit Story Graph.Add Child Story Node To Parent
+- Panel.Edit Story Graph.Delete Story Node From Parent
+- Panel.Edit Story Graph.Update Story Node name
+- Panel.Edit Story Graph.Move Story Node
+- Panel.Edit Story Graph.Submit Action Scoped To Story Scope
+- Automatically Refresh Story Graph Changes
+
+### Edit Story Graph In CLI
+- CLI.Edit Story Graph.Add Child Story Node To Parent
+- CLI.Edit Story Graph.Delete Story Node From Parent
+- CLI.Edit Story Graph.Update Story Node name
+- CLI.Edit Story Graph.Move Story Node
+- CLI.Edit Story Graph.Submit Action Scoped To Story Scope
+- CLI.Automatically Refresh Story Graph Changes
+
+### Edit Increments (Direct)
+- Direct.Edit Increments.Add Increment
+- Direct.Edit Increments.Delete Increment
+- Direct.Edit Increments.Move Story to Increment
+- Show All Increment Scope
+- Direct.Edit Increments.Submit Action Scoped To Increment
+
+### Edit Increments In Panel
+- Panel.Edit Increments.Add Increment
+- Panel.Edit Increments.Delete Increment
+- Panel.Edit Increments.Move Story to Increment
+- Show All Increment Scope Through Panel
+- Panel.Edit Increments.Submit Action Scoped To Increment
+
+### Edit Increments In CLI
+- CLI.Edit Increments.Add Increment
+- CLI.Edit Increments.Delete Increment
+- CLI.Edit Increments.Move Story to Increment
+- Show All Increment Scope Through CLI
+- CLI.Edit Increments.Submit Action Scoped To Increment
+
+## Increment 13: CLI Multi Bots
+
+- Load All Registered Bots
+- Invoke Specific Bot Behavior Command through CLI
+- Navigate to Bot using CLI Dot Notation
+- Display Available Bot in Tree Hierarchy
+- Display CLI Bot Command in Navigation Menu Footer
+
+---
+
+Instructions:
+- Flat list of stories per increment
+- No epic/sub-epic hierarchy shown
+- Format: "- Story Name"
+- Stories listed in sequential order within increment
+- Simple backlog view for sprint planning

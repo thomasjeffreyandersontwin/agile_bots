@@ -5,8 +5,8 @@
       "Manage Behaviors"
     ]
   },
-  "current_behavior": "story_bot.discovery",
-  "current_action": "story_bot.discovery.build",
-  "timestamp": "2026-01-17T13:40:40.325616",
+  "current_behavior": "story_bot.exploration",
+  "current_action": "story_bot.exploration.build",
+  "timestamp": "2026-01-17T17:22:40.614401",
   "completed_actions": []
 }

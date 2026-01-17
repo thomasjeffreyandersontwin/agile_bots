@@ -27,14 +27,33 @@ and (E) Invoke Bot
             and (S) Bot Behavior --> Inject Context Into Instructions
             and (S) Bot Behavior --> Track Activity For Workspace
             and (S) Bot Behavior --> Execute End To End Workflow
-        and (E) Manage Scope
-            (S) Bot Behavior --> Create Scope
-            and (S) Bot Behavior --> Filter Scope By Stories
-            and (S) Bot Behavior --> Filter Scope By Files
-            and (S) Bot Behavior --> Persist Scope
-            and (S) Bot Behavior --> Clear Scope
-            and (S) Bot Behavior --> Execute Actions With Scope
-            and (S) Bot Behavior --> Navigate Story Graph
+        and (E) Manage Story Graph
+            (E) Manage Story Scope
+                (S) Bot Behavior --> Create Scope
+                and (S) Bot Behavior --> Filter Scope By Stories
+                and (S) Bot Behavior --> Filter Scope By Files
+                and (S) Bot Behavior --> Persist Scope
+                and (S) Bot Behavior --> Clear Scope
+                and (S) Bot Behavior --> Execute Actions With Scope
+                and (S) Bot Behavior --> Navigate Story Graph
+            and (E) Manage File Scope
+                (S) Bot Behavior --> Filter File Scope
+                and (S) Bot Behavior --> Get All Files For Behavior
+                and (S) Bot Behavior --> Add Filter Part To File Scope
+                and (S) Bot Behavior --> Remove Filter Part From File Scope
+            and (E) Edit Story Graph
+                (S) Bot Behavior --> Add Child Story Node To Parent
+                and (S) Bot Behavior --> Delete Story Node From Parent
+                and (S) Bot Behavior --> Update Story Node name
+                and (S) Bot Behavior --> Move Story Node
+                and (S) Bot Behavior --> Submit Action Scoped To Story Scope
+                and (S) Bot Behavior --> Update Story Graph Changes
+            and (E) Edit Increments
+                (S) Bot Behavior --> Add Increment
+                and (S) Bot Behavior --> Delete Increment
+                and (S) Bot Behavior --> Move Story to Increment
+                and (S) Bot Behavior --> Show All Increment Scope
+                and (S) Bot Behavior --> Submit Action Scoped To Increment
         and (E) Perform Action
             (S) Bot Behavior --> Build Story Graph
             and (S) Bot Behavior --> Clarify Requirements
@@ -60,12 +79,31 @@ and (E) Invoke Bot
             (S) User --> Display Hierarchy
             and (S) User --> Navigate Behavior Action
             and (S) User --> Execute Behavior Action
-        and (E) Manage Scope Through Panel
-            (S) User --> Filter Story Scope
-            and (S) User --> Show All Scope Through Panel
-            and (S) User --> Display Story Scope Hierarchy
-            and (S) User --> Filter File Scope
-            and (S) User --> Open Story Files
+        and (E) Manage Story Graph Through Panel
+            (E) Manage Story Scope Through Panel
+                (S) User --> Filter Story Scope
+                and (S) User --> Show All Scope Through Panel
+                and (S) User --> Display Story Scope Hierarchy
+                and (S) User --> Filter File Scope
+                and (S) User --> Open Story Files
+            and (E) Manage File Scope Through Panel
+                (S) Bot Behavior --> Filter File Scope
+                and (S) Bot Behavior --> Display All Files For Behavior
+                and (S) Bot Behavior --> Add Filter Part To File Scope
+                and (S) Bot Behavior --> Remove Filter Part From File Scope
+            and (E) Edit Story Graph In Panel
+                (S) Bot Behavior --> Add Child Story Node To Parent
+                and (S) Bot Behavior --> Delete Story Node From Parent
+                and (S) Bot Behavior --> Update Story Node name
+                and (S) Bot Behavior --> Move Story Node
+                and (S) Bot Behavior --> Submit Action Scoped To Story Scope
+                and (S) Bot Behavior --> Automatically Refresh Story Graph Changes
+            and (E) Edit Increments In Panel
+                (S) Bot Behavior --> Add Increment
+                and (S) Bot Behavior --> Delete Increment
+                and (S) Bot Behavior --> Move Story to Increment
+                and (S) Bot Behavior --> Show All Increment Scope Through Panel
+                and (S) Bot Behavior --> Submit Action Scoped To Increment
         and (E) Display Action Instructions Through Panel
             (S) User --> Display Base Instructions
             and (S) User --> Display Clarify Instructions
@@ -126,12 +164,31 @@ and (E) Invoke Bot
                 and (S) User --> Get Render Instructions Through CLI
             and (E) Display Rules Through REPL
                 (S) User --> Get Rules Instructions Through CLI
-        and (E) Manage Scope Using REPL
-            (S) User --> Filter Work Using Knowledge Graph Scope in CLI
-            and (S) User --> Filter Work Using Files Scope in CLI
-            and (S) CLI --> Enforce Mutually Exclusive Scope Types
-            and (S) User --> View Current Scope in CLI
-            and (S) User --> Clear Scope Through CLI
+        and (E) Manage Story Graph Using REPL
+            (E) Manage Story Scope Using REPL
+                (S) User --> Filter Work Using Knowledge Graph Scope in CLI
+                and (S) User --> Filter Work Using Files Scope in CLI
+                and (S) CLI --> Enforce Mutually Exclusive Scope Types
+                and (S) User --> View Current Scope in CLI
+                and (S) User --> Clear Scope Through CLI
+            and (E) Manage File Scope Using REPL
+                (S) Bot Behavior --> Filter File Scope
+                and (S) Bot Behavior --> Display All Files For Behavior
+                and (S) Bot Behavior --> Add Filter Part To File Scope
+                and (S) Bot Behavior --> Remove Filter Part From File Scope
+            and (E) Edit Story Graph In CLI
+                (S) Bot Behavior --> Add Child Story Node To Parent
+                and (S) Bot Behavior --> Delete Story Node From Parent
+                and (S) Bot Behavior --> Update Story Node name
+                and (S) Bot Behavior --> Move Story Node
+                and (S) Bot Behavior --> Submit Action Scoped To Story Scope
+                and (S) Bot Behavior --> Automatically Refresh Story Graph Changes
+            and (E) Edit Increments In CLI
+                (S) Bot Behavior --> Add Increment
+                and (S) Bot Behavior --> Delete Increment
+                and (S) Bot Behavior --> Move Story to Increment
+                and (S) Bot Behavior --> Show All Increment Scope Through CLI
+                and (S) Bot Behavior --> Submit Action Scoped To Increment
         and (E) Display State Using REPL
             (S) CLI --> Display CLI Header
             and (S) CLI --> Display Bot Hierarchy Tree with Progress Indicators
