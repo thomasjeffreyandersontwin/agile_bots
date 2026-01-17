@@ -1,9 +1,9 @@
-﻿
+
 from typing import List, Dict, Any, Optional, Set
 from pathlib import Path
 import ast
 import logging
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 

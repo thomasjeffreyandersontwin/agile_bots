@@ -1,4 +1,4 @@
-﻿
+
 from typing import List, TYPE_CHECKING
 
 if TYPE_CHECKING:

@@ -1,4 +1,4 @@
-﻿
+
 from typing import List, Dict, Any, Optional, Set
 from pathlib import Path
 import ast

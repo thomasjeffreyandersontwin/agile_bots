@@ -1,4 +1,4 @@
-﻿
+
 from typing import List, Dict, Any, Optional, Iterator, Union
 
 class StoryNode:

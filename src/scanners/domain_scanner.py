@@ -1,4 +1,4 @@
-﻿
+
 from abc import abstractmethod
 from typing import List, Dict, Any, Optional
 from scanners.scanner import Scanner

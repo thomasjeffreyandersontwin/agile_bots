@@ -1,4 +1,4 @@
-﻿"""Scanner for validating boundary behavior is tested."""
+"""Scanner for validating boundary behavior is tested."""
 
 from typing import List, Dict, Any, Optional
 from pathlib import Path

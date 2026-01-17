@@ -1,4 +1,4 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 import re
 from domain_scanner import DomainScanner

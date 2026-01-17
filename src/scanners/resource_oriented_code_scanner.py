@@ -1,10 +1,10 @@
-﻿
+
 from typing import List, Dict, Any, Optional, Set, Tuple
 from pathlib import Path
 import ast
 import re
 import logging
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 from vocabulary_helper import VocabularyHelper

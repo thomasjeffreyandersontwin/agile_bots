@@ -1,4 +1,4 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 import re
 from domain_scanner import DomainScanner
@@ -29,7 +29,7 @@ class DomainLanguageScanner(DomainScanner):
                 violations.append(
                     Violation(
                         rule=rule_obj,
-                        violation_message=f'Domain concept "{node.name}" uses generic term "{term}". Use domain-specific language instead (e.g., "PortfolioData" â†’ "Portfolio", "TargetConfig" â†’ "TargetAllocation").',
+                        violation_message=f'Domain concept "{node.name}" uses generic term "{term}". Use domain-specific language instead (e.g., "PortfolioData" → "Portfolio", "TargetConfig" → "TargetAllocation").',
                         location=node.map_location('name'),
                         line_number=None,
                         severity='warning'

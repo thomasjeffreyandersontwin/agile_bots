@@ -1,4 +1,4 @@
-﻿from typing import Optional, Tuple
+from typing import Optional, Tuple
 import importlib
 from scanners.scanner import Scanner
 
@@ -28,6 +28,7 @@ class ScannerLoader:
             
             paths_to_try = [
                 module_path,
+                f'scanners.{scanner_name}_scanner',
                 f'agile_bots.src.scanners.{scanner_name}_scanner'
             ]
             

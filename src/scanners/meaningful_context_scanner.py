@@ -1,10 +1,10 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 import ast
 import re
 import logging
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ class MeaningfulContextScanner(CodeScanner):
             if '=' in stripped and re.match(r'^\s*[A-Z_][A-Z0-9_]*\s*=', stripped):
                 continue
             
-            # Skip string multiplication for display purposes (e.g., "â”€" * 60)
+            # Skip string multiplication for display purposes (e.g., "─" * 60)
             if re.search(r'["\'].*["\']\s*\*\s*\d+', stripped):
                 continue
             

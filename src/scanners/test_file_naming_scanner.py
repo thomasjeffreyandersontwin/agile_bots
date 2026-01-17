@@ -1,4 +1,4 @@
-﻿"""Scanner for validating test file naming matches sub-epic names."""
+"""Scanner for validating test file naming matches sub-epic names."""
 
 from typing import List, Dict, Any, Optional
 from pathlib import Path

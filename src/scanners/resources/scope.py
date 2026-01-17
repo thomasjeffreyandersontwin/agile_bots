@@ -1,7 +1,7 @@
-﻿
+
 from typing import List, Set, TYPE_CHECKING
 from pathlib import Path
-from file import File
+from scanners.resources.file import File
 
 if TYPE_CHECKING:
     from block import Block

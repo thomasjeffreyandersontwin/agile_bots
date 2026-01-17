@@ -1,4 +1,4 @@
-﻿"""Scanner for validating test quality (FIRST principles)."""
+"""Scanner for validating test quality (FIRST principles)."""
 
 from typing import List, Dict, Any, Optional
 from pathlib import Path

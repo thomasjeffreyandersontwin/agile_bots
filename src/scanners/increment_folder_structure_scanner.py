@@ -1,4 +1,4 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 from story_scanner import StoryScanner
@@ -36,10 +36,10 @@ class IncrementFolderStructureScanner(StoryScanner):
     
     def _check_epic_folder_structure(self, node: StoryNode, rule_obj: Any) -> Optional[Dict[str, Any]]:
         epic_name = node.name
-        expected_folder = f"ðŸŽ¯ {epic_name}"
+        expected_folder = f"🎯 {epic_name}"
         
         
-        if not epic_name.startswith('ðŸŽ¯'):
+        if not epic_name.startswith('🎯'):
             pass
         
         return None

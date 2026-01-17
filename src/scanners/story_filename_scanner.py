@@ -1,4 +1,4 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 from story_scanner import StoryScanner

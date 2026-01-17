@@ -1,4 +1,4 @@
-﻿
+
 from abc import abstractmethod
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
@@ -240,7 +240,7 @@ class CodeScanner(Scanner):
         context_before: int = 2,
         max_lines: int = 50
     ) -> Dict[str, Any]:
-        from violation import Violation
+        from scanners.violation import Violation
         
         code_snippet = ""
         if content is not None:

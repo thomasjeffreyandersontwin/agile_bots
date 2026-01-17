@@ -263,8 +263,8 @@ class ActivityTestHelper(BaseHelper):
     def given_activity_tracker(self, bot_name='story_bot'):
         """Create activity tracker."""
         from actions.activity_tracker import ActivityTracker
-        from bot.bot_paths import BotPaths
-        bot_paths = BotPaths(workspace_path=self.parent.workspace)
+        from bot_path.bot_path import BotPath
+        bot_paths = BotPath(workspace_path=self.parent.workspace)
         return ActivityTracker(bot_paths=bot_paths, bot_name=bot_name)
     
     def when_activity_tracks_start(self, tracker, action_state):

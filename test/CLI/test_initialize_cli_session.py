@@ -98,7 +98,7 @@ class TestResolveBotPathUsingCLI:
         from pathlib import Path
         assert isinstance(helper.cli_session.bot.bot_paths.python_workspace_root, Path)
         assert helper.cli_session.bot.bot_paths.python_workspace_root.exists()
-        assert (helper.cli_session.bot.bot_paths.python_workspace_root / 'agile_bots').exists()
+        assert (helper.cli_session.bot.bot_paths.python_workspace_root / 'src').exists()
     
     @pytest.mark.parametrize("helper_class", [
         TTYBotTestHelper,
@@ -124,8 +124,8 @@ class TestResolveBotPathUsingCLI:
         from pathlib import Path
         assert isinstance(repo_root, Path)
         assert repo_root.exists()
-        assert (repo_root / 'agile_bots').exists()
-        assert (repo_root / 'agile_bots' / 'bots' / 'story_bot').exists()
+        assert (repo_root / 'src').exists()
+        assert (repo_root / 'bots' / 'story_bot').exists()
 
 
 # ============================================================================

@@ -1,4 +1,4 @@
-﻿
+
 from typing import Optional, Dict, Type
 import importlib
 import re
@@ -38,6 +38,7 @@ class ScannerRegistry:
             
             paths_to_try = [
                 module_path,
+                f'scanners.{scanner_name}_scanner',
                 f'agile_bots.src.scanners.{scanner_name}_scanner'
             ]
             

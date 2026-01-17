@@ -1,7 +1,7 @@
-﻿import re
+import re
 from pathlib import Path
 from typing import List, Dict, Any
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 
 class PreferObjectModelOverConfigScanner(CodeScanner):

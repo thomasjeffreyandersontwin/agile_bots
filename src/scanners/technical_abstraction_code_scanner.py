@@ -1,10 +1,10 @@
-﻿"""Scanner for validating avoidance of technical abstractions in code."""
+"""Scanner for validating avoidance of technical abstractions in code."""
 
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 import ast
 import re
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 from .resources.ast_elements import Classes
 from vocabulary_helper import VocabularyHelper

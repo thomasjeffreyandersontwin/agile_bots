@@ -1,8 +1,8 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 import ast
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 
 class ExplicitDependenciesScanner(CodeScanner):

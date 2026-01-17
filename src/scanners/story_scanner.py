@@ -1,4 +1,4 @@
-﻿from abc import abstractmethod
+from abc import abstractmethod
 from typing import List, Dict, Any, Optional, TYPE_CHECKING
 from scanners.scanner import Scanner
 from story_map import StoryMap, StoryNode, StoryGroup

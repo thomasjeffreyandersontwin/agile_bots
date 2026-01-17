@@ -83,6 +83,11 @@ yarn.lock
 # Project specific
 activity_log.json
 behavior_action_state.json
+*validation-report*.md
+*validation-status*.md
+
+# Cache
+.cache/
 
 # Large files
 *.db

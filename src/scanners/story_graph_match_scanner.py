@@ -1,4 +1,4 @@
-﻿"""Scanner for validating test structure matches story graph exactly."""
+"""Scanner for validating test structure matches story graph exactly."""
 
 from typing import List, Dict, Any, Optional
 from pathlib import Path

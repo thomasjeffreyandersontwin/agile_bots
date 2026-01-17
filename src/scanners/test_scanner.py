@@ -1,4 +1,4 @@
-﻿"""Base TestScanner class for validating test files."""
+"""Base TestScanner class for validating test files."""
 
 from typing import List, Dict, Any, Optional, Tuple, TYPE_CHECKING
 from pathlib import Path

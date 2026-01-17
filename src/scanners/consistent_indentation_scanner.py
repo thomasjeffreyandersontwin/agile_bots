@@ -1,7 +1,7 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 from pathlib import Path
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 
 class ConsistentIndentationScanner(CodeScanner):

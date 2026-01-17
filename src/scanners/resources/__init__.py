@@ -1,4 +1,4 @@
-﻿
+
 from .scope import Scope
 from .file import File
 from .block import Block

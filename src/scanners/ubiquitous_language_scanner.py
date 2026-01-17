@@ -1,4 +1,4 @@
-﻿"""Scanner for validating ubiquitous language consistency."""
+"""Scanner for validating ubiquitous language consistency."""
 
 from typing import List, Dict, Any, Optional, Set, Tuple
 from pathlib import Path

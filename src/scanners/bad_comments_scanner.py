@@ -1,9 +1,9 @@
-﻿
+
 from typing import List, Dict, Any, Optional
 from pathlib import Path
 import re
 import logging
-from code_scanner import CodeScanner
+from scanners.code_scanner import CodeScanner
 from scanners.violation import Violation
 
 logger = logging.getLogger(__name__)
