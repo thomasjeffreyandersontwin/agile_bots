@@ -1,0 +1,76 @@
+{
+    "priority": 8,
+    "description": "Use channel-specific language with concrete examples. For Domain/API: show actual method calls. For CLI: show actual command syntax. For Panel/UI: show actual interactions and display elements. Don't use generic 'Bot does X' or 'System does Y' - be specific to the channel.",
+    "do": {
+        "description": "Frame acceptance criteria in terms of how that channel actually works. Domain: method calls. CLI: command syntax. Panel: UI interactions.",
+        "guidance": [
+            {
+                "description": "Domain/API stories: Use actual resource/object names and method signatures",
+                "example": [
+                    "WHEN Story Graph Node creates new child Node",
+                    "THEN parent Story Node creates new child node of appropriate type",
+                    "(Example: child = bot.story_graph.epics[\"epic name\"].createChild(\"child name\"))"
+                ]
+            },
+            {
+                "description": "CLI stories: Show actual command syntax with dot notation or flags",
+                "example": [
+                    "WHEN User enters dot notation to create new child",
+                    "EXAMPLE: cli.story_graph.\"Invoke Bot\".create_sub_epic.\"Manage Bot Information\"",
+                    "THEN CLI parses dot notation path to parent node"
+                ]
+            },
+            {
+                "description": "Panel/UI stories: Show specific UI elements, interactions, and visual feedback",
+                "example": [
+                    "WHEN User selects Epic node in Story Tree",
+                    "THEN Panel shows \"Create Sub-Epic\" button in action panel to the right",
+                    "BUT does not show \"Create Story\" button"
+                ]
+            },
+            {
+                "description": "Include concrete examples in parentheses showing actual usage",
+                "example": [
+                    "(Example: child = bot.story_graph.epics[\"epic name\"].createChild(\"child name\", 2))",
+                    "(Example: cli.story_graph.\"Invoke Bot\".move_to.\"Other Epic\".at_position.2)"
+                ]
+            }
+        ]
+    },
+    "dont": {
+        "description": "Don't use generic 'Bot', 'System', or 'User' without showing how it actually works in that channel. Example: Don't say 'Bot creates node' - show the actual API call or command",
+        "guidance": [
+            {
+                "description": "Don't use generic domain language that could apply to any channel",
+                "example": [
+                    "WHEN Bot creates child node",
+                    "THEN Bot validates parent exists",
+                    "AND Bot adds child to parent"
+                ]
+            },
+            {
+                "description": "Don't describe UI interactions without showing actual UI elements",
+                "example": [
+                    "WHEN User creates node in panel",
+                    "THEN Panel displays node"
+                ]
+            },
+            {
+                "description": "Don't describe CLI without showing actual command syntax",
+                "example": [
+                    "WHEN User enters command to move node",
+                    "THEN CLI validates command",
+                    "AND CLI executes move"
+                ]
+            },
+            {
+                "description": "Don't omit examples for domain/API stories",
+                "example": [
+                    "WHEN Story Graph Node moves to parent",
+                    "THEN node adds itself to target"
+                ]
+            }
+        ]
+    },
+    "scanner": "agile_bot.bots.base_bot.scanners.channel_specific_language_scanner.ChannelSpecificLanguageScanner"
+}

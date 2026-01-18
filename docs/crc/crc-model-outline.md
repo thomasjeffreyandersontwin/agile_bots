@@ -813,6 +813,7 @@ StoryNode (Base)
     Contains Children: StoryNodeChildren
     Delete self: StoryNodeSerializer
     Delete with children: StoryNodeSerializer,StoryNodeChildren
+    Execute action scoped to node: Action,Parameters,Bot
     Get/Update test: Test
 
 StoryNodeChildren
@@ -981,6 +982,7 @@ Story
     Get scenarios: List[Scenario]
     Get scenario outlines: List[ScenarioOutline]
     Get acceptance criteria: List[AcceptanceCriteria]
+    Maintain separate sequential ordering for scenarios and acceptance criteria: StoryNodeChildren
 
 StoryView
     Wraps story JSON: Story JSON
@@ -1081,6 +1083,7 @@ TTYStoryUser
 
 SubEpic
     Test file property: String
+    Validate cannot mix Sub-Epics and Stories: StoryNodeChildren
 
 SubEpicView
     Wraps sub epic JSON: SubEpic JSON

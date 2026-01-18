@@ -10,5 +10,13 @@
     "assumptions": [
       "this is an assumption"
     ]
+  },
+  "design": {
+    "decisions": {
+      "object_instantiation": "Self-Creating Objects",
+      "parent_child_management": "Explicit Collection Class",
+      "ui_domain_interaction": "Application Service Layer"
+    },
+    "assumptions": []
   }
 }

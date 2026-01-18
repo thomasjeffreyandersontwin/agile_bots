@@ -1,0 +1,75 @@
+{
+    "priority": 7,
+    "description": "Write atomic acceptance criteria. Avoid repeating common WHEN/THEN/AND blocks across multiple AC. State general case once, then only state what differs in variations. Example: WHEN node moves → general behavior, WHEN position specified → only state position difference.",
+    "do": {
+        "description": "Write one AC for general case, additional AC only state what changes. Example: WHEN moves → removes/adds/resequences; WHEN position specified → adds at position instead of last",
+        "guidance": [
+            {
+                "description": "State general behavior once in first acceptance criteria",
+                "example": [
+                    "WHEN Story Graph Node moves to new parent",
+                    "THEN node removes itself from current parent",
+                    "AND node adds itself to target parent as last child",
+                    "AND resequences siblings"
+                ]
+            },
+            {
+                "description": "Variations only state what differs from general case",
+                "example": [
+                    "WHEN position is specified",
+                    "THEN node adds itself at specified position instead of last"
+                ]
+            },
+            {
+                "description": "Edge cases state only the edge behavior",
+                "example": [
+                    "WHEN position exceeds children count",
+                    "THEN position adjusts to last"
+                ]
+            },
+            {
+                "description": "Use 'see previous' only when unavoidable - should be rare",
+                "example": [
+                    "WHEN User enters dot notation with position",
+                    "THEN CLI parses dot notation and position parameter",
+                    "AND resolves parent and child nodes [see previous acceptance criteria]"
+                ]
+            }
+        ]
+    },
+    "dont": {
+        "description": "Don't repeat common WHEN/THEN/AND blocks. Example: Don't have 4 AC that all say 'removes from parent, adds to target, resequences' with slight variations",
+        "guidance": [
+            {
+                "description": "Don't repeat the same base logic across multiple acceptance criteria",
+                "example": [
+                    "WHEN Story Graph Node moves to new parent",
+                    "THEN node removes itself from current parent",
+                    "AND node adds itself to target parent as last child",
+                    "AND resequences siblings",
+                    "",
+                    "WHEN Story Graph Node moves to new parent with position specified",
+                    "THEN node removes itself from current parent",
+                    "AND node adds itself to target parent at specified position",
+                    "AND resequences all children",
+                    "",
+                    "WHEN Story Graph Node moves with invalid position",
+                    "THEN node removes itself from current parent",
+                    "AND adjusts position to last",
+                    "AND moves node to adjusted position",
+                    "AND resequences siblings"
+                ]
+            },
+            {
+                "description": "Don't make variations repeat the full acceptance criteria",
+                "example": [
+                    "WHEN position specified",
+                    "THEN node removes from parent",
+                    "AND node adds at position",
+                    "AND resequences all children"
+                ]
+            }
+        ]
+    },
+    "scanner": "agile_bot.bots.base_bot.scanners.atomic_ac_scanner.AtomicACScanner"
+}

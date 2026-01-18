@@ -1,0 +1,732 @@
+(E) Invoke Bot
+    (E) Invoke Bot Directly
+        (E) Manage Story Graph
+            (E) Edit Story Graph
+                     (S) Create Child Story Node
+                        WHEN Strory Graph Node ceates new child Node
+                        THEN parent Story Node creates new child node of of appropriate  type with provided name
+                        AND parent Story Node adds the child as the last child of its children
+                        Example: child = bot.story_graph.epics["epic name"].createChild("child name")
+                        
+                        WHEN Story Graph Node creates new child with position specified
+                        THEN parent Story Node adds the child as the specfied position
+                        AND resequences all children at or after the position
+                        Example: child = bot.story_graph.epics["epic name"].createChild("child name", 2)
+
+                        WHEN Story Graph Node creates  new child with invalid position specified
+                        THEN adjusts position to last if exceeds children count
+                        AND creates new child node with provided data at adjusted position
+                        Example: child = bot.story_graph.epics["epic name"].createChild("child name", 9)
+
+                        WHEN Story Graph Node creates new child with identifical name as another child of Node
+                        THEN Story Graph Node identifies duplicate name
+                        AND returns error
+
+                        WHEN Story Graph Node creates new child  without a name
+                        THEN System populates name with unique field (eg: Child1)
+                        Example: child = bot.story_graph.epics["epic name"].createChild()
+
+                        WHEN Epic creates a child SubEpic
+                        THEN Epic adds Sub-Epic to children
+                        Example: subEpic = bot.story_graph.epics["epic name"].createChild("sub epic name")
+
+                        WHEN SubEpic with no Story children creates a child SubEpic
+                        THEN SubEpic adds SubEpic to children
+                        Example: subEpic = bot.story_graph.epics["sub epic name"].createChild("sub epic name")
+
+                        WHEN SubEpic creates Sub-Epic that has Stories children
+                        THEN SubEpic identifies SubEpic already contains Stories
+                        AND returns error indicating cannot create SubEpic under SubEpic with Stories
+                        BUT prevents create operation
+
+                        WHEN Sub-Epic with no SubEpic children creates a child Story
+                        THEN Sub-Epic creates default StoryGroup under Sub-Epic
+                        AND Sub-Epic adds Story to Stroy Group
+                        Example: subEpic = bot.story_graph.epics[sub "epic name"].createChild("story")
+
+                        WHEN SubEpic creates a child Story with existing Story children
+                        THEN SubEpic adds Story to existing SubEPic's Story Group
+
+                        WHEN SubEpic creates Story that has SubEpic children
+                        THEN SubEpic identifies SubEpic already contains Sub-Epics
+                        AND returns error indicating cannot create Story under SubEpic with Sub-Epics
+                        BUT prevents operation
+
+                        WHEN Story creates Scenario 
+                        THEN Story adds Scenario to common scenario child collection
+                        BUT Story does not add Scenario to acceptance criteria child collection
+
+                        WHEN Story creates ScenarioOutline 
+                        THEN Story adds ScenarioOutline to common scenario child collection
+                        BUT Story does not add Scenario to acceptance criteria child collection
+
+                        WHEN Bot creates AcceptanceCriteria under Story
+                        THEN Story adds Acceptance Criteria to its own child collection
+                        BUT Story does not add  Acceptance Criteria to scenarion child collection
+
+                    (S) Move Story Node To Parent
+                        WHEN Story Graph Node moves to new parent
+                        THEN node removes itself from current parent
+                        AND node adds itself to target parent as last child
+                        AND resequences original siblings on or after orignal location
+                        Example (parent API): bot.story_graph.epics["target epic"].addChild(childNode)
+                        Example (child API): childNode.moveTo(bot.story_graph.epics["target epic"])
+
+                        WHEN Story Graph Node moves to new parent with position specified
+                        THEN node removes itself from current parent
+                        AND node adds itself to target parent at specified position
+                        AND resequences all children at or after position in both locations
+                        Example (parent API): bot.story_graph.epics["target epic"].addChild(childNode, 2)
+                        Example (child API): childNode.moveTo(bot.story_graph.epics["target epic"], 2)
+                       
+                        WHEN Story Graph Node moves with invalid position specified
+                        THEN adjusts position to last if exceeds children count
+                        AND moves node to adjusted position
+                        Example (parent API): bot.story_graph.epics["target epic"].addChild(childNode, 99)
+                        Example (child API): childNode.moveTo(bot.story_graph.epics["target epic"], 99)
+
+                        WHEN Story Graph Node moves to same parent different position
+                        THEN node removes itself from current position
+                        AND node adds itself at new position
+                        AND resequences siblings
+                        Example (child API): childNode.moveTo(currentParent, 3)
+                        Example (child API): childNode.positiion =3 //property encapsulate logic
+
+                        WHEN Story Graph Node moves to parent where it already exists
+                        THEN Story Graph Node identifies child already under parent
+                        AND returns error
+
+                        WHEN SubEpic moves to SubEpic that has Stories
+                        THEN target SubEpic identifies it already contains Stories
+                        AND returns error indicating cannot move SubEpic to SubEpic with Stories
+                        BUT prevents move operation
+
+                        WHEN Story moves to SubEpic that has SubEpic children
+                        THEN target SubEpic identifies it already contains Sub-Epics
+                        AND returns error indicating cannot move Story to SubEpic with Sub-Epics
+                        BUT prevents move operation
+
+                        WHEN Story Graph Node moves to create circular reference
+                        THEN node identifies target parent is descendant of itself
+                        AND returns error indicating circular reference
+                        BUT prevents move operation
+
+                    (S) Delete Story Node
+                        WHEN Story Graph Node deletes itself without children
+                        THEN node removes itself from parent
+                        AND resequences remaining siblings
+                        Example: bot.story_graph.epics["epic name"].sub_epics["sub epic name"].delete()
+
+                        WHEN Story Graph Node deletes itself with children
+                        THEN node moves all children to node's parent as last children
+                        AND removes itself from parent
+                        AND resequences siblings
+                        Example: bot.story_graph.epics["epic name"].delete()
+
+                        WHEN Story Graph Node deletes itself including children
+                        THEN node recursively deletes all children
+                        AND removes itself from parent
+                        AND resequences siblings
+                        Example: bot.story_graph.epics["epic name"].deleteWithChildren()
+
+                    (S) Update Story Node Name
+                        WHEN Story Graph Node renames itself
+                        THEN node validates name not empty
+                        AND validates name unique among siblings
+                        AND updates node name
+                        Example: bot.story_graph.epics["old name"].rename("new name")
+
+                        WHEN Story Graph Node renames itself with empty or whitespace-only name
+                        THEN node identifies name is empty
+                        AND returns error
+
+                        WHEN Story Graph Node renames itself with duplicate sibling name
+                        THEN node identifies duplicate name among siblings
+                        AND returns error
+
+                        WHEN Story Graph Node renames itself with valid special characters
+                        THEN node validates name format
+                        AND updates node name
+
+                        WHEN Story Graph Node renames itself with invalid special characters
+                        THEN node validates name format
+                        AND identifies invalid characters
+                        AND returns error
+
+                    (S) Execute Action Scoped To Story Node
+
+                        WHEN Story Graph Node executes action with valid parameters
+                        THEN node validates action exists
+                        AND node invokes bot to execute action with scope context
+                        AND node validates graph structure remains valid after execution
+                        Example: bot.story_graph.epics["epic name"].executeAction("build", {"output": "docs/stories"})
+
+                        WHEN Story Graph Node executes action with invalid parameters
+                        THEN node invokes bot to execute action with scope context
+                        AND bot validates action parameters are invalid
+                        AND returns error with parameter requirements
+
+
+                    (S) Persist Story Graph Changes
+
+                        WHEN Story Graph structure is modified
+                        THEN Story Graph validates graph structure integrity
+                        AND Story Graph persists changes to storage
+                        AND Story Graph updates version metadata
+
+                        WHEN Story Graph persists changes successfully
+                        THEN Story Graph writes updated graph to file
+                        AND Story Graph verifies write successful
+
+                        WHEN Story Graph persistence fails
+                        THEN Story Graph identifies write failure
+                        AND Story Graph rolls back in-memory changes
+                        AND returns error with failure details
+
+                        WHEN Story Graph validates structure after modification
+                        THEN Story Graph checks all node references valid
+                        AND Story Graph checks sequential order consistency
+
+                        WHEN Story Graph identifies structure violations
+                        THEN Story Graph identifies violation details
+                        AND Story Graph prevents persistence
+                        AND returns error with violation specifics
+
+    (E) Invoke Bot Through Panel
+        (E) Manage Story Graph Through Panel
+            (E) Edit Story Graph In Panel
+                    (S) Add Existing Child Story Node To Parent
+
+                        WHEN User starts dragging node
+                        THEN Panel shows drag cursor with node icon
+
+                        WHEN User drags node over compatible parent
+                        THEN Panel highlights parent as valid drop target
+                        AND shows normal drop cursor
+
+                        WHEN User drags node over incompatible parent
+                        THEN Panel shows no-drop cursor
+
+                        WHEN User drags Sub-Epic node over SubEpic that has Stories
+                        THEN Panel shows no-drop cursor
+
+                        WHEN User drags Story node over SubEpic that has Sub-Epic children
+                        THEN Panel shows no-drop cursor
+
+                        WHEN User drags node already under parent over that parent
+                        THEN Panel shows no-drop cursor
+
+                        WHEN User drops node on compatible parent
+                        THEN Panel adds child to parent as last child
+                        AND assigns sequential order within appropriate child collection
+                        AND refreshes Story Tree
+
+                        WHEN User drops node at specific position under compatible parent
+                        THEN Panel inserts child under parent at position
+                        AND resequences all children at or after position
+
+                        WHEN User attempts to drop on incompatible parent
+                        THEN Panel ignores drop
+                        AND node returns to original position
+
+                    (S) Create Child Story Node Under Parent
+
+                        WHEN User selects Epic node in Story Tree
+                        THEN Panel shows "Create Sub-Epic" button in action panel to the right
+                        BUT does not show "Create Story" button
+                        BUT does not show "Create Scenario" button
+                        BUT does not show "Create Scenario Outline" button
+                        BUT does not show "Add Acceptance Criteria" button
+
+                        WHEN User selects SubEpic node that has no children in Story Tree
+                        THEN Panel shows "Create Sub-Epic" button in action panel to the right
+                        AND shows "Create Story" button in action panel to the right
+                        BUT does not show "Create Scenario" button
+                        BUT does not show "Create Scenario Outline" button
+                        BUT does not show "Add Acceptance Criteria" button
+
+                        WHEN User selects SubEpic node that has Sub-Epic children in Story Tree
+                        THEN Panel shows "Create Sub-Epic" button in action panel to the right
+                        BUT does not show "Create Story" button
+                        BUT does not show "Create Scenario" button
+                        BUT does not show "Create Scenario Outline" button
+                        BUT does not show "Add Acceptance Criteria" button
+
+                        WHEN User selects SubEpic node that has Stories in Story Tree
+                        THEN Panel shows "Create Story" button in action panel to the right
+                        BUT does not show "Create Sub-Epic" button
+                        BUT does not show "Create Scenario" button
+                        BUT does not show "Create Scenario Outline" button
+                        BUT does not show "Add Acceptance Criteria" button
+
+                        WHEN User selects Story node in Story Tree
+                        THEN Panel shows "Create Scenario" button in action panel to the right
+                        AND shows "Create Scenario Outline" button in action panel to the right
+                        AND shows "Add Acceptance Criteria" button in action panel to the right
+                        BUT does not show "Create Sub-Epic" button
+                        BUT does not show "Create Story" button
+
+                        WHEN User has Epic node selected 
+                        AND clicks "Create Sub-Epic" button in action panel
+                        THEN Panel creates Sub-Epic child node with unique generic name
+                        AND initializes Sub-Epic with empty sub-epics and story groups collections
+                        AND assigns next sequential order
+                        AND refreshes Story Tree
+                        AND puts node name in edit mode with text selected
+
+                        WHEN User has SubEpic node selected 
+                        AND clicks "Create Sub-Epic" button in action panel
+                        THEN Panel creates Sub-Epic child node with unique generic name
+                        AND initializes Sub-Epic with empty sub-epics and story groups collections
+
+                        WHEN User has SubEpic node selected 
+                        AND clicks "Create Story" button in action panel
+                        THEN Panel creates Story child node with unique generic name
+                        AND initializes Story with default users, story_type, empty scenarios collection, empty scenario outlines collection, and empty acceptance criteria collection
+
+                        WHEN User has Story node selected 
+                        AND clicks "Create Scenario" button in action panel
+                        THEN Panel creates Scenario child node with unique generic name
+                        AND initializes Scenario with empty steps and default test_method
+                        AND assigns sequential order within scenarios collection
+
+                        WHEN User has Story node selected 
+                        AND clicks "Create Scenario Outline" button in action panel
+                        THEN Panel creates ScenarioOutline child node with unique generic name
+                        AND initializes ScenarioOutline with empty examples and default test_method
+                        AND assigns sequential order within scenario outlines collection
+
+                        WHEN User has Story node selected 
+                        AND clicks "Add Acceptance Criteria" button in action panel
+                        THEN Panel creates AcceptanceCriteria child node with unique generic name
+                        AND initializes AcceptanceCriteria with empty condition and outcome
+                        AND assigns sequential order within acceptance criteria collection
+
+                        WHEN Panel displays Story node children in Story Tree
+                        THEN Panel displays scenarios and scenario outlines together as "Scenarios" group
+                        AND displays acceptance criteria as separate "Acceptance Criteria" group
+                        AND maintains grouped sequential ordering for scenarios AND scenario outlines, and separate sequential ordering for acceptance criteria
+
+                        WHEN User enters name that duplicates sibling while typing
+                        THEN Panel shows warning message in real-time
+                        AND disables save button
+
+                        WHEN User leaves required field empty
+                        THEN Panel shows field validation message
+                        AND disables save button
+
+                    (S) Delete Story Node From Parent
+
+                        WHEN User selects node without children in Story Tree
+                        THEN Panel shows "Delete" button in action panel to the right
+
+                        WHEN User selects node with children in Story Tree
+                        THEN Panel shows "Delete" button in action panel to the right
+                        AND shows "Delete Including Children" button in action panel to the right
+
+                        WHEN User clicks "Delete" button for node without children
+                        THEN Panel shows confirmation message inline in action panel
+                        AND shows confirm and cancel buttons
+
+                        WHEN User clicks confirm button
+                        THEN Panel removes node from parent
+                        AND resequences remaining siblings
+                        AND refreshes Story Tree
+                        AND hides confirmation message and buttons
+
+                        WHEN User clicks "Delete" button for node with children
+                        THEN Panel shows confirmation message with child count inline in action panel
+                        AND shows confirm and cancel buttons
+
+                        WHEN User clicks confirm button for delete with children
+                        THEN Panel moves all children to node's parent as last children
+                        AND Repeat this behavior with each child node recursively
+
+                        WHEN User clicks "Delete Including Children" button
+                        THEN Panel shows confirmation message with child count inline in action panel
+                        AND shows confirm and cancel buttons
+
+                        WHEN User clicks confirm button for delete including children
+                        THEN Panel recursively removes all children
+
+                        WHEN User clicks cancel button
+                        THEN Panel hides confirmation message and buttons
+                        AND node remains unchanged
+
+                    (S) Update Story Node name
+
+                        WHEN User clicks on node name to edit
+                        THEN Panel enables inline editing mode
+                        AND shows save and cancel buttons
+
+                        WHEN User types in name field
+                        THEN Panel validates name in real-time
+                        AND shows validation feedback
+                        AND enables save button if valid
+                        AND disables save button if invalid
+
+                        WHEN User types empty or whitespace-only name
+                        THEN Panel shows "Name required" message
+
+                        WHEN User types name that duplicates sibling
+                        THEN Panel shows "Name already exists" message
+
+                        WHEN User types name with invalid characters
+                        THEN Panel shows "Invalid characters" message
+
+                        WHEN User clicks save with valid name
+                        THEN Panel updates node name
+                        AND exits editing mode
+                        AND refreshes Story Tree
+
+                        WHEN User clicks cancel
+                        THEN Panel retains previous name
+                        AND exits editing mode
+
+                    (S) Move Story Node
+
+                        WHEN User starts dragging node to move
+                        THEN Panel shows drag cursor with node icon
+
+                        WHEN User drags node over compatible parent at different location
+                        THEN Panel highlights parent as valid drop target
+                        AND shows normal drop cursor
+
+                        WHEN User drags node over incompatible parent
+                        THEN Panel shows no-drop cursor
+
+                        WHEN User drags node over its own descendant
+                        THEN Panel shows no-drop cursor
+
+                        WHEN User drops node on new compatible parent
+                        THEN Panel removes node from source parent
+                        AND inserts node under target parent at position
+                        AND resequences nodes in both locations
+                        AND refreshes Story Tree
+
+                        WHEN User drops node at different position under same parent
+                        THEN Panel removes node from current position
+                        AND inserts node at new position
+
+                        WHEN User attempts to drop on incompatible parent or descendant
+                        THEN Panel ignores drop
+                        AND node returns to original position
+
+                    (S) Submit Action Scoped To Story Scope
+
+                        WHEN User selects story scope node
+                        THEN Panel shows available actions for that scope
+                        AND enables action buttons
+
+                        WHEN User clicks action button
+                        THEN Panel shows action parameter fields inline in action panel if needed
+                        OR executes action immediately if no parameters
+
+                        WHEN User enters action parameters
+                        THEN Panel validates parameters in real-time
+                        AND shows validation feedback inline
+                        AND enables execute button if valid
+
+                        WHEN User provides invalid parameters
+                        THEN Panel shows validation message inline
+
+                        WHEN User executes action with valid parameters
+                        THEN Panel applies modifications within story scope
+                        AND validates graph structure remains valid
+                        AND shows success message inline
+                        AND refreshes Story Tree
+
+                        WHEN Action requires additional context
+                        THEN Panel shows additional context fields inline in action panel
+
+                    (S) Automatically Refresh Story Graph Changes
+
+                        WHEN System detects story graph file modification
+                        THEN System reads updated graph structure
+                        AND validates graph structure integrity
+                        AND notifies Panel to refresh display
+
+                        WHEN Panel receives refresh notification
+                        THEN Panel reloads story graph data
+                        AND updates visible story structure
+                        AND preserves current navigation state if possible
+
+                        WHEN System detects invalid graph structure after modification
+                        THEN System identifies structure violations
+                        AND displays error notification in Panel
+                        AND retains previous valid graph state
+
+
+    (E) Invoke Bot Through REPL
+        (E) Manage Story Graph Using REPL
+            (E) Edit Story Graph In CLI
+                    (S) Add Existing Child Story Node To Parent
+
+                        WHEN User enters dot notation to add existing child to parent
+                        EXAMPLE: cli.story_graph."Invoke Bot".add_existing_sub_epic."Manage Story Graph"
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Some Story".add_existing_scenario."Login Flow"
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Some Story".add_existing_acceptance_criteria."User can submit"
+                        THEN CLI parses dot notation path to parent node
+                        AND resolves parent node from story graph
+                        AND validates parent node exists
+                        AND parses child node identifier from command
+                        AND resolves child node from story graph
+                        AND validates child node exists
+                        AND validates child type compatible with parent type
+                        AND validates child not already under parent
+                        AND adds child to parent as last child
+                        AND assigns sequential order within appropriate child collection
+                        AND outputs success message
+
+                        WHEN User enters dot notation with position to add existing child
+                        EXAMPLE: cli.story_graph."Invoke Bot".add_existing_sub_epic."Manage Story Graph".at_position.2
+                        THEN CLI parses dot notation and position parameter
+                        AND resolves parent and child nodes [ - see previous acceptance criteria]
+                        AND validates nodes exist and types compatible [ - see previous acceptance criteria]
+                        AND adjusts position to last if exceeds children count
+                        AND inserts child under parent at position
+                        AND resequences all children at or after position
+                        AND outputs success message
+
+                        WHEN User enters dot notation with non-existent parent path
+                        THEN CLI attempts to resolve parent node
+                        AND identifies parent node does not exist in path
+                        AND outputs error message with valid paths
+
+                        WHEN User enters non-existent child identifier
+                        THEN CLI attempts to resolve child node
+                        AND identifies child node does not exist
+                        AND outputs error message
+
+                        WHEN User enters dot notation with incompatible child type
+                        THEN CLI resolves parent and child nodes [ - see previous acceptance criteria]
+                        AND validates type compatibility [ - see previous acceptance criteria]
+                        AND identifies type incompatibility
+                        AND outputs error message with allowed child types
+
+                        WHEN User attempts to add Sub-Epic to SubEpic that has Stories
+                        THEN CLI invokes domain validation
+                        AND domain checks SubEpic for existing StoryGroups
+                        AND identifies SubEpic already contains Stories
+                        AND CLI outputs error message indicating cannot add Sub-Epic to SubEpic with Stories
+
+                        WHEN User attempts to add Story to SubEpic that has Sub-Epic children
+                        THEN CLI invokes domain validation
+                        AND domain checks SubEpic for existing Sub-Epics
+                        AND identifies SubEpic already contains Sub-Epics
+                        AND CLI outputs error message indicating cannot add Story to SubEpic with Sub-Epics
+
+                    (S) Create Child Story Node Under Parent
+
+                        WHEN User enters dot notation to create new child with data
+                        EXAMPLE: cli.story_graph."Invoke Bot".create_sub_epic."Manage Bot Information"
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Some Story".create_scenario."Login Flow"
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Some Story".create_scenario_outline."Data Entry"
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Some Story".add_acceptance_criteria."User can submit"
+                        THEN CLI parses dot notation path to parent node
+                        AND resolves parent node from story graph
+                        AND validates parent node exists
+                        AND parses child node type and data from command
+                        AND validates child node type allowed for parent type
+                        AND validates child node data completeness and format
+                        AND creates new child node as last child
+                        AND assigns sequential order within appropriate child collection
+                        AND outputs success message with new node path
+
+                        WHEN User enters dot notation with position to create new child
+                        EXAMPLE: cli.story_graph."Invoke Bot".create_sub_epic."Manage Bot Information".at_position.1
+                        THEN CLI parses dot notation, type, data, and position
+                        AND resolves parent node and validates type allowed [ - see previous acceptance criteria]
+                        AND adjusts position to last if exceeds children count
+                        AND creates new child node at position
+                        AND resequences all children at or after position
+                        AND outputs success message with new node path
+
+                        WHEN User enters dot notation with non-existent parent path
+                        THEN CLI attempts to resolve parent node
+                        AND identifies parent node does not exist in path
+                        AND outputs error message with valid paths
+
+                        WHEN User enters incompatible child node type for parent
+                        THEN CLI parses parent path and child type
+                        AND resolves parent node [ - see previous acceptance criteria]
+                        AND validates child type against parent type rules [ - see previous acceptance criteria]
+                        AND identifies invalid child type
+                        AND outputs error message with allowed child types
+
+                        WHEN User attempts to create Sub-Epic under SubEpic that has Stories
+                        THEN CLI invokes domain validation
+                        AND domain checks SubEpic for existing StoryGroups
+                        AND identifies SubEpic already contains Stories
+                        AND CLI outputs error message indicating cannot create Sub-Epic under SubEpic with Stories
+
+                        WHEN User attempts to create Story under SubEpic that has Sub-Epic children
+                        THEN CLI invokes domain validation
+                        AND domain checks SubEpic for existing Sub-Epics
+                        AND identifies SubEpic already contains Sub-Epics
+                        AND CLI outputs error message indicating cannot create Story under SubEpic with Sub-Epics
+
+                        WHEN User enters child node data with duplicate name
+                        THEN CLI resolves parent and checks existing children names [ - see previous acceptance criteria]
+                        AND identifies duplicate name
+                        AND outputs error message
+
+                        WHEN User enters child node data with missing required fields
+                        THEN CLI validates required fields for child type
+                        AND identifies missing fields
+                        AND outputs error message with field names
+
+                    (S) Delete Story Node From Parent
+
+                        WHEN User enters dot notation to delete node without children
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Manage Bot Information".delete
+                        THEN CLI parses dot notation path to node
+                        AND resolves node from story graph
+                        AND validates node exists
+                        AND removes child from parent
+                        AND resequences remaining siblings
+                        AND outputs success message
+
+                        WHEN User enters dot notation to delete node that has children
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Manage Story Graph".delete
+                        THEN CLI parses dot notation path to node [ - see previous acceptance criteria]
+                        AND resolves node and checks for children [ - see previous acceptance criteria]
+                        AND moves all children to node's parent as last children
+                        AND Repeat this behavior with each child node recursively
+
+                        WHEN User enters dot notation with non-existent node path
+                        THEN CLI attempts to resolve node
+                        AND identifies node does not exist in path
+                        AND outputs error message with valid paths
+
+                    (S) Update Story Node name
+
+                        WHEN User enters dot notation to update node name
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Manage Bot Information".rename."Manage Bot Config"
+                        THEN CLI parses dot notation path to node
+                        AND resolves node from story graph
+                        AND validates node exists
+                        AND parses new name from command
+                        AND validates name not empty
+                        AND validates name unique among siblings
+                        AND updates node name
+                        AND outputs success message
+
+                        WHEN User enters dot notation with non-existent node path for update
+                        THEN CLI attempts to resolve node [ - see previous acceptance criteria]
+                        AND identifies node does not exist in path
+                        AND outputs error message with valid paths
+
+                        WHEN User enters empty or whitespace-only name
+                        THEN CLI validates name not empty [ - see previous acceptance criteria]
+                        AND outputs error message
+
+                        WHEN User enters name that duplicates sibling node name
+                        THEN CLI checks sibling names [ - see previous acceptance criteria]
+                        AND identifies duplicate
+                        AND outputs error message
+
+                        WHEN User enters name with invalid special characters
+                        THEN CLI validates name format
+                        AND identifies invalid characters
+                        AND outputs error message
+
+                    (S) Move Story Node
+
+                        WHEN User enters dot notation to move node to new parent with position
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Manage Bot".move_to."Other Epic".at_position.2
+                        THEN CLI parses dot notation path to source node
+                        AND resolves source node from story graph
+                        AND validates source node exists
+                        AND parses target parent path and position from command
+                        AND resolves target parent from story graph
+                        AND validates target parent exists
+                        AND validates source node type compatible with target parent type
+                        AND adjusts position to last if exceeds target children count
+                        AND removes node from source parent
+                        AND inserts node under target parent at position
+                        AND resequences nodes in both locations
+                        AND outputs success message
+
+                        WHEN User enters dot notation to move node to different position under same parent
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Manage Bot".move_to_position.3
+                        THEN CLI parses dot notation path to node [ - see previous acceptance criteria]
+                        AND parses new position from command
+                        AND removes node from current position
+                        AND inserts node at new position
+
+                        WHEN User enters dot notation with non-existent source node path
+                        THEN CLI attempts to resolve source node [ - see previous acceptance criteria]
+                        AND identifies node does not exist in path
+                        AND outputs error message with valid paths
+
+                        WHEN User enters dot notation with non-existent target parent path
+                        THEN CLI attempts to resolve target parent [ - see previous acceptance criteria]
+                        AND identifies parent does not exist in path
+                        AND outputs error message with valid paths
+
+                        WHEN User moves incompatible node type to target parent
+                        THEN CLI resolves source node and target parent [ - see previous acceptance criteria]
+                        AND validates type compatibility [ - see previous acceptance criteria]
+                        AND identifies type incompatibility
+                        AND outputs error message with allowed child types
+
+                        WHEN User moves node to create circular reference
+                        THEN CLI validates target parent not descendant of source node
+                        AND identifies circular reference
+                        AND outputs error message
+
+                    (S) Submit Action Scoped To Story Scope
+
+                        WHEN User enters dot notation to execute action with story scope
+                        EXAMPLE: cli.story_graph."Invoke Bot"."Manage Story Graph".build.output."docs/stories"
+                        THEN CLI parses dot notation path to story scope
+                        AND resolves scope from story graph
+                        AND validates scope exists
+                        AND parses action name and parameters from command
+                        AND validates action exists
+                        AND executes action with scope context
+                        AND outputs action result
+
+                        WHEN User enters dot notation with non-existent scope path
+                        THEN CLI attempts to resolve scope [ - see previous acceptance criteria]
+                        AND identifies scope does not exist in path
+                        AND outputs error message with valid scope paths
+
+                        WHEN User enters invalid action parameters
+                        THEN CLI validates action parameters [ - see previous acceptance criteria]
+                        AND identifies parameter violations
+                        AND outputs error message with requirements
+
+                        WHEN User submits action that requires additional context
+                        THEN CLI identifies missing context
+                        AND prompts user for additional context
+
+                        WHEN Action execution modifies story graph
+                        THEN CLI applies modifications within story scope
+                        AND validates graph structure remains valid
+                        AND outputs success message
+
+                    (S) Automatically Refresh Story Graph Changes
+
+                        WHEN System detects story graph file modification
+                        THEN System reads updated graph structure
+                        AND validates graph structure integrity
+                        AND stores validation result for next CLI action
+
+                        WHEN User enters next CLI command after valid external modification
+                        THEN CLI displays informational message "Story graph updated from external source"
+                        AND reloads story graph data
+                        AND executes user command with updated graph
+
+                        WHEN User enters next CLI command after invalid external modification
+                        THEN CLI displays warning message "Story graph modified externally with errors"
+                        AND outputs structure violation details
+                        AND retains previous valid graph state
+                        AND executes user command with previous valid graph
+
+                        WHEN Multiple rapid changes occur to story graph before next CLI action
+                        THEN System debounces modification detection
+                        AND waits for stable state
+                        AND validates final stable state
+                        AND displays single notification on next CLI action

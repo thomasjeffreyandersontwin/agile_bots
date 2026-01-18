@@ -1525,70 +1525,157 @@
                       "connector": null,
                       "stories": [
                         {
-                          "name": "Add Child Story Node To Parent",
+                          "name": "Create Child Story Node",
                           "sequential_order": 1,
                           "connector": "or",
                           "users": [
-                            "Bot Behavior"
+                            "Story Graph Node"
                           ],
                           "story_type": "user",
-                          "test_class": "TestAddChildStoryNodeToParent",
+                          "test_class": "TestCreateChildStoryNode",
+                          "acceptance_criteria": [
+                            "WHEN Story Graph Node creates new child Node\nTHEN parent Story Node creates new child node of appropriate type with provided name\nAND parent Story Node adds the child as the last child of its children\nExample: child = bot.story_graph.epics[\"epic name\"].createChild(\"child name\")",
+                            "WHEN Story Graph Node creates new child with position specified\nTHEN parent Story Node adds the child as the specified position\nAND resequences all children at or after the position\nExample: child = bot.story_graph.epics[\"epic name\"].createChild(\"child name\", 2)",
+                            "WHEN Story Graph Node creates new child with invalid position specified\nTHEN adjusts position to last if exceeds children count\nAND creates new child node with provided data at adjusted position\nExample: child = bot.story_graph.epics[\"epic name\"].createChild(\"child name\", 9)",
+                            "WHEN Story Graph Node creates new child with identical name as another child of Node\nTHEN Story Graph Node identifies duplicate name\nAND returns error",
+                            "WHEN Story Graph Node creates new child without a name\nTHEN System populates name with unique field (eg: Child1)\nExample: child = bot.story_graph.epics[\"epic name\"].createChild()",
+                            "WHEN Epic creates a child SubEpic\nTHEN Epic adds Sub-Epic to children\nExample: subEpic = bot.story_graph.epics[\"epic name\"].createChild(\"sub epic name\")",
+                            "WHEN SubEpic with no Story children creates a child SubEpic\nTHEN SubEpic adds SubEpic to children\nExample: subEpic = bot.story_graph.epics[\"sub epic name\"].createChild(\"sub epic name\")",
+                            "WHEN SubEpic creates Sub-Epic that has Stories children\nTHEN SubEpic identifies SubEpic already contains Stories\nAND returns error indicating cannot create SubEpic under SubEpic with Stories\nBUT prevents create operation",
+                            "WHEN Sub-Epic with no SubEpic children creates a child Story\nTHEN Sub-Epic creates default StoryGroup under Sub-Epic\nAND Sub-Epic adds Story to Story Group\nExample: story = bot.story_graph.epics[\"sub epic name\"].createChild(\"story\")",
+                            "WHEN SubEpic creates a child Story with existing Story children\nTHEN SubEpic adds Story to existing SubEpic's Story Group",
+                            "WHEN SubEpic creates Story that has SubEpic children\nTHEN SubEpic identifies SubEpic already contains Sub-Epics\nAND returns error indicating cannot create Story under SubEpic with Sub-Epics\nBUT prevents operation",
+                            "WHEN Story creates Scenario\nTHEN Story adds Scenario to common scenario child collection\nBUT Story does not add Scenario to acceptance criteria child collection",
+                            "WHEN Story creates ScenarioOutline\nTHEN Story adds ScenarioOutline to common scenario child collection\nBUT Story does not add Scenario to acceptance criteria child collection",
+                            "WHEN Story creates AcceptanceCriteria\nTHEN Story adds Acceptance Criteria to its own child collection\nBUT Story does not add Acceptance Criteria to scenario child collection"
+                          ],
                           "scenarios": []
                         },
                         {
-                          "name": "Delete Story Node From Parent",
+                          "name": "Move Story Node To Parent",
                           "sequential_order": 2,
                           "connector": "or",
                           "users": [
-                            "Bot Behavior"
+                            "Story Graph Node"
                           ],
                           "story_type": "user",
-                          "test_class": "TestDeleteStoryNodeFromParent",
+                          "test_class": "TestMoveStoryNodeToParent",
+                          "acceptance_criteria": [
+                            "WHEN Story Graph Node moves to new parent\nTHEN node removes itself from current parent\nAND node adds itself to target parent as last child\nAND resequences original siblings on or after original location\nExample (parent API): bot.story_graph.epics[\"target epic\"].addChild(childNode)\nExample (child API): childNode.moveTo(bot.story_graph.epics[\"target epic\"])",
+                            "WHEN Story Graph Node moves to new parent with position specified\nTHEN node removes itself from current parent\nAND node adds itself to target parent at specified position\nAND resequences all children at or after position in both locations\nExample (parent API): bot.story_graph.epics[\"target epic\"].addChild(childNode, 2)\nExample (child API): childNode.moveTo(bot.story_graph.epics[\"target epic\"], 2)",
+                            "WHEN Story Graph Node moves with invalid position specified\nTHEN adjusts position to last if exceeds children count\nAND moves node to adjusted position\nExample (parent API): bot.story_graph.epics[\"target epic\"].addChild(childNode, 99)\nExample (child API): childNode.moveTo(bot.story_graph.epics[\"target epic\"], 99)",
+                            "WHEN Story Graph Node moves to same parent different position\nTHEN node removes itself from current position\nAND node adds itself at new position\nAND resequences siblings\nExample (child API): childNode.moveTo(currentParent, 3)\nExample (child API): childNode.position = 3 //property encapsulates logic",
+                            "WHEN Story Graph Node moves to parent where it already exists\nTHEN Story Graph Node identifies child already under parent\nAND returns error",
+                            "WHEN SubEpic moves to SubEpic that has Stories\nTHEN target SubEpic identifies it already contains Stories\nAND returns error indicating cannot move SubEpic to SubEpic with Stories\nBUT prevents move operation",
+                            "WHEN Story moves to SubEpic that has SubEpic children\nTHEN target SubEpic identifies it already contains Sub-Epics\nAND returns error indicating cannot move Story to SubEpic with Sub-Epics\nBUT prevents move operation",
+                            "WHEN Story Graph Node moves to create circular reference\nTHEN node identifies target parent is descendant of itself\nAND returns error indicating circular reference\nBUT prevents move operation"
+                          ],
                           "scenarios": []
                         },
                         {
-                          "name": "Update Story Node name",
+                          "name": "Delete Story Node",
                           "sequential_order": 3,
                           "connector": "or",
                           "users": [
-                            "Bot Behavior"
+                            "Story Graph Node"
                           ],
                           "story_type": "user",
-                          "test_class": "TestUpdateStoryNodename",
+                          "test_class": "TestDeleteStoryNode",
+                          "acceptance_criteria": [
+                            "WHEN Story Graph Node deletes itself without children\nTHEN node removes itself from parent\nAND resequences remaining siblings\nExample: bot.story_graph.epics[\"epic name\"].sub_epics[\"sub epic name\"].delete()",
+                            "WHEN Story Graph Node deletes itself with children\nTHEN node moves all children to node's parent as last children\nAND removes itself from parent\nAND resequences siblings\nExample: bot.story_graph.epics[\"epic name\"].delete()",
+                            "WHEN Story Graph Node deletes itself including children\nTHEN node recursively deletes all children\nAND removes itself from parent\nAND resequences siblings\nExample: bot.story_graph.epics[\"epic name\"].deleteWithChildren()"
+                          ],
                           "scenarios": []
                         },
                         {
-                          "name": "Move Story Node",
+                          "name": "Update Story Node Name",
                           "sequential_order": 4,
                           "connector": "or",
                           "users": [
-                            "Bot Behavior"
+                            "Story Graph Node"
                           ],
                           "story_type": "user",
-                          "test_class": "TestMoveStoryNode",
+                          "test_class": "TestUpdateStoryNodeName",
+                          "acceptance_criteria": [
+                            "WHEN Story Graph Node renames itself\nTHEN node validates name not empty\nAND validates name unique among siblings\nAND updates node name\nExample: bot.story_graph.epics[\"old name\"].rename(\"new name\")",
+                            "WHEN Story Graph Node renames itself with empty or whitespace-only name\nTHEN node identifies name is empty\nAND returns error",
+                            "WHEN Story Graph Node renames itself with duplicate sibling name\nTHEN node identifies duplicate name among siblings\nAND returns error",
+                            "WHEN Story Graph Node renames itself with valid special characters\nTHEN node validates name format\nAND updates node name",
+                            "WHEN Story Graph Node renames itself with invalid special characters\nTHEN node validates name format\nAND identifies invalid characters\nAND returns error"
+                          ],
                           "scenarios": []
                         },
                         {
-                          "name": "Submit Action Scoped To Story Scope",
+                          "name": "Execute Action Scoped To Story Node",
                           "sequential_order": 5,
                           "connector": "or",
                           "users": [
-                            "Bot Behavior"
+                            "Story Graph Node"
                           ],
                           "story_type": "user",
-                          "test_class": "TestSubmitActionScopedToStoryScope",
+                          "test_class": "TestExecuteActionScopedToStoryNode",
+                          "acceptance_criteria": [
+                            "WHEN Story Graph Node executes action with valid parameters\nTHEN node validates action exists\nAND node invokes bot to execute action with scope context\nAND node validates graph structure remains valid after execution\nExample: bot.story_graph.epics[\"epic name\"].executeAction(\"build\", {\"output\": \"docs/stories\"})",
+                            "WHEN Story Graph Node executes action with invalid parameters\nTHEN node invokes bot to execute action with scope context\nAND bot validates action parameters are invalid\nAND returns error with parameter requirements"
+                          ],
                           "scenarios": []
                         },
                         {
-                          "name": "Update Story Graph Changes",
+                          "name": "Persist Story Graph Changes",
                           "sequential_order": 6,
                           "connector": "or",
                           "users": [
-                            "Bot Behavior"
+                            "Story Graph"
                           ],
                           "story_type": "user",
-                          "test_class": "TestUpdateStoryGraphChanges",
+                          "test_class": "TestPersistStoryGraphChanges",
+                          "acceptance_criteria": [
+                            "WHEN Story Graph structure is modified\nTHEN Story Graph validates graph structure integrity\nAND Story Graph persists changes to storage\nAND Story Graph updates version metadata",
+                            "WHEN Story Graph persists changes successfully\nTHEN Story Graph writes updated graph to file\nAND Story Graph verifies write successful",
+                            "WHEN Story Graph persistence fails\nTHEN Story Graph identifies write failure\nAND Story Graph rolls back in-memory changes\nAND returns error with failure details",
+                            "WHEN Story Graph validates structure after modification\nTHEN Story Graph checks all node references valid\nAND Story Graph checks sequential order consistency",
+                            "WHEN Story Graph identifies structure violations\nTHEN Story Graph identifies violation details\nAND Story Graph prevents persistence\nAND returns error with violation specifics"
+                          ],
                           "scenarios": []
+                        }
+                      ]
+                    }
+                  ],
+                  "domain_concepts": [
+                    {
+                      "name": "StoryNode (Base)",
+                      "module": "story_graph.nodes",
+                      "responsibilities": [
+                        {
+                          "name": "Execute action scoped to node: Action, Parameters",
+                          "collaborators": [
+                            "Bot"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "SubEpic",
+                      "module": "story_graph.sub_epic",
+                      "responsibilities": [
+                        {
+                          "name": "Validate cannot mix Sub-Epics and Stories",
+                          "collaborators": [
+                            "StoryNodeChildren"
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Story",
+                      "module": "story_graph.story",
+                      "responsibilities": [
+                        {
+                          "name": "Maintain separate sequential ordering for scenarios and acceptance criteria",
+                          "collaborators": [
+                            "StoryNodeChildren"
+                          ]
                         }
                       ]
                     }
@@ -8868,6 +8955,14 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestAddChildStoryNodeToParent",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid parent node identifier AND valid child node data\nTHEN System validates parent node exists in graph\nAND System validates child node structure matches schema\nAND System adds child node to parent node\nAND System assigns sequential order to child node",
+                            "WHEN Bot Behavior submits parent node identifier for non-existent node\nTHEN System identifies parent node does not exist\nAND System returns error with parent node identifier",
+                            "WHEN Bot Behavior submits invalid child node data structure\nTHEN System validates child node structure\nAND System identifies structure violations\nAND System returns error with validation details",
+                            "WHEN Bot Behavior submits child node with duplicate name under same parent\nTHEN System checks existing child nodes under parent\nAND System identifies duplicate name\nAND System returns error with duplicate node name",
+                            "WHEN Bot Behavior adds child to parent with existing children\nTHEN System retrieves existing children count\nAND System assigns next sequential order to new child\nAND System preserves existing children order",
+                            "WHEN Bot Behavior adds child node with missing required fields\nTHEN System validates required fields present\nAND System identifies missing fields\nAND System returns error with missing field names"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -8879,6 +8974,12 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestDeleteStoryNodeFromParent",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid node identifier to delete\nTHEN System validates node exists in graph\nAND System validates node has parent\nAND System removes node from parent\nAND System resequences remaining sibling nodes",
+                            "WHEN Bot Behavior submits node identifier for non-existent node\nTHEN System identifies node does not exist\nAND System returns error with node identifier",
+                            "WHEN Bot Behavior deletes node with child nodes\nTHEN System checks for child nodes\nAND System recursively removes child nodes\nAND System removes parent node",
+                            "WHEN Bot Behavior deletes node from parent with multiple children\nTHEN System removes target node\nAND System resequences remaining children\nAND System preserves sibling node order"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -8890,6 +8991,13 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestUpdateStoryNodename",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid node identifier AND new node name\nTHEN System validates node exists in graph\nAND System validates new name not empty\nAND System validates new name unique among siblings\nAND System updates node name",
+                            "WHEN Bot Behavior submits node identifier for non-existent node\nTHEN System identifies node does not exist\nAND System returns error with node identifier",
+                            "WHEN Bot Behavior submits empty or whitespace-only name\nTHEN System validates name not empty\nAND System returns error indicating invalid name",
+                            "WHEN Bot Behavior submits name that duplicates sibling node name\nTHEN System checks sibling node names\nAND System identifies duplicate name\nAND System returns error with duplicate node name",
+                            "WHEN Bot Behavior updates name with special characters\nTHEN System validates name format\nAND System updates node name if valid\nAND System returns error if name contains invalid characters"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -8901,6 +9009,14 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestMoveStoryNode",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid node identifier AND new parent identifier AND new position\nTHEN System validates source node exists\nAND System validates target parent exists\nAND System validates position within bounds\nAND System removes node from current parent\nAND System inserts node at new position under new parent\nAND System resequences nodes in both locations",
+                            "WHEN Bot Behavior moves node to same parent different position\nTHEN System removes node from current position\nAND System inserts node at new position\nAND System resequences sibling nodes",
+                            "WHEN Bot Behavior submits non-existent node identifier\nTHEN System identifies node does not exist\nAND System returns error with node identifier",
+                            "WHEN Bot Behavior submits non-existent target parent identifier\nTHEN System identifies parent does not exist\nAND System returns error with parent identifier",
+                            "WHEN Bot Behavior moves node to position exceeding sibling count\nTHEN System validates position\nAND System returns error with valid position range",
+                            "WHEN Bot Behavior moves node to create circular reference\nTHEN System validates target parent not descendant of source node\nAND System returns error indicating circular reference"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -8912,6 +9028,14 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestSubmitActionScopedToStoryScope",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid action name AND story scope identifier\nTHEN System validates action exists\nAND System validates story scope exists in graph\nAND System resolves story scope path\nAND System executes action with story scope context",
+                            "WHEN Bot Behavior submits non-existent action name\nTHEN System identifies action does not exist\nAND System returns error with available action names",
+                            "WHEN Bot Behavior submits non-existent story scope identifier\nTHEN System identifies story scope does not exist\nAND System returns error with scope identifier",
+                            "WHEN Bot Behavior submits action with invalid parameters for story scope\nTHEN System validates action parameters\nAND System identifies parameter violations\nAND System returns error with parameter requirements",
+                            "WHEN Bot Behavior submits action that requires additional context\nTHEN System identifies missing context\nAND System requests additional context from behavior",
+                            "WHEN Action execution modifies story graph\nTHEN System applies modifications within story scope\nAND System validates graph structure remains valid"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -8923,6 +9047,12 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestAutomaticallyRefreshStoryGraphChanges",
+                          "acceptance_criteria": [
+                            "WHEN System detects story graph file modification\nTHEN System reads updated graph structure\nAND System validates graph structure integrity\nAND System notifies Panel to refresh display",
+                            "WHEN Panel receives refresh notification\nTHEN Panel reloads story graph data\nAND Panel updates visible story structure\nAND Panel preserves current navigation state if possible",
+                            "WHEN System detects invalid graph structure after modification\nTHEN System identifies structure violations\nAND System displays error notification in Panel\nAND System retains previous valid graph state",
+                            "WHEN Multiple rapid changes occur to story graph\nTHEN System debounces refresh requests\nAND System waits for stable state\nAND System performs single refresh after stabilization"
+                          ],
                           "scenarios": []
                         }
                       ]
@@ -10915,6 +11045,14 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestAddChildStoryNodeToParent",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid parent node identifier AND valid child node data\nTHEN System validates parent node exists in graph\nAND System validates child node structure matches schema\nAND System adds child node to parent node\nAND System assigns sequential order to child node",
+                            "WHEN Bot Behavior submits parent node identifier for non-existent node\nTHEN System identifies parent node does not exist\nAND System returns error with parent node identifier",
+                            "WHEN Bot Behavior submits invalid child node data structure\nTHEN System validates child node structure\nAND System identifies structure violations\nAND System returns error with validation details",
+                            "WHEN Bot Behavior submits child node with duplicate name under same parent\nTHEN System checks existing child nodes under parent\nAND System identifies duplicate name\nAND System returns error with duplicate node name",
+                            "WHEN Bot Behavior adds child to parent with existing children\nTHEN System retrieves existing children count\nAND System assigns next sequential order to new child\nAND System preserves existing children order",
+                            "WHEN Bot Behavior adds child node with missing required fields\nTHEN System validates required fields present\nAND System identifies missing fields\nAND System returns error with missing field names"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -10926,6 +11064,12 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestDeleteStoryNodeFromParent",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid node identifier to delete\nTHEN System validates node exists in graph\nAND System validates node has parent\nAND System removes node from parent\nAND System resequences remaining sibling nodes",
+                            "WHEN Bot Behavior submits node identifier for non-existent node\nTHEN System identifies node does not exist\nAND System returns error with node identifier",
+                            "WHEN Bot Behavior deletes node with child nodes\nTHEN System checks for child nodes\nAND System recursively removes child nodes\nAND System removes parent node",
+                            "WHEN Bot Behavior deletes node from parent with multiple children\nTHEN System removes target node\nAND System resequences remaining children\nAND System preserves sibling node order"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -10937,6 +11081,13 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestUpdateStoryNodename",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid node identifier AND new node name\nTHEN System validates node exists in graph\nAND System validates new name not empty\nAND System validates new name unique among siblings\nAND System updates node name",
+                            "WHEN Bot Behavior submits node identifier for non-existent node\nTHEN System identifies node does not exist\nAND System returns error with node identifier",
+                            "WHEN Bot Behavior submits empty or whitespace-only name\nTHEN System validates name not empty\nAND System returns error indicating invalid name",
+                            "WHEN Bot Behavior submits name that duplicates sibling node name\nTHEN System checks sibling node names\nAND System identifies duplicate name\nAND System returns error with duplicate node name",
+                            "WHEN Bot Behavior updates name with special characters\nTHEN System validates name format\nAND System updates node name if valid\nAND System returns error if name contains invalid characters"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -10948,6 +11099,14 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestMoveStoryNode",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid node identifier AND new parent identifier AND new position\nTHEN System validates source node exists\nAND System validates target parent exists\nAND System validates position within bounds\nAND System removes node from current parent\nAND System inserts node at new position under new parent\nAND System resequences nodes in both locations",
+                            "WHEN Bot Behavior moves node to same parent different position\nTHEN System removes node from current position\nAND System inserts node at new position\nAND System resequences sibling nodes",
+                            "WHEN Bot Behavior submits non-existent node identifier\nTHEN System identifies node does not exist\nAND System returns error with node identifier",
+                            "WHEN Bot Behavior submits non-existent target parent identifier\nTHEN System identifies parent does not exist\nAND System returns error with parent identifier",
+                            "WHEN Bot Behavior moves node to position exceeding sibling count\nTHEN System validates position\nAND System returns error with valid position range",
+                            "WHEN Bot Behavior moves node to create circular reference\nTHEN System validates target parent not descendant of source node\nAND System returns error indicating circular reference"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -10959,6 +11118,14 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestSubmitActionScopedToStoryScope",
+                          "acceptance_criteria": [
+                            "WHEN Bot Behavior submits valid action name AND story scope identifier\nTHEN System validates action exists\nAND System validates story scope exists in graph\nAND System resolves story scope path\nAND System executes action with story scope context",
+                            "WHEN Bot Behavior submits non-existent action name\nTHEN System identifies action does not exist\nAND System returns error with available action names",
+                            "WHEN Bot Behavior submits non-existent story scope identifier\nTHEN System identifies story scope does not exist\nAND System returns error with scope identifier",
+                            "WHEN Bot Behavior submits action with invalid parameters for story scope\nTHEN System validates action parameters\nAND System identifies parameter violations\nAND System returns error with parameter requirements",
+                            "WHEN Bot Behavior submits action that requires additional context\nTHEN System identifies missing context\nAND System requests additional context from behavior",
+                            "WHEN Action execution modifies story graph\nTHEN System applies modifications within story scope\nAND System validates graph structure remains valid"
+                          ],
                           "scenarios": []
                         },
                         {
@@ -10970,6 +11137,12 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestAutomaticallyRefreshStoryGraphChanges",
+                          "acceptance_criteria": [
+                            "WHEN System detects story graph file modification\nTHEN System reads updated graph structure\nAND System validates graph structure integrity\nAND System notifies CLI to refresh display",
+                            "WHEN CLI receives refresh notification\nTHEN CLI reloads story graph data\nAND CLI updates visible story structure\nAND CLI preserves current navigation state if possible",
+                            "WHEN System detects invalid graph structure after modification\nTHEN System identifies structure violations\nAND System displays error notification in CLI\nAND System retains previous valid graph state",
+                            "WHEN Multiple rapid changes occur to story graph\nTHEN System debounces refresh requests\nAND System waits for stable state\nAND System performs single refresh after stabilization"
+                          ],
                           "scenarios": []
                         }
                       ]

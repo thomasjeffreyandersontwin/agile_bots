@@ -1,0 +1,71 @@
+{
+    "priority": 9,
+    "description": "Use BUT to explicitly state negative conditions and constraints. When system prevents an action, validates a boundary, or enforces a rule, use BUT to state what does NOT happen. Example: WHEN invalid input THEN error AND returns message BUT does not save data.",
+    "do": {
+        "description": "Add BUT clause to show what system prevents or does not do. Makes constraints explicit.",
+        "guidance": [
+            {
+                "description": "Use BUT to show what the system prevents",
+                "example": [
+                    "WHEN SubEpic creates Sub-Epic that has Stories children",
+                    "THEN SubEpic identifies SubEpic already contains Stories",
+                    "AND returns error indicating cannot create SubEpic under SubEpic with Stories",
+                    "BUT prevents create operation"
+                ]
+            },
+            {
+                "description": "Use BUT to show what does not happen in error cases",
+                "example": [
+                    "WHEN User submits invalid form",
+                    "THEN System validates input",
+                    "AND System shows validation errors",
+                    "BUT does not save data"
+                ]
+            },
+            {
+                "description": "Use BUT to clarify collection separation",
+                "example": [
+                    "WHEN Story creates Scenario",
+                    "THEN Story adds Scenario to common scenario child collection",
+                    "BUT Story does not add Scenario to acceptance criteria child collection"
+                ]
+            },
+            {
+                "description": "Use BUT to show boundary enforcement",
+                "example": [
+                    "WHEN User drags node over incompatible parent",
+                    "THEN Panel shows no-drop cursor",
+                    "BUT does not allow drop operation"
+                ]
+            }
+        ]
+    },
+    "dont": {
+        "description": "Don't leave negative conditions implicit. Example: Don't say 'returns error' without stating what the system does NOT do",
+        "guidance": [
+            {
+                "description": "Don't omit the constraint being enforced",
+                "example": [
+                    "WHEN SubEpic creates Sub-Epic that has Stories",
+                    "THEN SubEpic identifies SubEpic already contains Stories",
+                    "AND returns error"
+                ]
+            },
+            {
+                "description": "Don't leave side effects unclear in error cases",
+                "example": [
+                    "WHEN validation fails",
+                    "THEN System shows error message"
+                ]
+            },
+            {
+                "description": "Don't assume constraints are obvious",
+                "example": [
+                    "WHEN Story creates Scenario",
+                    "THEN Story adds Scenario to scenario collection"
+                ]
+            }
+        ]
+    },
+    "scanner": "agile_bot.bots.base_bot.scanners.negative_conditions_scanner.NegativeConditionsScanner"
+}

@@ -6,7 +6,7 @@
     ]
   },
   "current_behavior": "story_bot.exploration",
-  "current_action": "story_bot.exploration.build",
-  "timestamp": "2026-01-17T17:22:40.614401",
+  "current_action": "story_bot.exploration.render",
+  "timestamp": "2026-01-18T12:47:53.920025",
   "completed_actions": []
 }

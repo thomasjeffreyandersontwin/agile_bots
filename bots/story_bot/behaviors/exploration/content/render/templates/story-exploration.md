@@ -21,40 +21,40 @@ Delivers complete end-to-end flow for initializing a project and starting the fi
 
 ### Core Domain Concepts
 
-- <Concept>: <description>
-- <Concept>: <description>
-- <Concept>: <description>
+- <Concept>: <description>  
+- <Concept>: <description>  
+- <Concept>: <description>  
 
-**Example:**
-- Agile Bot: Manages workflow execution and coordinates behaviors
-- Project: Provides project context and manages project state
-- Workflow: Manages behavior state transitions and action sequencing
+**Example:**  
+- Agile Bot: Manages workflow execution and coordinates behaviors  
+- Project: Provides project context and manages project state  
+- Workflow: Manages behavior state transitions and action sequencing  
 
 ---
 
 ### Domain Behaviors
 
-- <Concept> <verb> <noun>: <description>
-- <Concept> <verb> <noun>: <description>
-- <Concept> <verb> <noun>: <description>
+- <Concept> <verb> <noun>: <description>  
+- <Concept> <verb> <noun>: <description>  
+- <Concept> <verb> <noun>: <description>  
 
-**Example:**
-- Agile Bot manages workflow execution: Coordinates behaviors and state transitions
-- Project provides project context: Supplies project path and agent configuration
-- Workflow manages behavior state: Tracks current behavior and available actions
+**Example:**  
+- Agile Bot manages workflow execution: Coordinates behaviors and state transitions  
+- Project provides project context: Supplies project path and agent configuration  
+- Workflow manages behavior state: Tracks current behavior and available actions  
 
 ---
 
 ### Domain Rules
 
-- <Rule description>: <constraint or requirement>
-- <Rule description>: <constraint or requirement>
-- <Rule description>: <constraint or requirement>
+- <Rule description>: <constraint or requirement>  
+- <Rule description>: <constraint or requirement>  
+- <Rule description>: <constraint or requirement>  
 
-**Example:**
-- Workflow State transitions are sequential: Must complete current action before moving to next
-- Agent configuration must exist: Project cannot initialize without valid agent.json
-- Behaviors must provide required context: Clarification questions must be answered before proceeding
+**Example:**  
+- Workflow State transitions are sequential: Must complete current action before moving to next  
+- Agent configuration must exist: Project cannot initialize without valid agent.json  
+- Behaviors must provide required context: Clarification questions must be answered before proceeding  
 
 ---
 
@@ -62,16 +62,24 @@ Delivers complete end-to-end flow for initializing a project and starting the fi
 
 ### 📝 <Story Name>
 
-**Acceptance Criteria:**
-- **When** <action>, **then** <outcome>
-- **When** <action>, **then** <outcome>
+**Acceptance Criteria:**  
+- **WHEN** <action>  
+  **THEN** <outcome>  
+  **AND** <additional outcome>  
+- **WHEN** <action>  
+  **THEN** <outcome>  
+  **BUT** <negative condition - what NOT to do>  
 
-**Example:**
+**Example:**  
 ### 📝 User provides project path in chat window
 
-**Acceptance Criteria:**
-- **When** user types project path, **then** AI Chat receives project path
-- **When** Project initializes with invalid path, **then** Project shows error message
+**Acceptance Criteria:**  
+- **WHEN** user types project path  
+  **THEN** AI Chat receives project path  
+  **AND** validates path exists  
+- **WHEN** Project initializes with invalid path  
+  **THEN** Project shows error message  
+  **BUT** does not initialize project  
 
 {stories_with_ac}
 
