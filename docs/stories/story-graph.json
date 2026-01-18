@@ -1533,6 +1533,8 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestCreateChildStoryNode",
+                          "test_file": "test/story_graph/test_create_child_story_node.py",
+                          "test_line": 10,
                           "acceptance_criteria": [
                             "WHEN Story Graph Node creates new child Node\nTHEN parent Story Node creates new child node of appropriate type with provided name\nAND parent Story Node adds the child as the last child of its children\nExample: child = bot.story_graph.epics[\"epic name\"].createChild(\"child name\")",
                             "WHEN Story Graph Node creates new child with position specified\nTHEN parent Story Node adds the child as the specified position\nAND resequences all children at or after the position\nExample: child = bot.story_graph.epics[\"epic name\"].createChild(\"child name\", 2)",
@@ -1549,6 +1551,471 @@
                             "WHEN Story creates ScenarioOutline\nTHEN Story adds ScenarioOutline to common scenario child collection\nBUT Story does not add Scenario to acceptance criteria child collection",
                             "WHEN Story creates AcceptanceCriteria\nTHEN Story adds Acceptance Criteria to its own child collection\nBUT Story does not add Acceptance Criteria to scenario child collection"
                           ],
+                          "scenario_outlines": [
+                            {
+                              "name": "Create child node at any hierarchy level with default position",
+                              "type": "happy_path",
+                              "test_method": "test_create_child_node_at_hierarchy_level",
+                              "test_line": 25,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with <existing_count> existing children",
+                                "When \"<parent_name>\" creates child node \"<child_name>\" of type \"<child_type>\"",
+                                "Then Story Graph contains \"<child_type>\" named \"<child_name>\" under parent \"<parent_name>\"",
+                                "And child node \"<child_name>\" is at position <expected_position>",
+                                "And parent \"<parent_name>\" has <total_children> total children"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "existing_count",
+                                  "child_type",
+                                  "child_name",
+                                  "expected_position",
+                                  "total_children"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "0",
+                                    "SubEpic",
+                                    "Authentication",
+                                    "0",
+                                    "1"
+                                  ],
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "2",
+                                    "SubEpic",
+                                    "Authorization",
+                                    "2",
+                                    "3"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "0",
+                                    "SubEpic",
+                                    "Login Flow",
+                                    "0",
+                                    "1"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Login Flow",
+                                    "1",
+                                    "Story",
+                                    "Validate Password",
+                                    "0",
+                                    "1"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Validate Password",
+                                    "0",
+                                    "Scenario",
+                                    "Valid Password Entered",
+                                    "0",
+                                    "1"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Validate Password",
+                                    "2",
+                                    "Scenario",
+                                    "Invalid Password Entered",
+                                    "2",
+                                    "3"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Create child node with specified position",
+                              "type": "happy_path",
+                              "test_method": "test_create_child_node_with_position",
+                              "test_line": 75,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with children: <existing_children>",
+                                "When \"<parent_name>\" creates child node \"<new_child_name>\" at position <target_position>",
+                                "Then Story Graph shows children of \"<parent_name>\" in order: <final_order>",
+                                "And child node \"<new_child_name>\" is at position <target_position>"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "existing_children",
+                                  "new_child_name",
+                                  "target_position",
+                                  "final_order"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B",
+                                    "SubEpic C",
+                                    "0",
+                                    "SubEpic C, SubEpic A, SubEpic B"
+                                  ],
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B",
+                                    "SubEpic C",
+                                    "1",
+                                    "SubEpic A, SubEpic C, SubEpic B"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Story A, Story B, Story C",
+                                    "Story D",
+                                    "2",
+                                    "Story A, Story B, Story D, Story C"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Create child node with invalid position adjusts to last position",
+                              "type": "edge_case",
+                              "test_method": "test_create_child_invalid_position_adjusts",
+                              "test_line": 120,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with <child_count> children",
+                                "When \"<parent_name>\" creates child node \"<child_name>\" at position <invalid_position>",
+                                "Then system adjusts position to <adjusted_position>",
+                                "And child node \"<child_name>\" is created at position <adjusted_position>",
+                                "And parent \"<parent_name>\" has <total_children> total children"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "child_count",
+                                  "child_name",
+                                  "invalid_position",
+                                  "adjusted_position",
+                                  "total_children"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "3",
+                                    "New SubEpic",
+                                    "99",
+                                    "3",
+                                    "4"
+                                  ],
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "0",
+                                    "First SubEpic",
+                                    "5",
+                                    "0",
+                                    "1"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "2",
+                                    "New Story",
+                                    "10",
+                                    "2",
+                                    "3"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Create child node with duplicate name returns error",
+                              "type": "error_case",
+                              "test_method": "test_create_child_duplicate_name_error",
+                              "test_line": 165,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\"",
+                                "And \"<parent_name>\" has child \"<existing_child_name>\" of type \"<child_type>\"",
+                                "When \"<parent_name>\" attempts to create child node \"<duplicate_name>\" of type \"<child_type>\"",
+                                "Then system identifies duplicate name",
+                                "And returns error \"<error_message>\"",
+                                "And child node \"<duplicate_name>\" is not created"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "child_type",
+                                  "existing_child_name",
+                                  "duplicate_name",
+                                  "error_message"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Authentication",
+                                    "Child with name 'Authentication' already exists under parent 'User Management'"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Story",
+                                    "Login Form",
+                                    "Login Form",
+                                    "Child with name 'Login Form' already exists under parent 'Authentication'"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Validate Password",
+                                    "Scenario",
+                                    "Valid Password",
+                                    "Valid Password",
+                                    "Child with name 'Valid Password' already exists under parent 'Validate Password'"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Create child node without name generates unique name",
+                              "type": "edge_case",
+                              "test_method": "test_create_child_without_name_generates_unique",
+                              "test_line": 210,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with children: <existing_children>",
+                                "When \"<parent_name>\" creates child node without name",
+                                "Then system generates unique name \"<generated_name>\"",
+                                "And child node is created with name \"<generated_name>\"",
+                                "And \"<generated_name>\" is unique among siblings"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "existing_children",
+                                  "generated_name"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "none",
+                                    "Child1"
+                                  ],
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "Child1",
+                                    "Child2"
+                                  ],
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "Child1, Child2",
+                                    "Child3"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Story1, Story2",
+                                    "Story3"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "SubEpic creates Story and auto-creates StoryGroup on first Story",
+                              "type": "happy_path",
+                              "test_method": "test_subepic_creates_story_with_story_group",
+                              "test_line": 255,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has SubEpic \"<subepic_name>\" with <existing_story_count> Stories",
+                                "When SubEpic \"<subepic_name>\" creates child Story \"<story_name>\"",
+                                "Then SubEpic \"<subepic_name>\" <story_group_action>",
+                                "And Story \"<story_name>\" is added to StoryGroup",
+                                "And Story \"<story_name>\" is at position <story_position> in StoryGroup"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "subepic_name",
+                                  "existing_story_count",
+                                  "story_name",
+                                  "story_group_action",
+                                  "story_position"
+                                ],
+                                "rows": [
+                                  [
+                                    "Authentication",
+                                    "0",
+                                    "Login Form",
+                                    "creates default StoryGroup",
+                                    "0"
+                                  ],
+                                  [
+                                    "Authentication",
+                                    "1",
+                                    "Password Reset",
+                                    "uses existing StoryGroup",
+                                    "1"
+                                  ],
+                                  [
+                                    "Authentication",
+                                    "3",
+                                    "Two-Factor Auth",
+                                    "uses existing StoryGroup",
+                                    "3"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "SubEpic with Stories cannot create SubEpic child",
+                              "type": "error_case",
+                              "test_method": "test_subepic_with_stories_cannot_create_subepic",
+                              "test_line": 300,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has SubEpic \"<subepic_name>\"",
+                                "And SubEpic \"<subepic_name>\" has child Story \"<existing_story>\"",
+                                "When SubEpic \"<subepic_name>\" attempts to create child SubEpic \"<new_subepic_name>\"",
+                                "Then system identifies SubEpic already contains Stories",
+                                "And returns error \"Cannot create SubEpic under SubEpic with Stories\"",
+                                "And operation is prevented",
+                                "And SubEpic \"<new_subepic_name>\" is not created"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "subepic_name",
+                                  "existing_story",
+                                  "new_subepic_name"
+                                ],
+                                "rows": [
+                                  [
+                                    "Authentication",
+                                    "Login Form",
+                                    "OAuth Flow"
+                                  ],
+                                  [
+                                    "User Profile",
+                                    "Edit Profile",
+                                    "Profile Settings"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "SubEpic with SubEpics cannot create Story child",
+                              "type": "error_case",
+                              "test_method": "test_subepic_with_subepics_cannot_create_story",
+                              "test_line": 340,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has SubEpic \"<subepic_name>\"",
+                                "And SubEpic \"<subepic_name>\" has child SubEpic \"<existing_subepic>\"",
+                                "When SubEpic \"<subepic_name>\" attempts to create child Story \"<story_name>\"",
+                                "Then system identifies SubEpic already contains SubEpics",
+                                "And returns error \"Cannot create Story under SubEpic with SubEpics\"",
+                                "And operation is prevented",
+                                "And Story \"<story_name>\" is not created"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "subepic_name",
+                                  "existing_subepic",
+                                  "story_name"
+                                ],
+                                "rows": [
+                                  [
+                                    "User Management",
+                                    "Authentication",
+                                    "Login Form"
+                                  ],
+                                  [
+                                    "User Management",
+                                    "Authorization",
+                                    "Check Permissions"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Story creates child and adds to correct collection",
+                              "type": "happy_path",
+                              "test_method": "test_story_creates_child_in_correct_collection",
+                              "test_line": 380,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has Story \"<story_name>\"",
+                                "When Story \"<story_name>\" creates child \"<child_name>\" of type \"<child_type>\"",
+                                "Then child \"<child_name>\" is added to \"<target_collection>\" collection",
+                                "And child \"<child_name>\" is not added to \"<excluded_collection>\" collection",
+                                "And Story \"<story_name>\" \"<target_collection>\" collection contains \"<child_name>\""
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "story_name",
+                                  "child_type",
+                                  "child_name",
+                                  "target_collection",
+                                  "excluded_collection"
+                                ],
+                                "rows": [
+                                  [
+                                    "Validate Password",
+                                    "Scenario",
+                                    "Valid Password Entered",
+                                    "scenarios",
+                                    "acceptance_criteria"
+                                  ],
+                                  [
+                                    "Validate Password",
+                                    "ScenarioOutline",
+                                    "Invalid Password Formats",
+                                    "scenario_outlines",
+                                    "acceptance_criteria"
+                                  ],
+                                  [
+                                    "Validate Password",
+                                    "AcceptanceCriteria",
+                                    "Password Must Not Be Empty",
+                                    "acceptance_criteria",
+                                    "scenarios"
+                                  ]
+                                ]
+                              }
+                            }
+                          ],
                           "scenarios": []
                         },
                         {
@@ -1560,6 +2027,8 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestMoveStoryNodeToParent",
+                          "test_file": "test/story_graph/test_move_story_node.py",
+                          "test_line": 10,
                           "acceptance_criteria": [
                             "WHEN Story Graph Node moves to new parent\nTHEN node removes itself from current parent\nAND node adds itself to target parent as last child\nAND resequences original siblings on or after original location\nExample (parent API): bot.story_graph.epics[\"target epic\"].addChild(childNode)\nExample (child API): childNode.moveTo(bot.story_graph.epics[\"target epic\"])",
                             "WHEN Story Graph Node moves to new parent with position specified\nTHEN node removes itself from current parent\nAND node adds itself to target parent at specified position\nAND resequences all children at or after position in both locations\nExample (parent API): bot.story_graph.epics[\"target epic\"].addChild(childNode, 2)\nExample (child API): childNode.moveTo(bot.story_graph.epics[\"target epic\"], 2)",
@@ -1569,6 +2038,370 @@
                             "WHEN SubEpic moves to SubEpic that has Stories\nTHEN target SubEpic identifies it already contains Stories\nAND returns error indicating cannot move SubEpic to SubEpic with Stories\nBUT prevents move operation",
                             "WHEN Story moves to SubEpic that has SubEpic children\nTHEN target SubEpic identifies it already contains Sub-Epics\nAND returns error indicating cannot move Story to SubEpic with Sub-Epics\nBUT prevents move operation",
                             "WHEN Story Graph Node moves to create circular reference\nTHEN node identifies target parent is descendant of itself\nAND returns error indicating circular reference\nBUT prevents move operation"
+                          ],
+                          "scenario_outlines": [
+                            {
+                              "name": "Move node to new parent with default position",
+                              "type": "happy_path",
+                              "test_method": "test_move_node_to_new_parent",
+                              "test_line": 25,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<source_parent_type>\" named \"<source_parent>\" with child \"<node_name>\" at position <original_position>",
+                                "And Story Graph has \"<target_parent_type>\" named \"<target_parent>\" with <target_child_count> children",
+                                "When node \"<node_name>\" moves to parent \"<target_parent>\"",
+                                "Then node \"<node_name>\" is removed from \"<source_parent>\"",
+                                "And node \"<node_name>\" is added to \"<target_parent>\" at position <new_position>",
+                                "And \"<source_parent>\" children are resequenced",
+                                "And \"<target_parent>\" has <final_child_count> children"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "source_parent_type",
+                                  "source_parent",
+                                  "node_name",
+                                  "original_position",
+                                  "target_parent_type",
+                                  "target_parent",
+                                  "target_child_count",
+                                  "new_position",
+                                  "final_child_count"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "Authentication",
+                                    "1",
+                                    "Epic",
+                                    "System Admin",
+                                    "2",
+                                    "2",
+                                    "3"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Login Flow",
+                                    "0",
+                                    "SubEpic",
+                                    "Authorization",
+                                    "1",
+                                    "1",
+                                    "2"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "User Login",
+                                    "1",
+                                    "SubEpic",
+                                    "Session Management",
+                                    "0",
+                                    "0",
+                                    "1"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Move node to new parent with specified position",
+                              "type": "happy_path",
+                              "test_method": "test_move_node_with_position",
+                              "test_line": 70,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<source_parent>\" with child \"<node_name>\"",
+                                "And Story Graph has \"<target_parent>\" with children: <target_children>",
+                                "When node \"<node_name>\" moves to \"<target_parent>\" at position <target_position>",
+                                "Then \"<target_parent>\" children are in order: <final_order>",
+                                "And node \"<node_name>\" is at position <target_position>"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "source_parent",
+                                  "node_name",
+                                  "target_parent",
+                                  "target_children",
+                                  "target_position",
+                                  "final_order"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic A",
+                                    "SubEpic X",
+                                    "Epic B",
+                                    "SubEpic A, SubEpic B, SubEpic C",
+                                    "1",
+                                    "SubEpic A, SubEpic X, SubEpic B, SubEpic C"
+                                  ],
+                                  [
+                                    "SubEpic A",
+                                    "Story X",
+                                    "SubEpic B",
+                                    "Story A, Story B",
+                                    "0",
+                                    "Story X, Story A, Story B"
+                                  ],
+                                  [
+                                    "SubEpic A",
+                                    "Story X",
+                                    "SubEpic B",
+                                    "Story A, Story B",
+                                    "2",
+                                    "Story A, Story B, Story X"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Move node with invalid position adjusts to last",
+                              "type": "edge_case",
+                              "test_method": "test_move_node_invalid_position",
+                              "test_line": 115,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<source_parent>\" with child \"<node_name>\"",
+                                "And Story Graph has \"<target_parent>\" with <target_child_count> children",
+                                "When node \"<node_name>\" moves to \"<target_parent>\" at position <invalid_position>",
+                                "Then system adjusts position to <adjusted_position>",
+                                "And node \"<node_name>\" is at position <adjusted_position>",
+                                "And \"<target_parent>\" has <final_count> children"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "source_parent",
+                                  "node_name",
+                                  "target_parent",
+                                  "target_child_count",
+                                  "invalid_position",
+                                  "adjusted_position",
+                                  "final_count"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic A",
+                                    "SubEpic X",
+                                    "Epic B",
+                                    "3",
+                                    "99",
+                                    "3",
+                                    "4"
+                                  ],
+                                  [
+                                    "SubEpic A",
+                                    "Story X",
+                                    "SubEpic B",
+                                    "0",
+                                    "5",
+                                    "0",
+                                    "1"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Move node to same parent at different position",
+                              "type": "happy_path",
+                              "test_method": "test_move_node_reorder_within_parent",
+                              "test_line": 155,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with children: <initial_order>",
+                                "And node \"<node_name>\" is at position <current_position>",
+                                "When node \"<node_name>\" moves to position <new_position> within \"<parent_name>\"",
+                                "Then \"<parent_name>\" children are in order: <final_order>",
+                                "And node \"<node_name>\" is at position <new_position>"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "initial_order",
+                                  "node_name",
+                                  "current_position",
+                                  "new_position",
+                                  "final_order"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B, SubEpic C",
+                                    "SubEpic C",
+                                    "2",
+                                    "0",
+                                    "SubEpic C, SubEpic A, SubEpic B"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Story A, Story B, Story C, Story D",
+                                    "Story B",
+                                    "1",
+                                    "3",
+                                    "Story A, Story C, Story D, Story B"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Move node to parent where it already exists returns error",
+                              "type": "error_case",
+                              "test_method": "test_move_node_already_under_parent",
+                              "test_line": 200,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\"",
+                                "And \"<parent_name>\" has child \"<node_name>\"",
+                                "When node \"<node_name>\" attempts to move to \"<parent_name>\"",
+                                "Then system identifies child already under parent",
+                                "And returns error \"Node '<node_name>' already exists under parent '<parent_name>'\"",
+                                "And move operation is prevented"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "node_name"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "Authentication"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Login Form"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Move SubEpic to SubEpic with Stories returns error",
+                              "type": "error_case",
+                              "test_method": "test_move_subepic_to_subepic_with_stories",
+                              "test_line": 235,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has SubEpic \"<source_parent>\" with child SubEpic \"<node_name>\"",
+                                "And Story Graph has SubEpic \"<target_parent>\" with child Story \"<existing_story>\"",
+                                "When SubEpic \"<node_name>\" attempts to move to \"<target_parent>\"",
+                                "Then system identifies target SubEpic contains Stories",
+                                "And returns error \"Cannot move SubEpic to SubEpic with Stories\"",
+                                "And move operation is prevented"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "source_parent",
+                                  "node_name",
+                                  "target_parent",
+                                  "existing_story"
+                                ],
+                                "rows": [
+                                  [
+                                    "User Management",
+                                    "OAuth Flow",
+                                    "Authentication",
+                                    "Login Form"
+                                  ],
+                                  [
+                                    "Administration",
+                                    "Audit Logging",
+                                    "User Profile",
+                                    "Edit Profile"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Move Story to SubEpic with SubEpics returns error",
+                              "type": "error_case",
+                              "test_method": "test_move_story_to_subepic_with_subepics",
+                              "test_line": 270,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has SubEpic \"<source_parent>\" with child Story \"<node_name>\"",
+                                "And Story Graph has SubEpic \"<target_parent>\" with child SubEpic \"<existing_subepic>\"",
+                                "When Story \"<node_name>\" attempts to move to \"<target_parent>\"",
+                                "Then system identifies target SubEpic contains SubEpics",
+                                "And returns error \"Cannot move Story to SubEpic with SubEpics\"",
+                                "And move operation is prevented"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "source_parent",
+                                  "node_name",
+                                  "target_parent",
+                                  "existing_subepic"
+                                ],
+                                "rows": [
+                                  [
+                                    "Authentication",
+                                    "Login Form",
+                                    "User Management",
+                                    "Authorization"
+                                  ],
+                                  [
+                                    "User Profile",
+                                    "Edit Profile",
+                                    "Administration",
+                                    "Audit Logging"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Move node to create circular reference returns error",
+                              "type": "error_case",
+                              "test_method": "test_move_node_circular_reference",
+                              "test_line": 305,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with descendant \"<child_name>\"",
+                                "When \"<parent_name>\" attempts to move to \"<child_name>\"",
+                                "Then system identifies target is descendant of node",
+                                "And returns error \"Cannot move node to its own descendant - circular reference\"",
+                                "And move operation is prevented"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "child_name"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "Authentication"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Login Flow"
+                                  ]
+                                ]
+                              }
+                            }
                           ],
                           "scenarios": []
                         },
@@ -1581,10 +2414,226 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestDeleteStoryNode",
+                          "test_file": "test/story_graph/test_delete_story_node.py",
+                          "test_line": 10,
                           "acceptance_criteria": [
                             "WHEN Story Graph Node deletes itself without children\nTHEN node removes itself from parent\nAND resequences remaining siblings\nExample: bot.story_graph.epics[\"epic name\"].sub_epics[\"sub epic name\"].delete()",
                             "WHEN Story Graph Node deletes itself with children\nTHEN node moves all children to node's parent as last children\nAND removes itself from parent\nAND resequences siblings\nExample: bot.story_graph.epics[\"epic name\"].delete()",
                             "WHEN Story Graph Node deletes itself including children\nTHEN node recursively deletes all children\nAND removes itself from parent\nAND resequences siblings\nExample: bot.story_graph.epics[\"epic name\"].deleteWithChildren()"
+                          ],
+                          "scenario_outlines": [
+                            {
+                              "name": "Delete node without children",
+                              "type": "happy_path",
+                              "test_method": "test_delete_node_without_children",
+                              "test_line": 25,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with children: <initial_children>",
+                                "And node \"<node_name>\" is at position <node_position> with <child_count> children",
+                                "When node \"<node_name>\" is deleted",
+                                "Then node \"<node_name>\" is removed from \"<parent_name>\"",
+                                "And \"<parent_name>\" children are: <remaining_children>",
+                                "And \"<parent_name>\" children are resequenced",
+                                "And \"<parent_name>\" has <final_count> children"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "initial_children",
+                                  "node_name",
+                                  "node_position",
+                                  "child_count",
+                                  "remaining_children",
+                                  "final_count"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B, SubEpic C",
+                                    "SubEpic B",
+                                    "1",
+                                    "0",
+                                    "SubEpic A, SubEpic C",
+                                    "2"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Story A, Story B",
+                                    "Story A",
+                                    "0",
+                                    "0",
+                                    "Story B",
+                                    "1"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login Form",
+                                    "Scenario A, Scenario B, Scenario C",
+                                    "Scenario C",
+                                    "2",
+                                    "0",
+                                    "Scenario A, Scenario B",
+                                    "2"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Delete node with children promotes children to grandparent",
+                              "type": "happy_path",
+                              "test_method": "test_delete_node_promotes_children",
+                              "test_line": 70,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<grandparent_type>\" named \"<grandparent>\" with child \"<node_name>\"",
+                                "And node \"<node_name>\" has children: <node_children>",
+                                "And \"<grandparent>\" has <initial_child_count> children",
+                                "When node \"<node_name>\" is deleted",
+                                "Then node \"<node_name>\" is removed from \"<grandparent>\"",
+                                "And children <node_children> are moved to \"<grandparent>\" as last children",
+                                "And \"<grandparent>\" has <final_child_count> children"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "grandparent_type",
+                                  "grandparent",
+                                  "node_name",
+                                  "node_children",
+                                  "initial_child_count",
+                                  "final_child_count"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "Authentication",
+                                    "Login Flow, Password Reset",
+                                    "3",
+                                    "4"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "OAuth Flow",
+                                    "Google Auth, GitHub Auth",
+                                    "2",
+                                    "3"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Delete node including children (cascade delete)",
+                              "type": "happy_path",
+                              "test_method": "test_delete_node_cascade",
+                              "test_line": 110,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with children: <initial_children>",
+                                "And node \"<node_name>\" has <child_count> children",
+                                "And node \"<node_name>\" has <total_descendants> total descendants",
+                                "When node \"<node_name>\" is deleted with cascade option",
+                                "Then node \"<node_name>\" and all descendants are deleted",
+                                "And \"<parent_name>\" children are: <remaining_children>",
+                                "And \"<parent_name>\" has <final_count> children"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "initial_children",
+                                  "node_name",
+                                  "child_count",
+                                  "total_descendants",
+                                  "remaining_children",
+                                  "final_count"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B, SubEpic C, SubEpic D",
+                                    "SubEpic B",
+                                    "2",
+                                    "5",
+                                    "SubEpic A, SubEpic C, SubEpic D",
+                                    "3"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "SubEpic A, SubEpic B",
+                                    "SubEpic A",
+                                    "3",
+                                    "8",
+                                    "SubEpic B",
+                                    "1"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Delete node at different positions verifies resequencing",
+                              "type": "edge_case",
+                              "test_method": "test_delete_node_resequencing",
+                              "test_line": 150,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with children in order: <initial_order>",
+                                "And node \"<node_name>\" is at position <delete_position>",
+                                "When node \"<node_name>\" is deleted",
+                                "Then \"<parent_name>\" children are in order: <final_order>",
+                                "And all remaining children have sequential positions"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "initial_order",
+                                  "node_name",
+                                  "delete_position",
+                                  "final_order"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B, SubEpic C, SubEpic D",
+                                    "SubEpic A",
+                                    "0",
+                                    "SubEpic B, SubEpic C, SubEpic D"
+                                  ],
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B, SubEpic C, SubEpic D",
+                                    "SubEpic C",
+                                    "2",
+                                    "SubEpic A, SubEpic B, SubEpic D"
+                                  ],
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "SubEpic A, SubEpic B, SubEpic C, SubEpic D",
+                                    "SubEpic D",
+                                    "3",
+                                    "SubEpic A, SubEpic B, SubEpic C"
+                                  ]
+                                ]
+                              }
+                            }
                           ],
                           "scenarios": []
                         },
@@ -1597,12 +2646,255 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestUpdateStoryNodeName",
+                          "test_file": "test/story_graph/test_update_story_node_name.py",
+                          "test_line": 10,
                           "acceptance_criteria": [
                             "WHEN Story Graph Node renames itself\nTHEN node validates name not empty\nAND validates name unique among siblings\nAND updates node name\nExample: bot.story_graph.epics[\"old name\"].rename(\"new name\")",
                             "WHEN Story Graph Node renames itself with empty or whitespace-only name\nTHEN node identifies name is empty\nAND returns error",
                             "WHEN Story Graph Node renames itself with duplicate sibling name\nTHEN node identifies duplicate name among siblings\nAND returns error",
                             "WHEN Story Graph Node renames itself with valid special characters\nTHEN node validates name format\nAND updates node name",
                             "WHEN Story Graph Node renames itself with invalid special characters\nTHEN node validates name format\nAND identifies invalid characters\nAND returns error"
+                          ],
+                          "scenario_outlines": [
+                            {
+                              "name": "Rename node with valid name across hierarchy levels",
+                              "type": "happy_path",
+                              "test_method": "test_rename_node_valid_name",
+                              "test_line": 25,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<node_type>\" named \"<old_name>\" under parent \"<parent_name>\"",
+                                "When node \"<old_name>\" is renamed to \"<new_name>\"",
+                                "Then node name is updated to \"<new_name>\"",
+                                "And node is accessible by name \"<new_name>\"",
+                                "And node is no longer accessible by name \"<old_name>\""
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_type",
+                                  "parent_name",
+                                  "old_name",
+                                  "new_name"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "root",
+                                    "User Management",
+                                    "User Administration"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "User Management",
+                                    "Authentication",
+                                    "User Authentication"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Authentication",
+                                    "Login Form",
+                                    "User Login Form"
+                                  ],
+                                  [
+                                    "Scenario",
+                                    "Login Form",
+                                    "Valid Login",
+                                    "Successful User Login"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Rename node with empty or whitespace name returns error",
+                              "type": "error_case",
+                              "test_method": "test_rename_node_empty_name",
+                              "test_line": 65,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<node_type>\" named \"<current_name>\"",
+                                "When node \"<current_name>\" is renamed to \"<invalid_name>\"",
+                                "Then system identifies name is empty or whitespace-only",
+                                "And returns error \"<error_message>\"",
+                                "And node name remains \"<current_name>\""
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_type",
+                                  "current_name",
+                                  "invalid_name",
+                                  "error_message"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "",
+                                    "Node name cannot be empty"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "   ",
+                                    "Node name cannot be whitespace-only"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login Form",
+                                    "\t\n",
+                                    "Node name cannot be whitespace-only"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Rename node with duplicate sibling name returns error",
+                              "type": "error_case",
+                              "test_method": "test_rename_node_duplicate_name",
+                              "test_line": 105,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<parent_type>\" named \"<parent_name>\" with children: <existing_children>",
+                                "And node \"<node_name>\" is one of the children",
+                                "When node \"<node_name>\" is renamed to \"<duplicate_name>\"",
+                                "Then system identifies duplicate name among siblings",
+                                "And returns error \"Name '<duplicate_name>' already exists among siblings\"",
+                                "And node name remains \"<node_name>\""
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "parent_type",
+                                  "parent_name",
+                                  "existing_children",
+                                  "node_name",
+                                  "duplicate_name"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "Authentication, Authorization, Audit",
+                                    "Audit",
+                                    "Authentication"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Login Flow, Password Reset, OAuth",
+                                    "OAuth",
+                                    "Login Flow"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login Form",
+                                    "Valid Login, Invalid Password, Account Locked",
+                                    "Account Locked",
+                                    "Valid Login"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Rename node with valid special characters",
+                              "type": "happy_path",
+                              "test_method": "test_rename_node_valid_special_chars",
+                              "test_line": 145,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<node_type>\" named \"<old_name>\"",
+                                "When node \"<old_name>\" is renamed to \"<new_name_with_special_chars>\"",
+                                "Then bot validates name format",
+                                "And node name is updated to \"<new_name_with_special_chars>\"",
+                                "And special characters in name are preserved"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_type",
+                                  "old_name",
+                                  "new_name_with_special_chars"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "User Management & Administration"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Authentication (OAuth 2.0)"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login",
+                                    "Login - Username/Password"
+                                  ],
+                                  [
+                                    "Scenario",
+                                    "Valid Login",
+                                    "Valid Login: Success Response"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Rename node with invalid special characters returns error",
+                              "type": "error_case",
+                              "test_method": "test_rename_node_invalid_special_chars",
+                              "test_line": 185,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<node_type>\" named \"<current_name>\"",
+                                "When node \"<current_name>\" is renamed to \"<invalid_name>\"",
+                                "Then bot validates name format",
+                                "And identifies invalid characters: <invalid_chars>",
+                                "And returns error \"Name contains invalid characters: <invalid_chars>\"",
+                                "And node name remains \"<current_name>\""
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_type",
+                                  "current_name",
+                                  "invalid_name",
+                                  "invalid_chars"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "User<Admin>",
+                                    "<, >"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "Auth\\System",
+                                    "\\"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login Form",
+                                    "Login|Form",
+                                    "|"
+                                  ],
+                                  [
+                                    "Scenario",
+                                    "Valid Login",
+                                    "Valid*Login?",
+                                    "*, ?"
+                                  ]
+                                ]
+                              }
+                            }
                           ],
                           "scenarios": []
                         },
@@ -1615,9 +2907,155 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestExecuteActionScopedToStoryNode",
+                          "test_file": "test/story_graph/test_execute_action_scoped.py",
+                          "test_line": 10,
                           "acceptance_criteria": [
                             "WHEN Story Graph Node executes action with valid parameters\nTHEN node validates action exists\nAND node invokes bot to execute action with scope context\nAND node validates graph structure remains valid after execution\nExample: bot.story_graph.epics[\"epic name\"].executeAction(\"build\", {\"output\": \"docs/stories\"})",
                             "WHEN Story Graph Node executes action with invalid parameters\nTHEN node invokes bot to execute action with scope context\nAND bot validates action parameters are invalid\nAND returns error with parameter requirements"
+                          ],
+                          "scenario_outlines": [
+                            {
+                              "name": "Execute action on node with valid parameters",
+                              "type": "happy_path",
+                              "test_method": "test_execute_action_valid_params",
+                              "test_line": 25,
+                              "background": [
+                                "Given Story Graph is initialized",
+                                "And bot has registered actions: clarify, strategy, build, validate, render"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<node_type>\" named \"<node_name>\"",
+                                "When node \"<node_name>\" executes action \"<action_name>\" with parameters: <parameters>",
+                                "Then bot validates action \"<action_name>\" exists",
+                                "And bot executes \"<action_name>\" with scope context for \"<node_name>\"",
+                                "And action completes successfully",
+                                "And Story Graph structure remains valid"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_type",
+                                  "node_name",
+                                  "action_name",
+                                  "parameters"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "build",
+                                    "{\"output\": \"docs/stories\"}"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "validate",
+                                    "{\"rules\": \"all\"}"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login Form",
+                                    "render",
+                                    "{\"format\": \"markdown\"}"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Execute action with invalid parameters returns error",
+                              "type": "error_case",
+                              "test_method": "test_execute_action_invalid_params",
+                              "test_line": 65,
+                              "background": [
+                                "Given Story Graph is initialized",
+                                "And bot has registered actions: clarify, strategy, build, validate, render"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<node_type>\" named \"<node_name>\"",
+                                "When node \"<node_name>\" executes action \"<action_name>\" with parameters: <invalid_parameters>",
+                                "Then bot validates action parameters",
+                                "And identifies invalid parameters: <invalid_params_list>",
+                                "And returns error \"<error_message>\"",
+                                "And action is not executed"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_type",
+                                  "node_name",
+                                  "action_name",
+                                  "invalid_parameters",
+                                  "invalid_params_list",
+                                  "error_message"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "build",
+                                    "{\"invalid_key\": \"value\"}",
+                                    "invalid_key",
+                                    "Invalid parameter: invalid_key. Expected: output"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "validate",
+                                    "{}",
+                                    "rules",
+                                    "Missing required parameter: rules"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login Form",
+                                    "render",
+                                    "{\"format\": \"invalid_format\"}",
+                                    "format",
+                                    "Invalid format value: invalid_format. Expected: markdown, json, html"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Execute non-existent action returns error",
+                              "type": "error_case",
+                              "test_method": "test_execute_non_existent_action",
+                              "test_line": 105,
+                              "background": [
+                                "Given Story Graph is initialized",
+                                "And bot has registered actions: clarify, strategy, build, validate, render"
+                              ],
+                              "steps": [
+                                "Given Story Graph has \"<node_type>\" named \"<node_name>\"",
+                                "When node \"<node_name>\" attempts to execute action \"<non_existent_action>\"",
+                                "Then bot validates action exists",
+                                "And identifies action does not exist",
+                                "And returns error \"Action '<non_existent_action>' not found. Available actions: clarify, strategy, build, validate, render\"",
+                                "And action is not executed"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_type",
+                                  "node_name",
+                                  "non_existent_action"
+                                ],
+                                "rows": [
+                                  [
+                                    "Epic",
+                                    "User Management",
+                                    "deploy"
+                                  ],
+                                  [
+                                    "SubEpic",
+                                    "Authentication",
+                                    "test"
+                                  ],
+                                  [
+                                    "Story",
+                                    "Login Form",
+                                    "compile"
+                                  ]
+                                ]
+                              }
+                            }
                           ],
                           "scenarios": []
                         },
@@ -1630,12 +3068,238 @@
                           ],
                           "story_type": "user",
                           "test_class": "TestPersistStoryGraphChanges",
+                          "test_file": "test/story_graph/test_persist_changes.py",
+                          "test_line": 10,
                           "acceptance_criteria": [
                             "WHEN Story Graph structure is modified\nTHEN Story Graph validates graph structure integrity\nAND Story Graph persists changes to storage\nAND Story Graph updates version metadata",
                             "WHEN Story Graph persists changes successfully\nTHEN Story Graph writes updated graph to file\nAND Story Graph verifies write successful",
                             "WHEN Story Graph persistence fails\nTHEN Story Graph identifies write failure\nAND Story Graph rolls back in-memory changes\nAND returns error with failure details",
                             "WHEN Story Graph validates structure after modification\nTHEN Story Graph checks all node references valid\nAND Story Graph checks sequential order consistency",
                             "WHEN Story Graph identifies structure violations\nTHEN Story Graph identifies violation details\nAND Story Graph prevents persistence\nAND returns error with violation specifics"
+                          ],
+                          "scenario_outlines": [
+                            {
+                              "name": "Persist valid graph modifications successfully",
+                              "type": "happy_path",
+                              "test_method": "test_persist_valid_modifications",
+                              "test_line": 25,
+                              "background": [
+                                "Given Story Graph is initialized",
+                                "And Story Graph file is at \"docs/stories/story-graph.json\""
+                              ],
+                              "steps": [
+                                "Given Story Graph has <initial_node_count> nodes",
+                                "When Story Graph is modified with <modification_type>: <modification_details>",
+                                "Then Story Graph validates structure integrity",
+                                "And Story Graph persists changes to file",
+                                "And file write is verified successful",
+                                "And version metadata is updated",
+                                "And persisted graph has <final_node_count> nodes"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "modification_type",
+                                  "modification_details",
+                                  "initial_node_count",
+                                  "final_node_count"
+                                ],
+                                "rows": [
+                                  [
+                                    "add_node",
+                                    "Add SubEpic 'OAuth Flow' to Epic 'Authentication'",
+                                    "50",
+                                    "51"
+                                  ],
+                                  [
+                                    "delete_node",
+                                    "Delete SubEpic 'Deprecated Feature'",
+                                    "50",
+                                    "49"
+                                  ],
+                                  [
+                                    "move_node",
+                                    "Move SubEpic 'Login Flow' from Epic A to Epic B",
+                                    "50",
+                                    "50"
+                                  ],
+                                  [
+                                    "rename_node",
+                                    "Rename Story 'User Login' to 'User Authentication'",
+                                    "50",
+                                    "50"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Validate structure integrity before persistence",
+                              "type": "happy_path",
+                              "test_method": "test_validate_structure_before_persist",
+                              "test_line": 70,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has valid structure with <node_count> nodes",
+                                "When Story Graph is modified with <modification>",
+                                "Then Story Graph validates all node references are valid",
+                                "And Story Graph validates sequential order consistency",
+                                "And Story Graph validates parent-child relationships",
+                                "And validation result is: <validation_result>"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "node_count",
+                                  "modification",
+                                  "validation_result"
+                                ],
+                                "rows": [
+                                  [
+                                    "50",
+                                    "Add new Epic with valid structure",
+                                    "valid"
+                                  ],
+                                  [
+                                    "50",
+                                    "Update existing node name to unique value",
+                                    "valid"
+                                  ],
+                                  [
+                                    "50",
+                                    "Move node to valid parent",
+                                    "valid"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Detect structure violations and prevent persistence",
+                              "type": "error_case",
+                              "test_method": "test_detect_structure_violations",
+                              "test_line": 110,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has valid structure",
+                                "When Story Graph is modified to create <violation_type>",
+                                "Then Story Graph validates structure",
+                                "And identifies violation: <violation_details>",
+                                "And prevents persistence",
+                                "And returns error \"<error_message>\"",
+                                "And in-memory changes are rolled back"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "violation_type",
+                                  "violation_details",
+                                  "error_message"
+                                ],
+                                "rows": [
+                                  [
+                                    "invalid_reference",
+                                    "Node references non-existent parent",
+                                    "Structure violation: Invalid parent reference"
+                                  ],
+                                  [
+                                    "duplicate_position",
+                                    "Two nodes have same sequential_order",
+                                    "Structure violation: Duplicate sequential order"
+                                  ],
+                                  [
+                                    "broken_hierarchy",
+                                    "Story placed directly under Epic (missing SubEpic)",
+                                    "Structure violation: Invalid hierarchy - Story must be under SubEpic"
+                                  ],
+                                  [
+                                    "circular_reference",
+                                    "Node is ancestor of itself",
+                                    "Structure violation: Circular reference detected"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Handle persistence failures and rollback changes",
+                              "type": "error_case",
+                              "test_method": "test_persistence_failure_rollback",
+                              "test_line": 155,
+                              "background": [
+                                "Given Story Graph is initialized",
+                                "And Story Graph file is at \"docs/stories/story-graph.json\""
+                              ],
+                              "steps": [
+                                "Given Story Graph has valid structure with state: <initial_state>",
+                                "And file write will fail with error: <write_error>",
+                                "When Story Graph attempts to persist modifications",
+                                "Then Story Graph identifies write failure",
+                                "And rolls back in-memory changes to state: <initial_state>",
+                                "And returns error \"Persistence failed: <write_error>\"",
+                                "And Story Graph state is unchanged"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "initial_state",
+                                  "write_error"
+                                ],
+                                "rows": [
+                                  [
+                                    "50 nodes, version 1.2.3",
+                                    "Permission denied - file is read-only"
+                                  ],
+                                  [
+                                    "50 nodes, version 1.2.3",
+                                    "Disk full - cannot write file"
+                                  ],
+                                  [
+                                    "50 nodes, version 1.2.3",
+                                    "File locked by another process"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "name": "Update version metadata on successful persistence",
+                              "type": "happy_path",
+                              "test_method": "test_update_version_metadata",
+                              "test_line": 195,
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
+                              "steps": [
+                                "Given Story Graph has version: <initial_version>",
+                                "And last modified timestamp: <initial_timestamp>",
+                                "When Story Graph persists modifications successfully",
+                                "Then version is incremented to: <new_version>",
+                                "And last modified timestamp is updated to current time",
+                                "And modification count is incremented",
+                                "And metadata is persisted with graph"
+                              ],
+                              "examples": {
+                                "columns": [
+                                  "initial_version",
+                                  "initial_timestamp",
+                                  "new_version"
+                                ],
+                                "rows": [
+                                  [
+                                    "1.0.0",
+                                    "2025-01-01T00:00:00Z",
+                                    "1.0.1"
+                                  ],
+                                  [
+                                    "1.2.5",
+                                    "2025-06-15T12:30:00Z",
+                                    "1.2.6"
+                                  ],
+                                  [
+                                    "2.0.0",
+                                    "2025-12-31T23:59:59Z",
+                                    "2.0.1"
+                                  ]
+                                ]
+                              }
+                            }
                           ],
                           "scenarios": []
                         }

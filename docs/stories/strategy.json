@@ -18,5 +18,25 @@
       "ui_domain_interaction": "Application Service Layer"
     },
     "assumptions": []
+  },
+  "scenarios": {
+    "decisions": {
+      "examples_representation": "Verification Data Table",
+      "scenario_outline": "Scenario Outline with Examples"
+    },
+    "assumptions": [
+      "One story is specified at a time",
+      "Acceptance criteria must be testable, unambiguous, and executable",
+      "Gherkin syntax or structured language (Given/When/Then) is preferred",
+      "Scenarios are written in plain English. When using Scenario Outline, variables are clearly marked and defined in Examples tables with actual test data.",
+      "Specification drives both design and test \u2014 not written after implementation",
+      "Scenarios must cover both behavior and domain policy",
+      "Examples tables when used must include ALL variables used in scenario steps",
+      "Examples tables when used must have exact values for both input AND output variables",
+      "Every variable when used in scenario steps must have a corresponding column in Examples table",
+      "Examples tables when used must have actual test data, not placeholders",
+      "Output/expected result variables must be included in Examples tables when used",
+      "Examples drive both design and test \u2014 not written after implementation"
+    ]
   }
 }

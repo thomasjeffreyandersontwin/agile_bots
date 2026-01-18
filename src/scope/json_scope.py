@@ -132,7 +132,7 @@ class JSONScope(JSONAdapter):
         if 'links' not in story:
             story['links'] = []
         
-        story_doc_file = parent_doc_folder / f"📝 {story['name']}.md"
+        story_doc_file = parent_doc_folder / f"📄 {story['name']}.md"
         if story_doc_file.exists():
             story['links'].append({
                 'text': 'story',

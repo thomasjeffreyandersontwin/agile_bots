@@ -219,13 +219,13 @@ def build_folder_path_from_graph(epic_name, sub_epic_name, story_graph_data):
     """
     Build folder path dynamically from story graph structure.
     Traverses the graph to find the actual epic and sub_epic names.
-    Uses emoji monikers: ðŸŽ¯ for Epic, âš™ï¸ for Sub-Epic.
+    Uses emoji monikers: 🎯 for Epic, ⚙️ for Sub-Epic.
     Handles nested sub-epics by building full folder path.
     """
     # Find the epic in the graph
     for epic in story_graph_data.get('epics', []):
         if epic['name'] == epic_name:
-            epic_folder = f"ðŸŽ¯ {epic_name}"  # Use emoji moniker
+            epic_folder = f"🎯 {epic_name}"  # Use emoji moniker
             
             # If sub_epic_name matches the epic itself, it's a top-level epic
             if sub_epic_name == epic_name:
@@ -235,7 +235,7 @@ def build_folder_path_from_graph(epic_name, sub_epic_name, story_graph_data):
             if '/' in sub_epic_name:
                 parts = sub_epic_name.split('/')
                 # Build path with gear emoji for each part
-                formatted_parts = [f"âš™ï¸ {part.strip()}" for part in parts]
+                formatted_parts = [f"⚙️ {part.strip()}" for part in parts]
                 # Join with Path separator for folder structure
                 sub_epic_path = Path(*formatted_parts)
                 return epic_folder, str(sub_epic_path)
@@ -244,7 +244,7 @@ def build_folder_path_from_graph(epic_name, sub_epic_name, story_graph_data):
             def find_sub_epic(sub_epics, target_name):
                 for sub_epic in sub_epics:
                     if sub_epic['name'] == target_name:
-                        return f"âš™ï¸ {target_name}"  # Use emoji moniker for sub-epic
+                        return f"⚙️ {target_name}"  # Use emoji moniker for sub-epic
                     # Recursively check nested sub_epics
                     if 'sub_epics' in sub_epic:
                         result = find_sub_epic(sub_epic['sub_epics'], target_name)
@@ -257,11 +257,11 @@ def build_folder_path_from_graph(epic_name, sub_epic_name, story_graph_data):
                 return epic_folder, sub_epic_folder
             
             # If not found in sub_epics, use the provided name with emoji moniker
-            return epic_folder, f"âš™ï¸ {sub_epic_name}" if sub_epic_name != epic_name else epic_name
+            return epic_folder, f"⚙️ {sub_epic_name}" if sub_epic_name != epic_name else epic_name
     
     # Fallback: use names directly with emoji monikers
-    fallback_epic = f"ðŸŽ¯ {epic_name}"
-    fallback_sub_epic = f"âš™ï¸ {sub_epic_name}" if sub_epic_name != epic_name else epic_name
+    fallback_epic = f"🎯 {epic_name}"
+    fallback_sub_epic = f"⚙️ {sub_epic_name}" if sub_epic_name != epic_name else epic_name
     return fallback_epic, fallback_sub_epic
 
 
@@ -334,32 +334,32 @@ Then action completes successfully
 """
     
     # Build clickable path with proper relative links for each level
-    path_parts = [f"[ðŸŽ¯ {epic_name}](../..)"]
+    path_parts = [f"[🎯 {epic_name}](../..)"]
     
     if sub_epic_name != epic_name:
         # Handle nested sub-epics separated by '/'
         if '/' in sub_epic_name:
             sub_parts = [part.strip() for part in sub_epic_name.split('/')]
             # First sub-epic is 1 level up (..)
-            path_parts.append(f"[âš™ï¸ {sub_parts[0]}](..)")
+            path_parts.append(f"[⚙️ {sub_parts[0]}](..)")
             # Additional nested sub-epics - last one is current folder (.)
             for i, part in enumerate(sub_parts[1:], start=1):
                 if i == len(sub_parts) - 1:
-                    path_parts.append(f"[âš™ï¸ {part}](.)")
+                    path_parts.append(f"[⚙️ {part}](.)")
                 else:
                     # For middle levels, calculate relative path
                     levels_up = len(sub_parts) - i - 1
                     rel_path = '/'.join(['..'] * levels_up) if levels_up > 0 else '.'
-                    path_parts.append(f"[âš™ï¸ {part}]({rel_path})")
+                    path_parts.append(f"[⚙️ {part}]({rel_path})")
         else:
             # Single sub-epic - story is inside it, so current folder (.)
-            path_parts.append(f"[âš™ï¸ {sub_epic_name}](.)")
+            path_parts.append(f"[⚙️ {sub_epic_name}](.)")
     
     path_line = ' / '.join(path_parts)
     
-    content = f"""# ðŸ“ {story_name}
+    content = f"""# 📄 {story_name}
 
-**Navigation:** [ðŸ“‹ Story Map](../../../../story-map.drawio){test_file_link}
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio){test_file_link}
 
 **User:** {user_str}
 **Path:** {path_line}  
@@ -464,8 +464,8 @@ class StoryScenariosSynchronizer:
                         name = file.replace('.md', '')
                         if name.startswith('[Story] '):
                             name = name[8:]  # Remove '[Story] '
-                        elif name.startswith('ðŸ“ '):
-                            name = name[2:]  # Remove 'ðŸ“ '
+                        elif name.startswith('📄 '):
+                            name = name[2:]  # Remove '📄 '
                         existing_story_files[name] = file_path
         
         # Extract all stories from graph
@@ -500,8 +500,8 @@ class StoryScenariosSynchronizer:
             story_dir = base_dir / epic_folder / sub_epic_folder
             story_dir.mkdir(parents=True, exist_ok=True)
             
-            # Create file (use ðŸ“ emoji prefix) with sanitized name
-            story_file = story_dir / f"ðŸ“ {sanitized_story_name}.md"
+            # Create file (use 📄 emoji prefix) with sanitized name
+            story_file = story_dir / f"📄 {sanitized_story_name}.md"
             rendered_file_paths.add(story_file)  # Track this as a valid file location
             
             # Generate content - workspace_directory is 3 levels up from map directory (map -> stories -> docs -> workspace)
