@@ -9,6 +9,7 @@ from help import Help
 from navigation import NavigationResult
 from exit_result import ExitResult
 from utils import read_json_file
+from story_graph import StoryMap
 import logging
 logger = logging.getLogger(__name__)
 __all__ = ['Bot', 'BotResult', 'Behavior']
@@ -53,6 +54,8 @@ class Bot:
         self._scope = Scope(self.bot_paths.workspace_directory, self.bot_paths)
         self._scope.load()
         
+        self._story_graph = None
+        
         import json; from pathlib import Path as P; log_path = P(r'c:\dev\augmented-teams\.cursor\debug.log'); log_file = open(log_path, 'a', encoding='utf-8'); log_file.write(json.dumps({'location':'bot.py:37','message':'Bot.__init__ exit','data':{},'timestamp':__import__('time').time()*1000,'sessionId':'debug-session','hypothesisId':'H1'})+'\n'); log_file.close()
 
     @property
@@ -90,6 +93,31 @@ class Bot:
     @property
     def workspace_directory(self) -> Path:
         return self.bot_paths.workspace_directory
+
+    @property
+    def story_graph(self) -> StoryMap:
+        """Lazy-load and return the story graph from workspace.
+        
+        Returns:
+            StoryMap: The loaded story graph with Epic/SubEpic/Story hierarchy
+            
+        Raises:
+            FileNotFoundError: If story-graph.json doesn't exist in workspace
+        """
+        if self._story_graph is None:
+            story_graph_path = self.bot_paths.workspace_directory / 'docs' / 'stories' / 'story-graph.json'
+            if not story_graph_path.exists():
+                raise FileNotFoundError(
+                    f'Story graph not found at {story_graph_path}. '
+                    f'Please create a story-graph.json file in the docs/stories directory.'
+                )
+            
+            with open(story_graph_path, 'r', encoding='utf-8') as f:
+                story_graph_data = json.load(f)
+            
+            self._story_graph = StoryMap(story_graph_data, bot=self)
+        
+        return self._story_graph
 
     @property
     def progress_path(self) -> str:

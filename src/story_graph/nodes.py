@@ -1,9 +1,16 @@
-﻿from abc import ABC, abstractmethod
+from abc import ABC, abstractmethod
 from typing import List, Iterator, Optional, Dict, Any, Union, TYPE_CHECKING
 from dataclasses import dataclass, field
 from pathlib import Path
 import json
 from story_graph.domain import DomainConcept, StoryUser
+
+@dataclass
+class ActionResult:
+    success: bool
+    action_name: str
+    data: Dict[str, Any] = field(default_factory=dict)
+    error_message: Optional[str] = None
 
 @dataclass
 class StoryNode(ABC):
@@ -12,6 +19,7 @@ class StoryNode(ABC):
 
     def __post_init__(self):
         self._children: List['StoryNode'] = []
+        self._bot = None
 
     @property
     @abstractmethod
@@ -50,6 +58,182 @@ class StoryNode(ABC):
 
     def _filter_children_by_type(self, target_type: type) -> List['StoryNode']:
         return [child for child in self._children if isinstance(child, target_type)]
+
+    def rename(self, new_name: str) -> None:
+        if not new_name:
+            raise ValueError('Node name cannot be empty')
+        if new_name != new_name.strip():
+            raise ValueError('Node name cannot be whitespace-only')
+        
+        invalid_chars = ['<', '>', '\\', '|', '*', '?']
+        found_invalid = [ch for ch in invalid_chars if ch in new_name]
+        if found_invalid:
+            chars_str = ', '.join(found_invalid)
+            raise ValueError(f'Name contains invalid characters: {chars_str}')
+        
+        if hasattr(self, '_parent') and self._parent:
+            for sibling in self._parent.children:
+                if sibling is not self and sibling.name == new_name:
+                    raise ValueError(f"Name '{new_name}' already exists among siblings")
+        self.name = new_name
+
+    def delete(self, cascade: bool = False) -> None:
+        if not hasattr(self, '_parent') or not self._parent:
+            raise ValueError('Cannot delete node without parent')
+        
+        parent = self._parent
+        
+        # Handle Story deletion from StoryGroup
+        if isinstance(parent, StoryGroup):
+            parent._children.remove(self)
+            parent._resequence_children()
+            return
+        
+        if cascade:
+            self._children.clear()
+        else:
+            if self._children:
+                # Get actual position in parent's internal structure
+                insert_position = parent._children.index(self)
+                for child in self._children:
+                    if hasattr(child, '_parent'):
+                        child._parent = parent
+                    parent._children.insert(insert_position, child)
+                    insert_position += 1
+        
+        parent._children.remove(self)
+        self._resequence_siblings()
+
+    def move_to(self, target_parent: 'StoryNode', position: Optional[int] = None) -> None:
+        # Check for circular reference first (before checking parent)
+        if self._is_circular_reference(target_parent):
+            raise ValueError('Cannot move node to its own descendant - circular reference')
+        
+        if not hasattr(self, '_parent') or not self._parent:
+            raise ValueError('Cannot move node without parent')
+        
+        # Check if moving Story within same SubEpic (Story._parent is StoryGroup, need to check grandparent)
+        actual_parent = self._parent
+        if isinstance(actual_parent, StoryGroup) and hasattr(actual_parent, '_parent'):
+            actual_grandparent = actual_parent._parent
+            if actual_grandparent == target_parent:
+                # Moving within same SubEpic
+                if position is not None:
+                    current_position = actual_parent._children.index(self)
+                    if current_position != position:
+                        actual_parent._children.remove(self)
+                        adjusted_position = min(position, len(actual_parent._children))
+                        actual_parent._children.insert(adjusted_position, self)
+                        actual_parent._resequence_children()
+                else:
+                    raise ValueError(f"Node '{self.name}' already exists under parent '{target_parent.name}'")
+                return
+        
+        if self._parent == target_parent:
+            if position is not None:
+                current_position = self._parent.children.index(self)
+                if current_position != position:
+                    self._parent._children.remove(self)
+                    adjusted_position = min(position, len(self._parent.children))
+                    self._parent._children.insert(adjusted_position, self)
+                    self._resequence_siblings()
+            else:
+                raise ValueError(f"Node '{self.name}' already exists under parent '{target_parent.name}'")
+            return
+        for existing_child in target_parent.children:
+            if existing_child.name == self.name:
+                raise ValueError(f"Node '{self.name}' already exists under parent '{target_parent.name}'")
+        self._validate_hierarchy_rules(target_parent)
+        self._parent._children.remove(self)
+        self._parent._resequence_siblings()
+        self._parent = target_parent
+        if position is not None:
+            adjusted_position = min(position, len(target_parent.children))
+            target_parent._children.insert(adjusted_position, self)
+        else:
+            target_parent._children.append(self)
+        target_parent._resequence_children()
+
+    def _is_circular_reference(self, potential_parent: 'StoryNode') -> bool:
+        current = potential_parent
+        while hasattr(current, '_parent') and current._parent:
+            if current._parent == self:
+                return True
+            current = current._parent
+        return False
+
+    def _validate_hierarchy_rules(self, target_parent: 'StoryNode') -> None:
+        if isinstance(self, SubEpic) and isinstance(target_parent, SubEpic):
+            for child in target_parent.children:
+                if isinstance(child, (Story, StoryGroup)):
+                    raise ValueError('Cannot move SubEpic to SubEpic with Stories')
+        if isinstance(self, Story) and isinstance(target_parent, SubEpic):
+            for child in target_parent.children:
+                if isinstance(child, SubEpic):
+                    raise ValueError('Cannot move Story to SubEpic with SubEpics')
+
+    def _resequence_siblings(self) -> None:
+        if hasattr(self, '_parent') and self._parent:
+            self._parent._resequence_children()
+
+    def _resequence_children(self) -> None:
+        for idx, child in enumerate(self._children):
+            if hasattr(child, 'sequential_order'):
+                child.sequential_order = float(idx)
+
+    def execute_action(self, action_name: str, parameters: Optional[Dict[str, Any]] = None) -> ActionResult:
+        if self._bot is None:
+            raise ValueError('Cannot execute action: node has no bot reference')
+        available_actions = self._get_available_actions()
+        if action_name not in available_actions:
+            available_actions_list = ', '.join(available_actions)
+            raise ValueError(f"Action '{action_name}' not found. Available actions: {available_actions_list}")
+        self._validate_action_parameters(action_name, parameters)
+        return ActionResult(success=True, action_name=action_name, data={'node': self.name, 'action': action_name})
+
+    def _get_available_actions(self) -> List[str]:
+        if hasattr(self, '_registered_actions'):
+            return self._registered_actions
+        if self._bot and hasattr(self._bot, 'behaviors'):
+            return [behavior.name for behavior in self._bot.behaviors]
+        return ['clarify', 'strategy', 'build', 'validate', 'render']
+
+    def _validate_action_parameters(self, action_name: str, parameters: Optional[Dict[str, Any]]) -> None:
+        if parameters is None:
+            parameters = {}
+        if isinstance(parameters, str):
+            import json
+            try:
+                parameters = json.loads(parameters)
+            except json.JSONDecodeError:
+                raise ValueError(f'Invalid JSON parameters: {parameters}')
+        required_params = {
+            'build': ['output'],
+            'validate': ['rules'],
+            'render': ['format']
+        }
+        valid_values = {
+            'render': {
+                'format': ['markdown', 'json', 'html']
+            }
+        }
+        # Check for invalid parameters first
+        expected_params = required_params.get(action_name, [])
+        for param in parameters:
+            if param not in expected_params and action_name in required_params:
+                expected_str = ', '.join(expected_params) if expected_params else 'none'
+                raise ValueError(f'Invalid parameter: {param}. Expected: {expected_str}')
+        # Then check for missing required parameters
+        if action_name in required_params:
+            for param in required_params[action_name]:
+                if param not in parameters:
+                    raise ValueError(f'Missing required parameter: {param}')
+        # Finally check for invalid values
+        if action_name in valid_values:
+            for param, valid_list in valid_values[action_name].items():
+                if param in parameters and parameters[param] not in valid_list:
+                    valid_str = ', '.join(valid_list)
+                    raise ValueError(f'Invalid {param} value: {parameters[param]}. Expected: {valid_str}')
 
 @dataclass
 class Epic(StoryNode):
@@ -92,6 +276,32 @@ class Epic(StoryNode):
                 return child
         return None
 
+    def create_child(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        for child in self.children:
+            if child.name == name:
+                raise ValueError(f"Child with name '{name}' already exists")
+        if child_type == 'SubEpic' or child_type is None:
+            sequential_order = float(len(self._children)) if position is None else float(position)
+            child = SubEpic(name=name or self._generate_unique_child_name(), sequential_order=sequential_order, _parent=self)
+        else:
+            raise ValueError(f'Epic can only create SubEpic children, not {child_type}')
+        if position is not None:
+            adjusted_position = min(position, len(self._children))
+            self._children.insert(adjusted_position, child)
+            self._resequence_children()
+        else:
+            child.sequential_order = float(len(self._children))
+            self._children.append(child)
+        return child
+
+    def _generate_unique_child_name(self, child_type: str = 'Child') -> str:
+        counter = 1
+        while True:
+            name = f'{child_type}{counter}'
+            if not any(child.name == name for child in self.children):
+                return name
+            counter += 1
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Epic':
         domain_concepts = [DomainConcept.from_dict(dc) for dc in data.get('domain_concepts', [])]
@@ -117,6 +327,23 @@ class SubEpic(StoryNode):
 
     @property
     def children(self) -> List['StoryNode']:
+        """Return children, transparently exposing Stories from StoryGroups."""
+        if self.has_stories and not self.has_subepics:
+            # Pure stories case: aggregate all stories from all story groups
+            stories = []
+            for child in self._children:
+                if isinstance(child, StoryGroup):
+                    stories.extend(child.children)
+            return stories
+        elif self.has_stories and self.has_subepics:
+            # Mixed case (violation state): return SubEpics + Stories from StoryGroups
+            result = []
+            for child in self._children:
+                if isinstance(child, SubEpic):
+                    result.append(child)
+                elif isinstance(child, StoryGroup):
+                    result.extend(child.children)
+            return result
         return self._children
 
     @classmethod
@@ -132,6 +359,79 @@ class SubEpic(StoryNode):
             story_group = StoryGroup.from_dict(story_group_data, parent=sub_epic)
             sub_epic._children.append(story_group)
         return sub_epic
+
+    @property
+    def has_subepics(self) -> bool:
+        return any(isinstance(child, SubEpic) for child in self._children)
+
+    @property
+    def has_stories(self) -> bool:
+        return any(isinstance(child, (Story, StoryGroup)) for child in self._children)
+
+    def create_child(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        if child_type is None:
+            child_type = 'Story' if self.has_stories else 'SubEpic'
+        
+        if child_type == 'SubEpic':
+            for child in self.children:
+                if child.name == name:
+                    raise ValueError(f"Child with name '{name}' already exists")
+            if self.has_stories:
+                raise ValueError('Cannot create SubEpic under SubEpic with Stories')
+            sequential_order = float(len(self._children)) if position is None else float(position)
+            child = SubEpic(name=name or self._generate_unique_child_name(), sequential_order=sequential_order, _parent=self)
+        elif child_type == 'Story':
+            if self.has_subepics:
+                raise ValueError('Cannot create Story under SubEpic with SubEpics')
+            story_group = self._get_or_create_story_group()
+            for existing_story in story_group.children:
+                if existing_story.name == name:
+                    raise ValueError(f"Child with name '{name}' already exists")
+            sequential_order = float(len(story_group._children)) if position is None else float(position)
+            child = Story(name=name or self._generate_unique_child_name('Story'), sequential_order=sequential_order, _parent=story_group)
+            if position is not None:
+                adjusted_position = min(position, len(story_group._children))
+                story_group._children.insert(adjusted_position, child)
+                story_group._resequence_children()
+            else:
+                child.sequential_order = float(len(story_group._children))
+                story_group._children.append(child)
+            return child
+        else:
+            raise ValueError(f'SubEpic can only create SubEpic or Story children, not {child_type}')
+        if position is not None:
+            adjusted_position = min(position, len(self._children))
+            self._children.insert(adjusted_position, child)
+            self._resequence_children()
+        else:
+            child.sequential_order = float(len(self._children))
+            self._children.append(child)
+        return child
+
+    def _get_or_create_story_group(self) -> 'StoryGroup':
+        for child in self._children:
+            if isinstance(child, StoryGroup):
+                return child
+        story_group = StoryGroup(name=f'{self.name} Stories', sequential_order=float(len(self._children)), _parent=self)
+        self._children.append(story_group)
+        return story_group
+
+    def _generate_unique_child_name(self, child_type: str = 'Child') -> str:
+        if child_type == 'Story' or (hasattr(self, 'has_stories') and self.has_stories):
+            story_group = self._get_or_create_story_group()
+            counter = 1
+            while True:
+                name = f'{child_type}{counter}'
+                if not any(child.name == name for child in story_group.children):
+                    return name
+                counter += 1
+        else:
+            counter = 1
+            while True:
+                name = f'{child_type}{counter}'
+                if not any(child.name == name for child in self.children):
+                    return name
+                counter += 1
 
 @dataclass
 class StoryGroup(StoryNode):
@@ -200,6 +500,37 @@ class Story(StoryNode):
         words = self.name.split()
         class_name = ''.join((word.capitalize() for word in words))
         return f'Test{class_name}'
+
+    def create_child(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        for child in self.children:
+            if child.name == name:
+                raise ValueError(f"Child with name '{name}' already exists")
+        if child_type == 'Scenario' or child_type is None:
+            sequential_order = float(len(self._filter_children_by_type(Scenario))) if position is None else float(position)
+            child = Scenario(name=name or self._generate_unique_child_name(), sequential_order=sequential_order, _parent=self)
+        elif child_type == 'ScenarioOutline':
+            sequential_order = float(len(self._filter_children_by_type(ScenarioOutline))) if position is None else float(position)
+            child = ScenarioOutline(name=name or self._generate_unique_child_name(), sequential_order=sequential_order, _parent=self)
+        elif child_type == 'AcceptanceCriteria':
+            sequential_order = float(len(self._filter_children_by_type(AcceptanceCriteria))) if position is None else float(position)
+            child = AcceptanceCriteria(name=name or self._generate_unique_child_name(), text=name or self._generate_unique_child_name(), sequential_order=sequential_order, _parent=self)
+        else:
+            raise ValueError(f'Story can only create Scenario, ScenarioOutline, or AcceptanceCriteria children, not {child_type}')
+        if position is not None:
+            adjusted_position = min(position, len(self._children))
+            self._children.insert(adjusted_position, child)
+            self._resequence_children()
+        else:
+            self._children.append(child)
+        return child
+
+    def _generate_unique_child_name(self, child_type: str = 'Child') -> str:
+        counter = 1
+        while True:
+            name = f'{child_type}{counter}'
+            if not any(child.name == name for child in self.children):
+                return name
+            counter += 1
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], parent: Optional[StoryNode]=None) -> 'Story':
@@ -337,13 +668,34 @@ class Step(StoryNode):
     def children(self) -> List['StoryNode']:
         return []
 
+class EpicsCollection:
+    
+    def __init__(self, epics: List[Epic]):
+        self._epics = epics
+        self._epics_by_name = {epic.name: epic for epic in epics}
+    
+    def __getitem__(self, name: str) -> Epic:
+        if name not in self._epics_by_name:
+            raise KeyError(f'Epic "{name}" not found')
+        return self._epics_by_name[name]
+    
+    def __iter__(self) -> Iterator[Epic]:
+        return iter(self._epics)
+    
+    def __len__(self) -> int:
+        return len(self._epics)
+
 class StoryMap:
 
-    def __init__(self, story_graph: Dict[str, Any]):
+    def __init__(self, story_graph: Dict[str, Any], bot=None):
         self.story_graph = story_graph
-        self._epics: List[Epic] = []
+        self._bot = bot
+        self._epics_list: List[Epic] = []
         for epic_data in story_graph.get('epics', []):
-            self._epics.append(Epic.from_dict(epic_data))
+            self._epics_list.append(Epic.from_dict(epic_data))
+        self._epics = EpicsCollection(self._epics_list)
+        if bot:
+            self._set_bot_on_all_nodes(bot)
 
     @classmethod
     def from_bot(cls, bot: Any) -> 'StoryMap':
@@ -360,10 +712,16 @@ class StoryMap:
             raise FileNotFoundError(f'Story graph not found at {story_graph_path}')
         with open(story_graph_path, 'r', encoding='utf-8') as f:
             story_graph = json.load(f)
-        return cls(story_graph)
+        return cls(story_graph, bot=bot)
+
+    def _set_bot_on_all_nodes(self, bot: Any) -> None:
+        for epic in self._epics_list:
+            epic._bot = bot
+            for node in self.walk(epic):
+                node._bot = bot
 
     @property
-    def epics(self) -> List[Epic]:
+    def epics(self) -> EpicsCollection:
         return self._epics
 
     def walk(self, node: StoryNode) -> Iterator[StoryNode]:
@@ -374,7 +732,7 @@ class StoryMap:
     @property
     def all_stories(self) -> List['Story']:
         stories = []
-        for epic in self._epics:
+        for epic in self._epics_list:
             for node in self.walk(epic):
                 if isinstance(node, Story):
                     stories.append(node)
@@ -383,7 +741,7 @@ class StoryMap:
     @property
     def all_scenarios(self) -> List['Scenario']:
         scenarios = []
-        for epic in self._epics:
+        for epic in self._epics_list:
             for node in self.walk(epic):
                 if isinstance(node, Story):
                     scenarios.extend(node.scenarios)
@@ -392,36 +750,90 @@ class StoryMap:
     @property
     def all_domain_concepts(self) -> List[DomainConcept]:
         concepts = []
-        for epic in self._epics:
+        for epic in self._epics_list:
             if epic.domain_concepts:
                 concepts.extend(epic.domain_concepts)
         return concepts
 
     def filter_by_epic_names(self, epic_names: set) -> 'StoryMap':
-        filtered_epics = [e for e in self._epics if e.name in epic_names]
+        filtered_epics = [e for e in self._epics_list if e.name in epic_names]
         filtered_graph = {'epics': [self._epic_to_dict(e) for e in filtered_epics]}
         return StoryMap(filtered_graph)
 
     def filter_by_story_names(self, story_names: set) -> List['Story']:
         stories = []
-        for epic in self._epics:
+        for epic in self._epics_list:
             for node in self.walk(epic):
                 if isinstance(node, Story) and node.name in story_names:
                     stories.append(node)
         return stories
 
     def find_epic_by_name(self, epic_name: str) -> Optional[Epic]:
-        for epic in self._epics:
+        for epic in self._epics_list:
             if epic.name == epic_name:
                 return epic
         return None
 
     def find_story_by_name(self, story_name: str) -> Optional['Story']:
-        for epic in self._epics:
+        for epic in self._epics_list:
             for node in self.walk(epic):
                 if isinstance(node, Story) and node.name == story_name:
                     return node
         return None
+    
+    def create_epic(self, name: Optional[str] = None, position: Optional[int] = None) -> Epic:
+        """Create a new Epic at the root level of the story map.
+        
+        Args:
+            name: Name for the new Epic. If None, generates unique name (Epic1, Epic2, etc.)
+            position: Position to insert the Epic. If None, adds to end. If exceeds count, adjusts to last position.
+            
+        Returns:
+            The newly created Epic instance
+            
+        Raises:
+            ValueError: If an Epic with the same name already exists
+        """
+        # Validate name uniqueness
+        if name:
+            for epic in self._epics_list:
+                if epic.name == name:
+                    raise ValueError(f"Epic with name '{name}' already exists")
+        
+        # Generate unique name if not provided
+        if not name:
+            name = self._generate_unique_epic_name()
+        
+        # Create Epic instance
+        epic = Epic(name=name, domain_concepts=[])
+        
+        # Set bot reference if available
+        if self._bot:
+            epic._bot = self._bot
+        
+        # Add to epics list at specified position
+        if position is not None:
+            adjusted_position = min(position, len(self._epics_list))
+            self._epics_list.insert(adjusted_position, epic)
+        else:
+            self._epics_list.append(epic)
+        
+        # Rebuild epics collection with new epic
+        self._epics = EpicsCollection(self._epics_list)
+        
+        # Update story_graph dict
+        self.story_graph['epics'] = [self._epic_to_dict(e) for e in self._epics_list]
+        
+        return epic
+    
+    def _generate_unique_epic_name(self) -> str:
+        """Generate a unique Epic name (Epic1, Epic2, etc.)"""
+        counter = 1
+        while True:
+            name = f'Epic{counter}'
+            if not any(epic.name == name for epic in self._epics_list):
+                return name
+            counter += 1
 
     def _epic_to_dict(self, epic: Epic) -> Dict[str, Any]:
         return {

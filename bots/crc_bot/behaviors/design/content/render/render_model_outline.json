@@ -1,0 +1,9 @@
+{
+  "name": "render_crc_model_outline",
+  "type": "synchronizer",
+  "path": "docs/crc",
+  "input": "story-graph.json",
+  "synchronizer": "synchronizers.domain_model.DomainModelOutlineSynchronizer",
+  "output": "crc-model-outline.md",
+  "instructions": "Generate CRC model outline markdown file in the docs/crc directory based on the domain_concepts from story-graph.json. Extract domain_concepts from all epics and sub_epics in story-graph.json."
+}

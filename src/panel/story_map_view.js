@@ -1,16 +1,20 @@
 /**
- * ScopeSection - Renders scope section with filter and story tree or file list.
+ * StoryMapView - Renders story map with filtering and editing capabilities.
+ * 
+ * Combines scope filtering with story graph editing in one unified view.
  * 
  * Epic: Invoke Bot Through Panel
- * Sub-Epic: Manage Scope Through Panel
- * Story: Display Story Scope Hierarchy, Filter Story Scope
+ * Sub-Epic: Manage Story Graph Through Panel
+ * Stories: 
+ *   - Display Story Scope Hierarchy, Filter Story Scope
+ *   - Edit Story Graph In Panel
  */
 
 const PanelView = require('./panel_view');
 
-class ScopeSection extends PanelView {
+class StoryMapView extends PanelView {
     /**
-     * Scope section view.
+     * Story map view with filtering and editing.
      * 
      * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {Object} webview - VS Code webview instance (optional)
@@ -153,7 +157,9 @@ class ScopeSection extends PanelView {
         if ((scopeData.type === 'story' || scopeData.type === 'showAll') && scopeData.content) {
             // content is an object with 'epics' property, not directly an array
             const epics = scopeData.content.epics || [];
-            contentHtml = this.renderStoryTree(epics, gearIconPath, epicIconPath, pageIconPath, testTubeIconPath, documentIconPath, plusIconPath, subtractIconPath);
+            const rootNode = this.renderRootNode(plusIconPath);
+            const treeHtml = this.renderStoryTree(epics, gearIconPath, epicIconPath, pageIconPath, testTubeIconPath, documentIconPath, plusIconPath, subtractIconPath);
+            contentHtml = rootNode + treeHtml;
             contentSummary = `${epics.length} epic${epics.length !== 1 ? 's' : ''}`;
         } else if (scopeData.type === 'files' && scopeData.content) {
             contentHtml = this.renderFileList(scopeData.content);
@@ -182,8 +188,8 @@ class ScopeSection extends PanelView {
             ">
                 <div style="display: flex; align-items: center;">
                     <span class="expand-icon" style="margin-right: 8px; font-size: 28px; transition: transform 0.15s;">▸</span>
-                    ${magnifyingGlassIconPath ? `<img src="${magnifyingGlassIconPath}" style="margin-right: 8px; width: 28px; height: 28px; object-fit: contain;" alt="Scope Icon" />` : ''}
-                    <span style="font-weight: 600; font-size: 20px;">Scope</span>
+                    ${magnifyingGlassIconPath ? `<img src="${magnifyingGlassIconPath}" style="margin-right: 8px; width: 28px; height: 28px; object-fit: contain;" alt="Story Map Icon" />` : ''}
+                    <span style="font-weight: 600; font-size: 20px;">Story Map</span>
                     ${showAllIconPath ? `<button onclick="event.stopPropagation(); showAllScope();" style="
                         background: transparent;
                         border: none;
@@ -249,6 +255,30 @@ class ScopeSection extends PanelView {
             </div>
         </div>
     </div>`;
+    }
+    
+    /**
+     * Render root "Story Map" node with Create Epic button.
+     * 
+     * @param {string} plusIconPath - Path to plus icon
+     * @returns {string} HTML string
+     */
+    renderRootNode(plusIconPath) {
+        const plusIcon = plusIconPath ? `<img src="${plusIconPath}" style="width: 12px; height: 12px; vertical-align: middle; margin-right: 4px;" alt="Create" />` : '+';
+        
+        return `<div style="margin-top: 8px; margin-bottom: 4px; font-size: 12px; font-weight: 600;">
+            <span style="display: inline-block;">Story Map</span>
+            <button onclick="createEpic()" style="
+                margin-left: 12px;
+                padding: 2px 8px;
+                background: transparent;
+                border: 1px solid currentColor;
+                border-radius: 3px;
+                cursor: pointer;
+                font-size: 11px;
+                font-weight: normal;
+            " title="Create Epic at root level">${plusIcon}Create Epic</button>
+        </div>`;
     }
     
     /**
@@ -507,5 +537,5 @@ class ScopeSection extends PanelView {
     }
 }
 
-module.exports = ScopeSection;
+module.exports = StoryMapView;
 

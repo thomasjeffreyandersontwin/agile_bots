@@ -1,6 +1,8 @@
 {
-  "type": "all",
-  "value": [],
+  "type": "story",
+  "value": [
+    "Edit Story"
+  ],
   "exclude": [],
   "skiprule": []
 }

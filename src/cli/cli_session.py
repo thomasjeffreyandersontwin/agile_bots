@@ -120,6 +120,9 @@ class CLISession:
         if hasattr(self.bot, verb):
             return self._execute_bot_attribute(verb, args)
         
+        if '.' in verb and hasattr(self.bot, verb.split('.')[0]):
+            return self._execute_domain_object_command(command)
+        
         return self._execute_action_or_route(verb, args, command)
     
     def _handle_bot_command(self, args: str) -> dict:
@@ -151,6 +154,18 @@ class CLISession:
             return result, True
         
         return attr, False
+    
+    def _execute_domain_object_command(self, command: str) -> tuple:
+        """Execute commands on domain objects like story_graph.create_epic"""
+        from navigation.domain_navigator import DomainNavigator
+        
+        navigator = DomainNavigator(self.bot)
+        result = navigator.navigate(command)
+        
+        if isinstance(result, dict):
+            return result, False
+        
+        return {'status': 'success', 'result': result}, False
     
     def _execute_action_or_route(self, verb: str, args: str, command: str) -> tuple:
         result = self._handle_action_shortcut(verb, args)

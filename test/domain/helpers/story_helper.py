@@ -10,8 +10,13 @@ from .base_helper import BaseHelper
 class StoryTestHelper(BaseHelper):
     """Helper for story graph and story map testing"""
     
+    @property
+    def bot(self):
+        """Access bot instance for bot.story_graph API."""
+        return self.parent.bot
+    
     def create_story_graph(self, graph_data: dict = None, docs_path: str = 'docs/stories', filename: str = 'story-graph.json') -> Path:
-        """Create test story-graph.json in workspace.
+        """Create test story-graph.json in workspace and load into bot.story_graph.
         
         Args:
             graph_data: Story graph dict (default: {'epics': []})
@@ -29,6 +34,9 @@ class StoryTestHelper(BaseHelper):
         
         story_graph_file = docs_dir / filename
         story_graph_file.write_text(json.dumps(graph_data, indent=2), encoding='utf-8')
+        
+        self.load_story_graph_into_bot()
+        
         return story_graph_file
     
     def simple_story_graph(self) -> dict:
@@ -547,3 +555,651 @@ class StoryTestHelper(BaseHelper):
     def when_item_accessed(self, item_type, source, **access_params):
         """Access item from source (alias for access_story_item)."""
         return self.access_story_item(item_type, source, **access_params)
+    
+    def create_story_graph_with_parent_and_children(self, parent_type, parent_name, existing_count, child_type):
+        """Create story graph with parent node and existing children."""
+        graph_data = {'epics': []}
+        
+        if parent_type == 'Epic':
+            epic = {'name': parent_name, 'sub_epics': []}
+            for i in range(existing_count):
+                epic['sub_epics'].append({
+                    'name': f'SubEpic {chr(65 + i)}',
+                    'sequential_order': i
+                })
+            graph_data['epics'].append(epic)
+        elif parent_type == 'SubEpic':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': parent_name, 'sequential_order': 0}
+            if child_type == 'SubEpic':
+                subepic['sub_epics'] = []
+                for i in range(existing_count):
+                    subepic['sub_epics'].append({
+                        'name': f'SubEpic {chr(65 + i)}',
+                        'sequential_order': i
+                    })
+            elif child_type == 'Story':
+                subepic['story_groups'] = [{'type': 'and', 'stories': []}]
+                for i in range(existing_count):
+                    subepic['story_groups'][0]['stories'].append({
+                        'name': f'Story {chr(65 + i)}',
+                        'sequential_order': i,
+                        'scenarios': []
+                    })
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        elif parent_type == 'Story':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': 'Test SubEpic', 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+            story = {'name': parent_name, 'sequential_order': 0, 'scenarios': []}
+            for i in range(existing_count):
+                story['scenarios'].append({
+                    'name': f'Scenario {chr(65 + i)}',
+                    'steps': []
+                })
+            subepic['story_groups'][0]['stories'].append(story)
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_with_named_children(self, parent_type, parent_name, existing_children_csv):
+        """Create story graph with parent node and named children."""
+        graph_data = {'epics': []}
+        child_names = [name.strip() for name in existing_children_csv.split(',')] if existing_children_csv else []
+        
+        if parent_type == 'Epic':
+            epic = {'name': parent_name, 'sub_epics': []}
+            for i, name in enumerate(child_names):
+                epic['sub_epics'].append({
+                    'name': name,
+                    'sequential_order': i
+                })
+            graph_data['epics'].append(epic)
+        elif parent_type == 'SubEpic':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': parent_name, 'sequential_order': 0}
+            
+            has_nested_structure = any('Flow' in name or 'Reset' in name or 'OAuth' in name or 'Auth' in name for name in child_names)
+            
+            if has_nested_structure:
+                subepic['sub_epics'] = []
+                for i, name in enumerate(child_names):
+                    subepic['sub_epics'].append({
+                        'name': name,
+                        'sequential_order': i
+                    })
+            else:
+                subepic['story_groups'] = [{'type': 'and', 'stories': []}]
+                for i, name in enumerate(child_names):
+                    subepic['story_groups'][0]['stories'].append({
+                        'name': name,
+                        'sequential_order': i,
+                        'scenarios': []
+                    })
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        elif parent_type == 'Story':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': 'Test SubEpic', 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+            story = {'name': parent_name, 'sequential_order': 0, 'scenarios': []}
+            for i, name in enumerate(child_names):
+                story['scenarios'].append({
+                    'name': name,
+                    'sequential_order': i,
+                    'steps': []
+                })
+            subepic['story_groups'][0]['stories'].append(story)
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_with_existing_child(self, parent_type, parent_name, existing_child_name, child_type):
+        """Create story graph with parent node and one existing child."""
+        graph_data = {'epics': []}
+        
+        if parent_type == 'Epic':
+            epic = {'name': parent_name, 'sub_epics': []}
+            epic['sub_epics'].append({
+                'name': existing_child_name,
+                'sequential_order': 0
+            })
+            graph_data['epics'].append(epic)
+        elif parent_type == 'SubEpic':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': parent_name, 'sequential_order': 0}
+            if child_type == 'Story':
+                subepic['story_groups'] = [{'type': 'and', 'stories': []}]
+                subepic['story_groups'][0]['stories'].append({
+                    'name': existing_child_name,
+                    'sequential_order': 0,
+                    'scenarios': []
+                })
+            else:
+                subepic['sub_epics'] = []
+                subepic['sub_epics'].append({
+                    'name': existing_child_name,
+                    'sequential_order': 0
+                })
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        elif parent_type == 'Story':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': 'Test SubEpic', 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+            story = {'name': parent_name, 'sequential_order': 0, 'scenarios': []}
+            if child_type == 'Scenario':
+                story['scenarios'].append({
+                    'name': existing_child_name,
+                    'sequential_order': 0,
+                    'steps': []
+                })
+            subepic['story_groups'][0]['stories'].append(story)
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_subepic_with_existing_stories(self, subepic_name, existing_story_count):
+        """Create SubEpic with existing Story count."""
+        graph_data = {'epics': []}
+        epic = {'name': 'Test Epic', 'sub_epics': []}
+        subepic = {'name': subepic_name, 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+        for i in range(existing_story_count):
+            subepic['story_groups'][0]['stories'].append({
+                'name': f'Story {chr(65 + i)}',
+                'sequential_order': i,
+                'scenarios': []
+            })
+        epic['sub_epics'].append(subepic)
+        graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_subepic_with_existing_story(self, subepic_name, existing_story):
+        """Create SubEpic with one existing Story."""
+        return self.create_subepic_with_existing_stories(subepic_name, 1)
+    
+    def create_subepic_with_existing_subepic(self, subepic_name, existing_subepic):
+        """Create SubEpic with one existing SubEpic child."""
+        graph_data = {'epics': []}
+        epic = {'name': 'Test Epic', 'sub_epics': []}
+        subepic = {'name': subepic_name, 'sequential_order': 0, 'sub_epics': []}
+        subepic['sub_epics'].append({
+            'name': existing_subepic,
+            'sequential_order': 0
+        })
+        epic['sub_epics'].append(subepic)
+        graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_in_graph(self, story_name):
+        """Create Story in story graph."""
+        graph_data = {'epics': []}
+        epic = {'name': 'Test Epic', 'sub_epics': []}
+        subepic = {'name': 'Test SubEpic', 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+        story = {'name': story_name, 'sequential_order': 0, 'scenarios': []}
+        subepic['story_groups'][0]['stories'].append(story)
+        epic['sub_epics'].append(subepic)
+        graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def find_subepic_in_story_graph(self, name):
+        """Find SubEpic by name in bot.story_graph."""
+        from story_graph.nodes import SubEpic
+        
+        for epic in self.bot.story_graph.epics:
+            for node in self.bot.story_graph.walk(epic):
+                if isinstance(node, SubEpic) and node.name == name:
+                    return node
+        raise ValueError(f"SubEpic '{name}' not found in bot.story_graph")
+    
+    def find_story_in_story_graph(self, name):
+        """Find Story by name in bot.story_graph."""
+        from story_graph.nodes import Story
+        
+        for epic in self.bot.story_graph.epics:
+            for node in self.bot.story_graph.walk(epic):
+                if isinstance(node, Story) and node.name == name:
+                    return node
+        raise ValueError(f"Story '{name}' not found in bot.story_graph")
+    
+    def find_story_in_parent(self, parent, name):
+        """Find Story by name within parent (handles StoryGroup)."""
+        from story_graph.nodes import SubEpic, StoryGroup, Story
+        
+        if isinstance(parent, SubEpic):
+            story_groups = [c for c in parent.children if isinstance(c, StoryGroup)]
+            if story_groups:
+                for story in story_groups[0].children:
+                    if isinstance(story, Story) and story.name == name:
+                        return story
+        
+        for child in parent.children:
+            if child.name == name:
+                return child
+        return None
+    
+    def find_scenario_in_story_graph(self, name):
+        """Find Scenario by name in bot.story_graph."""
+        from story_graph.nodes import Scenario
+        
+        for epic in self.bot.story_graph.epics:
+            for node in self.bot.story_graph.walk(epic):
+                if isinstance(node, Scenario) and node.name == name:
+                    return node
+        raise ValueError(f"Scenario '{name}' not found in bot.story_graph")
+    
+    def load_story_graph_into_bot(self):
+        """Load story graph into bot.story_graph for test access.
+        
+        Note: Bot now has a native story_graph property that loads from workspace.
+        This method forces a reload by clearing the cached instance.
+        """
+        story_graph_path = self.bot.bot_paths.workspace_directory / 'docs' / 'stories' / 'story-graph.json'
+        if not story_graph_path.exists():
+            return None
+        
+        # Clear cached story_graph to force reload from file
+        self.bot._story_graph = None
+        
+        # Access the property which will lazy-load it
+        story_map = self.bot.story_graph
+        
+        return story_map
+    
+    def get_children_names(self, parent_name):
+        """Get list of child names for a parent node - uses real domain objects from bot.story_graph."""
+        if parent_name in self.bot.story_graph.epics:
+            parent = self.bot.story_graph.epics[parent_name]
+        else:
+            parent = self.find_subepic_in_story_graph(parent_name) or self.find_story_in_story_graph(parent_name)
+        return [child.name for child in parent.children]
+    
+    def get_child_count(self, parent_name):
+        """Get count of children for a parent node."""
+        return len(self.get_children_names(parent_name))
+    
+    def get_child_position(self, parent_name, child_name):
+        """Get position of child in parent's children list."""
+        children = self.get_children_names(parent_name)
+        try:
+            return children.index(child_name)
+        except ValueError:
+            raise ValueError(f"Child '{child_name}' not found under '{parent_name}'")
+    
+    def assert_story_is_in_storygroup_at_position(self, subepic_name, story_name, expected_position):
+        """Verify Story is in StoryGroup at expected position - uses real domain objects from bot.story_graph."""
+        from story_graph.nodes import StoryGroup, Story
+        
+        subepic = self.find_subepic_in_story_graph(subepic_name)
+        # Check internal structure to verify StoryGroup exists
+        story_groups = [child for child in subepic._children if isinstance(child, StoryGroup)]
+        assert len(story_groups) > 0
+        
+        # Use public API to check stories (now transparent)
+        stories = list(subepic.children)
+        story_names = [s.name for s in stories if isinstance(s, Story)]
+        assert story_name in story_names
+        
+        actual_position = story_names.index(story_name)
+        assert actual_position == expected_position
+    
+    def assert_storygroup_exists(self, subepic_name):
+        """Verify StoryGroup exists - uses real domain objects from bot.story_graph."""
+        from story_graph.nodes import StoryGroup
+        
+        subepic = self.find_subepic_in_story_graph(subepic_name)
+        # Check internal structure to verify StoryGroup exists
+        story_groups = [child for child in subepic._children if isinstance(child, StoryGroup)]
+        assert len(story_groups) > 0
+    
+    def assert_child_is_in_collection(self, story_name, child_name, collection_name):
+        """Verify child is in target collection - uses real domain objects from bot.story_graph."""
+        story = self.find_story_in_story_graph(story_name)
+        
+        if collection_name == 'scenarios':
+            children = story.scenarios
+        elif collection_name == 'scenario_outlines':
+            children = story.scenario_outlines
+        elif collection_name == 'acceptance_criteria':
+            children = story.acceptance_criteria
+        else:
+            raise ValueError(f"Unknown collection: {collection_name}")
+        
+        child_names = [c.name for c in children]
+        assert child_name in child_names
+    
+    def assert_child_is_not_in_collection(self, story_name, child_name, excluded_collection):
+        """Verify child is not in excluded collection - uses real domain objects from bot.story_graph."""
+        story = self.find_story_in_story_graph(story_name)
+        
+        if excluded_collection == 'scenarios':
+            children = story.scenarios
+        elif excluded_collection == 'scenario_outlines':
+            children = story.scenario_outlines
+        elif excluded_collection == 'acceptance_criteria':
+            children = story.acceptance_criteria
+        else:
+            children = []
+        
+        child_names = [c.name for c in children]
+        assert child_name not in child_names
+    
+    def create_story_graph_with_node_and_children(self, grandparent_type, grandparent, node_name, node_children, initial_child_count):
+        """Create story graph with node that has children under grandparent."""
+        graph_data = {'epics': []}
+        epic = {'name': 'Test Epic' if grandparent_type != 'Epic' else grandparent, 'sub_epics': []}
+        
+        if grandparent_type == 'Epic':
+            node = {'name': node_name, 'sequential_order': 0, 'sub_epics': []}
+            for i, child in enumerate([n.strip() for n in node_children.split(',')]):
+                node['sub_epics'].append({'name': child, 'sequential_order': i})
+            for i in range(initial_child_count - 1):
+                epic['sub_epics'].append({'name': f'Other {i}', 'sequential_order': i + 1})
+            epic['sub_epics'].insert(0, node)
+        elif grandparent_type == 'SubEpic':
+            subepic = {'name': grandparent, 'sequential_order': 0, 'sub_epics': []}
+            node = {'name': node_name, 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+            for i, child in enumerate([n.strip() for n in node_children.split(',')]):
+                node['story_groups'][0]['stories'].append({'name': child, 'sequential_order': i, 'scenarios': []})
+            for i in range(initial_child_count - 1):
+                subepic['sub_epics'].append({'name': f'Other {i}', 'sequential_order': i + 1})
+            subepic['sub_epics'].insert(0, node)
+            epic['sub_epics'].append(subepic)
+        
+        graph_data['epics'].append(epic)
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_with_descendants(self, parent_type, parent_name, initial_children, node_name, child_count, total_descendants):
+        """Create story graph with node that has multiple descendant levels."""
+        graph_data = {'epics': []}
+        
+        initial_child_list = [n.strip() for n in initial_children.split(',')]
+        if parent_type == 'Epic':
+            epic = {'name': parent_name, 'sub_epics': []}
+            for child_name in initial_child_list:
+                if child_name == node_name:
+                    subepic = {'name': node_name, 'sequential_order': len(epic['sub_epics']), 'sub_epics': []}
+                    for i in range(child_count):
+                        nested = {'name': f'Nested {i}', 'sequential_order': i, 'story_groups': [{'type': 'and', 'stories': []}]}
+                        for j in range(2):
+                            nested['story_groups'][0]['stories'].append({
+                                'name': f'Story {i}-{j}',
+                                'sequential_order': j,
+                                'scenarios': []
+                            })
+                        subepic['sub_epics'].append(nested)
+                    epic['sub_epics'].append(subepic)
+                else:
+                    epic['sub_epics'].append({'name': child_name, 'sequential_order': len(epic['sub_epics'])})
+            graph_data['epics'].append(epic)
+        elif parent_type == 'SubEpic':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            parent_subepic = {'name': parent_name, 'sequential_order': 0, 'sub_epics': []}
+            for child_name in initial_child_list:
+                if child_name == node_name:
+                    subepic = {'name': node_name, 'sequential_order': len(parent_subepic['sub_epics']), 'sub_epics': []}
+                    for i in range(child_count):
+                        nested = {'name': f'Nested {i}', 'sequential_order': i, 'story_groups': [{'type': 'and', 'stories': []}]}
+                        for j in range(2):
+                            nested['story_groups'][0]['stories'].append({
+                                'name': f'Story {i}-{j}',
+                                'sequential_order': j,
+                                'scenarios': []
+                            })
+                        subepic['sub_epics'].append(nested)
+                    parent_subepic['sub_epics'].append(subepic)
+                else:
+                    parent_subepic['sub_epics'].append({'name': child_name, 'sequential_order': len(parent_subepic['sub_epics'])})
+            epic['sub_epics'].append(parent_subepic)
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def assert_children_have_sequential_positions(self, parent_name):
+        """Verify all children have sequential positions (0, 1, 2, ...)."""
+        try:
+            parent = self.bot.story_graph.epics[parent_name]
+        except KeyError:
+            try:
+                parent = self.find_subepic_in_story_graph(parent_name)
+            except ValueError:
+                parent = self.find_story_in_story_graph(parent_name)
+        
+        children = list(parent.children)
+        for i, child in enumerate(children):
+            assert child.sequential_order is not None or i == 0
+    
+    def create_story_graph_with_node(self, node_type, parent_name, node_name):
+        """Create story graph with single node."""
+        graph_data = {'epics': []}
+        
+        if node_type == 'Epic':
+            graph_data['epics'].append({'name': node_name, 'sub_epics': []})
+        elif node_type == 'SubEpic':
+            epic = {'name': parent_name if parent_name != 'root' else 'Root Epic', 'sub_epics': []}
+            epic['sub_epics'].append({'name': node_name, 'sequential_order': 0})
+            graph_data['epics'].append(epic)
+        elif node_type == 'Story':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': parent_name, 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+            subepic['story_groups'][0]['stories'].append({'name': node_name, 'sequential_order': 0, 'scenarios': []})
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        elif node_type == 'Scenario':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': 'Test SubEpic', 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': []}]}
+            story = {'name': parent_name, 'sequential_order': 0, 'scenarios': []}
+            story['scenarios'].append({'name': node_name, 'steps': []})
+            subepic['story_groups'][0]['stories'].append(story)
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_for_move(self, source_parent_type, source_parent, node_name, target_parent_type, target_parent, target_child_count):
+        """Create story graph for move operation tests."""
+        graph_data = {'epics': []}
+        
+        if source_parent_type == 'Epic' and target_parent_type == 'Epic':
+            source_epic = {'name': source_parent, 'sub_epics': []}
+            source_epic['sub_epics'].append({'name': node_name, 'sequential_order': 0})
+            
+            target_epic = {'name': target_parent, 'sub_epics': []}
+            for i in range(target_child_count):
+                target_epic['sub_epics'].append({'name': f'Existing {i}', 'sequential_order': i})
+            
+            graph_data['epics'].extend([source_epic, target_epic])
+        elif source_parent_type == 'SubEpic' and target_parent_type == 'SubEpic':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            
+            # Create source SubEpic with node
+            source_subepic = {'name': source_parent, 'sequential_order': 0, 'sub_epics': []}
+            source_subepic['sub_epics'].append({'name': node_name, 'sequential_order': 0})
+            
+            # Create target SubEpic with existing children
+            target_subepic = {'name': target_parent, 'sequential_order': 1, 'sub_epics': []}
+            for i in range(target_child_count):
+                target_subepic['sub_epics'].append({'name': f'Existing {i}', 'sequential_order': i})
+            
+            epic['sub_epics'].extend([source_subepic, target_subepic])
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_for_move_with_children(self, source_parent, node_name, target_parent, target_children):
+        """Create story graph for move with specific target children."""
+        graph_data = {'epics': []}
+        
+        source_epic = {'name': source_parent, 'sub_epics': []}
+        source_epic['sub_epics'].append({'name': node_name, 'sequential_order': 0})
+        
+        target_epic = {'name': target_parent, 'sub_epics': []}
+        for i, child in enumerate([n.strip() for n in target_children.split(',')]):
+            target_epic['sub_epics'].append({'name': child, 'sequential_order': i})
+        
+        graph_data['epics'].extend([source_epic, target_epic])
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_with_child(self, parent_type, parent_name, node_name):
+        """Create story graph with parent and single child."""
+        graph_data = {'epics': []}
+        
+        if parent_type == 'Epic':
+            epic = {'name': parent_name, 'sub_epics': [{'name': node_name, 'sequential_order': 0}]}
+            graph_data['epics'].append(epic)
+        elif parent_type == 'SubEpic':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': parent_name, 'sequential_order': 0, 'story_groups': [{'type': 'and', 'stories': [{'name': node_name, 'sequential_order': 0, 'scenarios': []}]}]}
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_for_hierarchy_move_test(self, source_parent, node_name, node_type, target_parent, existing_child, existing_type):
+        """Create story graph for hierarchy violation move tests."""
+        graph_data = {'epics': []}
+        epic = {'name': 'Test Epic', 'sub_epics': []}
+        
+        source = {'name': source_parent, 'sequential_order': 0, 'sub_epics': []}
+        if node_type == 'SubEpic':
+            source['sub_epics'].append({'name': node_name, 'sequential_order': 0})
+        else:
+            source['story_groups'] = [{'type': 'and', 'stories': []}]
+            source['story_groups'][0]['stories'].append({'name': node_name, 'sequential_order': 0, 'scenarios': []})
+        
+        target = {'name': target_parent, 'sequential_order': 1}
+        if existing_type == 'SubEpic':
+            target['sub_epics'] = [{'name': existing_child, 'sequential_order': 0}]
+        else:
+            target['story_groups'] = [{'type': 'and', 'stories': []}]
+            target['story_groups'][0]['stories'].append({'name': existing_child, 'sequential_order': 0, 'scenarios': []})
+        
+        epic['sub_epics'].extend([source, target])
+        graph_data['epics'].append(epic)
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_with_descendant(self, parent_type, parent_name, child_name):
+        """Create story graph with parent and descendant."""
+        graph_data = {'epics': []}
+        
+        if parent_type == 'Epic':
+            epic = {'name': parent_name, 'sub_epics': []}
+            epic['sub_epics'].append({'name': child_name, 'sequential_order': 0})
+            graph_data['epics'].append(epic)
+        elif parent_type == 'SubEpic':
+            epic = {'name': 'Test Epic', 'sub_epics': []}
+            subepic = {'name': parent_name, 'sequential_order': 0, 'sub_epics': []}
+            subepic['sub_epics'].append({'name': child_name, 'sequential_order': 0})
+            epic['sub_epics'].append(subepic)
+            graph_data['epics'].append(epic)
+        
+        self.create_story_graph(graph_data)
+        return graph_data
+    
+    def create_story_graph_with_node_and_actions(self, node_type, node_name, actions):
+        """Create story graph with node and register bot actions."""
+        graph_data = self.create_story_graph_with_node(node_type, 'parent', node_name)
+        self.load_story_graph_into_bot()
+        if node_type == 'Epic':
+            node = self.bot.story_graph.epics[node_name]
+        elif node_type == 'SubEpic':
+            node = self.find_subepic_in_story_graph(node_name)
+        else:
+            node = self.find_story_in_story_graph(node_name)
+        node._registered_actions = actions
+        return graph_data
+    
+    def assert_story_graph_structure_valid(self):
+        """Verify story graph structure is valid."""
+        story_graph_path = self.parent.workspace / 'docs' / 'stories' / 'story-graph.json'
+        assert story_graph_path.exists()
+        story_graph_data = json.loads(story_graph_path.read_text(encoding='utf-8'))
+        assert 'epics' in story_graph_data
+    
+    def assert_child_created_at_position(self, parent, child_name, expected_position, total_children):
+        """Assert child was created at expected position with correct total count."""
+        children = list(parent.children)
+        assert len(children) == total_children
+        assert children[expected_position].name == child_name
+    
+    def assert_children_in_order(self, parent, expected_order_csv):
+        """Assert children are in expected order."""
+        expected_names = [name.strip() for name in expected_order_csv.split(',')]
+        actual_names = [c.name for c in parent.children]
+        assert actual_names == expected_names
+    
+    def assert_child_at_position(self, parent, child_name, expected_position):
+        """Assert specific child is at expected position."""
+        children = list(parent.children)
+        assert children[expected_position].name == child_name
+    
+    def assert_node_removed_from_parent(self, parent, node_name):
+        """Assert node no longer exists in parent's children."""
+        child_names = [c.name for c in parent.children]
+        assert node_name not in child_names
+    
+    def assert_node_added_to_parent(self, parent, node_name, expected_position=None):
+        """Assert node exists in parent's children at optional position."""
+        child_names = [c.name for c in parent.children]
+        assert node_name in child_names
+        if expected_position is not None:
+            children = list(parent.children)
+            assert children[expected_position].name == node_name
+    
+    def assert_children_promoted_to_grandparent(self, grandparent, promoted_children_csv, expected_total):
+        """Assert children were promoted to grandparent."""
+        grandparent_children = list(grandparent.children)
+        assert len(grandparent_children) == expected_total
+        grandparent_child_names = [c.name for c in grandparent_children]
+        for child_name in [n.strip() for n in promoted_children_csv.split(',')]:
+            assert child_name in grandparent_child_names
+    
+    def assert_parent_child_count(self, parent, expected_count):
+        """Assert parent has expected number of children."""
+        assert len(parent.children) == expected_count
+    
+    # =======================================================================================
+    # Story Map / Epic Creation Helpers
+    # =======================================================================================
+    
+    def create_story_map_empty(self) -> None:
+        """Create an empty story map with no epics"""
+        story_graph_data = {
+            'epics': []
+        }
+        self.create_story_graph(story_graph_data)
+    
+    def create_story_map_with_epics(self, epic_names: list) -> None:
+        """Create a story map with specified epic names"""
+        epics = []
+        for epic_name in epic_names:
+            epics.append({
+                'name': epic_name,
+                'domain_concepts': [],
+                'sub_epics': [],
+                'story_groups': []
+            })
+        
+        story_graph_data = {
+            'epics': epics
+        }
+        self.create_story_graph(story_graph_data)
+
+

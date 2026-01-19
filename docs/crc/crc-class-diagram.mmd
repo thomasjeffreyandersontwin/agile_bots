@@ -1,0 +1,108 @@
+classDiagram
+
+    class PanelView(Base) {
+        +Wraps JSON data()
+        +Spawns subprocess()
+        +Sends command to CLI()
+        +Receives JSON from CLI()
+        +Parses JSON()
+        +Provides element ID()
+        +Renders to HTML()
+    }
+    
+    class SectionView {
+        +Renders section header()
+        +Toggles collapsed state()
+        +May contain subsections()
+    }
+    PanelView(Base) <|-- SectionView
+    
+    class SubSectionView {
+        +Toggles collapsed state()
+    }
+    PanelView <|-- SubSectionView
+    
+    class PanelHeader {
+        +Displays header image()
+        +Displays title()
+    }
+    
+    class StoryGraphTreeView {
+        +Renders story graph as tree hierarchy()
+        +Shows context-appropriate action buttons()
+        +Refreshes tree display()
+        +Delegates to InlineNameEditor()
+        +Delegates to DragDropManager()
+    }
+    PanelView <|-- StoryGraphTreeView
+    StoryGraphTreeView "1" *-- "many" InlineNameEditor
+    StoryGraphTreeView "1" *-- "many" DragDropManager
+    StoryGraphTreeView "1" *-- "many" ValidationMessageDisplay
+    StoryGraphTreeView ..> StoryGraph
+    StoryGraphTreeView ..> StoryNode
+    
+    class InlineNameEditor {
+        +Enables inline editing mode()
+        +Validates name in real-time()
+        +Saves name on blur or Enter()
+        +Cancels on Escape()
+        +Shows validation messages()
+    }
+    InlineNameEditor "1" *-- "many" ValidationMessageDisplay
+    InlineNameEditor ..> StoryNode
+    
+    class ValidationMessageDisplay {
+        +Shows warning message()
+        +Hides message()
+        +Applies message styling()
+    }
+    
+    class DragDropManager {
+        +Shows drag cursor with icon()
+        +Validates drop target compatibility at UI level()
+        +Shows no-drop cursor for incompatible targets()
+        +Highlights valid drop target()
+        +Delegates move to StoryNode domain operation()
+        +Returns node to original on invalid drop()
+    }
+    DragDropManager ..> StoryGraph
+    DragDropManager ..> StoryNode
+    
+    class ConfirmationDialog {
+        +Shows confirmation inline()
+        +Shows confirm and cancel buttons()
+        +Invokes callback on confirm()
+        +Hides confirmation on cancel()
+    }
+    
+    class DotNotationParser {
+        +Parses dot notation to node path()
+        +Resolves node from path()
+        +Parses operation from command()
+        +Parses parameters from command()
+        +Formats error with valid paths()
+    }
+    DotNotationParser ..> StoryGraph
+    DotNotationParser ..> StoryNode
+    
+    class StoryGraphCommandRouter {
+        +Parses command to extract operation and parameters()
+        +Routes to domain operation on StoryNode()
+        +Formats success result()
+        +Formats error result()
+    }
+    StoryGraphCommandRouter "1" *-- "many" DotNotationParser
+    StoryGraphCommandRouter ..> StoryGraph
+    StoryGraphCommandRouter ..> StoryNode
+    StoryGraphCommandRouter ..> ChannelAdapter
+    
+    class FileModificationMonitor {
+        +Detects file modification before command()
+        +Delegates reload to StoryGraph()
+        +Formats update notification()
+        +Formats validation error notification()
+        +Retains previous valid graph reference()
+    }
+    FileModificationMonitor ..> StoryGraph
+    FileModificationMonitor ..> ChannelAdapter
+

@@ -9,7 +9,7 @@
 const PanelView = require('./panel_view');
 const BotHeaderView = require('./bot_header_view');
 const BehaviorsView = require('./behaviors_view');
-const ScopeSection = require('./scope_view');
+const StoryMapView = require('./story_map_view');
 const InstructionsSection = require('./instructions_view');
 
 class BotView extends PanelView {
@@ -30,7 +30,7 @@ class BotView extends PanelView {
         // Initialize domain views - pass CLI to all child views
         this.headerView = new BotHeaderView(botPathOrCli, this.panelVersion, webview, extensionUri);
         this.behaviorsView = new BehaviorsView(botPathOrCli, webview, extensionUri);
-        this.scopeSection = new ScopeSection(botPathOrCli, webview, extensionUri);
+        this.storyMapView = new StoryMapView(botPathOrCli, webview, extensionUri);
         this.instructionsSection = new InstructionsSection(botPathOrCli, webview, extensionUri);
     }
     
@@ -49,9 +49,9 @@ class BotView extends PanelView {
         const behaviors = await this.behaviorsView.render();
         console.log('[BotView] Behaviors rendered, length:', behaviors.length);
         
-        console.log('[BotView] Rendering scope...');
-        const scope = await this.scopeSection.render();
-        console.log('[BotView] Scope rendered, length:', scope.length);
+        console.log('[BotView] Rendering story map...');
+        const storyMap = await this.storyMapView.render();
+        console.log('[BotView] Story map rendered, length:', storyMap.length);
         
         console.log('[BotView] Rendering instructions...');
         const instructions = await this.instructionsSection.render();
@@ -61,7 +61,7 @@ class BotView extends PanelView {
             <div class="bot-view">
                 ${header}
                 ${behaviors}
-                ${scope}
+                ${storyMap}
                 ${instructions}
             </div>
         `;

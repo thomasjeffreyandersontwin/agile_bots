@@ -1,7 +1,8 @@
 {
   "instructions": [
     "Render design model documentation showing object responsibilities and design patterns",
-    "Generate class diagrams showing object relationships and collaborations"
+    "Generate class diagrams showing object relationships and collaborations",
+    "Generate model outline showing all domain concepts grouped by module"
   ]
 }
 

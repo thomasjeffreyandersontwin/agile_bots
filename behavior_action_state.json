@@ -5,8 +5,8 @@
       "Manage Behaviors"
     ]
   },
-  "current_behavior": "crc_bot.walkthrough",
-  "current_action": "crc_bot.walkthrough.render",
-  "timestamp": "2026-01-18T14:38:30.683485",
+  "current_behavior": "story_bot.code",
+  "current_action": "story_bot.code.build",
+  "timestamp": "2026-01-19T00:11:27.649000",
   "completed_actions": []
 }

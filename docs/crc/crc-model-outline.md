@@ -617,6 +617,12 @@ TTYNavigation
 
 ## Module: panel
 
+ConfirmationDialog
+    Shows confirmation inline: Message,DOM Element
+    Shows confirm and cancel buttons: Button Set
+    Invokes callback on confirm: Callback Function
+    Hides confirmation on cancel: DOM Element
+
 PanelHeader
     Displays header image: Image
     Displays title: String
@@ -779,6 +785,13 @@ TTYEpic
 
 ## Module: story_graph.nodes
 
+InlineNameEditor
+    Enables inline editing mode: DOM Element,Input Field
+    Validates name in real-time: StoryNode,Siblings Collection
+    Saves name on blur or Enter: StoryNode,Event
+    Cancels on Escape: Event,Original Value
+    Shows validation messages: ValidationMessageDisplay,Message
+
 JSONStoryNode
     Serialize node to JSON: StoryNode,JSON String
     Include name: String,JSON
@@ -813,7 +826,6 @@ StoryNode (Base)
     Contains Children: StoryNodeChildren
     Delete self: StoryNodeSerializer
     Delete with children: StoryNodeSerializer,StoryNodeChildren
-    Execute action scoped to node: Action,Parameters,Bot
     Get/Update test: Test
 
 StoryNodeChildren
@@ -870,6 +882,11 @@ TTYStoryNode
     Reorder children: Start Pos,End Pos,CLI Result
     Automatically refresh story graph: CLI Result
     Wraps domain story node: StoryNode
+
+ValidationMessageDisplay
+    Shows warning message: Message Text,DOM Element
+    Hides message: DOM Element
+    Applies message styling: CSS Class,Message Type
 
 
 ## Module: story_graph.scenario
@@ -982,7 +999,6 @@ Story
     Get scenarios: List[Scenario]
     Get scenario outlines: List[ScenarioOutline]
     Get acceptance criteria: List[AcceptanceCriteria]
-    Maintain separate sequential ordering for scenarios and acceptance criteria: StoryNodeChildren
 
 StoryView
     Wraps story JSON: Story JSON
@@ -1004,6 +1020,18 @@ StoryGroup
 
 ## Module: story_graph.story_map
 
+DotNotationParser
+    Parses dot notation to node path: Dot Notation String,Path Segments
+    Resolves node from path: StoryGraph,Path Segments,StoryNode
+    Formats navigation error with valid paths: Error Message,Valid Paths List
+
+FileModificationMonitor
+    Detects file modification: File System,Last Modified Timestamp
+    Delegates reload to StoryGraph: StoryGraph,File Path
+    Triggers panel refresh: StoryMapView,DOM
+    Shows validation error notification: Error Message,Panel Display
+    Retains previous valid graph on error: Previous Graph,StoryGraph
+
 JSONStoryMap
     Serialize story map to JSON: StoryMap,JSON String
     Include story graph: Dict,JSON
@@ -1019,6 +1047,7 @@ MarkdownStoryMap
 StoryMap
     Load from bot directory: Bot,StoryMap
     Load from story graph: File Path,StoryMap
+    Creates Epic at root level: Epic,Name,Position
     Walk nodes: StoryNode,Iterator[StoryNode]
     Get all stories: List[Story]
     Get all scenarios: List[Scenario]
@@ -1033,10 +1062,15 @@ StoryMap
 
 StoryMapView
     Wraps story map JSON: StoryMap JSON
+    Renders story graph as tree hierarchy: StoryNode,HTML
     Displays epic hierarchy: EpicView,Epic JSON
+    Shows context-appropriate action buttons: StoryNode,ButtonSet
+    Refreshes tree display: StoryGraph,DOM
     Searches stories: Filter,StoryGraph JSON
     Opens story graph file: CLI,File JSON
     Opens story map file: CLI,File JSON
+    Delegates to InlineNameEditor: InlineNameEditor,StoryNode
+    Delegates to DragDropManager: DragDropManager,StoryNode
 
 TTYStoryMap
     Serialize story map to TTY: StoryMap,TTY String
@@ -1083,7 +1117,6 @@ TTYStoryUser
 
 SubEpic
     Test file property: String
-    Validate cannot mix Sub-Epics and Stories: StoryNodeChildren
 
 SubEpicView
     Wraps sub epic JSON: SubEpic JSON
