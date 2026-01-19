@@ -104,6 +104,7 @@ class StoryMapView extends PanelView {
         let addSubEpicIconPath = '';
         let addStoryIconPath = '';
         let addTestsIconPath = '';
+        let addAcceptanceCriteriaIconPath = '';
         if (this.webview && this.extensionUri) {
             try {
                 const magnifyingGlassUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'magnifying_glass.png');
@@ -139,7 +140,7 @@ class StoryMapView extends PanelView {
                 const addEpicUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'add_epic.png');
                 addEpicIconPath = this.webview.asWebviewUri(addEpicUri).toString();
                 
-                const addSubEpicUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'add_sub_epic.jpg');
+                const addSubEpicUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'add_sub_epic.png');
                 addSubEpicIconPath = this.webview.asWebviewUri(addSubEpicUri).toString();
                 
                 const addStoryUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'add_story.png');
@@ -147,6 +148,9 @@ class StoryMapView extends PanelView {
                 
                 const addTestsUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'add_tests.png');
                 addTestsIconPath = this.webview.asWebviewUri(addTestsUri).toString();
+                
+                const addAcceptanceCriteriaUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'clipboard.png');
+                addAcceptanceCriteriaIconPath = this.webview.asWebviewUri(addAcceptanceCriteriaUri).toString();
             } catch (err) {
                 console.error('Failed to create icon URIs:', err);
             }
@@ -164,8 +168,11 @@ class StoryMapView extends PanelView {
                 <button id="btn-create-story" onclick="event.stopPropagation(); handleContextualCreate('story');" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Create Story">
                     <img src="${addStoryIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Create Story" />
                 </button>
-                <button id="btn-create-tests" onclick="event.stopPropagation(); handleContextualCreate('tests');" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Create Tests">
-                    <img src="${addTestsIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Create Tests" />
+                <button id="btn-create-scenario" onclick="event.stopPropagation(); handleContextualCreate('scenario');" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Create Scenario">
+                    <img src="${addTestsIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Create Scenario" />
+                </button>
+                <button id="btn-create-acceptance-criteria" onclick="event.stopPropagation(); handleContextualCreate('acceptance-criteria');" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Create Acceptance Criteria">
+                    <img src="${addAcceptanceCriteriaIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Create Acceptance Criteria" />
                 </button>
             </div>
         `;
@@ -386,8 +393,8 @@ class StoryMapView extends PanelView {
                 
                 // Make sub-epic name a hyperlink if document exists, clickable to select, double-click to edit
                 const subEpicNameHtml = subEpicDocLink
-                    ? `<span onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {canHaveSubEpic: ${hasNoChildren || hasNestedSubEpics}, canHaveStory: ${hasNoChildren || hasStories}}); openFile('${this.escapeForJs(subEpicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
-                    : `<span onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {canHaveSubEpic: ${hasNoChildren || hasNestedSubEpics}, canHaveStory: ${hasNoChildren || hasStories}})" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
+                    ? `<span onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}'); openFile('${this.escapeForJs(subEpicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
+                    : `<span onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}')" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
                 
                 // Only render test tube icon for test links
                 const subEpicTestIcon = (subEpicTestLink && testTubeIconPath)

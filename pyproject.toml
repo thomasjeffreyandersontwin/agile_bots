@@ -1,0 +1,65 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agile-bots"
+version = "1.0.0"
+description = "AI-powered bots that inject Agile delivery, product, and engineering best practices directly into your workflow"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "AGPL-3.0-or-later"}
+authors = [
+    {name = "Agile by Design"},
+]
+keywords = ["agile", "bdd", "tdd", "user-stories", "crc-cards", "ai", "bot"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Testing :: BDD",
+]
+
+dependencies = [
+    "fastmcp>=0.2.0",
+    "nltk>=3.8.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-watch>=4.2.0",
+    "pytest-cov>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/agilebydesign/agile_bots"
+Repository = "https://github.com/agilebydesign/agile_bots.git"
+Issues = "https://github.com/agilebydesign/agile_bots/issues"
+
+[project.scripts]
+story_bot_cli = "cli.story_bot_entry:main"
+crc_bot_cli = "cli.crc_bot_entry:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.json", "*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["test"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
+addopts = "-v --tb=short"

@@ -1375,13 +1375,15 @@ class BotPanel {
             const btnCreateEpic = document.getElementById('btn-create-epic');
             const btnCreateSubEpic = document.getElementById('btn-create-sub-epic');
             const btnCreateStory = document.getElementById('btn-create-story');
-            const btnCreateTests = document.getElementById('btn-create-tests');
+            const btnCreateScenario = document.getElementById('btn-create-scenario');
+            const btnCreateAcceptanceCriteria = document.getElementById('btn-create-acceptance-criteria');
             
             // Hide all buttons first
             if (btnCreateEpic) btnCreateEpic.style.display = 'none';
             if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'none';
             if (btnCreateStory) btnCreateStory.style.display = 'none';
-            if (btnCreateTests) btnCreateTests.style.display = 'none';
+            if (btnCreateScenario) btnCreateScenario.style.display = 'none';
+            if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'none';
             
             // Show buttons based on selection
             if (selectedNode.type === 'root') {
@@ -1389,10 +1391,13 @@ class BotPanel {
             } else if (selectedNode.type === 'epic') {
                 if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
             } else if (selectedNode.type === 'sub-epic') {
-                if (selectedNode.canHaveSubEpic && btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
-                if (selectedNode.canHaveStory && btnCreateStory) btnCreateStory.style.display = 'block';
+                // Sub-epics can have both sub-epics AND stories, always show both options
+                if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
+                if (btnCreateStory) btnCreateStory.style.display = 'block';
             } else if (selectedNode.type === 'story') {
-                if (btnCreateTests) btnCreateTests.style.display = 'block';
+                // Stories can have both scenarios and acceptance criteria
+                if (btnCreateScenario) btnCreateScenario.style.display = 'block';
+                if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'block';
             }
         }
         
@@ -1425,9 +1430,11 @@ class BotPanel {
                 case 'story':
                     createStory(selectedNode.name);
                     break;
-                case 'tests':
-                    // Show test options menu
+                case 'scenario':
                     createScenario(selectedNode.name);
+                    break;
+                case 'acceptance-criteria':
+                    createAcceptanceCriteria(selectedNode.name);
                     break;
             }
         }
