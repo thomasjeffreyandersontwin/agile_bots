@@ -29,6 +29,11 @@ class DomainNavigator:
                 
                 if is_last and callable(attr):
                     params = self._parse_parameters(params_part)
+                    # If it's an Action and no params, return its instructions instead of executing
+                    if type(attr).__name__ == 'Action' and not params:
+                        # Just return the action's instructions, don't execute it
+                        return self._format_object_result(attr)
+                    # For other callables or actions with params, execute them
                     try:
                         result = attr(**params)
                         return self._format_result(part, result, params)

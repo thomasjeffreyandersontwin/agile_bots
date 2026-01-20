@@ -134,7 +134,16 @@ class BotPanel {
           case "refresh":
             this._update().catch(err => console.error(`[BotPanel] Refresh error: ${err.message}`));
             return;
+          case "logToFile":
+            if (message.message) {
+              const fs = require('fs');
+              const logPath = path.join(this._workspaceRoot, 'panel_clicks.log');
+              const timestamp = new Date().toISOString();
+              fs.appendFileSync(logPath, `[${timestamp}] ${message.message}\n`);
+            }
+            return;
           case "openFile":
+            this._log('[BotPanel] openFile message received with filePath: ' + message.filePath);
             if (message.filePath) {
               const rawPath = message.filePath;
               const cleanPath = rawPath.split('#')[0];
@@ -452,7 +461,7 @@ class BotPanel {
             return;
           case "navigateToBehavior":
             if (message.behaviorName) {
-              const cmd = `${message.behaviorName}.clarify`;
+              const cmd = `${message.behaviorName}`;
               this._log(`[BotPanel] navigateToBehavior -> ${cmd}`);
               this._botView?.execute(cmd)
                 .then((result) => {
@@ -473,6 +482,9 @@ class BotPanel {
               this._botView?.execute(cmd)
                 .then((result) => {
                   this._log(`[BotPanel] navigateToAction success: ${cmd} | result keys: ${Object.keys(result || {})}`);
+                  const currentAction = result?.bot?.current_action || result?.current_action;
+                  const currentBehavior = result?.bot?.current_behavior || result?.current_behavior;
+                  this._log(`[BotPanel] After navigation - current_behavior: ${currentBehavior}, current_action: ${currentAction}`);
                   return this._update();
                 })
                 .catch((error) => {
@@ -766,7 +778,21 @@ class BotPanel {
       // #region agent log
       fetch('http://127.0.0.1:7242/ingest/cc11718e-e210-436d-8aa6-f3e81dc3fdfc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'bot_panel.js:405',message:'After _botView.render()',data:{htmlLength:html?.length||0},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
       // #endregion
+      
+      // Log HTML update details
+      const htmlPreview = html.substring(0, 500).replace(/\s+/g, ' ');
+      this._log(`[BotPanel] Setting webview HTML (length: ${html.length}, preview: ${htmlPreview}...)`);
+      this._log(`[BotPanel] Current HTML length: ${this._lastHtmlLength || 0}, New HTML length: ${html.length}`);
+      
+      if (this._lastHtmlLength === html.length) {
+        this._log('[BotPanel] WARNING: HTML length unchanged - content may not have updated');
+      } else {
+        this._log('[BotPanel] HTML length changed - update should be visible');
+      }
+      
+      this._lastHtmlLength = html.length;
       this._panel.webview.html = html;
+      this._log('[BotPanel] Webview HTML property set');
       console.log("[BotPanel] _update() completed successfully");
       this._log('[BotPanel] _update() completed successfully');
       this._log('[BotPanel] _update() END');
@@ -1211,6 +1237,54 @@ class BotPanel {
         console.log('[WebView] vscode API acquired:', !!vscode);
         console.log('[WebView] vscode.postMessage available:', typeof vscode.postMessage);
         
+        // Global click handler using event delegation (CSP blocks inline onclick)
+        document.addEventListener('click', function(e) {
+            const target = e.target;
+            const targetInfo = {
+                tagName: target.tagName,
+                className: target.className,
+                id: target.id,
+                nodeType: target.getAttribute && target.getAttribute('data-node-type'),
+                nodeName: target.getAttribute && target.getAttribute('data-node-name')
+            };
+            console.log('[WebView] CLICK DETECTED:', targetInfo);
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] CLICK: ' + JSON.stringify(targetInfo)
+            });
+            
+            // Handle story node clicks (epic, sub-epic, story)
+            if (target.classList.contains('story-node')) {
+                const nodeType = target.getAttribute('data-node-type');
+                const nodeName = target.getAttribute('data-node-name');
+                const hasChildren = target.getAttribute('data-has-children') === 'true';
+                const hasStories = target.getAttribute('data-has-stories') === 'true';
+                const hasNestedSubEpics = target.getAttribute('data-has-nested-sub-epics') === 'true';
+                const nodePath = target.getAttribute('data-path');
+                const fileLink = target.getAttribute('data-file-link');
+                
+                console.log('[WebView] Story node clicked:', { nodeType, nodeName, hasChildren, nodePath, fileLink });
+                
+                // Call selectNode
+                if (window.selectNode && nodeType && nodeName !== null) {
+                    const options = {
+                        hasChildren: hasChildren,
+                        hasStories: hasStories,
+                        hasNestedSubEpics: hasNestedSubEpics,
+                        path: nodePath
+                    };
+                    window.selectNode(nodeType, nodeName, options);
+                }
+                
+                // Call openFile if there's a file link
+                if (window.openFile && fileLink) {
+                    window.openFile(fileLink);
+                }
+                
+                e.stopPropagation();
+            }
+        }, true); // Use capture phase to catch all clicks
+        
         // Test if onclick handlers can access functions
         window.testFunction = function() {
             console.log('[WebView] TEST FUNCTION CALLED - functions are accessible!');
@@ -1278,6 +1352,11 @@ class BotPanel {
         };
         
         window.openFile = function(filePath) {
+            console.log('[WebView] openFile called with:', filePath);
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] openFile called with: ' + filePath
+            });
             vscode.postMessage({
                 command: 'openFile',
                 filePath: filePath
@@ -1478,8 +1557,8 @@ class BotPanel {
             });
         };
         
-        // Track selected node for contextual actions
-        let selectedNode = {
+        // Track selected node for contextual actions (initialize window.selectedNode)
+        window.selectedNode = {
             type: 'root', // root, epic, sub-epic, story
             name: null,
             path: null, // Full path like story_graph."Epic"."SubEpic"
@@ -1493,6 +1572,10 @@ class BotPanel {
         
         // Update contextual action buttons based on selection
         window.updateContextualButtons = function() {
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] updateContextualButtons called, selectedNode=' + JSON.stringify(window.selectedNode)
+            });
             const btnCreateEpic = document.getElementById('btn-create-epic');
             const btnCreateSubEpic = document.getElementById('btn-create-sub-epic');
             const btnCreateStory = document.getElementById('btn-create-story');
@@ -1511,21 +1594,21 @@ class BotPanel {
             if (btnDeleteAll) btnDeleteAll.style.display = 'none';
             
             // Show buttons based on selection
-            if (selectedNode.type === 'root') {
+            if (window.selectedNode.type === 'root') {
                 if (btnCreateEpic) btnCreateEpic.style.display = 'block';
-            } else if (selectedNode.type === 'epic') {
+            } else if (window.selectedNode.type === 'epic') {
                 if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
                 if (btnDelete) btnDelete.style.display = 'block';
-                if (selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
-            } else if (selectedNode.type === 'sub-epic') {
+                if (window.selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
+            } else if (window.selectedNode.type === 'sub-epic') {
                 // Sub-epics can have EITHER sub-epics OR stories, not both
                 // If it has stories, only show create story button
                 // If it has sub-epics, only show create sub-epic button
                 // If empty, show both options
-                if (selectedNode.hasStories) {
+                if (window.selectedNode.hasStories) {
                     // Has stories - only allow adding more stories
                     if (btnCreateStory) btnCreateStory.style.display = 'block';
-                } else if (selectedNode.hasNestedSubEpics) {
+                } else if (window.selectedNode.hasNestedSubEpics) {
                     // Has nested sub-epics - only allow adding more sub-epics
                     if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
                 } else {
@@ -1534,19 +1617,23 @@ class BotPanel {
                     if (btnCreateStory) btnCreateStory.style.display = 'block';
                 }
                 if (btnDelete) btnDelete.style.display = 'block';
-                if (selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
-            } else if (selectedNode.type === 'story') {
+                if (window.selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
+            } else if (window.selectedNode.type === 'story') {
                 // Stories can have both scenarios and acceptance criteria
                 if (btnCreateScenario) btnCreateScenario.style.display = 'block';
                 if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'block';
                 if (btnDelete) btnDelete.style.display = 'block';
-                if (selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
+                if (window.selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
             }
         };
         
         // Select a node (called when clicking on node name/icon)
         window.selectNode = function(type, name, options = {}) {
             console.log('[WebView] selectNode:', type, name, options);
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] selectNode called: type=' + type + ', name=' + name + ', options=' + JSON.stringify(options)
+            });
             
             // Remove selected class from all nodes
             document.querySelectorAll('.story-node.selected').forEach(node => {
@@ -1560,7 +1647,7 @@ class BotPanel {
                 targetNode.classList.add('selected');
             }
             
-            selectedNode = {
+            window.selectedNode = {
                 type: type,
                 name: name,
                 path: options.path || null,
@@ -1576,9 +1663,9 @@ class BotPanel {
         
         // Handle contextual create actions
         window.handleContextualCreate = function(actionType) {
-            console.log('[WebView] handleContextualCreate:', actionType, 'for node:', selectedNode);
+            console.log('[WebView] handleContextualCreate:', actionType, 'for node:', window.selectedNode);
             
-            if (!selectedNode.path && !selectedNode.name) {
+            if (!window.selectedNode.path && !window.selectedNode.name) {
                 console.error('[WebView] No node selected for contextual create');
                 return;
             }
@@ -1587,16 +1674,16 @@ class BotPanel {
             let commandText;
             switch(actionType) {
                 case 'sub-epic':
-                    commandText = selectedNode.path ? \`\${selectedNode.path}.create\` : \`story_graph."\${selectedNode.name}".create\`;
+                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create\` : \`story_graph."\${window.selectedNode.name}".create\`;
                     break;
                 case 'story':
-                    commandText = selectedNode.path ? \`\${selectedNode.path}.create_story\` : \`story_graph."\${selectedNode.name}".create_story\`;
+                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create_story\` : \`story_graph."\${window.selectedNode.name}".create_story\`;
                     break;
                 case 'scenario':
-                    commandText = selectedNode.path ? \`\${selectedNode.path}.create_scenario\` : \`story_graph."\${selectedNode.name}".create_scenario\`;
+                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create_scenario\` : \`story_graph."\${window.selectedNode.name}".create_scenario\`;
                     break;
                 case 'acceptance-criteria':
-                    commandText = selectedNode.path ? \`\${selectedNode.path}.create_acceptance_criteria\` : \`story_graph."\${selectedNode.name}".create_acceptance_criteria\`;
+                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create_acceptance_criteria\` : \`story_graph."\${window.selectedNode.name}".create_acceptance_criteria\`;
                     break;
             }
             
@@ -1614,9 +1701,9 @@ class BotPanel {
         
         // Handle delete node action - show confirmation
         window.handleDeleteNode = function() {
-            console.log('[WebView] handleDeleteNode called for node:', selectedNode);
+            console.log('[WebView] handleDeleteNode called for node:', window.selectedNode);
             
-            if (!selectedNode.path && !selectedNode.name) {
+            if (!window.selectedNode.path && !window.selectedNode.name) {
                 console.error('[WebView] No node selected for delete');
                 return;
             }
@@ -1628,7 +1715,7 @@ class BotPanel {
             const deleteAllBtn = document.getElementById('btn-delete-all');
             
             if (confirmDiv && messageSpan) {
-                messageSpan.textContent = \`Delete "\${selectedNode.name}"?\`;
+                messageSpan.textContent = \`Delete "\${window.selectedNode.name}"?\`;
                 confirmDiv.style.display = 'flex';
                 
                 // Hide delete buttons while showing confirmation
@@ -1638,16 +1725,16 @@ class BotPanel {
                 // Store the operation
                 pendingDelete = {
                     type: 'delete',
-                    path: selectedNode.path || \`story_graph."\${selectedNode.name}"\`
+                    path: window.selectedNode.path || \`story_graph."\${window.selectedNode.name}"\`
                 };
             }
         };
         
         // Handle delete node including children action - show confirmation
         window.handleDeleteAll = function() {
-            console.log('[WebView] handleDeleteAll called for node:', selectedNode);
+            console.log('[WebView] handleDeleteAll called for node:', window.selectedNode);
             
-            if (!selectedNode.path && !selectedNode.name) {
+            if (!window.selectedNode.path && !window.selectedNode.name) {
                 console.error('[WebView] No node selected for delete all');
                 return;
             }
@@ -1659,7 +1746,7 @@ class BotPanel {
             const deleteAllBtn = document.getElementById('btn-delete-all');
             
             if (confirmDiv && messageSpan) {
-                messageSpan.textContent = \`Delete "\${selectedNode.name}" and all children?\`;
+                messageSpan.textContent = \`Delete "\${window.selectedNode.name}" and all children?\`;
                 confirmDiv.style.display = 'flex';
                 
                 // Hide delete buttons while showing confirmation
@@ -1669,7 +1756,7 @@ class BotPanel {
                 // Store the operation
                 pendingDelete = {
                     type: 'delete-all',
-                    path: selectedNode.path || \`story_graph."\${selectedNode.name}"\`
+                    path: window.selectedNode.path || \`story_graph."\${window.selectedNode.name}"\`
                 };
             }
         };

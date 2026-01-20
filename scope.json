@@ -1,6 +1,8 @@
 {
-  "type": "showAll",
-  "value": [],
+  "type": "story",
+  "value": [
+    "Get Help"
+  ],
   "exclude": [],
   "skiprule": []
 }

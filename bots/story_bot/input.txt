@@ -1,0 +1,2 @@
+﻿exploration.strategy --format json
+status --format json

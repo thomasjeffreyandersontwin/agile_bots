@@ -54,6 +54,19 @@ class BehaviorsView extends PanelView {
         };
         return text.replace(/[&<>"']/g, m => map[m]);
     }
+
+    /**
+     * Escape text for use in JavaScript strings.
+     * 
+     * @param {string} text - Text to escape
+     * @returns {string} Escaped text
+     */
+    escapeForJs(text) {
+        if (typeof text !== 'string') {
+            text = String(text);
+        }
+        return text.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\r/g, '\\r');
+    }
     
     /**
      * Get status marker for behavior/action/operation.
@@ -91,6 +104,10 @@ class BehaviorsView extends PanelView {
         if (!botData) throw new Error('[BehaviorsView] botData is null/undefined');
         if (!botData.behaviors) throw new Error('[BehaviorsView] No behaviors in response');
         if (!botData.behaviors.all_behaviors) throw new Error('[BehaviorsView] No all_behaviors in response');
+        
+        // Log current state from status command
+        console.log(`[BehaviorsView] Status returned - current_behavior: ${botData.current_behavior}, current_action: ${botData.current_action}`);
+        
         const behaviorsData = botData.behaviors.all_behaviors;
         const vscode = require('vscode');
         
@@ -323,7 +340,9 @@ class BehaviorsView extends PanelView {
         
         const behaviorTooltip = behavior.description ? this.escapeHtml(behavior.description) : '';
         const behaviorId = `behavior-${bIdx}`;
-        const behaviorName = this.escapeHtml(behavior.name || '');
+        const behaviorNameRaw = behavior.name || '';
+        const behaviorName = this.escapeHtml(behaviorNameRaw);
+        const behaviorNameJs = this.escapeForJs(behaviorNameRaw);
         
         // Expansion logic:
         // 1. If we have saved state for this item, use it (user's explicit choice)
@@ -336,7 +355,7 @@ class BehaviorsView extends PanelView {
         const behaviorDisplay = behaviorExpanded ? 'block' : 'none';
         
         const behaviorActiveClass = isCurrent ? ' active' : '';
-        let html = `<div class="collapsible-header card-item${behaviorActiveClass}" data-behavior="${behaviorName}" title="${behaviorTooltip}"><span id="${behaviorId}-icon" class="${behaviorIconClass}" style="display: inline-block; min-width: 12px; cursor: pointer;" onclick="toggleCollapse('${behaviorId}')" data-plus="${plusIconPath}" data-subtract="${subtractIconPath}">${plusIconPath && subtractIconPath ? `<img src="${behaviorIconSrc}" alt="${behaviorIconAlt}" style="width: 12px; height: 12px; vertical-align: middle;" />` : ''}</span> <span style="cursor: pointer; text-decoration: underline;" onclick="navigateToBehavior('${behaviorName}')">${behaviorMarker}${behaviorName}</span>${clipboardIconPath ? `<button onclick="event.stopPropagation(); getBehaviorRules('${behaviorName}');" style="background: transparent; border: none; padding: 0 0 0 8px; margin: 0; cursor: pointer; vertical-align: middle; display: inline-flex; align-items: center; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Get rules for ${behaviorName} and send to chat"><img src="${clipboardIconPath}" style="width: 16px; height: 16px; object-fit: contain;" alt="Get Rules" /></button>` : ''}</div>`;
+        let html = `<div class="collapsible-header card-item${behaviorActiveClass}" data-behavior="${behaviorName}" title="${behaviorTooltip}"><span id="${behaviorId}-icon" class="${behaviorIconClass}" style="display: inline-block; min-width: 12px; cursor: pointer;" onclick="toggleCollapse('${behaviorId}')" data-plus="${plusIconPath}" data-subtract="${subtractIconPath}">${plusIconPath && subtractIconPath ? `<img src="${behaviorIconSrc}" alt="${behaviorIconAlt}" style="width: 12px; height: 12px; vertical-align: middle;" />` : ''}</span> <span style="cursor: pointer; text-decoration: underline;" onclick="navigateToBehavior('${behaviorNameJs}')">${behaviorMarker}${behaviorName}</span>${clipboardIconPath ? `<button onclick="event.stopPropagation(); getBehaviorRules('${behaviorNameJs}');" style="background: transparent; border: none; padding: 0 0 0 8px; margin: 0; cursor: pointer; vertical-align: middle; display: inline-flex; align-items: center; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Get rules for ${behaviorName} and send to chat"><img src="${clipboardIconPath}" style="width: 16px; height: 16px; object-fit: contain;" alt="Get Rules" /></button>` : ''}</div>`;
         
         // Always create collapsible content, even if empty
         const actionsArray = behavior.actions?.all_actions || behavior.actions || [];
@@ -364,6 +383,24 @@ class BehaviorsView extends PanelView {
      * @returns {string} HTML string
      */
     renderAction(action, bIdx, aIdx, behaviorName, plusIconPath, subtractIconPath, tickIconPath, notTickedIconPath) {
+        // Log inputs
+        const fs = require('fs');
+        const path = require('path');
+        const logPath = 'c:\\dev\\agile_bots\\render-action-debug.log';
+        const timestamp = new Date().toISOString();
+        
+        const logEntry = `\n${'='.repeat(80)}\n[${timestamp}] renderAction called\n` +
+            `  bIdx: ${bIdx}, aIdx: ${aIdx}\n` +
+            `  action raw: ${JSON.stringify(action)}\n` +
+            `  behaviorName (passed in): "${behaviorName}"\n` +
+            `  behaviorName type: ${typeof behaviorName}\n`;
+        
+        try {
+            fs.appendFileSync(logPath, logEntry);
+        } catch (err) {
+            console.error('[BehaviorsView] Failed to write to log file:', err);
+        }
+        
         const isCurrent = action.isCurrent || action.is_current || false;
         const isCompleted = action.isCompleted || action.is_completed || false;
         const actionMarker = isCurrent
@@ -375,8 +412,26 @@ class BehaviorsView extends PanelView {
         const actionTooltip = action.description ? this.escapeHtml(action.description) : '';
         const actionName = this.escapeHtml(action.action_name || action.name || '');
         
+        // Log escaped values
+        const logEntry2 = `  actionName (escaped): "${actionName}"\n` +
+            `  onclick will be: navigateToAction('${behaviorName}', '${actionName}')\n`;
+        
+        try {
+            fs.appendFileSync(logPath, logEntry2);
+        } catch (err) {
+            console.error('[BehaviorsView] Failed to write to log file:', err);
+        }
+        
         const actionActiveClass = isCurrent ? ' active' : '';
         const actionHtml = `<div class="collapsible-header action-item card-item${actionActiveClass}" title="${actionTooltip}"><span style="cursor: pointer; text-decoration: underline;" onclick="navigateToAction('${behaviorName}', '${actionName}')">${actionMarker}${actionName}</span></div>`;
+        
+        // Log final HTML
+        const logEntry3 = `  Generated HTML: ${actionHtml.substring(0, 200)}...\n`;
+        try {
+            fs.appendFileSync(logPath, logEntry3);
+        } catch (err) {
+            console.error('[BehaviorsView] Failed to write to log file:', err);
+        }
         
         return actionHtml;
     }

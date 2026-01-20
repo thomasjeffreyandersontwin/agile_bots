@@ -15,8 +15,10 @@ class CLISession:
         self.mode = mode
     
     def execute_command(self, command: str) -> CLICommandResponse:
+        # Extract format mode from the entire command first
+        command = self._extract_format_mode(command)
+        
         verb, args = self._parse_command(command)
-        args = self._extract_format_mode(args)
         
         handler = self._get_command_handler(verb)
         if handler:

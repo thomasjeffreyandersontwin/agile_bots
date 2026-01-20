@@ -775,5 +775,7 @@ class Bot:
     def __getattr__(self, name: str):
         behavior = self.behaviors.find_by_name(name)
         if behavior:
+            # Navigate to the behavior when accessed
+            self.behaviors.navigate_to(name)
             return behavior
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")

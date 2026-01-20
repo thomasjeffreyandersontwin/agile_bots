@@ -139,6 +139,9 @@ class Behavior:
         # Try to find the action by name
         action = self.actions.find_by_name(name)
         if action:
+            # Navigate to the action when accessed
+            self.actions.navigate_to(name)
+            # Return the action object, not the navigation result
             return action
         
         # If not found, raise AttributeError as expected

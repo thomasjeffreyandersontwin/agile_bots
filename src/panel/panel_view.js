@@ -58,9 +58,15 @@ class PanelView {
             throw new Error(`CLI script not found at: ${cliPath}`);
         }
         
+        // PYTHONPATH must point to agile_bots src/test directories
+        // _workspaceDir is the agile_bots root (derived from bot path)
+        const srcDir = path.join(this._workspaceDir, 'src');
+        const testDir = path.join(this._workspaceDir, 'test');
+        const pythonPath = `${srcDir}${path.delimiter}${testDir}${path.delimiter}${this._workspaceDir}`;
+        
         const env = {
             ...process.env,
-            PYTHONPATH: this._workspaceDir,
+            PYTHONPATH: pythonPath,
             BOT_DIRECTORY: this._botPath,
             CLI_MODE: 'json',
             SUPPRESS_CLI_HEADER: '1'

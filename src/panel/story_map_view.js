@@ -362,8 +362,8 @@ class StoryMapView extends PanelView {
             // Make epic name a hyperlink if document exists, clickable to select, double-click to edit
             const epicPath = `story_graph."${this.escapeForJs(epic.name)}"`;
             const epicNameHtml = epicDocLink
-                ? `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" onclick="event.stopPropagation(); selectNode('epic', '${this.escapeForJs(epic.name)}', {hasChildren: ${epicHasChildren}, path: '${epicPath}'}); openFile('${this.escapeForJs(epicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${epicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(epic.name)}</span>`
-                : `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" onclick="event.stopPropagation(); selectNode('epic', '${this.escapeForJs(epic.name)}', {hasChildren: ${epicHasChildren}, path: '${epicPath}'})" ondblclick="event.stopPropagation(); enableEditMode('${epicPath}')" style="cursor: pointer;">${this.escapeHtml(epic.name)}</span>`;
+                ? `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-has-children="${epicHasChildren}" data-path="${epicPath}" data-file-link="${this.escapeHtml(epicDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(epic.name)}</span>`
+                : `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-has-children="${epicHasChildren}" data-path="${epicPath}" style="cursor: pointer;">${this.escapeHtml(epic.name)}</span>`;
             
             // Render test tube icon for epic test link
             const epicTestIcon = (epicTestLink && testTubeIconPath)
@@ -395,8 +395,8 @@ class StoryMapView extends PanelView {
                 
                 // Make sub-epic name a hyperlink if document exists, clickable to select, double-click to edit
                 const subEpicNameHtml = subEpicDocLink
-                    ? `<span class="story-node" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {hasChildren: ${subEpicHasChildren}, hasStories: ${hasStories}, hasNestedSubEpics: ${hasNestedSubEpics}, path: '${subEpicPath}'}); openFile('${this.escapeForJs(subEpicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
-                    : `<span class="story-node" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {hasChildren: ${subEpicHasChildren}, hasStories: ${hasStories}, hasNestedSubEpics: ${hasNestedSubEpics}, path: '${subEpicPath}'})" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
+                    ? `<span class="story-node" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" data-has-children="${subEpicHasChildren}" data-has-stories="${hasStories}" data-has-nested-sub-epics="${hasNestedSubEpics}" data-path="${subEpicPath}" data-file-link="${this.escapeHtml(subEpicDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
+                    : `<span class="story-node" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" data-has-children="${subEpicHasChildren}" data-has-stories="${hasStories}" data-has-nested-sub-epics="${hasNestedSubEpics}" data-path="${subEpicPath}" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
                 
                 // Only render test tube icon for test links
                 const subEpicTestIcon = (subEpicTestLink && testTubeIconPath)
@@ -443,9 +443,9 @@ class StoryMapView extends PanelView {
                                 
                                 // Story name with double-click to edit, clickable to select
                                 if (storyDocLink) {
-                                    html += `<span class="story-node" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" onclick="event.stopPropagation(); selectNode('story', '${this.escapeForJs(story.name)}', {canHaveTests: true, hasChildren: ${hasScenarios}, path: '${storyPath}'}); openFile('${this.escapeForJs(storyDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${storyPath}')" style="text-decoration: underline; cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
+                                    html += `<span class="story-node" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" data-has-children="${hasScenarios}" data-path="${storyPath}" data-file-link="${this.escapeHtml(storyDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
                                 } else {
-                                    html += `<span class="story-node" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" onclick="event.stopPropagation(); selectNode('story', '${this.escapeForJs(story.name)}', {canHaveTests: true, hasChildren: ${hasScenarios}, path: '${storyPath}'})" ondblclick="event.stopPropagation(); enableEditMode('${storyPath}')" style="cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
+                                    html += `<span class="story-node" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" data-has-children="${hasScenarios}" data-path="${storyPath}" style="cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
                                 }
                                 
                                 // Render test tube icon for test link
