@@ -3761,6 +3761,57 @@
                       ]
                     },
                     {
+                      "name": "Render Story Graph using Story Graph API",
+                      "sequential_order": 1,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestRenderStoryGraphUsingStoryGraphAPI",
+                      "acceptance_criteria": [
+                        "WHEN a StoryAdapter renders an StoryOutput\nTHEN the StoryAdapter retrieves the StoryMap from the Bot\nAND the StoryAdapter parses each node in StoryMap\nAND creates a matching StoryRenderedNode for each StoryNode in the StoryMap\nAND the StoryRenderedNode renders itself on the Diagram using the StoryAdapter\nUSING formatting and positional rules associated with it's node type from the StoryAdapter\nAND the StoryRenderedNode iterates over it's node children to render themselves in turn\nAND every node in the StoryMap is represented in the Diagram\nAND the StoryRenderedNodes are saved as a StoryOutput file\nAND the StoryAdapter persists all positional data in a json file matching the rendered diagram",
+                        "When the StoryIODiagram is finished rendering\nThen all of the StoryRenderedNode are accessible using the same StoryMap API as the original object model\nAND the original StoryMap's parent/child relationship and all original data will be accessed exactly like the original\nAnd additional data will also be accessible, including formatting data, sizing and positional information",
+                        "When the bot, cli or another API makes a change to a StoryRenderedNode on the StoryOutput\nTHEN the StoryRenderedNode will render itself again and update the StoryOutput as required"
+                      ],
+                      "scenarios": []
+                    },
+                    {
+                      "name": "Build Story Graph Using API",
+                      "sequential_order": 2,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestBuildStoryGraphUsingAPI",
+                      "acceptance_criteria": [
+                        "WHEN Bot is called through StoryMap API\nTHEN caller uses create_epic(), create_child(), create_story() for fine-grained construction\nAND caller validates each node during creation\nAND validation errors caught immediately before invalid structure created",
+                        "WHEN Bot is called with large story graph structures\nTHEN caller uses create_epic_from_dict() for batch operations\nAND caller passes dictionary notation with epic/sub-epic/story hierarchy\nAND StoryMap converts dict notation to domain objects\nAND StoryMap validates entire structure before committing",
+                        "WHEN StoryMap uses save() method\nTHEN StoryMap persists story_graph dict to JSON file\nAND file format matches existing story-graph.json structure\nAND all nodes converted to dict representation before saving",
+                        "WHEN StoryMap uses load() method\nTHEN StoryMap reads JSON file\nAND StoryMap rebuilds domain model from JSON\nAND StoryMap reconstructs all Epic, SubEpic, Story objects with relationships",
+                        "WHEN fine-grained and batch APIs implement same interface\nTHEN both validate hierarchy rules (no mixing sub-epics and stories)\nAND both handle positioning and resequencing\nAND both update story_graph dict representation\nAND interface enables incremental construction or bulk creation"
+                      ],
+                      "scenarios": []
+                    },
+                    {
+                      "name": "Build Story Graph With CLI",
+                      "sequential_order": 3,
+                      "connector": "or",
+                      "users": [
+                        "AI Agent"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestBuildStoryGraphWithCLI",
+                      "acceptance_criteria": [
+                        "WHEN AI builds story graph through CLI\nTHEN AI calls CLI commands instead of writing raw JSON\nAND AI uses create_epic, create_sub_epic, create_story commands for fine-grained construction\nAND each CLI command invokes corresponding StoryMap API method\nAND validation errors returned immediately to AI",
+                        "WHEN AI builds large story graph structures through CLI\nTHEN AI uses create_from_json command for batch operations\nAND AI passes dictionary notation with epic/sub-epic/story hierarchy\nAND CLI accepts both inline JSON notation and file paths\nAND CLI invokes StoryMap.create_epic_from_dict() with provided data",
+                        "WHEN CLI wraps StoryMap API\nTHEN CLI exposes create_epic, create_sub_epic, create_story commands\nAND CLI exposes create_from_json for batch operations\nAND CLI provides save command to persist changes\nAND CLI can be called from AI or human users",
+                        "WHEN AI completes building story graph\nTHEN AI calls save command through CLI\nAND CLI invokes StoryMap.save() method\nAND story_graph persisted to file\nAND AI receives confirmation of successful save"
+                      ],
+                      "scenarios": []
+                    },
+                    {
                       "name": "Clarify Requirements",
                       "sequential_order": 999,
                       "connector": "or",
@@ -4068,39 +4119,6 @@
                       ]
                     },
                     {
-                      "name": "Render Using Story API",
-                      "sequential_order": 999,
-                      "connector": "or",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "story_type": "user",
-                      "test_class": "TestRenderUsingStoryAPI",
-                      "scenarios": []
-                    },
-                    {
-                      "name": "Synchronize Story Graph Using Story API",
-                      "sequential_order": 999,
-                      "connector": "or",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "story_type": "user",
-                      "test_class": "TestSynchronizeStoryGraphUsingStoryAPI",
-                      "scenarios": []
-                    },
-                    {
-                      "name": "Synchronize Story Graph On Rendered Change",
-                      "sequential_order": 999,
-                      "connector": "or",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "story_type": "user",
-                      "test_class": "TestSynchronizeStoryGraphOnRenderedChange",
-                      "scenarios": []
-                    },
-                    {
                       "name": "Save Guardrails",
                       "sequential_order": 7,
                       "connector": "and",
@@ -4189,6 +4207,114 @@
                           "test_method": "test_merge_with_existing_decisions"
                         }
                       ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Synchronize Graph",
+              "sequential_order": 5.5,
+              "test_file": "domain/test_synchronize_graph.py",
+              "story_groups": [
+                {
+                  "type": "and",
+                  "connector": null,
+                  "stories": [
+                    {
+                      "name": "Detect Story Graph Changes From Diagram",
+                      "sequential_order": 1,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestDetectStoryGraphChangesFromDiagram",
+                      "acceptance_criteria": [
+                        "WHEN User makes changes to StoryOutput diagram\nTHEN the StoryMap hanging off StoryOutput reflects those changes in its object model\nAND the changes are visible when accessing the StoryMap directly via API\nAND the StoryRenderedNodes maintain parent/child relationships matching the modified structure",
+                        "WHEN User hits synchronize button\nTHEN Synchronizer compares StoryOutput's StoryMap against Bot's story_graph\nAND Synchronizer identifies all differences (added nodes, deleted nodes, renamed nodes, moved nodes)\nAND Synchronizer generates batch of change operations grouped by change type\nAND Synchronizer calculates dependencies between changes (e.g., must create parent before child)"
+                      ],
+                      "scenarios": []
+                    },
+                    {
+                      "name": "Create Child Story Node From Diagram",
+                      "sequential_order": 2,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestCreateChildStoryNodeFromDiagram",
+                      "acceptance_criteria": [
+                        "WHEN Bot's StoryMap reads batch of add operations from Synchronizer\nTHEN Bot's StoryMap creates new child nodes at correct hierarchy positions\nAND new nodes include all properties from diagram's StoryMap (name, type, sequential order)\nAND Bot's StoryMap resequences existing siblings when inserting at specific positions\nAND parent-child relationships match diagram's StoryMap structure",
+                        "WHEN Bot's StoryMap reads Epic add child SubEpic operation\nTHEN Bot's StoryMap adds Sub-Epic to Epic's children\nAND sequential order matches position from diagram's StoryMap",
+                        "WHEN Bot's StoryMap reads SubEpic add child SubEpic operation (no Story children)\nTHEN Bot's StoryMap adds SubEpic to parent SubEpic's children",
+                        "WHEN Bot's StoryMap reads SubEpic add Story operation (no SubEpic children)\nTHEN Bot's StoryMap creates default StoryGroup under Sub-Epic if needed\nAND Bot's StoryMap adds Story to Story Group\nAND story properties match diagram's StoryMap",
+                        "WHEN Bot's StoryMap reads SubEpic add SubEpic operation (has existing Story children)\nTHEN Bot's StoryMap identifies SubEpic already contains Stories\nAND Bot's StoryMap reports error indicating cannot create SubEpic under SubEpic with Stories\nBUT Bot's StoryMap does not apply the invalid add operation",
+                        "WHEN Bot's StoryMap reads SubEpic add Story operation (has existing SubEpic children)\nTHEN Bot's StoryMap identifies SubEpic already contains Sub-Epics\nAND Bot's StoryMap reports error indicating cannot create Story under SubEpic with Sub-Epics\nBUT Bot's StoryMap does not apply the invalid add operation",
+                        "WHEN both Bot's StoryMap and diagram's StoryMap implement same interface\nTHEN both expose load() method\nAND both expose save() method\nAND both expose update() method\nAND interface enables bidirectional synchronization"
+                      ],
+                      "scenarios": []
+                    },
+                    {
+                      "name": "Delete Story Node From Diagram",
+                      "sequential_order": 3,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestDeleteStoryNodeFromDiagram",
+                      "acceptance_criteria": [
+                        "WHEN Bot's StoryMap reads batch of delete operations from Synchronizer\nTHEN Bot's StoryMap removes nodes from story_graph\nAND Bot's StoryMap resequences remaining siblings after deletion\nAND Bot's StoryMap handles cascade deletes (removing node removes all descendants)\nBUT Bot's StoryMap preserves scenarios and steps from deleted stories in archive/backup",
+                        "WHEN Bot's StoryMap reads delete operation for node with children\nTHEN Bot's StoryMap removes node and all descendants recursively\nAND Bot's StoryMap logs all deleted nodes for audit trail"
+                      ],
+                      "scenarios": []
+                    },
+                    {
+                      "name": "Update Story Node Name From Diagram",
+                      "sequential_order": 4,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestUpdateStoryNodeNameFromDiagram",
+                      "acceptance_criteria": [
+                        "WHEN Bot's StoryMap reads batch of rename operations from Synchronizer\nTHEN Bot's StoryMap updates node names to match diagram's StoryMap names\nAND Bot's StoryMap validates no duplicate names at same hierarchy level\nAND Bot's StoryMap updates all references to renamed nodes",
+                        "WHEN Bot's StoryMap reads rename operation that creates duplicate name at same level\nTHEN Bot's StoryMap identifies duplicate name\nAND Bot's StoryMap reports error\nBUT Bot's StoryMap does not apply conflicting rename"
+                      ],
+                      "scenarios": []
+                    },
+                    {
+                      "name": "Move Story Node From Diagram",
+                      "sequential_order": 5,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestMoveStoryNodeFromDiagram",
+                      "acceptance_criteria": [
+                        "WHEN Bot's StoryMap reads batch of move/reorder operations from Synchronizer\nTHEN Bot's StoryMap removes nodes from old parent\nAND Bot's StoryMap adds nodes to new parent at correct position\nAND Bot's StoryMap updates sequential_order values to match diagram's StoryMap ordering\nAND Bot's StoryMap resequences siblings in both old and new parent locations",
+                        "WHEN Bot's StoryMap reads move operation to new parent with specified position\nTHEN Bot's StoryMap inserts at specified position\nAND Bot's StoryMap resequences existing siblings at or after position"
+                      ],
+                      "scenarios": []
+                    },
+                    {
+                      "name": "Persist Story Graph Changes From Diagram",
+                      "sequential_order": 6,
+                      "connector": "or",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "story_type": "user",
+                      "test_class": "TestPersistStoryGraphChangesFromDiagram",
+                      "acceptance_criteria": [
+                        "WHEN Bot's StoryMap completes reading and applying all batches successfully\nTHEN Bot's StoryMap structure matches diagram's StoryMap structure\nAND all node names, types, hierarchy, and ordering match\nAND Bot's StoryMap logs summary (nodes added, deleted, renamed, moved)\nAND Bot's StoryMap persists updated story_graph to file using save() method",
+                        "WHEN Bot's StoryMap encounters errors during batch application\nTHEN Bot's StoryMap identifies which operation failed and why\nAND Bot's StoryMap rolls back incomplete batch to maintain consistency\nAND Bot's StoryMap reports error details to user\nBUT Bot's StoryMap does not apply partial changes that leave story_graph in inconsistent state"
+                      ],
+                      "scenarios": []
                     }
                   ]
                 }
@@ -15487,11 +15613,16 @@
       "priority": 16,
       "description": "Story graph API actions for building and rendering",
       "stories": [
-        "Build Story Graph using Story Graph API",
+        "Render Story Graph using Story Graph API",
+        "Build Story Graph Using API",
+        "Build Story Graph With CLI",
         "Render Output",
-        "Render Using Story Graph API",
-        "Synchronize Story Graph Using Story API",
-        "Synchronize Story Graph On Rendered Change"
+        "Detect Story Graph Changes From Diagram",
+        "Create Child Story Node From Diagram",
+        "Delete Story Node From Diagram",
+        "Update Story Node Name From Diagram",
+        "Move Story Node From Diagram",
+        "Persist Story Graph Changes From Diagram"
       ]
     },
     {

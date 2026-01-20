@@ -169,6 +169,10 @@ class CLISession:
         if isinstance(result, dict):
             return result, False
         
+        # Handle Instructions objects - return them directly for proper CLI formatting
+        if type(result).__name__ == 'Instructions':
+            return result, False
+        
         return {'status': 'success', 'result': result}, False
     
     def _execute_action_or_route(self, verb: str, args: str, command: str) -> tuple:

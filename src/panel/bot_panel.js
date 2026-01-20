@@ -349,17 +349,103 @@ class BotPanel {
                 });
             }
             return;
+          case "renameNode":
+            if (message.nodePath && message.currentName) {
+              // Prompt for new name
+              vscode.window.showInputBox({
+                prompt: `Rename "${message.currentName}"`,
+                value: message.currentName,
+                placeHolder: 'Enter new name'
+              }).then((newName) => {
+                if (newName && newName !== message.currentName) {
+                  const command = `${message.nodePath}.rename new_name:"${newName}"`;
+                  this._log(`[BotPanel] Rename command: ${command}`);
+                  
+                  // Log to file
+                  const fs = require('fs');
+                  const logPath = path.join(this._workspaceRoot, 'story_graph_operations.log');
+                  const timestamp = new Date().toISOString();
+                  const logEntry = `\n${'='.repeat(80)}\n[${timestamp}] RENAME COMMAND: ${command}\n`;
+                  
+                  try {
+                    fs.appendFileSync(logPath, logEntry);
+                  } catch (err) {
+                    this._log(`[BotPanel] Failed to write to log file: ${err.message}`);
+                  }
+                  
+                  this._botView?.execute(command)
+                    .then((result) => {
+                      this._log(`[BotPanel] Rename success: ${JSON.stringify(result).substring(0, 500)}`);
+                      
+                      // Log result to file
+                      const resultLog = `[${timestamp}] RESULT: ${JSON.stringify(result, null, 2)}\n`;
+                      try {
+                        fs.appendFileSync(logPath, resultLog);
+                      } catch (err) {
+                        this._log(`[BotPanel] Failed to write result to log file: ${err.message}`);
+                      }
+                      
+                      return this._update();
+                    })
+                    .catch((error) => {
+                      this._log(`[BotPanel] Rename ERROR: ${error.message}`);
+                      
+                      // Log error to file
+                      const errorLog = `[${timestamp}] ERROR: ${error.message}\nSTACK: ${error.stack}\n`;
+                      try {
+                        fs.appendFileSync(logPath, errorLog);
+                      } catch (err) {
+                        this._log(`[BotPanel] Failed to write error to log file: ${err.message}`);
+                      }
+                      
+                      vscode.window.showErrorMessage(`Failed to rename: ${error.message}`);
+                    });
+                }
+              });
+            }
+            return;
           case "executeCommand":
             if (message.commandText) {
               this._log(`[BotPanel] executeCommand -> ${message.commandText}`);
+              
+              // Log to file for create/delete/rename operations
+              const fs = require('fs');
+              const logPath = path.join(this._workspaceRoot, 'story_graph_operations.log');
+              const timestamp = new Date().toISOString();
+              const logEntry = `\n${'='.repeat(80)}\n[${timestamp}] COMMAND: ${message.commandText}\n`;
+              
+              try {
+                fs.appendFileSync(logPath, logEntry);
+              } catch (err) {
+                this._log(`[BotPanel] Failed to write to log file: ${err.message}`);
+              }
+              
               this._botView?.execute(message.commandText)
                 .then((result) => {
                   this._log(`[BotPanel] executeCommand success: ${message.commandText} | result: ${JSON.stringify(result).substring(0, 500)}`);
+                  
+                  // Log result to file
+                  const resultLog = `[${timestamp}] RESULT: ${JSON.stringify(result, null, 2)}\n`;
+                  try {
+                    fs.appendFileSync(logPath, resultLog);
+                  } catch (err) {
+                    this._log(`[BotPanel] Failed to write result to log file: ${err.message}`);
+                  }
+                  
                   return this._update();
                 })
                 .catch((error) => {
                   this._log(`[BotPanel] executeCommand ERROR: ${error.message}`);
                   this._log(`[BotPanel] executeCommand STACK: ${error.stack}`);
+                  
+                  // Log error to file
+                  const errorLog = `[${timestamp}] ERROR: ${error.message}\nSTACK: ${error.stack}\n`;
+                  try {
+                    fs.appendFileSync(logPath, errorLog);
+                  } catch (err) {
+                    this._log(`[BotPanel] Failed to write error to log file: ${err.message}`);
+                  }
+                  
                   vscode.window.showErrorMessage(`Failed to execute ${message.commandText}: ${error.message}`);
                 });
             }
@@ -896,6 +982,25 @@ class BotPanel {
             background-color: transparent;
         }
         
+        /* ============================================================
+           STORY TREE NODE INTERACTION
+           ============================================================ */
+        
+        .story-node {
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: background-color 150ms ease;
+        }
+        
+        .story-node:hover {
+            background-color: rgba(255, 140, 0, 0.15); /* Faded orange on hover */
+        }
+        
+        .story-node.selected {
+            background-color: rgba(255, 140, 0, 0.35); /* Distinct orange when selected */
+        }
+        
+        
         .collapsible-section {
             margin-bottom: var(--space-sm);
         }
@@ -1102,10 +1207,18 @@ class BotPanel {
     
     <script>
         const vscode = acquireVsCodeApi();
+        console.log('[WebView] ========== SCRIPT LOADING ==========');
         console.log('[WebView] vscode API acquired:', !!vscode);
         console.log('[WebView] vscode.postMessage available:', typeof vscode.postMessage);
         
-        function toggleSection(sectionId) {
+        // Test if onclick handlers can access functions
+        window.testFunction = function() {
+            console.log('[WebView] TEST FUNCTION CALLED - functions are accessible!');
+            alert('Test function works!');
+        };
+        console.log('[WebView] window.testFunction defined:', typeof window.testFunction);
+        
+        window.toggleSection = function(sectionId) {
             const content = document.getElementById(sectionId);
             if (content) {
                 const section = content.closest('.collapsible-section');
@@ -1133,9 +1246,9 @@ class BotPanel {
                     }
                 }
             }
-        }
+        };
         
-        function toggleCollapse(elementId) {
+        window.toggleCollapse = function(elementId) {
             const content = document.getElementById(elementId);
             if (content) {
                 const isHidden = content.style.display === 'none';
@@ -1162,16 +1275,16 @@ class BotPanel {
                     }
                 }
             }
-        }
+        };
         
-        function openFile(filePath) {
+        window.openFile = function(filePath) {
             vscode.postMessage({
                 command: 'openFile',
                 filePath: filePath
             });
-        }
+        };
         
-        function updateFilter(filterValue) {
+        window.updateFilter = function(filterValue) {
             console.log('[WebView] updateFilter called with:', filterValue);
             const message = {
                 command: 'updateFilter',
@@ -1180,50 +1293,50 @@ class BotPanel {
             console.log('[WebView] Sending message:', message);
             vscode.postMessage(message);
             console.log('[WebView] postMessage sent');
-        }
+        };
         
         // Test if updateFilter is defined
         console.log('[WebView] updateFilter function exists:', typeof updateFilter);
         
-        function clearScopeFilter() {
+        window.clearScopeFilter = function() {
             vscode.postMessage({
                 command: 'clearScopeFilter'
             });
-        }
+        };
         
-        function showAllScope() {
+        window.showAllScope = function() {
             console.log('[WebView] showAllScope called');
             vscode.postMessage({
                 command: 'showAllScope'
             });
-        }
+        };
         
-        function executeNavigationCommand(command) {
+        window.executeNavigationCommand = function(command) {
             console.log('[WebView] executeNavigationCommand click ->', command);
             vscode.postMessage({
                 command: 'executeNavigationCommand',
                 commandText: command
             });
-        }
+        };
         
-        function navigateToBehavior(behaviorName) {
+        window.navigateToBehavior = function(behaviorName) {
             console.log('[WebView] navigateToBehavior click ->', behaviorName);
             vscode.postMessage({
                 command: 'navigateToBehavior',
                 behaviorName: behaviorName
             });
-        }
+        };
         
-        function navigateToAction(behaviorName, actionName) {
+        window.navigateToAction = function(behaviorName, actionName) {
             console.log('[WebView] navigateToAction click ->', behaviorName, actionName);
             vscode.postMessage({
                 command: 'navigateToAction',
                 behaviorName: behaviorName,
                 actionName: actionName
             });
-        }
+        };
         
-        function navigateAndExecute(behaviorName, actionName, operationName) {
+        window.navigateAndExecute = function(behaviorName, actionName, operationName) {
             console.log('[WebView] navigateAndExecute click ->', behaviorName, actionName, operationName);
             vscode.postMessage({
                 command: 'navigateAndExecute',
@@ -1231,7 +1344,7 @@ class BotPanel {
                 actionName: actionName,
                 operationName: operationName
             });
-        }
+        };
         
         function submitToChat() {
             vscode.postMessage({
@@ -1269,109 +1382,117 @@ class BotPanel {
             });
         }
         
-        function switchBot(botName) {
+        window.switchBot = function(botName) {
             console.log('[WebView] switchBot called with:', botName);
             vscode.postMessage({
                 command: 'switchBot',
                 botName: botName
             });
-        }
+        };
         
-        function getBehaviorRules(behaviorName) {
+        window.getBehaviorRules = function(behaviorName) {
             console.log('[WebView] getBehaviorRules called with:', behaviorName);
             vscode.postMessage({
                 command: 'getBehaviorRules',
                 behaviorName: behaviorName
             });
-        }
+        };
         
         // Story Graph Edit functions
-        function createEpic() {
+        window.createEpic = function() {
             console.log('[WebView] createEpic called');
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: 'story_graph.create_epic'
             });
-        }
+        };
         
-        function createSubEpic(parentName) {
+        window.createSubEpic = function(parentName) {
             console.log('[WebView] createSubEpic called for:', parentName);
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`story_graph."\${parentName}".create\`
             });
-        }
+        };
         
-        function createStory(parentName) {
+        window.createStory = function(parentName) {
             console.log('[WebView] createStory called for:', parentName);
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`story_graph."\${parentName}".create_story\`
             });
-        }
+        };
         
-        function createScenario(storyName) {
+        window.createScenario = function(storyName) {
             console.log('[WebView] createScenario called for:', storyName);
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`story_graph."\${storyName}".create_scenario\`
             });
-        }
+        };
         
-        function createScenarioOutline(storyName) {
+        window.createScenarioOutline = function(storyName) {
             console.log('[WebView] createScenarioOutline called for:', storyName);
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`story_graph."\${storyName}".create_scenario_outline\`
             });
-        }
+        };
         
-        function createAcceptanceCriteria(storyName) {
+        window.createAcceptanceCriteria = function(storyName) {
             console.log('[WebView] createAcceptanceCriteria called for:', storyName);
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`story_graph."\${storyName}".create_acceptance_criteria\`
             });
-        }
+        };
         
-        function deleteNode(nodePath) {
+        window.deleteNode = function(nodePath) {
             console.log('[WebView] deleteNode called for:', nodePath);
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`\${nodePath}.delete\`
             });
-        }
+        };
         
-        function deleteNodeIncludingChildren(nodePath) {
+        window.deleteNodeIncludingChildren = function(nodePath) {
             console.log('[WebView] deleteNodeIncludingChildren called for:', nodePath);
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`\${nodePath}.delete_including_children\`
             });
-        }
+        };
         
-        function enableEditMode(nodePath) {
+        window.enableEditMode = function(nodePath) {
             console.log('[WebView] enableEditMode called for:', nodePath);
-            // TODO: Implement inline editing for node names
-            // For now, just log that double-click was detected
-            console.log('[WebView] Double-click detected on node:', nodePath);
+            // Extract the current node name from the path
+            // Path format: story_graph."Epic"."SubEpic"."Story"
+            const matches = nodePath.match(/"([^"]+)"[^"]*$/);
+            const currentName = matches ? matches[1] : '';
+            
+            console.log('[WebView] Double-click detected on node:', nodePath, 'currentName:', currentName);
             vscode.postMessage({
-                command: 'executeCommand',
-                commandText: \`\${nodePath}.rename\`
+                command: 'renameNode',
+                nodePath: nodePath,
+                currentName: currentName
             });
-        }
+        };
         
         // Track selected node for contextual actions
         let selectedNode = {
             type: 'root', // root, epic, sub-epic, story
             name: null,
+            path: null, // Full path like story_graph."Epic"."SubEpic"
             canHaveSubEpic: false,
             canHaveStory: false,
-            canHaveTests: false
+            canHaveTests: false,
+            hasChildren: false,
+            hasStories: false,
+            hasNestedSubEpics: false
         };
         
         // Update contextual action buttons based on selection
-        function updateContextualButtons() {
+        window.updateContextualButtons = function() {
             const btnCreateEpic = document.getElementById('btn-create-epic');
             const btnCreateSubEpic = document.getElementById('btn-create-sub-epic');
             const btnCreateStory = document.getElementById('btn-create-story');
@@ -1397,9 +1518,21 @@ class BotPanel {
                 if (btnDelete) btnDelete.style.display = 'block';
                 if (selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
             } else if (selectedNode.type === 'sub-epic') {
-                // Sub-epics can have both sub-epics AND stories, always show both options
-                if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
-                if (btnCreateStory) btnCreateStory.style.display = 'block';
+                // Sub-epics can have EITHER sub-epics OR stories, not both
+                // If it has stories, only show create story button
+                // If it has sub-epics, only show create sub-epic button
+                // If empty, show both options
+                if (selectedNode.hasStories) {
+                    // Has stories - only allow adding more stories
+                    if (btnCreateStory) btnCreateStory.style.display = 'block';
+                } else if (selectedNode.hasNestedSubEpics) {
+                    // Has nested sub-epics - only allow adding more sub-epics
+                    if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
+                } else {
+                    // Empty - show both options
+                    if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
+                    if (btnCreateStory) btnCreateStory.style.display = 'block';
+                }
                 if (btnDelete) btnDelete.style.display = 'block';
                 if (selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
             } else if (selectedNode.type === 'story') {
@@ -1409,53 +1542,184 @@ class BotPanel {
                 if (btnDelete) btnDelete.style.display = 'block';
                 if (selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
             }
-        }
+        };
         
         // Select a node (called when clicking on node name/icon)
-        function selectNode(type, name, options = {}) {
+        window.selectNode = function(type, name, options = {}) {
             console.log('[WebView] selectNode:', type, name, options);
+            
+            // Remove selected class from all nodes
+            document.querySelectorAll('.story-node.selected').forEach(node => {
+                node.classList.remove('selected');
+            });
+            
+            // Add selected class to the clicked node
+            const nodeName = name || 'Story Map';
+            const targetNode = document.querySelector(\`.story-node[data-node-type="\${type}"][data-node-name="\${nodeName}"]\`);
+            if (targetNode) {
+                targetNode.classList.add('selected');
+            }
+            
             selectedNode = {
                 type: type,
                 name: name,
+                path: options.path || null,
                 canHaveSubEpic: options.canHaveSubEpic || false,
                 canHaveStory: options.canHaveStory || false,
-                canHaveTests: options.canHaveTests || false
+                canHaveTests: options.canHaveTests || false,
+                hasChildren: options.hasChildren || false,
+                hasStories: options.hasStories || false,
+                hasNestedSubEpics: options.hasNestedSubEpics || false
             };
-            updateContextualButtons();
-        }
+            window.updateContextualButtons();
+        };
         
         // Handle contextual create actions
-        function handleContextualCreate(actionType) {
+        window.handleContextualCreate = function(actionType) {
             console.log('[WebView] handleContextualCreate:', actionType, 'for node:', selectedNode);
             
-            if (!selectedNode.name) {
+            if (!selectedNode.path && !selectedNode.name) {
                 console.error('[WebView] No node selected for contextual create');
                 return;
             }
             
+            // For create operations, send the command using the path
+            let commandText;
             switch(actionType) {
                 case 'sub-epic':
-                    createSubEpic(selectedNode.name);
+                    commandText = selectedNode.path ? \`\${selectedNode.path}.create\` : \`story_graph."\${selectedNode.name}".create\`;
                     break;
                 case 'story':
-                    createStory(selectedNode.name);
+                    commandText = selectedNode.path ? \`\${selectedNode.path}.create_story\` : \`story_graph."\${selectedNode.name}".create_story\`;
                     break;
                 case 'scenario':
-                    createScenario(selectedNode.name);
+                    commandText = selectedNode.path ? \`\${selectedNode.path}.create_scenario\` : \`story_graph."\${selectedNode.name}".create_scenario\`;
                     break;
                 case 'acceptance-criteria':
-                    createAcceptanceCriteria(selectedNode.name);
+                    commandText = selectedNode.path ? \`\${selectedNode.path}.create_acceptance_criteria\` : \`story_graph."\${selectedNode.name}".create_acceptance_criteria\`;
                     break;
             }
-        }
+            
+            if (commandText) {
+                console.log('[WebView] Executing command:', commandText);
+                vscode.postMessage({
+                    command: 'executeCommand',
+                    commandText: commandText
+                });
+            }
+        };
+        
+        // Track pending delete operation
+        let pendingDelete = null;
+        
+        // Handle delete node action - show confirmation
+        window.handleDeleteNode = function() {
+            console.log('[WebView] handleDeleteNode called for node:', selectedNode);
+            
+            if (!selectedNode.path && !selectedNode.name) {
+                console.error('[WebView] No node selected for delete');
+                return;
+            }
+            
+            // Show inline confirmation
+            const confirmDiv = document.getElementById('delete-confirmation');
+            const messageSpan = document.getElementById('delete-message');
+            const deleteBtn = document.getElementById('btn-delete');
+            const deleteAllBtn = document.getElementById('btn-delete-all');
+            
+            if (confirmDiv && messageSpan) {
+                messageSpan.textContent = \`Delete "\${selectedNode.name}"?\`;
+                confirmDiv.style.display = 'flex';
+                
+                // Hide delete buttons while showing confirmation
+                if (deleteBtn) deleteBtn.style.display = 'none';
+                if (deleteAllBtn) deleteAllBtn.style.display = 'none';
+                
+                // Store the operation
+                pendingDelete = {
+                    type: 'delete',
+                    path: selectedNode.path || \`story_graph."\${selectedNode.name}"\`
+                };
+            }
+        };
+        
+        // Handle delete node including children action - show confirmation
+        window.handleDeleteAll = function() {
+            console.log('[WebView] handleDeleteAll called for node:', selectedNode);
+            
+            if (!selectedNode.path && !selectedNode.name) {
+                console.error('[WebView] No node selected for delete all');
+                return;
+            }
+            
+            // Show inline confirmation
+            const confirmDiv = document.getElementById('delete-confirmation');
+            const messageSpan = document.getElementById('delete-message');
+            const deleteBtn = document.getElementById('btn-delete');
+            const deleteAllBtn = document.getElementById('btn-delete-all');
+            
+            if (confirmDiv && messageSpan) {
+                messageSpan.textContent = \`Delete "\${selectedNode.name}" and all children?\`;
+                confirmDiv.style.display = 'flex';
+                
+                // Hide delete buttons while showing confirmation
+                if (deleteBtn) deleteBtn.style.display = 'none';
+                if (deleteAllBtn) deleteAllBtn.style.display = 'none';
+                
+                // Store the operation
+                pendingDelete = {
+                    type: 'delete-all',
+                    path: selectedNode.path || \`story_graph."\${selectedNode.name}"\`
+                };
+            }
+        };
+        
+        // Confirm the delete operation
+        window.confirmDelete = function() {
+            console.log('[WebView] confirmDelete called, pending:', pendingDelete);
+            
+            if (!pendingDelete) return;
+            
+            const nodePath = pendingDelete.path;
+            
+            if (pendingDelete.type === 'delete') {
+                window.deleteNode(nodePath);
+            } else if (pendingDelete.type === 'delete-all') {
+                window.deleteNodeIncludingChildren(nodePath);
+            }
+            
+            // Hide confirmation
+            const confirmDiv = document.getElementById('delete-confirmation');
+            if (confirmDiv) {
+                confirmDiv.style.display = 'none';
+            }
+            
+            pendingDelete = null;
+        };
+        
+        // Cancel the delete operation
+        window.cancelDelete = function() {
+            console.log('[WebView] cancelDelete called');
+            
+            // Hide confirmation
+            const confirmDiv = document.getElementById('delete-confirmation');
+            if (confirmDiv) {
+                confirmDiv.style.display = 'none';
+            }
+            
+            // Restore delete buttons
+            window.updateContextualButtons();
+            
+            pendingDelete = null;
+        };
         
         // Initialize: show Create Epic button by default
         setTimeout(() => {
-            selectNode('root', null);
+            window.selectNode('root', null);
         }, 100);
         
         // Save functions for guardrails
-        function saveClarifyAnswers() {
+        window.saveClarifyAnswers = function() {
             console.log('[WebView] saveClarifyAnswers triggered');
             const answers = {};
             const answerElements = document.querySelectorAll('[id^="clarify-answer-"]');
@@ -1475,9 +1739,9 @@ class BotPanel {
                     answers: answers
                 });
             }
-        }
+        };
         
-        function saveClarifyEvidence() {
+        window.saveClarifyEvidence = function() {
             console.log('[WebView] saveClarifyEvidence triggered');
             const evidenceTextarea = document.getElementById('clarify-evidence');
             if (evidenceTextarea) {
@@ -1505,18 +1769,18 @@ class BotPanel {
                     }
                 }
             }
-        }
+        };
         
-        function saveStrategyDecision(criteriaKey, selectedOption) {
+        window.saveStrategyDecision = function(criteriaKey, selectedOption) {
             console.log('[WebView] saveStrategyDecision triggered:', criteriaKey, selectedOption);
             vscode.postMessage({
                 command: 'saveStrategyDecision',
                 criteriaKey: criteriaKey,
                 selectedOption: selectedOption
             });
-        }
+        };
         
-        function saveStrategyAssumptions() {
+        window.saveStrategyAssumptions = function() {
             console.log('[WebView] saveStrategyAssumptions triggered');
             const assumptionsTextarea = document.getElementById('strategy-assumptions');
             if (assumptionsTextarea) {
@@ -1530,7 +1794,7 @@ class BotPanel {
                     });
                 }
             }
-        }
+        };
         
         // Listen for messages from extension host (e.g. error displays)
         window.addEventListener('message', event => {

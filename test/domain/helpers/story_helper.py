@@ -1201,4 +1201,59 @@ class StoryTestHelper(BaseHelper):
             'epics': epics
         }
         self.create_story_graph(story_graph_data)
+    
+    def create_epic_with_children(self, epic_name: str, child_count: int, child_type: str = 'SubEpic') -> None:
+        """Create an Epic with specified number of children."""
+        epic = {
+            'name': epic_name,
+            'sequential_order': 0,
+            'domain_concepts': [],
+            'sub_epics': [],
+            'story_groups': []
+        }
+        
+        # Add children based on type
+        for i in range(child_count):
+            if child_type == 'SubEpic':
+                epic['sub_epics'].append({
+                    'name': f'{child_type}{i + 1}',
+                    'sequential_order': i,
+                    'sub_epics': [],
+                    'story_groups': []
+                })
+        
+        story_graph_data = {
+            'epics': [epic]
+        }
+        self.create_story_graph(story_graph_data)
+    
+    def create_epic(self, epic_name: str) -> None:
+        """Create a single epic with the given name. Appends to existing story graph if present."""
+        story_graph_path = self.parent.workspace / 'docs' / 'stories' / 'story-graph.json'
+        
+        # Ensure directory exists
+        story_graph_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        if story_graph_path.exists():
+            # Append to existing story graph
+            existing_data = json.loads(story_graph_path.read_text(encoding='utf-8'))
+            existing_data['epics'].append({
+                'name': epic_name,
+                'domain_concepts': [],
+                'sub_epics': [],
+                'story_groups': []
+            })
+            story_graph_path.write_text(json.dumps(existing_data, indent=2), encoding='utf-8')
+            self.load_story_graph_into_bot()
+        else:
+            # Create new story graph
+            story_graph_data = {
+                'epics': [{
+                    'name': epic_name,
+                    'domain_concepts': [],
+                    'sub_epics': [],
+                    'story_groups': []
+                }]
+            }
+            self.create_story_graph(story_graph_data)
 

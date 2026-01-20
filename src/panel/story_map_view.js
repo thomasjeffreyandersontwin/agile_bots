@@ -164,12 +164,11 @@ class StoryMapView extends PanelView {
             }
         }
         
-        // Create contextual action buttons toolbar with fixed positioning for delete buttons
-        // Max create buttons = 3 at 36px each = 108px; Delete buttons = 2 at 36px each = 72px
+        // Create contextual action buttons toolbar
         const actionButtonsHtml = `
-            <div id="contextual-actions" style="display: flex; align-items: center; margin-left: 12px;">
-                <!-- Create buttons with tight spacing (max 3 buttons, reserved 120px) -->
-                <div style="display: flex; align-items: center; gap: 4px; min-width: 120px;">
+            <div id="contextual-actions" style="display: flex; align-items: center; margin-left: 12px; gap: 16px;">
+                <!-- Create buttons with tight spacing -->
+                <div style="display: flex; align-items: center; gap: 2px;">
                     <button id="btn-create-epic" onclick="event.stopPropagation(); createEpic();" style="display: block; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Create Epic">
                         <img src="${addEpicIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Create Epic" />
                     </button>
@@ -187,17 +186,22 @@ class StoryMapView extends PanelView {
                     </button>
                 </div>
                 
-                <!-- Spacer to push delete buttons to the right -->
-                <div style="flex: 1; min-width: 20px;"></div>
-                
-                <!-- Delete buttons in fixed position (always in same spot, 80px reserved) -->
-                <div style="display: flex; align-items: center; gap: 4px; width: 80px; justify-content: flex-end;">
+                <!-- Delete buttons: regular delete is larger, delete-with-children stays smaller -->
+                <div style="display: flex; align-items: center; gap: 2px;">
                     <button id="btn-delete" onclick="event.stopPropagation(); handleDeleteNode();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete">
-                        <img src="${deleteIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Delete" />
+                        <img src="${deleteIconPath}" style="width: 56px; height: 56px; object-fit: contain;" alt="Delete" />
                     </button>
                     <button id="btn-delete-all" onclick="event.stopPropagation(); handleDeleteAll();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete All">
                         <img src="${deleteChildrenIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Delete All" />
                     </button>
+                </div>
+                
+                <!-- Inline confirmation message -->
+                <div id="delete-confirmation" style="display: none; align-items: center; gap: 8px; margin-left: 12px;">
+                    <span style="color: #ff8c00; font-size: 18px;">⚠</span>
+                    <span id="delete-message" style="font-size: 12px; color: var(--vscode-foreground);"></span>
+                    <button onclick="event.stopPropagation(); confirmDelete();" style="background: var(--accent-color); color: #000; border: none; padding: 4px 12px; cursor: pointer; font-size: 12px; border-radius: 3px;">OK</button>
+                    <button onclick="event.stopPropagation(); cancelDelete();" style="background: transparent; color: var(--vscode-foreground); border: 1px solid var(--vscode-foreground); padding: 4px 12px; cursor: pointer; font-size: 12px; border-radius: 3px;">Cancel</button>
                 </div>
             </div>
         `;
@@ -332,7 +336,7 @@ class StoryMapView extends PanelView {
      */
     renderRootNode(actionButtonsHtml) {
         return `<div style="margin-top: 8px; margin-bottom: 4px; font-size: 12px; font-weight: 600; display: flex; align-items: center;">
-            <span style="display: inline-block; cursor: pointer;" onclick="selectNode('root', null)">Story Map</span>
+            <span class="story-node" data-node-type="root" data-node-name="Story Map" style="display: inline-block; cursor: pointer;" onclick="selectNode('root', null)">Story Map</span>
             ${actionButtonsHtml}
         </div>`;
     }
@@ -358,8 +362,8 @@ class StoryMapView extends PanelView {
             // Make epic name a hyperlink if document exists, clickable to select, double-click to edit
             const epicPath = `story_graph."${this.escapeForJs(epic.name)}"`;
             const epicNameHtml = epicDocLink
-                ? `<span onclick="event.stopPropagation(); selectNode('epic', '${this.escapeForJs(epic.name)}', {hasChildren: ${epicHasChildren}}); openFile('${this.escapeForJs(epicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${epicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(epic.name)}</span>`
-                : `<span onclick="event.stopPropagation(); selectNode('epic', '${this.escapeForJs(epic.name)}', {hasChildren: ${epicHasChildren}})" ondblclick="event.stopPropagation(); enableEditMode('${epicPath}')" style="cursor: pointer;">${this.escapeHtml(epic.name)}</span>`;
+                ? `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" onclick="event.stopPropagation(); selectNode('epic', '${this.escapeForJs(epic.name)}', {hasChildren: ${epicHasChildren}, path: '${epicPath}'}); openFile('${this.escapeForJs(epicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${epicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(epic.name)}</span>`
+                : `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" onclick="event.stopPropagation(); selectNode('epic', '${this.escapeForJs(epic.name)}', {hasChildren: ${epicHasChildren}, path: '${epicPath}'})" ondblclick="event.stopPropagation(); enableEditMode('${epicPath}')" style="cursor: pointer;">${this.escapeHtml(epic.name)}</span>`;
             
             // Render test tube icon for epic test link
             const epicTestIcon = (epicTestLink && testTubeIconPath)
@@ -391,8 +395,8 @@ class StoryMapView extends PanelView {
                 
                 // Make sub-epic name a hyperlink if document exists, clickable to select, double-click to edit
                 const subEpicNameHtml = subEpicDocLink
-                    ? `<span onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {hasChildren: ${subEpicHasChildren}}); openFile('${this.escapeForJs(subEpicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
-                    : `<span onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {hasChildren: ${subEpicHasChildren}})" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
+                    ? `<span class="story-node" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {hasChildren: ${subEpicHasChildren}, hasStories: ${hasStories}, hasNestedSubEpics: ${hasNestedSubEpics}, path: '${subEpicPath}'}); openFile('${this.escapeForJs(subEpicDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
+                    : `<span class="story-node" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" onclick="event.stopPropagation(); selectNode('sub-epic', '${this.escapeForJs(subEpic.name)}', {hasChildren: ${subEpicHasChildren}, hasStories: ${hasStories}, hasNestedSubEpics: ${hasNestedSubEpics}, path: '${subEpicPath}'})" ondblclick="event.stopPropagation(); enableEditMode('${subEpicPath}')" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
                 
                 // Only render test tube icon for test links
                 const subEpicTestIcon = (subEpicTestLink && testTubeIconPath)
@@ -439,9 +443,9 @@ class StoryMapView extends PanelView {
                                 
                                 // Story name with double-click to edit, clickable to select
                                 if (storyDocLink) {
-                                    html += `<span onclick="event.stopPropagation(); selectNode('story', '${this.escapeForJs(story.name)}', {canHaveTests: true, hasChildren: ${hasScenarios}}); openFile('${this.escapeForJs(storyDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${storyPath}')" style="text-decoration: underline; cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
+                                    html += `<span class="story-node" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" onclick="event.stopPropagation(); selectNode('story', '${this.escapeForJs(story.name)}', {canHaveTests: true, hasChildren: ${hasScenarios}, path: '${storyPath}'}); openFile('${this.escapeForJs(storyDocLink.url)}')" ondblclick="event.stopPropagation(); enableEditMode('${storyPath}')" style="text-decoration: underline; cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
                                 } else {
-                                    html += `<span onclick="event.stopPropagation(); selectNode('story', '${this.escapeForJs(story.name)}', {canHaveTests: true, hasChildren: ${hasScenarios}})" ondblclick="event.stopPropagation(); enableEditMode('${storyPath}')" style="cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
+                                    html += `<span class="story-node" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" onclick="event.stopPropagation(); selectNode('story', '${this.escapeForJs(story.name)}', {canHaveTests: true, hasChildren: ${hasScenarios}, path: '${storyPath}'})" ondblclick="event.stopPropagation(); enableEditMode('${storyPath}')" style="cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
                                 }
                                 
                                 // Render test tube icon for test link

@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Dict, Any
 from utils import read_json_file
@@ -126,6 +126,23 @@ class Behavior:
             return ValidationType.FILES
         else:
             return ValidationType.BOTH
+    
+    def __getattr__(self, name: str):
+        """
+        Dynamically resolve action names as attributes.
+        This allows DomainNavigator to access actions like: behavior.build, behavior.clarify, etc.
+        """
+        # Avoid infinite recursion by checking if _actions exists
+        if name.startswith('_') or name in ('_actions', 'actions'):
+            raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
+        
+        # Try to find the action by name
+        action = self.actions.find_by_name(name)
+        if action:
+            return action
+        
+        # If not found, raise AttributeError as expected
+        raise AttributeError(f"'{type(self).__name__}' object has no attribute '{name}'")
     
     def submitRules(self) -> Dict[str, Any]:
         """Submit behavior rules instructions to AI chat.

@@ -11,7 +11,6 @@
         and (S) Generator --> Generate CLI Entry Point
         and (S) Generator --> Generate Cursor Commands
         and (S) Generator --> Generate Help Documentation
-
 (E) Invoke Bot
     (E) Invoke MCP
         (S) AI Chat --> Invoke Bot Tool

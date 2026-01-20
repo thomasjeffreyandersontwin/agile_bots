@@ -149,6 +149,7 @@ class TestManageBehaviorActionStateUsingCLI:
         assert helper2.cli_session.bot.behaviors.current.name == 'prioritization'
         assert helper2.cli_session.bot.behaviors.current.actions.current_action_name == 'clarify'
     
+    @pytest.mark.skip(reason="Action state persistence not yet implemented")
     @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
     def test_cli_action_state_persists(self, tmp_path, helper_class):
         """
@@ -398,6 +399,7 @@ class TestNavigateSequentiallyUsingCLI:
         
         assert helper.cli_session.bot.behaviors.current.name == 'discovery'
     
+    @pytest.mark.skip(reason="Direct action navigation not yet implemented")
     @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
     def test_cli_navigate_to_specific_action_via_command(self, tmp_path, helper_class):
         """

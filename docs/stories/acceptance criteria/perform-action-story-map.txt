@@ -1,0 +1,14 @@
+(E) Build Agile Bots
+    (E) Invoke Bot Directly
+        (E) Perform Action
+            (S) Bot Behavior --> Render Story Graph using Story Graph API
+            or (S) Bot Behavior --> Build Story Graph Using API
+            or (S) AI Agent --> Build Story Graph With CLI
+            or (S) Bot Behavior --> Render Output
+        (E) Synchronize Graph
+            (S) Bot Behavior --> Detect Story Graph Changes From Diagram
+            or (S) Bot Behavior --> Create Child Story Node From Diagram
+            or (S) Bot Behavior --> Delete Story Node From Diagram
+            or (S) Bot Behavior --> Update Story Node Name From Diagram
+            or (S) Bot Behavior --> Move Story Node From Diagram
+            or (S) Bot Behavior --> Persist Story Graph Changes From Diagram

@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 from typing import Dict, Any, Optional, TYPE_CHECKING, List, Type
 import json
 import logging
@@ -264,6 +264,18 @@ class Action:
         state = ActionState(self.behavior.bot_name, self.behavior.name, self.action_name, outputs=outputs, duration=duration)
         self.tracker.track_completion(state)
 
+    def __call__(self, **kwargs) -> Dict[str, Any]:
+        """
+        Make Action objects callable so DomainNavigator can execute them directly.
+        Example: bot.behaviors.shape.build() or bot.behaviors.shape.build(**params)
+        """
+        # If context is provided in kwargs, use it; otherwise create default
+        context = kwargs.pop('context', None)
+        if context is None and kwargs:
+            # If there are parameters, create context with them
+            context = self.context_class(**kwargs) if kwargs else self.context_class()
+        return self.execute(context)
+    
     def execute(self, context: ActionContext = None) -> Dict[str, Any]:
         self.track_activity_on_start()
         if context is None:

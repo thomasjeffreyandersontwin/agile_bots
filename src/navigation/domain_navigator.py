@@ -60,11 +60,23 @@ class DomainNavigator:
         Example: 
             'story_graph.create_epic name:"User" at_position:1'
             -> ('story_graph.create_epic', 'name:"User" at_position:1')
+            
+            'story_graph."Invoke Bot".create name:"Test"'
+            -> ('story_graph."Invoke Bot".create', 'name:"Test"')
         """
-        match = re.match(r'([a-zA-Z0-9_."]+)\s*(.*)', command)
-        if match:
-            return match.group(1), match.group(2).strip()
-        return command, ''
+        # Split by finding where the parameters start (looking for param_name:)
+        # Parameters follow pattern: word:value (with optional quotes around value)
+        param_pattern = r'\s+\w+:(?:"[^"]*"|\d+|\w+)'
+        param_match = re.search(param_pattern, command)
+        
+        if param_match:
+            split_pos = param_match.start()
+            command_part = command[:split_pos].strip()
+            params_part = command[split_pos:].strip()
+            return command_part, params_part
+        
+        # No parameters found
+        return command.strip(), ''
     
     def _parse_dot_notation(self, path: str) -> list:
         """Parse dot notation into parts, handling quoted strings
@@ -126,13 +138,70 @@ class DomainNavigator:
         if result is None:
             return {'status': 'success', 'message': f'{method_name} completed'}
         
+        # Handle Instructions objects - return them directly so they can be rendered
+        if type(result).__name__ == 'Instructions':
+            return result
+        
+        # Handle operation results (delete, rename, move_to)
+        if isinstance(result, dict) and 'operation' in result:
+            operation = result['operation']
+            node_type = result.get('node_type', 'Node')
+            node_name = result.get('node_name', '')
+            
+            if operation == 'delete':
+                message = f'Deleted {node_type} "{node_name}"'
+                children_moved = result.get('children_moved')
+                if children_moved:
+                    message += f'. Moved {children_moved} children to parent'
+                return {
+                    'status': 'success',
+                    'message': message,
+                    'node_name': node_name,
+                    'node_type': node_type
+                }
+            elif operation == 'rename':
+                old_name = result.get('old_name', '')
+                new_name = result.get('new_name', '')
+                return {
+                    'status': 'success',
+                    'message': f'Renamed {node_type} "{old_name}" to "{new_name}"',
+                    'old_name': old_name,
+                    'new_name': new_name,
+                    'node_type': node_type
+                }
+            elif operation == 'move':
+                source = result.get('source_parent', '')
+                target = result.get('target_parent', '')
+                position = result.get('position')
+                message = f'Moved {node_type} "{node_name}" from "{source}" to "{target}"'
+                if position is not None:
+                    message += f' at position {position}'
+                return {
+                    'status': 'success',
+                    'message': message,
+                    'node_name': node_name,
+                    'node_type': node_type,
+                    'source_parent': source,
+                    'target_parent': target
+                }
+        
         if hasattr(result, 'name'):
-            return {
+            response = {
                 'status': 'success',
                 'message': f'Created {type(result).__name__} "{result.name}"',
                 'node_name': result.name,
                 'node_type': type(result).__name__
             }
+            # Include position if available
+            if hasattr(result, 'sequential_order') and result.sequential_order is not None:
+                actual_position = int(result.sequential_order)
+                response['position'] = actual_position
+                response['message'] += f' at position {actual_position}'
+                # Check if position was adjusted
+                requested_position = params.get('position')
+                if requested_position is not None and requested_position != actual_position:
+                    response['message'] += f' (adjusted from {requested_position})'
+            return response
         
         if isinstance(result, (str, int, float, bool, list, dict)):
             return {'status': 'success', 'result': result}
@@ -141,6 +210,10 @@ class DomainNavigator:
     
     def _format_object_result(self, obj: Any) -> dict:
         """Format a domain object (like StoryMap) as serializable dict"""
+        # Handle Instructions objects - return them directly so CLI adapter can format them
+        if type(obj).__name__ == 'Instructions':
+            return obj
+        
         if hasattr(obj, 'story_graph') and isinstance(getattr(obj, 'story_graph'), dict):
             return {'status': 'success', 'result': obj.story_graph}
         

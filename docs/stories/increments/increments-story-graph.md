@@ -81,6 +81,13 @@
 - Synchronize Story Graph Using Story API
 - Synchronize Story Graph On Rendered Change
 
+## Sub Epic: Perform Action
+- Build Story Graph using Story Graph API
+- Render Output
+- Render Using Story Graph API
+- Synchronize Story Graph Using Story API
+- Synchronize Story Graph On Rendered Change
+
 # Increment:  Story Filter Advanced
 ##  Add Filter Part To Story Scope
 - Direct.Filter on Story Scope.Add Filter Part To Story Scope

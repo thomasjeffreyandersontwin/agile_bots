@@ -28,6 +28,13 @@ class StoryNode(ABC):
 
     def __iter__(self) -> Iterator['StoryNode']:
         return iter(self.children)
+    
+    def __getitem__(self, child_name: str) -> 'StoryNode':
+        """Access child by name"""
+        for child in self.children:
+            if child.name == child_name:
+                return child
+        raise KeyError(f"Child '{child_name}' not found in {type(self).__name__} '{self.name}'")
 
     def __repr__(self) -> str:
         order = f', order={self.sequential_order}' if self.sequential_order is not None else ''
@@ -59,35 +66,47 @@ class StoryNode(ABC):
     def _filter_children_by_type(self, target_type: type) -> List['StoryNode']:
         return [child for child in self._children if isinstance(child, target_type)]
 
-    def rename(self, new_name: str) -> None:
-        if not new_name:
+    def rename(self, name: str = None) -> dict:
+        """Rename the node. Parameter 'name' for CLI compatibility."""
+        if name is None or not name:
             raise ValueError('Node name cannot be empty')
-        if new_name != new_name.strip():
+        if name != name.strip():
             raise ValueError('Node name cannot be whitespace-only')
         
         invalid_chars = ['<', '>', '\\', '|', '*', '?']
-        found_invalid = [ch for ch in invalid_chars if ch in new_name]
+        found_invalid = [ch for ch in invalid_chars if ch in name]
         if found_invalid:
             chars_str = ', '.join(found_invalid)
             raise ValueError(f'Name contains invalid characters: {chars_str}')
         
         if hasattr(self, '_parent') and self._parent:
             for sibling in self._parent.children:
-                if sibling is not self and sibling.name == new_name:
-                    raise ValueError(f"Name '{new_name}' already exists among siblings")
-        self.name = new_name
+                if sibling is not self and sibling.name == name:
+                    raise ValueError(f"Name '{name}' already exists among siblings")
+        
+        node_type = type(self).__name__
+        old_name = self.name
+        self.name = name
+        
+        return {'node_type': node_type, 'old_name': old_name, 'new_name': name, 'operation': 'rename'}
 
-    def delete(self, cascade: bool = False) -> None:
+    def delete(self, cascade: bool = False) -> dict:
         if not hasattr(self, '_parent') or not self._parent:
             raise ValueError('Cannot delete node without parent')
         
+        node_type = type(self).__name__
+        node_name = self.name
         parent = self._parent
+        children_count = len(self._children)
         
         # Handle Story deletion from StoryGroup
         if isinstance(parent, StoryGroup):
             parent._children.remove(self)
             parent._resequence_children()
-            return
+            result = {'node_type': node_type, 'node_name': node_name, 'operation': 'delete'}
+            if children_count > 0 and not cascade:
+                result['children_moved'] = children_count
+            return result
         
         if cascade:
             self._children.clear()
@@ -103,10 +122,34 @@ class StoryNode(ABC):
         
         parent._children.remove(self)
         self._resequence_siblings()
+        
+        result = {'node_type': node_type, 'node_name': node_name, 'operation': 'delete'}
+        if children_count > 0 and not cascade:
+            result['children_moved'] = children_count
+        return result
 
-    def move_to(self, target_parent: 'StoryNode', position: Optional[int] = None) -> None:
+    def move_to(self, target: Union[str, 'StoryNode'] = None, position: Optional[int] = None, at_position: Optional[int] = None) -> dict:
+        """Move node to a different parent or reorder within same parent. Parameters 'target' and 'at_position' for CLI compatibility."""
+        # Handle CLI parameter alias
+        if at_position is not None and position is None:
+            position = at_position
+        
+        # If no target specified, move within same parent (just reorder)
+        if target is None:
+            if not hasattr(self, '_parent') or not self._parent:
+                raise ValueError('Cannot move node without parent')
+            target = self._parent
+        elif isinstance(target, str):
+            # Resolve string target to actual node
+            target = self._resolve_target_from_string(target)
+        
+        node_type = type(self).__name__
+        node_name = self.name
+        source_parent_name = self._parent.name if hasattr(self, '_parent') and self._parent else None
+        target_parent_name = target.name
+        
         # Check for circular reference first (before checking parent)
-        if self._is_circular_reference(target_parent):
+        if self._is_circular_reference(target):
             raise ValueError('Cannot move node to its own descendant - circular reference')
         
         if not hasattr(self, '_parent') or not self._parent:
@@ -116,7 +159,7 @@ class StoryNode(ABC):
         actual_parent = self._parent
         if isinstance(actual_parent, StoryGroup) and hasattr(actual_parent, '_parent'):
             actual_grandparent = actual_parent._parent
-            if actual_grandparent == target_parent:
+            if actual_grandparent == target:
                 # Moving within same SubEpic
                 if position is not None:
                     current_position = actual_parent._children.index(self)
@@ -126,10 +169,10 @@ class StoryNode(ABC):
                         actual_parent._children.insert(adjusted_position, self)
                         actual_parent._resequence_children()
                 else:
-                    raise ValueError(f"Node '{self.name}' already exists under parent '{target_parent.name}'")
-                return
+                    raise ValueError(f"Node '{self.name}' already exists under parent '{target.name}'")
+                return {'node_type': node_type, 'node_name': node_name, 'source_parent': source_parent_name, 'target_parent': target_parent_name, 'position': position, 'operation': 'move'}
         
-        if self._parent == target_parent:
+        if self._parent == target:
             if position is not None:
                 current_position = self._parent.children.index(self)
                 if current_position != position:
@@ -138,21 +181,25 @@ class StoryNode(ABC):
                     self._parent._children.insert(adjusted_position, self)
                     self._resequence_siblings()
             else:
-                raise ValueError(f"Node '{self.name}' already exists under parent '{target_parent.name}'")
-            return
-        for existing_child in target_parent.children:
+                raise ValueError(f"Node '{self.name}' already exists under parent '{target.name}'")
+            return {'node_type': node_type, 'node_name': node_name, 'source_parent': source_parent_name, 'target_parent': target_parent_name, 'position': position, 'operation': 'move'}
+        
+        for existing_child in target.children:
             if existing_child.name == self.name:
-                raise ValueError(f"Node '{self.name}' already exists under parent '{target_parent.name}'")
-        self._validate_hierarchy_rules(target_parent)
+                raise ValueError(f"Node '{self.name}' already exists under parent '{target.name}'")
+        
+        self._validate_hierarchy_rules(target)
         self._parent._children.remove(self)
         self._parent._resequence_siblings()
-        self._parent = target_parent
+        self._parent = target
         if position is not None:
-            adjusted_position = min(position, len(target_parent.children))
-            target_parent._children.insert(adjusted_position, self)
+            adjusted_position = min(position, len(target.children))
+            target._children.insert(adjusted_position, self)
         else:
-            target_parent._children.append(self)
-        target_parent._resequence_children()
+            target._children.append(self)
+        target._resequence_children()
+        
+        return {'node_type': node_type, 'node_name': node_name, 'source_parent': source_parent_name, 'target_parent': target_parent_name, 'position': position, 'operation': 'move'}
 
     def _is_circular_reference(self, potential_parent: 'StoryNode') -> bool:
         current = potential_parent
@@ -161,6 +208,42 @@ class StoryNode(ABC):
                 return True
             current = current._parent
         return False
+    
+    def _resolve_target_from_string(self, target_name: str) -> 'StoryNode':
+        """Resolve a target node name to an actual node by searching from root"""
+        # Navigate to root (story_map)
+        current = self
+        while hasattr(current, '_parent') and current._parent:
+            current = current._parent
+            if not hasattr(current, '_parent'):  # Reached Epic level
+                # Go one more level up to StoryMap if Epic has _bot
+                if hasattr(current, '_bot') and current._bot and hasattr(current._bot, 'story_graph'):
+                    story_map = current._bot.story_graph
+                    # Search for target in all epics
+                    for epic in story_map.epics:
+                        if epic.name == target_name:
+                            return epic
+                        # Search in epic's children recursively
+                        found = self._search_node_recursive(epic, target_name)
+                        if found:
+                            return found
+                break
+        
+        raise ValueError(f"Target '{target_name}' not found")
+    
+    def _search_node_recursive(self, node: 'StoryNode', name: str) -> Optional['StoryNode']:
+        """Recursively search for a node by name"""
+        for child in node.children:
+            if child.name == name:
+                return child
+            found = self._search_node_recursive(child, name)
+            if found:
+                return found
+        return None
+    
+    def move_to_position(self, position: int) -> dict:
+        """Alias for move_to with only position (moves within same parent)"""
+        return self.move_to(position=position)
 
     def _validate_hierarchy_rules(self, target_parent: 'StoryNode') -> None:
         if isinstance(self, SubEpic) and isinstance(target_parent, SubEpic):
@@ -276,6 +359,14 @@ class Epic(StoryNode):
                 return child
         return None
 
+    def create(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Alias for create_child"""
+        return self.create_child(name, child_type, position)
+    
+    def create_sub_epic(self, name: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Create SubEpic child"""
+        return self.create_child(name, 'SubEpic', position)
+    
     def create_child(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
         for child in self.children:
             if child.name == name:
@@ -345,6 +436,20 @@ class SubEpic(StoryNode):
                     result.extend(child.children)
             return result
         return self._children
+    
+    def __getitem__(self, child_name: str) -> 'StoryNode':
+        """Access child by name"""
+        for child in self.children:
+            if child.name == child_name:
+                return child
+        raise KeyError(f"Child '{child_name}' not found in SubEpic '{self.name}'")
+    
+    def __getitem__(self, child_name: str) -> 'StoryNode':
+        """Access child by name"""
+        for child in self.children:
+            if child.name == child_name:
+                return child
+        raise KeyError(f"Child '{child_name}' not found in SubEpic '{self.name}'")
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], parent: Optional[StoryNode]=None) -> 'SubEpic':
@@ -368,6 +473,18 @@ class SubEpic(StoryNode):
     def has_stories(self) -> bool:
         return any(isinstance(child, (Story, StoryGroup)) for child in self._children)
 
+    def create(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Alias for create_child"""
+        return self.create_child(name, child_type, position)
+    
+    def create_story(self, name: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Create Story child"""
+        return self.create_child(name, 'Story', position)
+    
+    def create_sub_epic(self, name: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Create SubEpic child"""
+        return self.create_child(name, 'SubEpic', position)
+    
     def create_child(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
         if child_type is None:
             child_type = 'Story' if self.has_stories else 'SubEpic'
@@ -450,15 +567,6 @@ class StoryGroup(StoryNode):
     def children(self) -> List['StoryNode']:
         return self._children
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any], parent: Optional[StoryNode]=None) -> 'StoryGroup':
-        sequential_order = data.get('sequential_order', 1.0)
-        story_group = cls(name=data.get('name', ''), sequential_order=float(sequential_order), group_type=data.get('type', 'and'), connector=data.get('connector'), _parent=parent)
-        for story_data in data.get('stories', []):
-            story = Story.from_dict(story_data, parent=story_group)
-            story_group._children.append(story)
-        return story_group
-
 @dataclass
 class Story(StoryNode):
     sequential_order: float
@@ -480,13 +588,13 @@ class Story(StoryNode):
     @property
     def children(self) -> List['StoryNode']:
         return self._children
-
-    @property
-    def scenarios(self) -> List['Scenario']:
-        return [child for child in self._children if isinstance(child, Scenario)]
-
-    @property
-    def scenario_outlines(self) -> List['ScenarioOutline']:
+    
+    def __getitem__(self, child_name: str) -> 'StoryNode':
+        """Access child by name"""
+        for child in self.children:
+            if child.name == child_name:
+                return child
+        raise KeyError(f"Child '{child_name}' not found in Story '{self.name}'")
         return [child for child in self._children if isinstance(child, ScenarioOutline)]
 
     @property
@@ -501,6 +609,18 @@ class Story(StoryNode):
         class_name = ''.join((word.capitalize() for word in words))
         return f'Test{class_name}'
 
+    def create(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Alias for create_child"""
+        return self.create_child(name, child_type, position)
+    
+    def create_scenario(self, name: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Create Scenario child"""
+        return self.create_child(name, 'Scenario', position)
+    
+    def create_acceptance_criteria(self, name: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
+        """Create AcceptanceCriteria child"""
+        return self.create_child(name, 'AcceptanceCriteria', position)
+    
     def create_child(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
         for child in self.children:
             if child.name == name:
@@ -723,6 +843,10 @@ class StoryMap:
     @property
     def epics(self) -> EpicsCollection:
         return self._epics
+    
+    def __getitem__(self, epic_name: str) -> Epic:
+        """Allow epic access by name: story_map['Epic Name']"""
+        return self._epics[epic_name]
 
     def walk(self, node: StoryNode) -> Iterator[StoryNode]:
         yield node
