@@ -49,7 +49,9 @@ class JSONScope(JSONAdapter):
                 content = graph_adapter.to_dict().get('content', [])
                 
                 if content and 'epics' in content:
-                    self._enrich_with_links(content['epics'], story_graph)
+                    # Skip expensive scenario enrichment for 'showAll' to avoid timeout
+                    enrich_scenarios = (self.scope.type.value != 'showAll')
+                    self._enrich_with_links(content['epics'], story_graph, enrich_scenarios)
                     result['content'] = content
                 else:
                     result['content'] = {'epics': []}
@@ -70,7 +72,7 @@ class JSONScope(JSONAdapter):
         
         return result
     
-    def _enrich_with_links(self, epics: list, story_graph):
+    def _enrich_with_links(self, epics: list, story_graph, enrich_scenarios: bool = True):
         if not self.scope.workspace_directory or not self.scope.bot_paths:
             return
         
@@ -91,9 +93,9 @@ class JSONScope(JSONAdapter):
             
             if 'sub_epics' in epic:
                 for sub_epic in epic['sub_epics']:
-                    self._enrich_sub_epic_with_links(sub_epic, test_dir, docs_stories_map, epic['name'])
+                    self._enrich_sub_epic_with_links(sub_epic, test_dir, docs_stories_map, epic['name'], enrich_scenarios=enrich_scenarios)
     
-    def _enrich_sub_epic_with_links(self, sub_epic: dict, test_dir: Path, docs_stories_map: Path, epic_name: str, parent_path: str = None):
+    def _enrich_sub_epic_with_links(self, sub_epic: dict, test_dir: Path, docs_stories_map: Path, epic_name: str, parent_path: str = None, enrich_scenarios: bool = True):
         if parent_path:
             sub_epic_doc_folder = Path(parent_path) / f"⚙️ {sub_epic['name']}"
         else:
@@ -120,15 +122,15 @@ class JSONScope(JSONAdapter):
         
         if 'sub_epics' in sub_epic:
             for nested_sub_epic in sub_epic['sub_epics']:
-                self._enrich_sub_epic_with_links(nested_sub_epic, test_dir, docs_stories_map, epic_name, str(sub_epic_doc_folder))
+                self._enrich_sub_epic_with_links(nested_sub_epic, test_dir, docs_stories_map, epic_name, str(sub_epic_doc_folder), enrich_scenarios=enrich_scenarios)
         
         if 'story_groups' in sub_epic:
             for story_group in sub_epic['story_groups']:
                 if 'stories' in story_group:
                     for story in story_group['stories']:
-                        self._enrich_story_with_links(story, test_dir, sub_epic_doc_folder, sub_epic.get('test_file'))
+                        self._enrich_story_with_links(story, test_dir, sub_epic_doc_folder, sub_epic.get('test_file'), enrich_scenarios=enrich_scenarios)
     
-    def _enrich_story_with_links(self, story: dict, test_dir: Path, parent_doc_folder: Path, parent_test_file: str):
+    def _enrich_story_with_links(self, story: dict, test_dir: Path, parent_doc_folder: Path, parent_test_file: str, enrich_scenarios: bool = True):
         if 'links' not in story:
             story['links'] = []
         
@@ -153,7 +155,8 @@ class JSONScope(JSONAdapter):
                     'icon': 'test_tube'
                 })
         
-        if 'scenarios' in story:
+        # Only enrich scenarios if requested (skip for 'scope showall' to avoid expensive AST parsing)
+        if enrich_scenarios and 'scenarios' in story:
             for scenario in story['scenarios']:
                 self._enrich_scenario_with_links(scenario, test_dir, test_file, test_class)
     

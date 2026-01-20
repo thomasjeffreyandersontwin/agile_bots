@@ -186,10 +186,10 @@ class StoryMapView extends PanelView {
                     </button>
                 </div>
                 
-                <!-- Delete buttons: regular delete is larger, delete-with-children stays smaller -->
+                <!-- Delete buttons: both same size -->
                 <div style="display: flex; align-items: center; gap: 2px;">
                     <button id="btn-delete" onclick="event.stopPropagation(); handleDeleteNode();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete">
-                        <img src="${deleteIconPath}" style="width: 56px; height: 56px; object-fit: contain;" alt="Delete" />
+                        <img src="${deleteIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Delete" />
                     </button>
                     <button id="btn-delete-all" onclick="event.stopPropagation(); handleDeleteAll();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete All">
                         <img src="${deleteChildrenIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Delete All" />
