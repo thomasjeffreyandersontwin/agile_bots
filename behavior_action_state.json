@@ -5,9 +5,9 @@
       "Manage Behaviors"
     ]
   },
-  "current_behavior": "story_bot.scenarios",
-  "current_action": "story_bot.scenarios.build",
-  "timestamp": "2026-01-20T19:36:13.913853",
+  "current_behavior": "crc_bot.domain",
+  "current_action": "crc_bot.domain.build",
+  "timestamp": "2026-01-20T23:55:06.950383",
   "completed_actions": [
     {
       "action_state": "story_bot.exploration.render",

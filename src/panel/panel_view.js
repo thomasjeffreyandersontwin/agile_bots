@@ -68,6 +68,7 @@ class PanelView {
             ...process.env,
             PYTHONPATH: pythonPath,
             BOT_DIRECTORY: this._botPath,
+            WORKING_AREA: this._workspaceDir,
             CLI_MODE: 'json',
             SUPPRESS_CLI_HEADER: '1'
         };

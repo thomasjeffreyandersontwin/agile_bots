@@ -1,0 +1,64 @@
+(E) Invoke Bot
+    (E) Perform Action
+        or
+            (S) Bot Behavior --> Build Story Graph
+            (AC) Action injects story graph template
+            (AC) Action loads and merges instructions
+            (AC) Action injects all template variables
+            (AC) Prioritization behavior updates existing story-graph.json
+        or
+            (S) Bot Behavior --> Render Story Graph using Story Graph API
+            (AC) StoryAdapter retrieves StoryMap and creates StoryRenderedNodes
+            (AC) StoryRenderedNode renders itself using formatting rules
+            (AC) StoryAdapter persists positional data to json
+            (AC) StoryIODiagram provides same API as original StoryMap
+            (AC) Changes to StoryRenderedNode trigger re-render
+        or
+            (S) Bot Behavior --> Build Story Graph Using API
+            (AC) Caller uses create_epic/create_child/create_story for fine-grained construction
+            (AC) Caller uses create_epic_from_dict for batch operations
+            (AC) StoryMap.save persists to JSON with proper format
+            (AC) StoryMap.load rebuilds domain model from JSON
+            (AC) Both APIs validate hierarchy rules and handle positioning
+        or
+            (S) AI Agent --> Build Story Graph With CLI
+            (AC) AI calls CLI commands instead of writing raw JSON
+            (AC) AI uses create_from_json command for batch operations
+            (AC) CLI wraps StoryMap API with command interface
+            (AC) AI calls save command to persist changes
+        or
+            (S) Bot Behavior --> Clarify Requirements
+            (AC) Action injects questions and evidence from guardrails
+            (AC) Save creates clarification.json with behavior section
+            (AC) Save preserves existing behavior data when merging
+            (AC) Skip saving when no parameters provided
+            (AC) Behavior loads questions, evidence, and strategy assumptions
+        or
+            (S) Bot Behavior --> Validate Rules
+            (AC) Instructions contain rule descriptions and priorities
+            (AC) Story graph scanners receive filtered story graph
+            (AC) File scanners receive filtered file paths
+        or
+            (S) Bot Behavior --> Display Rules
+            (AC) Instructions contain formatted rules digest with file paths
+            (AC) All behavior rules included in digest
+            (AC) User message included when provided
+        or
+            (S) Bot Behavior --> Decide Strategy
+            (AC) Action injects decision criteria and assumptions
+            (AC) Save creates strategy.json with behavior section
+            (AC) Save preserves existing behavior data when merging
+            (AC) Skip saving when no parameters provided
+        or
+            (S) Bot Behavior --> Render Output
+            (AC) Action injects render configs and instructions
+            (AC) Synchronizers executed automatically
+            (AC) Template configs remain for AI handling
+            (AC) Instructions include synchronizer execution info
+        or
+            (S) System --> Save Guardrails
+            (AC) Save answers merges with existing clarification.json
+            (AC) Save evidence merges with existing clarification.json
+            (AC) Save decisions merges with existing strategy.json
+            (AC) Save assumptions merges with existing strategy.json
+            (AC) Merge preserves existing fields and overwrites updated fields

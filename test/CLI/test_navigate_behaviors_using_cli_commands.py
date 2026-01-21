@@ -149,20 +149,6 @@ class TestManageBehaviorActionStateUsingCLI:
         assert helper2.cli_session.bot.behaviors.current.name == 'prioritization'
         assert helper2.cli_session.bot.behaviors.current.actions.current_action_name == 'clarify'
     
-    @pytest.mark.skip(reason="Action state persistence not yet implemented")
-    @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
-    def test_cli_action_state_persists(self, tmp_path, helper_class):
-        """
-        Domain: test_save_current_action_state
-        CLI: Action state saves via CLI commands
-        """
-        helper = helper_class(tmp_path)
-        
-        cli_response = helper.cli_session.execute_command('shape.strategy')
-        
-        state = helper.domain.state.get_state()
-        assert 'strategy' in state.get('current_action', '')
-    
     @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
     def test_cli_next_command_closes_and_advances(self, tmp_path, helper_class):
         """
@@ -399,19 +385,6 @@ class TestNavigateSequentiallyUsingCLI:
         
         assert helper.cli_session.bot.behaviors.current.name == 'discovery'
     
-    @pytest.mark.skip(reason="Direct action navigation not yet implemented")
-    @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
-    def test_cli_navigate_to_specific_action_via_command(self, tmp_path, helper_class):
-        """
-        Domain: test_navigate_to_action
-        CLI: Direct navigation via behavior.action command
-        """
-        helper = helper_class(tmp_path)
-        
-        cli_response = helper.cli_session.execute_command('shape.build')
-        
-        helper.domain.behaviors.assert_at_behavior_action('shape', 'build')
-    
     @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
     def test_cli_back_command_navigates_to_previous_action(self, tmp_path, helper_class):
         """
@@ -594,64 +567,3 @@ class TestExecuteEndToEndWorkflowUsingCLI:
 # STORY: Track Activity For Workspace
 # Maps to: TestTrackActivityForWorkspace in test_navigate_and_execute_behaviors.py (2 tests)
 # TODO: Implement activity tracking - stubbed out for now
-# ============================================================================
-class TestTrackActivityForWorkspaceUsingCLI:
-    """
-    Story: Track Activity For Workspace Using CLI
-    
-    Domain logic: test_navigate_and_execute_behaviors.py::TestTrackActivityForWorkspace
-    CLI focus: Activity logging when executing CLI commands
-    
-    NOTE: Stubbed out for future implementation
-    """
-    
-    @pytest.mark.skip(reason="Activity tracking exists in domain but not wired through CLI execution path yet")
-    @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
-    def test_cli_activity_logged_to_workspace(self, tmp_path, helper_class):
-        """
-        Domain: test_activity_logged_to_workspace_area_not_bot_area
-        CLI: CLI commands log activity to workspace area
-        
-        NOTE: ActivityTracker exists and domain tests pass, but CLI doesn't invoke it yet
-        """
-        helper = helper_class(tmp_path)
-        helper.domain.state.set_state('shape', 'clarify')
-        
-        # Execute command - should log activity
-        cli_response = helper.cli_session.execute_command('shape.clarify')
-        
-        # Activity should be tracked in workspace
-        expected_log = helper.domain.workspace / 'activity_log.json'
-        assert expected_log.exists()
-        
-        # Verify activity log not in bot directory
-        from pathlib import Path
-        repo_root = Path(__file__).parent.parent.parent.parent
-        bot_area_log = repo_root / 'agile_bots' / 'bots' / 'story_bot' / 'activity_log.json'
-        assert not bot_area_log.exists()
-    
-    @pytest.mark.skip(reason="Activity tracking exists in domain but not wired through CLI execution path yet")
-    @pytest.mark.parametrize("helper_class", [TTYBotTestHelper, PipeBotTestHelper, JsonBotTestHelper])
-    def test_cli_activity_log_contains_action_state(self, tmp_path, helper_class):
-        """
-        Domain: test_activity_log_contains_correct_entry
-        CLI: Activity log includes full action_state path
-        
-        NOTE: ActivityTracker exists and domain tests pass, but CLI doesn't invoke it yet
-        """
-        helper = helper_class(tmp_path)
-        helper.domain.state.set_state('shape', 'clarify')
-        
-        # Execute command
-        cli_response = helper.cli_session.execute_command('shape.clarify')
-        
-        # Verify activity log entry
-        expected_log = helper.domain.workspace / 'activity_log.json'
-        assert expected_log.exists()
-        
-        import json
-        with open(expected_log) as f:
-            log_data = json.load(f)
-        
-        # Should contain entry with action_state
-        assert any('story_bot.shape.clarify' in str(entry) for entry in log_data)

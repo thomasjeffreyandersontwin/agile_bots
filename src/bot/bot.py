@@ -95,11 +95,11 @@ class Bot:
         return self.bot_paths.workspace_directory
 
     @property
-    def story_graph(self) -> StoryMap:
-        """Lazy-load and return the story graph from workspace.
+    def story_map(self) -> StoryMap:
+        """Lazy-load and return the story map from workspace.
         
         Returns:
-            StoryMap: The loaded story graph with Epic/SubEpic/Story hierarchy
+            StoryMap: The loaded story map with Epic/SubEpic/Story hierarchy
             
         Raises:
             FileNotFoundError: If story-graph.json doesn't exist in workspace
@@ -118,6 +118,12 @@ class Bot:
             self._story_graph = StoryMap(story_graph_data, bot=self)
         
         return self._story_graph
+    
+    # Backward compatibility alias
+    @property
+    def story_graph(self) -> StoryMap:
+        """Deprecated: Use story_map instead."""
+        return self.story_map
 
     @property
     def progress_path(self) -> str:
@@ -773,12 +779,15 @@ class Bot:
         }
 
     def __getattr__(self, name: str):
-        # Special handling for story_graph property
+        # Special handling for story_map/story_graph property
         # This shouldn't be needed, but there seems to be an issue with property lookup
         # in certain test scenarios where __getattr__ is called before the property is found
-        if name == 'story_graph':
+        if name == 'story_map':
             # Directly call the property getter using type(self) to avoid recursion
-            return type(self).story_graph.fget(self)
+            return type(self).story_map.fget(self)
+        if name == 'story_graph':
+            # Backward compatibility: redirect to story_map
+            return type(self).story_map.fget(self)
         
         behavior = self.behaviors.find_by_name(name)
         if behavior:

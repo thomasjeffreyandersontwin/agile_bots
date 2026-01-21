@@ -1,5 +1,6 @@
 """Domain Navigator - Executes dot notation commands on domain objects"""
 import re
+import inspect
 from typing import Any
 
 
@@ -27,36 +28,37 @@ class DomainNavigator:
             if hasattr(current_object, part):
                 attr = getattr(current_object, part)
                 
+                # Check if this is a callable followed by a value (e.g., rename."New Name" or move_to."Target")
+                if callable(attr) and not is_last and i + 1 < len(parts):
+                    next_part = parts[i + 1]
+                    # If the next part looks like a value (not a method/property), treat it as a parameter
+                    if not hasattr(attr, next_part): 
+                        # Get the first parameter name from the method signature
+                        try:
+                            sig = inspect.signature(attr)
+                            # Get first parameter (excluding 'self')
+                            param_names = [p for p in sig.parameters.keys() if p != 'self']
+                            if param_names:
+                                first_param_name = param_names[0]
+                                # Call the method with the next part as the first parameter
+                                params = {first_param_name: next_part}
+                                # Merge with any other parameters
+                                params.update(self._parse_parameters(params_part))
+                                try:
+                                    result = attr(**params)
+                                    return self._format_result(part, result, params)
+                                except ValueError as e:
+                                    return {'status': 'error', 'message': str(e)}
+                        except (ValueError, TypeError):
+                            pass  # Fall through to normal navigation
+                
                 if is_last and callable(attr):
                     params = self._parse_parameters(params_part)
-                    # Handle Action objects specially
-                    if type(attr).__name__ == 'Action' or type(attr).__name__.endswith('Action'):
-                        if not params:
-                            # No params - return instructions without executing
-                            return self._format_object_result(attr)
-                        else:
-                            # Has params - create context and execute
-                            try:
-                                # Get the context class from the action
-                                context_class = getattr(attr, 'context_class', None)
-                                if context_class:
-                                    context = context_class()
-                                else:
-                                    # Fallback to generic context
-                                    from actions.action_context import ActionContext
-                                    context = ActionContext()
-                                
-                                # Set params as context attributes
-                                for key, value in params.items():
-                                    setattr(context, key, value)
-                                
-                                # Execute the action with context
-                                result = attr.do_execute(context)
-                                return self._format_result(part, result, params)
-                            except Exception as e:
-                                return {'status': 'error', 'message': str(e)}
-                    
-                    # For non-Action callables, use kwargs directly
+                    # If it's an Action and no params, return its instructions instead of executing
+                    if type(attr).__name__ == 'Action' and not params:
+                        # Just return the action's instructions, don't execute it
+                        return self._format_object_result(attr)
+                    # For other callables or actions with params, execute them
                     try:
                         result = attr(**params)
                         return self._format_result(part, result, params)
@@ -91,13 +93,10 @@ class DomainNavigator:
             
             'story_graph."Invoke Bot".create name:"Test"'
             -> ('story_graph."Invoke Bot".create', 'name:"Test"')
-            
-            'shape.clarify scope="value" depth="Workflow"'
-            -> ('shape.clarify', 'scope="value" depth="Workflow"')
         """
-        # Split by finding where the parameters start (looking for param_name: or param_name=)
-        # Parameters follow pattern: word[:=]value (with optional quotes around value)
-        param_pattern = r'\s+[\w\.]+[:=](?:"[^"]*"|\d+|\w+)'
+        # Split by finding where the parameters start (looking for param_name:)
+        # Parameters follow pattern: word:value (with optional quotes around value)
+        param_pattern = r'\s+\w+:(?:"[^"]*"|\d+|\w+)'
         param_match = re.search(param_pattern, command)
         
         if param_match:
@@ -137,8 +136,6 @@ class DomainNavigator:
     
     def _parse_parameters(self, params_str: str) -> dict:
         """Parse parameters from string like: name:"User Management" at_position:1
-        Also supports nested params like: scope="value" depth_of_shaping="Workflow"
-        For clarify/strategy actions, converts flat params to answers/decisions dict
         
         Returns:
             dict with parameter names and values
@@ -148,12 +145,8 @@ class DomainNavigator:
         
         params = {}
         
-        # Support both : and = for assignment
-        pattern = r'([\w\.]+)[:=](?:"([^"]*)"|(\d+)|(\w+))'
+        pattern = r'(\w+):(?:"([^"]*)"|(\d+)|(\w+))'
         matches = re.findall(pattern, params_str)
-        
-        # Track if we're collecting answers or decisions (for clarify/strategy)
-        collected_answers = {}
         
         for match in matches:
             param_name = match[0]
@@ -161,22 +154,13 @@ class DomainNavigator:
             if param_name == 'at_position':
                 param_name = 'position'
             
+            # Check for quoted string (match[1]) - use truthiness to handle empty strings correctly
             if match[1]:
-                value = match[1]
+                params[param_name] = match[1]
             elif match[2]:
-                value = int(match[2])
+                params[param_name] = int(match[2])
             elif match[3]:
-                value = match[3]
-            else:
-                continue
-            
-            # All params become answers by default (to avoid conflicts with internal context attributes)
-            # The key is used as-is for the answer
-            collected_answers[param_name] = value
-        
-        # All collected params become the answers dict
-        if collected_answers:
-            params['answers'] = collected_answers
+                params[param_name] = match[3]
         
         return params
     

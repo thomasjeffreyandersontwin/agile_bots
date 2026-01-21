@@ -1546,7 +1546,9 @@
                               "name": "Create Epic with name at default position",
                               "type": "happy_path",
                               "test_method": "test_create_epic_with_name_at_default_position",
-                              "background": ["Given Story Map is initialized"],
+                              "background": [
+                                "Given Story Map is initialized"
+                              ],
                               "steps": [
                                 "And Story Map has two Epics: \"Epic A\", \"Epic B\"",
                                 "When Story Map creates Epic with name \"User Management\"",
@@ -1559,7 +1561,9 @@
                               "name": "Create Epic with position specified",
                               "type": "happy_path",
                               "test_method": "test_create_epic_with_position_specified",
-                              "background": ["Given Story Map is initialized"],
+                              "background": [
+                                "Given Story Map is initialized"
+                              ],
                               "steps": [
                                 "And Story Map has three Epics: \"Epic A\", \"Epic B\", \"Epic C\"",
                                 "When Story Map creates Epic \"User Management\" at position 1",
@@ -1571,7 +1575,9 @@
                               "name": "Create Epic with invalid position adjusts to last",
                               "type": "edge_case",
                               "test_method": "test_create_epic_with_invalid_position_adjusts",
-                              "background": ["Given Story Map is initialized"],
+                              "background": [
+                                "Given Story Map is initialized"
+                              ],
                               "steps": [
                                 "And Story Map has two Epics",
                                 "When Story Map creates Epic \"User Management\" at position 99",
@@ -1583,7 +1589,9 @@
                               "name": "Create Epic without name generates unique name",
                               "type": "happy_path",
                               "test_method": "test_create_epic_without_name_generates_unique_name",
-                              "background": ["Given Story Map is initialized"],
+                              "background": [
+                                "Given Story Map is initialized"
+                              ],
                               "steps": [
                                 "And Story Map has Epics: \"User Management\", \"Reporting\"",
                                 "When Story Map creates Epic without name",
@@ -1595,7 +1603,9 @@
                               "name": "Create Epic with duplicate name returns error",
                               "type": "error_case",
                               "test_method": "test_create_epic_with_duplicate_name_returns_error",
-                              "background": ["Given Story Map is initialized"],
+                              "background": [
+                                "Given Story Map is initialized"
+                              ],
                               "steps": [
                                 "And Story Map has Epic \"User Management\"",
                                 "When Story Map attempts to create Epic with name \"User Management\"",
@@ -4207,6 +4217,495 @@
                           "test_method": "test_merge_with_existing_decisions"
                         }
                       ]
+                    }
+                  ]
+                }
+              ],
+              "domain_concepts": [
+                {
+                  "name": "StoryNode",
+                  "scope": "global",
+                  "module": "story_graph.nodes",
+                  "inherits_from": "ABC",
+                  "description": "Abstract base class for all story map node types providing common traversal, visitor acceptance, and persistence operations",
+                  "responsibilities": [
+                    {
+                      "name": "traverse children",
+                      "collaborators": [
+                        "StoryNode"
+                      ],
+                      "description": "Iterate over child nodes in the story hierarchy"
+                    },
+                    {
+                      "name": "accept visitor",
+                      "collaborators": [
+                        "StoryRenderVisitor"
+                      ],
+                      "description": "Allow visitor to process this node using visitor pattern"
+                    },
+                    {
+                      "name": "rename node",
+                      "collaborators": [
+                        "StoryMap"
+                      ],
+                      "description": "Update node name and persist changes to story graph"
+                    },
+                    {
+                      "name": "delete node",
+                      "collaborators": [
+                        "Parent"
+                      ],
+                      "description": "Remove this node from parent's children collection"
+                    },
+                    {
+                      "name": "move node",
+                      "collaborators": [
+                        "Parent",
+                        "StoryMap"
+                      ],
+                      "description": "Reposition node within hierarchy and update order"
+                    },
+                    {
+                      "name": "persist changes",
+                      "collaborators": [
+                        "StoryMap"
+                      ],
+                      "description": "Trigger story_graph dict update when node changes"
+                    }
+                  ]
+                },
+                {
+                  "name": "Epic",
+                  "scope": "global",
+                  "module": "story_graph.nodes",
+                  "inherits_from": "StoryNode",
+                  "description": "Top-level story map node containing sub-epics and stories",
+                  "responsibilities": [
+                    {
+                      "name": "contain sub-epics",
+                      "collaborators": [
+                        "SubEpic"
+                      ],
+                      "description": "Maintain collection of sub-epic children"
+                    },
+                    {
+                      "name": "create sub-epic",
+                      "collaborators": [
+                        "SubEpic",
+                        "StoryMap"
+                      ],
+                      "description": "Add new sub-epic as child and update story graph"
+                    },
+                    {
+                      "name": "accept visitor",
+                      "collaborators": [
+                        "StoryRenderVisitor"
+                      ],
+                      "description": "Process epic-specific rendering logic via visitor"
+                    }
+                  ]
+                },
+                {
+                  "name": "SubEpic",
+                  "scope": "global",
+                  "module": "story_graph.nodes",
+                  "inherits_from": "StoryNode",
+                  "description": "Mid-level story map node representing features or capabilities",
+                  "responsibilities": [
+                    {
+                      "name": "contain sub-epics",
+                      "collaborators": [
+                        "SubEpic"
+                      ],
+                      "description": "Maintain nested sub-epics for deeper hierarchy"
+                    },
+                    {
+                      "name": "contain stories",
+                      "collaborators": [
+                        "Story"
+                      ],
+                      "description": "Maintain collection of story children"
+                    },
+                    {
+                      "name": "create child",
+                      "collaborators": [
+                        "SubEpic",
+                        "Story",
+                        "StoryMap"
+                      ],
+                      "description": "Add sub-epic or story as child based on hierarchy rules"
+                    },
+                    {
+                      "name": "validate hierarchy",
+                      "collaborators": [],
+                      "description": "Enforce no mixing of sub-epics and stories at same level"
+                    }
+                  ]
+                },
+                {
+                  "name": "Story",
+                  "scope": "global",
+                  "module": "story_graph.nodes",
+                  "inherits_from": "StoryNode",
+                  "description": "Leaf node representing user stories with acceptance criteria",
+                  "responsibilities": [
+                    {
+                      "name": "contain acceptance criteria",
+                      "collaborators": [],
+                      "description": "Maintain list of AC strings"
+                    },
+                    {
+                      "name": "contain scenarios",
+                      "collaborators": [
+                        "Scenario"
+                      ],
+                      "description": "Maintain collection of test scenarios"
+                    },
+                    {
+                      "name": "accept visitor",
+                      "collaborators": [
+                        "StoryRenderVisitor"
+                      ],
+                      "description": "Process story-specific rendering logic via visitor"
+                    }
+                  ]
+                },
+                {
+                  "name": "StoryMap",
+                  "scope": "global",
+                  "module": "story_graph.nodes",
+                  "inherits_from": "StoryNode",
+                  "description": "Root aggregate managing story graph hierarchy, persistence, and API operations",
+                  "responsibilities": [
+                    {
+                      "name": "contain epics",
+                      "collaborators": [
+                        "Epic"
+                      ],
+                      "description": "Maintain top-level epic collection"
+                    },
+                    {
+                      "name": "create epic",
+                      "collaborators": [
+                        "Epic"
+                      ],
+                      "description": "Add new epic to story graph"
+                    },
+                    {
+                      "name": "create epic from dict",
+                      "collaborators": [
+                        "Epic",
+                        "SubEpic",
+                        "Story"
+                      ],
+                      "description": "Batch create hierarchy from dictionary notation"
+                    },
+                    {
+                      "name": "save story graph",
+                      "collaborators": [],
+                      "description": "Persist story_graph dict to JSON file"
+                    },
+                    {
+                      "name": "load story graph",
+                      "collaborators": [
+                        "Epic",
+                        "SubEpic",
+                        "Story"
+                      ],
+                      "description": "Rebuild domain model from JSON file"
+                    },
+                    {
+                      "name": "accept visitor",
+                      "collaborators": [
+                        "StoryRenderVisitor"
+                      ],
+                      "description": "Process entire story map via visitor pattern"
+                    }
+                  ]
+                },
+                {
+                  "name": "StoryRenderVisitor",
+                  "scope": "global",
+                  "module": "story_graph.renderers",
+                  "inherits_from": "ABC",
+                  "description": "Abstract visitor base class for rendering story graph to different formats following visitor pattern",
+                  "responsibilities": [
+                    {
+                      "name": "visit story map",
+                      "collaborators": [
+                        "StoryMap"
+                      ],
+                      "description": "Process root story map node and initialize rendering"
+                    },
+                    {
+                      "name": "visit epic",
+                      "collaborators": [
+                        "Epic",
+                        "RenderedNode"
+                      ],
+                      "description": "Render epic node with format-specific layout"
+                    },
+                    {
+                      "name": "visit sub epic",
+                      "collaborators": [
+                        "SubEpic",
+                        "RenderedNode"
+                      ],
+                      "description": "Render sub-epic node with format-specific layout"
+                    },
+                    {
+                      "name": "visit story",
+                      "collaborators": [
+                        "Story",
+                        "RenderedNode"
+                      ],
+                      "description": "Render story node with format-specific layout"
+                    },
+                    {
+                      "name": "traverse children",
+                      "collaborators": [
+                        "StoryNode"
+                      ],
+                      "description": "Recursively visit child nodes in hierarchy"
+                    }
+                  ]
+                },
+                {
+                  "name": "DrawIORenderer",
+                  "scope": "local",
+                  "module": "synchronizers.story_io.renderers",
+                  "inherits_from": "StoryRenderVisitor",
+                  "description": "Concrete visitor rendering story graph to DrawIO diagram format",
+                  "responsibilities": [
+                    {
+                      "name": "initialize file",
+                      "collaborators": [],
+                      "description": "Create DrawIO XML document structure"
+                    },
+                    {
+                      "name": "create epic shape",
+                      "collaborators": [
+                        "Epic",
+                        "Position"
+                      ],
+                      "description": "Render epic as DrawIO rectangle with specific styling"
+                    },
+                    {
+                      "name": "create sub epic shape",
+                      "collaborators": [
+                        "SubEpic",
+                        "Position"
+                      ],
+                      "description": "Render sub-epic as DrawIO rectangle with specific styling"
+                    },
+                    {
+                      "name": "create story shape",
+                      "collaborators": [
+                        "Story",
+                        "Position"
+                      ],
+                      "description": "Render story as DrawIO rectangle with specific styling"
+                    },
+                    {
+                      "name": "persist positions",
+                      "collaborators": [
+                        "Position"
+                      ],
+                      "description": "Save layout data to position JSON file"
+                    }
+                  ]
+                },
+                {
+                  "name": "MarkdownRenderer",
+                  "scope": "local",
+                  "module": "story_graph.renderers",
+                  "inherits_from": "StoryRenderVisitor",
+                  "description": "Concrete visitor rendering story graph to markdown format",
+                  "responsibilities": [
+                    {
+                      "name": "render epic as heading",
+                      "collaborators": [
+                        "Epic"
+                      ],
+                      "description": "Output epic as markdown heading level 1"
+                    },
+                    {
+                      "name": "render sub epic as heading",
+                      "collaborators": [
+                        "SubEpic"
+                      ],
+                      "description": "Output sub-epic as markdown heading level 2"
+                    },
+                    {
+                      "name": "render story as list item",
+                      "collaborators": [
+                        "Story"
+                      ],
+                      "description": "Output story as markdown bullet point"
+                    },
+                    {
+                      "name": "write to file",
+                      "collaborators": [],
+                      "description": "Persist markdown content to .md file"
+                    }
+                  ]
+                },
+                {
+                  "name": "TextRenderer",
+                  "scope": "local",
+                  "module": "story_graph.renderers",
+                  "inherits_from": "StoryRenderVisitor",
+                  "description": "Concrete visitor rendering story graph to plain text outline format",
+                  "responsibilities": [
+                    {
+                      "name": "render with indentation",
+                      "collaborators": [
+                        "StoryNode"
+                      ],
+                      "description": "Output nodes with hierarchical indentation"
+                    },
+                    {
+                      "name": "add node prefix",
+                      "collaborators": [],
+                      "description": "Prefix nodes with (E), (S), (AC) markers"
+                    },
+                    {
+                      "name": "write to file",
+                      "collaborators": [],
+                      "description": "Persist text content to .txt file"
+                    }
+                  ]
+                },
+                {
+                  "name": "RenderedNode",
+                  "scope": "global",
+                  "module": "story_graph.rendered",
+                  "inherits_from": "StoryNode",
+                  "description": "Decorator wrapping StoryNode with rendering metadata (position, layout, formatting)",
+                  "responsibilities": [
+                    {
+                      "name": "delegate to wrapped node",
+                      "collaborators": [
+                        "StoryNode"
+                      ],
+                      "description": "Forward core operations to underlying StoryNode"
+                    },
+                    {
+                      "name": "store position data",
+                      "collaborators": [
+                        "Position"
+                      ],
+                      "description": "Maintain x, y coordinates for rendered output"
+                    },
+                    {
+                      "name": "store layout data",
+                      "collaborators": [
+                        "Layout"
+                      ],
+                      "description": "Maintain width, height, spacing information"
+                    },
+                    {
+                      "name": "store formatting data",
+                      "collaborators": [
+                        "Format"
+                      ],
+                      "description": "Maintain colors, fonts, styling information"
+                    },
+                    {
+                      "name": "trigger re-render",
+                      "collaborators": [
+                        "StoryRenderVisitor"
+                      ],
+                      "description": "Accept visitor again when node changes"
+                    }
+                  ]
+                },
+                {
+                  "name": "Position",
+                  "scope": "global",
+                  "module": "story_graph.layout",
+                  "description": "Value object representing x, y coordinates in rendered output",
+                  "responsibilities": [
+                    {
+                      "name": "calculate relative position",
+                      "collaborators": [
+                        "Parent"
+                      ],
+                      "description": "Compute position relative to parent node"
+                    },
+                    {
+                      "name": "serialize to dict",
+                      "collaborators": [],
+                      "description": "Convert position to JSON-serializable format"
+                    }
+                  ]
+                },
+                {
+                  "name": "Layout",
+                  "scope": "global",
+                  "module": "story_graph.layout",
+                  "description": "Value object representing size and spacing information",
+                  "responsibilities": [
+                    {
+                      "name": "calculate node dimensions",
+                      "collaborators": [],
+                      "description": "Determine width and height based on content"
+                    },
+                    {
+                      "name": "calculate spacing",
+                      "collaborators": [
+                        "Parent",
+                        "Siblings"
+                      ],
+                      "description": "Determine spacing between nodes in hierarchy"
+                    }
+                  ]
+                },
+                {
+                  "name": "CLIAdapter",
+                  "scope": "local",
+                  "module": "cli.story_graph_commands",
+                  "description": "CLI command adapter wrapping StoryMap API for AI and human use",
+                  "responsibilities": [
+                    {
+                      "name": "parse create epic command",
+                      "collaborators": [
+                        "StoryMap"
+                      ],
+                      "description": "Convert CLI syntax to StoryMap.create_epic call"
+                    },
+                    {
+                      "name": "parse create sub epic command",
+                      "collaborators": [
+                        "SubEpic"
+                      ],
+                      "description": "Convert CLI syntax to create_child call"
+                    },
+                    {
+                      "name": "parse create story command",
+                      "collaborators": [
+                        "Story"
+                      ],
+                      "description": "Convert CLI syntax to create_story call"
+                    },
+                    {
+                      "name": "parse create from json command",
+                      "collaborators": [
+                        "StoryMap"
+                      ],
+                      "description": "Convert CLI syntax to create_epic_from_dict call"
+                    },
+                    {
+                      "name": "parse save command",
+                      "collaborators": [
+                        "StoryMap"
+                      ],
+                      "description": "Convert CLI syntax to save call"
+                    },
+                    {
+                      "name": "return validation errors",
+                      "collaborators": [],
+                      "description": "Convert exceptions to CLI error messages"
                     }
                   ]
                 }
@@ -8578,7 +9077,10 @@
             {
               "name": "StoryMapView",
               "module": "story_graph.story_map",
-              "instantiated_with": ["StoryGraph", "PanelView"],
+              "instantiated_with": [
+                "StoryGraph",
+                "PanelView"
+              ],
               "responsibilities": [
                 {
                   "name": "Wraps story map JSON",
@@ -8652,8 +9154,15 @@
               ],
               "inherits_from": "PanelView",
               "ownership": {
-                "has": ["InlineNameEditor", "StoryNodeDragDropManager", "ValidationMessageDisplay"],
-                "references": ["StoryGraph", "StoryNode"]
+                "has": [
+                  "InlineNameEditor",
+                  "StoryNodeDragDropManager",
+                  "ValidationMessageDisplay"
+                ],
+                "references": [
+                  "StoryGraph",
+                  "StoryNode"
+                ]
               }
             },
             {
@@ -11084,7 +11593,9 @@
                               "name": "Panel shows appropriate create button for Epic node",
                               "type": "happy_path",
                               "test_method": "test_panel_shows_create_sub_epic_button_for_epic",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic named \"User Management\"",
                                 "When User selects Epic \"User Management\"",
@@ -11096,7 +11607,9 @@
                               "name": "Panel shows both create buttons for SubEpic without children",
                               "type": "happy_path",
                               "test_method": "test_panel_shows_both_buttons_for_empty_subepic",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" has no children",
@@ -11109,7 +11622,9 @@
                               "name": "Panel shows only create SubEpic button for SubEpic with SubEpic children",
                               "type": "happy_path",
                               "test_method": "test_panel_shows_subepic_button_only_when_has_subepics",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"User Management\" with child SubEpic \"Authentication\"",
                                 "When User selects SubEpic \"User Management\"",
@@ -11121,7 +11636,9 @@
                               "name": "Panel shows only create Story button for SubEpic with Stories",
                               "type": "happy_path",
                               "test_method": "test_panel_shows_story_button_only_when_has_stories",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" with child Story \"Login Form\"",
                                 "When User selects SubEpic \"Authentication\"",
@@ -11133,7 +11650,9 @@
                               "name": "Panel shows scenario create buttons for Story node",
                               "type": "happy_path",
                               "test_method": "test_panel_shows_scenario_buttons_for_story",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Story \"Validate Password\"",
                                 "When User selects Story \"Validate Password\"",
@@ -11146,7 +11665,9 @@
                               "name": "User creates child node with auto-generated name in edit mode",
                               "type": "happy_path",
                               "test_method": "test_create_child_auto_name_edit_mode",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with two SubEpic children",
                                 "And Epic \"User Management\" is selected",
@@ -11162,7 +11683,9 @@
                               "name": "User enters duplicate name and Panel shows warning",
                               "type": "error_case",
                               "test_method": "test_duplicate_name_shows_warning_stays_in_edit",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpic \"Authentication\"",
                                 "And new SubEpic exists under \"User Management\" with name in edit mode",
@@ -11200,7 +11723,9 @@
                               "name": "Panel shows delete button for node without children",
                               "type": "happy_path",
                               "test_method": "test_panel_shows_delete_button_for_node",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" without children",
                                 "When User selects SubEpic \"Authentication\"",
@@ -11212,7 +11737,9 @@
                               "name": "Panel shows both delete buttons for node with children",
                               "type": "happy_path",
                               "test_method": "test_panel_shows_both_delete_buttons_for_parent",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" with child Story \"Login Form\"",
                                 "When User selects SubEpic \"Authentication\"",
@@ -11224,7 +11751,9 @@
                               "name": "User clicks delete button and Panel shows confirmation",
                               "type": "happy_path",
                               "test_method": "test_delete_button_shows_confirmation",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" is selected",
@@ -11239,7 +11768,9 @@
                               "name": "User confirms delete for node without children",
                               "type": "happy_path",
                               "test_method": "test_confirm_delete_node_without_children",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpics: \"SubEpic A\", \"Authentication\", \"SubEpic B\"",
                                 "And SubEpic \"Authentication\" has no children",
@@ -11255,7 +11786,9 @@
                               "name": "User confirms delete for node with children and children move to parent",
                               "type": "happy_path",
                               "test_method": "test_confirm_delete_node_moves_children_to_parent",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" has children Stories: \"Login Form\", \"Password Reset\"",
@@ -11272,7 +11805,9 @@
                               "name": "User confirms delete including children and Panel recursively deletes all",
                               "type": "happy_path",
                               "test_method": "test_confirm_delete_including_children_deletes_recursively",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" has child Story \"Login Form\"",
@@ -11290,7 +11825,9 @@
                               "name": "User cancels delete and node remains unchanged",
                               "type": "happy_path",
                               "test_method": "test_cancel_delete_keeps_node",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" with child Story \"Login Form\"",
                                 "And Delete confirmation is displayed on panel for \"Authentication\"",
@@ -11326,7 +11863,9 @@
                               "name": "User clicks node name and Panel enables inline editing",
                               "type": "happy_path",
                               "test_method": "test_click_name_enables_inline_editing",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" is selected",
@@ -11340,7 +11879,9 @@
                               "name": "User types valid name and saves by pressing Tab",
                               "type": "happy_path",
                               "test_method": "test_save_valid_name_with_tab",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\"",
                                 "And User has clicked node name \"Authentication\" to edit",
@@ -11358,7 +11899,9 @@
                               "name": "User types valid name and saves by pressing Enter",
                               "type": "happy_path",
                               "test_method": "test_save_valid_name_with_enter",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Story \"Login Form\"",
                                 "And User has clicked node name \"Login Form\" to edit",
@@ -11375,7 +11918,9 @@
                               "name": "User types empty name and Panel shows required message",
                               "type": "error_case",
                               "test_method": "test_empty_name_shows_required_message",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\"",
                                 "And User has clicked node name to edit",
@@ -11392,7 +11937,9 @@
                               "name": "User types duplicate name and Panel shows exists message",
                               "type": "error_case",
                               "test_method": "test_duplicate_name_shows_exists_message",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpics: \"Authentication\", \"Authorization\"",
                                 "And User has clicked node name \"Authorization\" to edit",
@@ -11409,7 +11956,9 @@
                               "name": "User types invalid characters and Panel shows invalid message",
                               "type": "error_case",
                               "test_method": "test_invalid_characters_shows_message",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\"",
                                 "And User has clicked node name to edit",
@@ -11426,7 +11975,9 @@
                               "name": "User cancels editing by pressing Escape and Panel retains original name",
                               "type": "happy_path",
                               "test_method": "test_escape_cancels_editing_retains_name",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\"",
                                 "And User has clicked node name to edit",
@@ -11462,7 +12013,9 @@
                               "name": "User drags node and Panel shows drag cursor",
                               "type": "happy_path",
                               "test_method": "test_drag_node_shows_drag_cursor",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" is selected",
@@ -11476,7 +12029,9 @@
                               "name": "User drags over compatible parent and Panel highlights as valid target",
                               "type": "happy_path",
                               "test_method": "test_drag_over_compatible_highlights_target",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" and Epic \"System Admin\"",
                                 "And Epic \"User Management\" has SubEpic \"Authentication\"",
@@ -11491,7 +12046,9 @@
                               "name": "User drags over incompatible parent and Panel shows no-drop cursor",
                               "type": "error_case",
                               "test_method": "test_drag_over_incompatible_shows_no_drop",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" with Story \"Login Form\"",
                                 "And Story Graph has SubEpic \"Authorization\" with SubEpic \"Roles\"",
@@ -11506,7 +12063,9 @@
                               "name": "User drags over descendant and Panel shows no-drop cursor",
                               "type": "error_case",
                               "test_method": "test_drag_over_descendant_shows_no_drop",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" has SubEpic \"Login Flow\"",
@@ -11521,7 +12080,9 @@
                               "name": "User drops on compatible parent and Panel moves node",
                               "type": "happy_path",
                               "test_method": "test_drop_on_compatible_moves_node",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpics: \"SubEpic A\", \"Authentication\", \"SubEpic B\"",
                                 "And Story Graph has Epic \"System Admin\" with SubEpic \"SubEpic C\"",
@@ -11540,7 +12101,9 @@
                               "name": "User drops on incompatible parent and Panel ignores drop",
                               "type": "error_case",
                               "test_method": "test_drop_on_incompatible_ignores_drop",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" with Story \"Login Form\"",
                                 "And Story Graph has SubEpic \"Authorization\" with SubEpic \"Roles\"",
@@ -11572,7 +12135,9 @@
                               "name": "User selects story scope node and Panel shows available actions",
                               "type": "happy_path",
                               "test_method": "test_select_scope_shows_actions",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Story Graph\"",
                                 "And SubEpic \"Manage Story Graph\" has available actions: \"build\", \"validate\"",
@@ -11586,7 +12151,9 @@
                               "name": "User clicks action button and Panel executes action",
                               "type": "happy_path",
                               "test_method": "test_click_action_executes",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Manage Story Graph\" with action \"build\"",
                                 "And SubEpic \"Manage Story Graph\" is selected",
@@ -11601,7 +12168,9 @@
                               "name": "User executes action that modifies graph and Panel validates and refreshes",
                               "type": "happy_path",
                               "test_method": "test_action_modifies_graph_validates_refreshes",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Story \"Create Scenarios\" with action \"generate_scenarios\"",
                                 "And Story \"Create Scenarios\" is selected",
@@ -11634,7 +12203,9 @@
                               "name": "Panel detects file modification and refreshes with valid structure",
                               "type": "happy_path",
                               "test_method": "test_file_modification_refreshes_tree",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" selected",
                                 "And Panel is displaying Epic \"Invoke Bot\" details",
@@ -11652,7 +12223,9 @@
                               "name": "Panel detects invalid structure and displays error retaining previous state",
                               "type": "error_case",
                               "test_method": "test_invalid_structure_shows_error_retains_state",
-                              "background": ["Given Story Graph is loaded in Panel"],
+                              "background": [
+                                "Given Story Graph is loaded in Panel"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot\"",
                                 "And Panel is displaying valid Story Graph Tree",
@@ -12366,7 +12939,9 @@
             {
               "name": "InlineNameEditor",
               "module": "story_graph.nodes",
-              "instantiated_with": ["StoryNode"],
+              "instantiated_with": [
+                "StoryNode"
+              ],
               "responsibilities": [
                 {
                   "name": "Enables inline editing mode",
@@ -12405,8 +12980,12 @@
                 }
               ],
               "ownership": {
-                "has": ["ValidationMessageDisplay"],
-                "references": ["StoryNode"]
+                "has": [
+                  "ValidationMessageDisplay"
+                ],
+                "references": [
+                  "StoryNode"
+                ]
               }
             },
             {
@@ -12439,7 +13018,10 @@
             {
               "name": "ConfirmationDialog",
               "module": "panel",
-              "instantiated_with": ["Message", "Callback"],
+              "instantiated_with": [
+                "Message",
+                "Callback"
+              ],
               "responsibilities": [
                 {
                   "name": "Shows confirmation inline",
@@ -13777,7 +14359,9 @@
                               "name": "User creates child with dot notation at default position",
                               "type": "happy_path",
                               "test_method": "test_create_child_with_dot_notation_default_position",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with two SubEpic children",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".create_sub_epic.\"Manage Bot Information\"",
@@ -13793,7 +14377,9 @@
                               "name": "User creates child with position specified",
                               "type": "happy_path",
                               "test_method": "test_create_child_with_position_specified",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with children: \"SubEpic A\", \"SubEpic B\", \"SubEpic C\"",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".create_sub_epic name:\"Info\" at_position:1",
@@ -13809,7 +14395,9 @@
                               "name": "User creates child with invalid position and CLI adjusts",
                               "type": "edge_case",
                               "test_method": "test_create_child_invalid_position_adjusts",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with two SubEpic children",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".create_sub_epic name:\"Info\" at_position:99",
@@ -13825,7 +14413,9 @@
                               "name": "User enters non-existent parent path and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_nonexistent_parent_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\"",
                                 "And Story Graph does not have Epic \"Non-existent Epic\"",
@@ -13841,7 +14431,9 @@
                               "name": "User enters incompatible child type and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_incompatible_child_type_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" with child Story \"Login Form\"",
                                 "When User executes CLI command: story_graph.\"Authentication\".create_sub_epic name:\"OAuth Flow\"",
@@ -13857,7 +14449,9 @@
                               "name": "User enters duplicate name and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_duplicate_name_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot Information\"",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".create_sub_epic.\"Manage Bot Information\"",
@@ -13890,7 +14484,9 @@
                               "name": "User deletes node without children using dot notation",
                               "type": "happy_path",
                               "test_method": "test_delete_node_without_children",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpics: \"SubEpic A\", \"Manage Bot\", \"SubEpic B\"",
                                 "And SubEpic \"Manage Bot\" has no children",
@@ -13908,7 +14504,9 @@
                               "name": "User deletes node with children and CLI moves children to parent",
                               "type": "happy_path",
                               "test_method": "test_delete_node_with_children_moves_to_parent",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot\"",
                                 "And SubEpic \"Manage Bot\" has children Stories: \"Story A\", \"Story B\"",
@@ -13926,7 +14524,9 @@
                               "name": "User enters non-existent node path and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_delete_nonexistent_node_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot\"",
                                 "And Story Graph does not have SubEpic \"Non-existent Node\"",
@@ -13961,7 +14561,9 @@
                               "name": "User renames node with valid name using dot notation",
                               "type": "happy_path",
                               "test_method": "test_rename_node_with_valid_name",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Old Name\"",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".\"Old Name\".rename name:\"New Name\"",
@@ -13979,7 +14581,9 @@
                               "name": "User enters non-existent node path and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_rename_nonexistent_node_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot\"",
                                 "And Story Graph does not have SubEpic \"Non-existent Node\"",
@@ -13995,7 +14599,9 @@
                               "name": "User enters empty name and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_rename_with_empty_name_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Manage Bot\"",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".\"Manage Bot\".rename name:\"\"",
@@ -14011,7 +14617,9 @@
                               "name": "User enters duplicate name and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_rename_with_duplicate_name_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpics: \"Manage Bot\", \"Other SubEpic\"",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".\"Other SubEpic\".rename name:\"Manage Bot\"",
@@ -14027,7 +14635,9 @@
                               "name": "User enters invalid characters and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_rename_with_invalid_characters_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Manage Bot\"",
                                 "When User executes CLI command: story_graph.\"Invoke Bot\".\"Manage Bot\".rename name:\"Name<>|*\"",
@@ -14063,7 +14673,9 @@
                               "name": "User moves node to different parent with position using dot notation",
                               "type": "happy_path",
                               "test_method": "test_move_node_to_different_parent_with_position",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpics: \"SubEpic A\", \"Manage Bot\", \"SubEpic B\"",
                                 "And Story Graph has Epic \"Other Epic\" with SubEpics: \"SubEpic C\", \"SubEpic D\"",
@@ -14084,7 +14696,9 @@
                               "name": "User moves node to same parent different position",
                               "type": "happy_path",
                               "test_method": "test_move_node_same_parent_different_position",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpics: \"SubEpic A\", \"Manage Bot\", \"SubEpic B\", \"SubEpic C\"",
                                 "And SubEpic \"Manage Bot\" is at position 1",
@@ -14102,7 +14716,9 @@
                               "name": "User enters non-existent source path and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_move_nonexistent_source_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\"",
                                 "And Story Graph has Epic \"Other Epic\"",
@@ -14119,7 +14735,9 @@
                               "name": "User enters non-existent target path and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_move_to_nonexistent_target_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot\"",
                                 "And Story Graph does not have Epic \"Non-existent Epic\"",
@@ -14137,7 +14755,9 @@
                               "name": "User moves incompatible type and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_move_incompatible_type_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has SubEpic \"Authentication\" with Story \"Login Form\"",
                                 "And Story Graph has SubEpic \"Authorization\" with SubEpic \"Roles\"",
@@ -14155,7 +14775,9 @@
                               "name": "User moves to create circular reference and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_move_circular_reference_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"User Management\" with SubEpic \"Authentication\"",
                                 "And SubEpic \"Authentication\" has SubEpic \"Login Flow\"",
@@ -14189,7 +14811,9 @@
                               "name": "User executes action with dot notation and CLI executes action",
                               "type": "happy_path",
                               "test_method": "test_execute_action_with_dot_notation",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Story Graph\"",
                                 "And SubEpic \"Manage Story Graph\" has action \"build\" available",
@@ -14208,7 +14832,9 @@
                               "name": "User enters non-existent scope path and CLI outputs error",
                               "type": "error_case",
                               "test_method": "test_execute_action_nonexistent_scope_outputs_error",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\"",
                                 "And Story Graph does not have SubEpic \"Non-existent Scope\"",
@@ -14224,7 +14850,9 @@
                               "name": "Action execution modifies graph and CLI validates and outputs success",
                               "type": "happy_path",
                               "test_method": "test_action_modifies_graph_validates_outputs_success",
-                              "background": ["Given Story Graph is initialized"],
+                              "background": [
+                                "Given Story Graph is initialized"
+                              ],
                               "steps": [
                                 "And Story Graph has Story \"Create Scenarios\" with action \"generate_scenarios\"",
                                 "When User executes CLI command: story_graph.\"Create Scenarios\".generate_scenarios",
@@ -14256,7 +14884,9 @@
                               "name": "CLI detects file modification before command and refreshes with valid structure",
                               "type": "happy_path",
                               "test_method": "test_cli_detects_modification_refreshes_executes",
-                              "background": ["Given Story Graph is initialized in CLI"],
+                              "background": [
+                                "Given Story Graph is initialized in CLI"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot\"",
                                 "And file monitor is watching story-graph.json",
@@ -14274,7 +14904,9 @@
                               "name": "CLI detects invalid structure and displays error retaining previous state",
                               "type": "error_case",
                               "test_method": "test_cli_invalid_structure_shows_error_retains_state",
-                              "background": ["Given Story Graph is initialized in CLI"],
+                              "background": [
+                                "Given Story Graph is initialized in CLI"
+                              ],
                               "steps": [
                                 "And Story Graph has Epic \"Invoke Bot\" with SubEpic \"Manage Bot\"",
                                 "And CLI has valid graph state loaded",
@@ -14411,7 +15043,7 @@
                         },
                         {
                           "name": "CLI displays workspace name and path",
-                          "steps": "Given CLI is initialized with workspace base_bot\nAnd workspace path is C:/dev/augmented-teams/agile_bot/bots/base_bot\nWhen CLI renders the dashboard header\nThen output contains 'Ã°Å¸â€œâ€š **Workspace:** base_bot' with folder emoji\nAnd output shows code block with three backticks\nAnd output shows full workspace path: 'C:\\dev\\augmented-teams\\agile_bot\\bots\\base_bot'\nAnd output closes code block with three backticks",
+                          "steps": "Given CLI is initialized with workspace base_bot\nAnd workspace path is C:/dev/augmented-teams/agile_bot/bots/base_bot\nWhen CLI renders the dashboard header\nThen output contains '\u00c3\u00b0\u00c5\u00b8\u00e2\u20ac\u0153\u00e2\u20ac\u0161 **Workspace:** base_bot' with folder emoji\nAnd output shows code block with three backticks\nAnd output shows full workspace path: 'C:\\dev\\augmented-teams\\agile_bot\\bots\\base_bot'\nAnd output closes code block with three backticks",
                           "test_method": "test_cli_displays_workspace_name_and_path",
                           "notes": "Test method referenced but not found in test files - may need to be implemented. Based on screen example lines 38-39 and implementation in repl_session.py display_current_state() lines 177-179"
                         },
@@ -15001,7 +15633,9 @@
             {
               "name": "DotNotationParser",
               "module": "story_graph.story_map",
-              "instantiated_with": ["StoryGraph"],
+              "instantiated_with": [
+                "StoryGraph"
+              ],
               "responsibilities": [
                 {
                   "name": "Parses dot notation to node path",
@@ -15027,13 +15661,18 @@
                 }
               ],
               "ownership": {
-                "references": ["StoryGraph", "StoryNode"]
+                "references": [
+                  "StoryGraph",
+                  "StoryNode"
+                ]
               }
             },
             {
               "name": "FileModificationMonitor",
               "module": "story_graph.story_map",
-              "instantiated_with": ["File Path"],
+              "instantiated_with": [
+                "File Path"
+              ],
               "responsibilities": [
                 {
                   "name": "Detects file modification",
@@ -15072,13 +15711,18 @@
                 }
               ],
               "ownership": {
-                "references": ["StoryGraph", "StoryMapView"]
+                "references": [
+                  "StoryGraph",
+                  "StoryMapView"
+                ]
               }
             },
             {
               "name": "StoryNodeDragDropManager",
               "module": "story_graph.story_map",
-              "instantiated_with": ["StoryGraph"],
+              "instantiated_with": [
+                "StoryGraph"
+              ],
               "responsibilities": [
                 {
                   "name": "Shows drag cursor with icon",
@@ -15124,7 +15768,10 @@
                 }
               ],
               "ownership": {
-                "references": ["StoryGraph", "StoryNode"]
+                "references": [
+                  "StoryGraph",
+                  "StoryNode"
+                ]
               }
             }
           ]
