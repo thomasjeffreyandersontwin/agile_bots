@@ -147,7 +147,7 @@ class InstructionsSection extends PanelView {
                 align-items: center;
                 user-select: none;
             ">
-                <span class="expand-icon" style="margin-right: 8px; font-size: 28px; transition: transform 0.15s;">▸</span>
+                <span class="expand-icon">▸</span>
                 <span style="font-weight: 600; font-size: 20px;">Instructions</span>
             </div>
             <div id="instructions-content" class="collapsible-content" style="max-height: 600px; overflow-y: auto; overflow-x: hidden; transition: max-height 0.3s ease;">
@@ -461,7 +461,7 @@ class InstructionsSection extends PanelView {
 
         // Define colors and display order/names - 6 sections (base + 5 action-specific)
         const propertyConfig = {
-            'base_instructions': { name: 'Base Instructions', color: '#ff8c00', icon: '', iconPath: documentIconPath, defaultExpanded: true },
+            'base_instructions': { name: 'Base Instructions', color: '#ff8c00', icon: '', iconPath: documentIconPath, defaultExpanded: false },
             'clarify_instructions': { name: 'Clarify', color: '#569cd6', icon: '', iconPath: lightbulbHeadIconPath, defaultExpanded: false },
             'strategy_instructions': { name: 'Strategy', color: '#c586c0', icon: '', iconPath: lightbulbIconPath, defaultExpanded: false },
             'build_instructions': { name: 'Build', color: '#4ec9b0', icon: '', iconPath: bullseyeIconPath, defaultExpanded: false },
@@ -531,13 +531,14 @@ class InstructionsSection extends PanelView {
             align-items: center;
             user-select: none;
           ">
-            <span class="expand-icon" style="margin-right: 8px; font-size: 28px; transition: transform 0.15s;">▸</span>
+            <span class="expand-icon">▸</span>
             ${iconHtml}
             <span style="font-weight: 600; color: var(--vscode-foreground); font-size: 14px;">${config.name}</span>
           </div>
           <div id="${sectionId}" class="collapsible-content" style="
             max-height: ${config.defaultExpanded ? 'none' : '0'};
             overflow: ${config.defaultExpanded ? 'visible' : 'hidden'};
+            display: ${config.defaultExpanded ? 'block' : 'none'};
             transition: max-height 0.3s ease;
           ">
             <div style="padding: 5px; background-color: transparent; margin-top: 2px;">
@@ -566,7 +567,7 @@ class InstructionsSection extends PanelView {
                 user-select: none;
             ">
                 <div style="display: flex; align-items: center;" onclick="toggleSection('instructions-content')">
-                    <span class="expand-icon" style="margin-right: 8px; font-size: 28px; transition: transform 0.15s;">▸</span>
+                    <span class="expand-icon">▸</span>
                     ${clipboardIconPath ? `<img src="${clipboardIconPath}" style="margin-right: 8px; width: 28px; height: 28px; object-fit: contain;" alt="Instructions Icon" />` : ''}
                     <span style="font-weight: 600; font-size: 20px;">Instructions</span>
                 </div>
@@ -606,7 +607,7 @@ class InstructionsSection extends PanelView {
                                 align-items: center;
                                 user-select: none;
                             " onclick="toggleSection('raw-instructions-content')">
-                                <span class="expand-icon" style="margin-right: 8px; font-size: 20px; transition: transform 0.15s;">▸</span>
+                                <span class="expand-icon">▸</span>
                                 <img src="${this.webview && this.extensionUri ? this.webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'copy.png')).toString() : ''}" 
                                      style="margin-right: 8px; width: 20px; height: 20px; object-fit: contain; opacity: 0.9;" 
                                      alt="Raw" 
@@ -829,10 +830,10 @@ class InstructionsSection extends PanelView {
         if (value.schema) {
             html += '<div class="collapsible-section" style="margin-bottom: 8px;">';
             html += '<div class="collapsible-header" style="margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection(\'build-kg-section\')">';
-            html += '<span class="expand-icon" style="margin-right: 8px; font-size: 20px; transition: transform 0.15s;">▸</span>';
+            html += '<span class="expand-icon">▸</span>';
             html += '<strong style="font-size: 14px;">Story Graph</strong>';
             html += '</div>';
-            html += '<div id="build-kg-section" class="collapsible-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">';
+            html += '<div id="build-kg-section" class="collapsible-content" style="max-height: 0; overflow: hidden; display: none; transition: max-height 0.3s ease;">';
             html += '<div style="padding-left: 14px;">';
             html += this._formatBuildStoryGraph(value.schema);
             html += '</div>';
@@ -844,10 +845,10 @@ class InstructionsSection extends PanelView {
         if (value.rules && Array.isArray(value.rules) && value.rules.length > 0) {
             html += '<div class="collapsible-section" style="margin-bottom: 8px;">';
             html += '<div class="collapsible-header" style="margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection(\'build-rules-section\')">';
-            html += '<span class="expand-icon" style="margin-right: 8px; font-size: 20px; transition: transform 0.15s;">▸</span>';
+            html += '<span class="expand-icon">▸</span>';
             html += '<strong style="font-size: 14px;">Rules</strong>';
             html += '</div>';
-            html += '<div id="build-rules-section" class="collapsible-content" style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">';
+            html += '<div id="build-rules-section" class="collapsible-content" style="max-height: 0; overflow: hidden; display: none; transition: max-height 0.3s ease;">';
             html += '<div style="padding-left: 14px;">';
             html += this._formatBuildRules(value.rules);
             html += '</div>';
@@ -1008,7 +1009,7 @@ class InstructionsSection extends PanelView {
             configs.forEach((config, idx) => {
                 html += '<div class="collapsible-section" style="margin-bottom: 8px;">';
                 html += `<div class="collapsible-header" style="margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection('render-config-section-${idx}')">`;
-                html += '<span class="expand-icon" style="margin-right: 8px; font-size: 20px; transition: transform 0.15s;">▸</span>';
+                html += '<span class="expand-icon">▸</span>';
                 html += `<strong style="font-size: 14px;">Render Config ${configs.length > 1 ? idx + 1 : ''}</strong>`;
                 html += '</div>';
                 html += `<div id="render-config-section-${idx}" class="collapsible-content" style="max-height: 0; overflow: hidden; display: none; transition: max-height 0.3s ease;">`;
@@ -1080,7 +1081,7 @@ class InstructionsSection extends PanelView {
         if (value.rules && Array.isArray(value.rules) && value.rules.length > 0) {
             html += '<div class="collapsible-section" style="margin-bottom: 8px;">';
             html += '<div class="collapsible-header" style="margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection(\'validate-rules-section\')">';
-            html += '<span class="expand-icon" style="margin-right: 8px; font-size: 20px; transition: transform 0.15s;">▸</span>';
+            html += '<span class="expand-icon">▸</span>';
             html += '<strong style="font-size: 14px;">Rule Files</strong>';
             html += '</div>';
             html += '<div id="validate-rules-section" class="collapsible-content" style="max-height: 0; overflow: hidden; display: none; transition: max-height 0.3s ease;">';
@@ -1095,7 +1096,7 @@ class InstructionsSection extends PanelView {
         if (value.validation_rules && Array.isArray(value.validation_rules) && value.validation_rules.length > 0) {
             html += '<div class="collapsible-section" style="margin-bottom: 8px;">';
             html += '<div class="collapsible-header" style="margin-bottom: 8px; cursor: pointer; display: flex; align-items: center;" onclick="toggleSection(\'validate-rules-objects-section\')">';
-            html += '<span class="expand-icon" style="margin-right: 8px; font-size: 20px; transition: transform 0.15s;">▸</span>';
+            html += '<span class="expand-icon">▸</span>';
             html += '<strong style="font-size: 14px;">Validation Rules</strong>';
             html += '</div>';
             html += '<div id="validate-rules-objects-section" class="collapsible-content" style="max-height: 0; overflow: hidden; display: none; transition: max-height 0.3s ease;">';

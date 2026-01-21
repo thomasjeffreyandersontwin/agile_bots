@@ -1038,9 +1038,15 @@ class BotPanel {
             font-style: normal;
             min-width: var(--space-md);
             color: #ff8c00 !important;
+            font-size: 28px;
+            margin-right: 8px;
         }
         .collapsible-section.expanded .expand-icon {
             transform: rotate(90deg);
+        }
+        /* Ensure nested subsections have smaller icons */
+        .collapsible-content .collapsible-section .expand-icon {
+            font-size: 20px;
         }
         .collapsible-content {
             overflow: hidden;
@@ -1293,10 +1299,14 @@ class BotPanel {
         console.log('[WebView] window.testFunction defined:', typeof window.testFunction);
         
         window.toggleSection = function(sectionId) {
+            console.log('[toggleSection] Called with sectionId:', sectionId);
             const content = document.getElementById(sectionId);
+            console.log('[toggleSection] Content element:', content);
             if (content) {
                 const section = content.closest('.collapsible-section');
+                console.log('[toggleSection] Parent section:', section);
                 const isExpanded = section && section.classList.contains('expanded');
+                console.log('[toggleSection] isExpanded:', isExpanded);
                 
                 // Toggle visibility
                 if (isExpanded) {
@@ -1311,12 +1321,16 @@ class BotPanel {
                 
                 // Toggle expanded class (CSS handles icon rotation - ▸ rotates 90deg when expanded)
                 const header = content.previousElementSibling;
+                console.log('[toggleSection] Header element:', header);
                 if (header && section) {
                     section.classList.toggle('expanded', !isExpanded);
+                    console.log('[toggleSection] After toggle, section classes:', section.className);
                     // Keep icon as ▸ always - CSS rotation handles the visual state
                     const icon = header.querySelector('.expand-icon');
+                    console.log('[toggleSection] Icon element:', icon);
                     if (icon) {
                         icon.textContent = '▸';
+                        console.log('[toggleSection] Icon transform:', window.getComputedStyle(icon).transform);
                     }
                 }
             }

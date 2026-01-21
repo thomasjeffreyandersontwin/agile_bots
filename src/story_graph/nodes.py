@@ -566,6 +566,24 @@ class StoryGroup(StoryNode):
     @property
     def children(self) -> List['StoryNode']:
         return self._children
+    
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any], parent: Optional[StoryNode]=None) -> 'StoryGroup':
+        """Create StoryGroup from dictionary data."""
+        sequential_order = data.get('sequential_order', 0.0)
+        group_type = data.get('type', 'and')
+        connector = data.get('connector')
+        story_group = cls(
+            name='',  # StoryGroup doesn't have a name in the typical sense
+            sequential_order=float(sequential_order),
+            group_type=group_type,
+            connector=connector,
+            _parent=parent
+        )
+        for story_data in data.get('stories', []):
+            story = Story.from_dict(story_data, parent=story_group)
+            story_group._children.append(story)
+        return story_group
 
 @dataclass
 class Story(StoryNode):
@@ -595,6 +613,13 @@ class Story(StoryNode):
             if child.name == child_name:
                 return child
         raise KeyError(f"Child '{child_name}' not found in Story '{self.name}'")
+
+    @property
+    def scenarios(self) -> List['Scenario']:
+        return [child for child in self._children if isinstance(child, Scenario)]
+    
+    @property
+    def scenario_outlines(self) -> List['ScenarioOutline']:
         return [child for child in self._children if isinstance(child, ScenarioOutline)]
 
     @property

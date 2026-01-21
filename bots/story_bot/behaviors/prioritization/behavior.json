@@ -20,18 +20,12 @@
       {
         "name": "strategy",
         "order": 2,
-        "next_action": "build",
-        "instructions": []
-      },
-      {
-        "name": "build",
-        "order": 3,
         "next_action": "validate",
         "instructions": []
       },
       {
         "name": "validate",
-        "order": 4,
+        "order": 3,
         "next_action": "render",
         "instructions": [
           "prioritization: validate increment organization and dependencies"
@@ -39,7 +33,7 @@
       },
       {
         "name": "render",
-        "order": 5,
+        "order": 4,
         "instructions": [
           "prioritization: render increment documentation"
         ]

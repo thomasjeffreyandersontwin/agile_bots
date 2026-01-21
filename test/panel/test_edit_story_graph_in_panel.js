@@ -44,55 +44,9 @@ const fs = require('fs');
 // Setup
 const workspaceDir = path.join(__dirname, '../..');
 const botPath = path.join(workspaceDir, 'bots', 'story_bot');
-const testGraphPath = path.join(botPath, 'docs', 'stories', 'story-graph.json');
-const testGraphBackupPath = path.join(botPath, 'docs', 'stories', 'story-graph.json.test-backup');
-
-// Backup original story graph
-let originalGraph = null;
-try {
-    if (fs.existsSync(testGraphPath)) {
-        originalGraph = fs.readFileSync(testGraphPath, 'utf8');
-        fs.writeFileSync(testGraphBackupPath, originalGraph);
-    }
-} catch (err) {
-    console.error('Warning: Could not backup original graph:', err.message);
-}
-
-// Initialize with minimal test graph BEFORE creating backendPanel
-const initialTestGraph = {
-    epics: []
-};
-fs.writeFileSync(testGraphPath, JSON.stringify(initialTestGraph, null, 2));
-
-// Small delay to ensure file system writes are complete
-// (Windows file system can have timing issues)
-const now = Date.now();
-while (Date.now() - now < 100) {
-    // Busy wait for 100ms
-}
 
 // Shared backend panel for message handler (DO NOT call backendPanel.execute in tests!)
-// This will load the clean test graph we just created
 const backendPanel = new PanelView(botPath);
-
-/**
- * Helper to reset story graph to clean state
- * Use at the start of test suites to ensure isolation
- * 
- * NOTE: This writes a clean graph to disk, but the Python backend
- * caches the graph in memory. The backend will reload from disk
- * when it processes the next command, so this works correctly.
- */
-function resetStoryGraph() {
-    const cleanGraph = { epics: [] };
-    fs.writeFileSync(testGraphPath, JSON.stringify(cleanGraph, null, 2));
-    // Ensure file system has flushed the write
-    const fd = fs.openSync(testGraphPath, 'r');
-    fs.closeSync(fd);
-    
-    // The Python backend reloads the graph from disk on each execute,
-    // so our next command will pick up the clean graph
-}
 
 /**
  * Helper to query story graph state via message handler
@@ -105,24 +59,17 @@ async function queryStoryGraph(testPanel) {
     const beforeLength = testPanel.sentMessages.length;
     await testPanel.postMessageFromWebview({
         command: 'executeCommand',
-        commandText: 'status'
+        commandText: 'story_graph'
     });
-    // Find the new message (after beforeLength)
     const statusMsg = testPanel.sentMessages.slice(beforeLength).find(m => m.command === 'commandResult');
     if (!statusMsg) {
-        throw new Error('No commandResult message received from status query');
+        throw new Error('No commandResult message received from story_graph query');
     }
     const result = statusMsg.data.result;
     
-    // Result might already be parsed or be a string
-    let data;
-    if (typeof result === 'string') {
-        data = JSON.parse(result);
-    } else {
-        data = result;
-    }
+    let response = typeof result === 'string' ? JSON.parse(result) : result;
+    const data = response.result || response;
     
-    // Ensure data has expected structure
     if (!data || typeof data !== 'object') {
         return { epics: [] };
     }
@@ -214,17 +161,6 @@ function createTestBotPanel() {
 
 after(() => {
     backendPanel.cleanup();
-    
-    // Restore original story graph
-    try {
-        if (fs.existsSync(testGraphBackupPath)) {
-            const backup = fs.readFileSync(testGraphBackupPath, 'utf8');
-            fs.writeFileSync(testGraphPath, backup);
-            fs.unlinkSync(testGraphBackupPath);
-        }
-    } catch (err) {
-        console.error('Failed to restore original story graph:', err.message);
-    }
 });
 
 
@@ -255,11 +191,11 @@ test('TestCreateEpic', { concurrency: false }, async (t) => {
         // SIMULATE: User clicks "Create Epic" button
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Test Epic Creation"'
+            commandText: 'story_graph.create_epic name:"Test Epic Creation"'
         });
         
         // Verify command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph.create_epic name:"Test Epic Creation"'),
+        assert.ok(testPanel.executedCommands.includes('story_graph.create_epic name:"Test Epic Creation"'),
             'Create epic command should be executed via message handler');
         
         // Check the response from create command
@@ -297,7 +233,7 @@ test('TestCreateEpic', { concurrency: false }, async (t) => {
         // Create first epic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Duplicate Epic Test"'
+            commandText: 'story_graph.create_epic name:"Duplicate Epic Test"'
         });
         
         // Verify it was created
@@ -309,7 +245,7 @@ test('TestCreateEpic', { concurrency: false }, async (t) => {
         const messagesBefore = testPanel.sentMessages.length;
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Duplicate Epic Test"'
+            commandText: 'story_graph.create_epic name:"Duplicate Epic Test"'
         });
         
         // Verify error was returned through message handler
@@ -341,7 +277,7 @@ test('TestCreateEpic', { concurrency: false }, async (t) => {
         // Try to create epic with empty name via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:""'
+            commandText: 'story_graph.create_epic name:""'
         });
         
         // Verify error handling through message handler
@@ -377,7 +313,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic first via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Parent Validation Epic"'
+            commandText: 'story_graph.create_epic name:"Parent Validation Epic"'
         });
         
         // Verify Epic exists
@@ -389,11 +325,11 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create child under Epic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Parent Validation Epic".create_sub_epic name:"Child SubEpic"'
+            commandText: 'story_graph."Parent Validation Epic".create_sub_epic name:"Child SubEpic"'
         });
         
         // Verify command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Parent Validation Epic".create_sub_epic name:"Child SubEpic"'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Parent Validation Epic".create_sub_epic name:"Child SubEpic"'),
             'Create child command should be executed via message handler');
         
         // Query final state via message handler
@@ -425,7 +361,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Try to create child under non-existent parent via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."NonExistentParent123".create_sub_epic name:"Child"'
+            commandText: 'story_graph."NonExistentParent123".create_sub_epic name:"Child"'
         });
         
         // Verify error handling through message handler
@@ -456,11 +392,11 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic with a child
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"DuplicateTestEpic"'
+            commandText: 'story_graph.create_epic name:"DuplicateTestEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."DuplicateTestEpic".create name:"Child1"'
+            commandText: 'story_graph."DuplicateTestEpic".create name:"Child1"'
         });
         
         // Try to create another child with same name
@@ -468,7 +404,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         try {
             await testPanel.postMessageFromWebview({
                 command: 'executeCommand',
-                commandText: 'bot.story_graph."DuplicateTestEpic".create name:"Child1"'
+                commandText: 'story_graph."DuplicateTestEpic".create name:"Child1"'
             });
         } catch (error) {
             errorOccurred = true;
@@ -496,7 +432,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic with multiple children through message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"OrderTestEpic"'
+            commandText: 'story_graph.create_epic name:"OrderTestEpic"'
         });
         
         // Verify epic was created
@@ -506,11 +442,11 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."OrderTestEpic".create name:"First"'
+            commandText: 'story_graph."OrderTestEpic".create name:"First"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."OrderTestEpic".create name:"Second"'
+            commandText: 'story_graph."OrderTestEpic".create name:"Second"'
         });
         
         // Verify order is preserved via message handler
@@ -545,7 +481,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Epic Button Test"'
+            commandText: 'story_graph.create_epic name:"Epic Button Test"'
         });
         
         // Verify Epic exists
@@ -556,11 +492,11 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // SIMULATE: User clicks "Create Sub-Epic" button on Epic
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Epic Button Test".create_sub_epic name:"SubEpic1"'
+            commandText: 'story_graph."Epic Button Test".create_sub_epic name:"SubEpic1"'
         });
         
         // Verify command executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Epic Button Test".create_sub_epic name:"SubEpic1"'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Epic Button Test".create_sub_epic name:"SubEpic1"'),
             'Create sub-epic command should be executed via message handler');
         
         // Verify SubEpic was added via message handler
@@ -588,11 +524,11 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic and empty SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Empty SubEpic Test Epic"'
+            commandText: 'story_graph.create_epic name:"Empty SubEpic Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Empty SubEpic Test Epic".create_sub_epic name:"Empty SubEpic"'
+            commandText: 'story_graph."Empty SubEpic Test Epic".create_sub_epic name:"Empty SubEpic"'
         });
         
         // Verify SubEpic is empty
@@ -606,7 +542,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // SIMULATE: User clicks "Create Story" button on empty SubEpic
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Empty SubEpic Test Epic"."Empty SubEpic".create_story name:"Story1"'
+            commandText: 'story_graph."Empty SubEpic Test Epic"."Empty SubEpic".create_story name:"Story1"'
         });
         
         // Verify Story was added via message handler
@@ -634,15 +570,15 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic > SubEpic > SubEpic hierarchy via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Hierarchy Test Epic"'
+            commandText: 'story_graph.create_epic name:"Hierarchy Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Hierarchy Test Epic".create_sub_epic name:"Parent SubEpic"'
+            commandText: 'story_graph."Hierarchy Test Epic".create_sub_epic name:"Parent SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Hierarchy Test Epic"."Parent SubEpic".create_sub_epic name:"Child SubEpic"'
+            commandText: 'story_graph."Hierarchy Test Epic"."Parent SubEpic".create_sub_epic name:"Child SubEpic"'
         });
         
         // Verify SubEpic has SubEpic children
@@ -655,7 +591,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // SIMULATE: User can create another SubEpic (allowed)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Hierarchy Test Epic"."Parent SubEpic".create_sub_epic name:"Second SubEpic"'
+            commandText: 'story_graph."Hierarchy Test Epic"."Parent SubEpic".create_sub_epic name:"Second SubEpic"'
         });
         
         // Verify second SubEpic was added
@@ -681,15 +617,15 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic > SubEpic > Story hierarchy via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Story Hierarchy Test"'
+            commandText: 'story_graph.create_epic name:"Story Hierarchy Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Story Hierarchy Test".create_sub_epic name:"SubEpic With Stories"'
+            commandText: 'story_graph."Story Hierarchy Test".create_sub_epic name:"SubEpic With Stories"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Story Hierarchy Test"."SubEpic With Stories".create_story name:"Story1"'
+            commandText: 'story_graph."Story Hierarchy Test"."SubEpic With Stories".create_story name:"Story1"'
         });
         
         // Verify SubEpic has Story children
@@ -702,7 +638,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // SIMULATE: User can create another Story (allowed)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Story Hierarchy Test"."SubEpic With Stories".create_story name:"Story2"'
+            commandText: 'story_graph."Story Hierarchy Test"."SubEpic With Stories".create_story name:"Story2"'
         });
         
         // Verify second Story was added
@@ -730,15 +666,15 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic > SubEpic > Story hierarchy via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Scenario Test Epic"'
+            commandText: 'story_graph.create_epic name:"Scenario Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Scenario Test Epic".create_sub_epic name:"Scenario SubEpic"'
+            commandText: 'story_graph."Scenario Test Epic".create_sub_epic name:"Scenario SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Scenario Test Epic"."Scenario SubEpic".create_story name:"Test Story"'
+            commandText: 'story_graph."Scenario Test Epic"."Scenario SubEpic".create_story name:"Test Story"'
         });
         
         // Verify Story exists
@@ -752,7 +688,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // SIMULATE: User clicks "Create Scenario" button
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Scenario Test Epic"."Scenario SubEpic"."Test Story".create_scenario name:"Happy Path"'
+            commandText: 'story_graph."Scenario Test Epic"."Scenario SubEpic"."Test Story".create_scenario name:"Happy Path"'
         });
         
         // Verify scenario was added via message handler
@@ -783,15 +719,15 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic with two SubEpics via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Auto Name Test"'
+            commandText: 'story_graph.create_epic name:"Auto Name Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Auto Name Test".create_sub_epic name:"First"'
+            commandText: 'story_graph."Auto Name Test".create_sub_epic name:"First"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Auto Name Test".create_sub_epic name:"Second"'
+            commandText: 'story_graph."Auto Name Test".create_sub_epic name:"Second"'
         });
         
         // Verify two children exist
@@ -802,11 +738,11 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // SIMULATE: User clicks create without specifying name
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Auto Name Test".create_sub_epic'
+            commandText: 'story_graph."Auto Name Test".create_sub_epic'
         });
         
         // Verify command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Auto Name Test".create_sub_epic'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Auto Name Test".create_sub_epic'),
             'Create command should be executed via message handler');
         
         // Verify child was created with auto-generated name
@@ -837,11 +773,11 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // Create Epic with existing child via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Duplicate Sibling Test"'
+            commandText: 'story_graph.create_epic name:"Duplicate Sibling Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Duplicate Sibling Test".create_sub_epic name:"Existing Child"'
+            commandText: 'story_graph."Duplicate Sibling Test".create_sub_epic name:"Existing Child"'
         });
         
         // Verify child exists
@@ -853,7 +789,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         // SIMULATE: User tries to create sibling with duplicate name
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Duplicate Sibling Test".create_sub_epic name:"Existing Child"'
+            commandText: 'story_graph."Duplicate Sibling Test".create_sub_epic name:"Existing Child"'
         });
         
         // Verify validation error through message handler
@@ -893,19 +829,19 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create test structure: Epic with 3 SubEpics
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"DeleteTestEpic"'
+            commandText: 'story_graph.create_epic name:"DeleteTestEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."DeleteTestEpic".create name:"SubEpic1"'
+            commandText: 'story_graph."DeleteTestEpic".create name:"SubEpic1"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."DeleteTestEpic".create name:"SubEpic2"'
+            commandText: 'story_graph."DeleteTestEpic".create name:"SubEpic2"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."DeleteTestEpic".create name:"SubEpic3"'
+            commandText: 'story_graph."DeleteTestEpic".create name:"SubEpic3"'
         });
         
         // Verify all 3 exist via message handler
@@ -916,11 +852,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // SIMULATE: User confirms delete for middle SubEpic
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."DeleteTestEpic"."SubEpic2".delete'
+            commandText: 'story_graph."DeleteTestEpic"."SubEpic2".delete'
         });
         
         // Verify handler called backend
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."DeleteTestEpic"."SubEpic2".delete'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."DeleteTestEpic"."SubEpic2".delete'),
             'Message handler should call backend with delete command');
         
         // Verify node was removed and siblings resequenced via message handler
@@ -955,7 +891,7 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         try {
             await testPanel.postMessageFromWebview({
                 command: 'executeCommand',
-                commandText: 'bot.story_graph."NonExistent".delete'
+                commandText: 'story_graph."NonExistent".delete'
             });
         } catch (error) {
             errorOccurred = true;
@@ -982,19 +918,19 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create nested structure: Epic > SubEpic > Story > Scenario
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"RecursiveDeleteEpic"'
+            commandText: 'story_graph.create_epic name:"RecursiveDeleteEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."RecursiveDeleteEpic".create name:"ParentSubEpic"'
+            commandText: 'story_graph."RecursiveDeleteEpic".create name:"ParentSubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."RecursiveDeleteEpic"."ParentSubEpic".create_story name:"ChildStory"'
+            commandText: 'story_graph."RecursiveDeleteEpic"."ParentSubEpic".create_story name:"ChildStory"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."RecursiveDeleteEpic"."ParentSubEpic"."ChildStory".create_scenario name:"GrandchildScenario"'
+            commandText: 'story_graph."RecursiveDeleteEpic"."ParentSubEpic"."ChildStory".create_scenario name:"GrandchildScenario"'
         });
         
         // Verify structure exists via message handler
@@ -1007,11 +943,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // SIMULATE: User confirms "Delete All" for SubEpic
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."RecursiveDeleteEpic"."ParentSubEpic".delete_including_children'
+            commandText: 'story_graph."RecursiveDeleteEpic"."ParentSubEpic".delete_including_children'
         });
         
         // Verify handler called backend with recursive delete
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."RecursiveDeleteEpic"."ParentSubEpic".delete_including_children'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."RecursiveDeleteEpic"."ParentSubEpic".delete_including_children'),
             'Message handler should call backend with delete_including_children command');
         
         // Verify entire subtree was removed via message handler
@@ -1036,11 +972,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create Epic with childless SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Delete Childless Test"'
+            commandText: 'story_graph.create_epic name:"Delete Childless Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete Childless Test".create_sub_epic name:"Childless SubEpic"'
+            commandText: 'story_graph."Delete Childless Test".create_sub_epic name:"Childless SubEpic"'
         });
         
         // Verify SubEpic exists and has no children
@@ -1054,11 +990,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // SIMULATE: User clicks "Delete" button
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete Childless Test"."Childless SubEpic".delete'
+            commandText: 'story_graph."Delete Childless Test"."Childless SubEpic".delete'
         });
         
         // Verify command executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Delete Childless Test"."Childless SubEpic".delete'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Delete Childless Test"."Childless SubEpic".delete'),
             'Delete command should be executed via message handler');
         
         // Verify node was removed
@@ -1084,15 +1020,15 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create Epic > SubEpic > Story hierarchy via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Delete Parent Test"'
+            commandText: 'story_graph.create_epic name:"Delete Parent Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete Parent Test".create_sub_epic name:"Parent With Children"'
+            commandText: 'story_graph."Delete Parent Test".create_sub_epic name:"Parent With Children"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete Parent Test"."Parent With Children".create_story name:"Child Story"'
+            commandText: 'story_graph."Delete Parent Test"."Parent With Children".create_story name:"Child Story"'
         });
         
         // Verify SubEpic has children
@@ -1106,11 +1042,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Test delete (promotes children)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete Parent Test"."Parent With Children".delete'
+            commandText: 'story_graph."Delete Parent Test"."Parent With Children".delete'
         });
         
         // Verify delete command executed (may promote children or handle differently)
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Delete Parent Test"."Parent With Children".delete'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Delete Parent Test"."Parent With Children".delete'),
             'Delete command should be available for node with children');
     });
     
@@ -1129,11 +1065,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create Epic with SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Delete Confirmation Test"'
+            commandText: 'story_graph.create_epic name:"Delete Confirmation Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete Confirmation Test".create_sub_epic name:"To Be Deleted"'
+            commandText: 'story_graph."Delete Confirmation Test".create_sub_epic name:"To Be Deleted"'
         });
         
         // Verify SubEpic exists
@@ -1145,11 +1081,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // SIMULATE: User confirms delete (in real UI, confirmation dialog appears first)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete Confirmation Test"."To Be Deleted".delete'
+            commandText: 'story_graph."Delete Confirmation Test"."To Be Deleted".delete'
         });
         
         // Verify command executed and success response sent
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Delete Confirmation Test"."To Be Deleted".delete'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Delete Confirmation Test"."To Be Deleted".delete'),
             'System should execute delete command after confirmation');
         
         const response = testPanel.sentMessages[testPanel.sentMessages.length - 1];
@@ -1177,11 +1113,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create test structure
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Confirm Delete Test Epic"'
+            commandText: 'story_graph.create_epic name:"Confirm Delete Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Confirm Delete Test Epic".create_sub_epic name:"ToDelete SubEpic"'
+            commandText: 'story_graph."Confirm Delete Test Epic".create_sub_epic name:"ToDelete SubEpic"'
         });
         
         // Query initial state via message handler
@@ -1193,11 +1129,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Simulate delete confirmation via webview message
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Confirm Delete Test Epic"."ToDelete SubEpic".delete'
+            commandText: 'story_graph."Confirm Delete Test Epic"."ToDelete SubEpic".delete'
         });
         
         // Verify command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Confirm Delete Test Epic"."ToDelete SubEpic".delete'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Confirm Delete Test Epic"."ToDelete SubEpic".delete'),
             'Delete command should be executed via message handler');
         
         // Query final state via message handler
@@ -1221,25 +1157,25 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create test structure with children
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Delete With Promotion Epic"'
+            commandText: 'story_graph.create_epic name:"Delete With Promotion Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete With Promotion Epic".create_sub_epic name:"Parent SubEpic"'
+            commandText: 'story_graph."Delete With Promotion Epic".create_sub_epic name:"Parent SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete With Promotion Epic"."Parent SubEpic".create_story name:"Child Story"'
+            commandText: 'story_graph."Delete With Promotion Epic"."Parent SubEpic".create_story name:"Child Story"'
         });
         
         // Simulate delete with children via webview message
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Delete With Promotion Epic"."Parent SubEpic".delete'
+            commandText: 'story_graph."Delete With Promotion Epic"."Parent SubEpic".delete'
         });
         
         // Verify command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Delete With Promotion Epic"."Parent SubEpic".delete'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Delete With Promotion Epic"."Parent SubEpic".delete'),
             'Delete command should be executed via message handler');
     });
     
@@ -1257,15 +1193,15 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create test structure with nested children
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Cascade Delete Epic"'
+            commandText: 'story_graph.create_epic name:"Cascade Delete Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Cascade Delete Epic".create_sub_epic name:"Parent SubEpic"'
+            commandText: 'story_graph."Cascade Delete Epic".create_sub_epic name:"Parent SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Cascade Delete Epic"."Parent SubEpic".create_story name:"Child Story"'
+            commandText: 'story_graph."Cascade Delete Epic"."Parent SubEpic".create_story name:"Child Story"'
         });
         
         // Query initial state via message handler
@@ -1279,11 +1215,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Simulate cascade delete via webview message
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Cascade Delete Epic"."Parent SubEpic".delete_including_children'
+            commandText: 'story_graph."Cascade Delete Epic"."Parent SubEpic".delete_including_children'
         });
         
         // Verify command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Cascade Delete Epic"."Parent SubEpic".delete_including_children'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Cascade Delete Epic"."Parent SubEpic".delete_including_children'),
             'Delete including children command should be executed via message handler');
         
         // Query final state via message handler
@@ -1311,11 +1247,11 @@ test('TestDeleteStoryNodeFromParent', { concurrency: false }, async (t) => {
         // Create Epic with SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Cancel Delete Test"'
+            commandText: 'story_graph.create_epic name:"Cancel Delete Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Cancel Delete Test".create_sub_epic name:"Should Not Be Deleted"'
+            commandText: 'story_graph."Cancel Delete Test".create_sub_epic name:"Should Not Be Deleted"'
         });
         
         // Verify SubEpic exists
@@ -1370,11 +1306,11 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Create Epic with SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Rename Test Epic"'
+            commandText: 'story_graph.create_epic name:"Rename Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Rename Test Epic".create_sub_epic name:"Original Name"'
+            commandText: 'story_graph."Rename Test Epic".create_sub_epic name:"Original Name"'
         });
         
         // Verify original name exists
@@ -1387,11 +1323,11 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // SIMULATE: User edits node name and presses Enter
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Rename Test Epic"."Original Name".rename."Updated Name"'
+            commandText: 'story_graph."Rename Test Epic"."Original Name".rename."Updated Name"'
         });
         
         // Verify rename command executed
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Rename Test Epic"."Original Name".rename."Updated Name"'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Rename Test Epic"."Original Name".rename."Updated Name"'),
             'Rename command should be executed via message handler');
         
         // Verify name was updated via message handler
@@ -1419,11 +1355,11 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Create test structure
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Valid Rename Epic"'
+            commandText: 'story_graph.create_epic name:"Valid Rename Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Valid Rename Epic".create_sub_epic name:"Old SubEpic Name"'
+            commandText: 'story_graph."Valid Rename Epic".create_sub_epic name:"Old SubEpic Name"'
         });
         
         // Query initial state via message handler
@@ -1435,11 +1371,11 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Simulate rename via webview message
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Valid Rename Epic"."Old SubEpic Name".rename."New SubEpic Name"'
+            commandText: 'story_graph."Valid Rename Epic"."Old SubEpic Name".rename."New SubEpic Name"'
         });
         
         // Verify rename command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Valid Rename Epic"."Old SubEpic Name".rename."New SubEpic Name"'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Valid Rename Epic"."Old SubEpic Name".rename."New SubEpic Name"'),
             'Rename command should be executed via message handler');
         
         // Query final state via message handler
@@ -1466,11 +1402,11 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Create Epic with SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Empty Name Test Epic"'
+            commandText: 'story_graph.create_epic name:"Empty Name Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Empty Name Test Epic".create_sub_epic name:"Valid Name"'
+            commandText: 'story_graph."Empty Name Test Epic".create_sub_epic name:"Valid Name"'
         });
         
         // Verify original name
@@ -1482,7 +1418,7 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // SIMULATE: User tries to rename to empty string
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Empty Name Test Epic"."Valid Name".rename.""'
+            commandText: 'story_graph."Empty Name Test Epic"."Valid Name".rename.""'
         });
         
         // Verify validation error through message handler
@@ -1515,15 +1451,15 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Create Epic with two SubEpics via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Duplicate Rename Test"'
+            commandText: 'story_graph.create_epic name:"Duplicate Rename Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Duplicate Rename Test".create_sub_epic name:"Authentication"'
+            commandText: 'story_graph."Duplicate Rename Test".create_sub_epic name:"Authentication"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Duplicate Rename Test".create_sub_epic name:"Authorization"'
+            commandText: 'story_graph."Duplicate Rename Test".create_sub_epic name:"Authorization"'
         });
         
         // Verify both exist
@@ -1536,7 +1472,7 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // SIMULATE: User tries to rename Authorization to Authentication (duplicate)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Duplicate Rename Test"."Authorization".rename."Authentication"'
+            commandText: 'story_graph."Duplicate Rename Test"."Authorization".rename."Authentication"'
         });
         
         // Verify validation error through message handler
@@ -1569,11 +1505,11 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Create Epic with SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Invalid Chars Test"'
+            commandText: 'story_graph.create_epic name:"Invalid Chars Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Invalid Chars Test".create_sub_epic name:"Valid Name"'
+            commandText: 'story_graph."Invalid Chars Test".create_sub_epic name:"Valid Name"'
         });
         
         // Verify original name
@@ -1586,7 +1522,7 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Note: The backend may handle special characters differently
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Invalid Chars Test"."Valid Name".rename."Invalid<>Name"'
+            commandText: 'story_graph."Invalid Chars Test"."Valid Name".rename."Invalid<>Name"'
         });
         
         // Verify validation handling through message handler
@@ -1620,11 +1556,11 @@ test('TestUpdateStoryNodename', { concurrency: false }, async (t) => {
         // Create Epic with SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Cancel Rename Test"'
+            commandText: 'story_graph.create_epic name:"Cancel Rename Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Cancel Rename Test".create_sub_epic name:"Original Name Preserved"'
+            commandText: 'story_graph."Cancel Rename Test".create_sub_epic name:"Original Name Preserved"'
         });
         
         // Verify original name
@@ -1679,15 +1615,15 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // Create two Epics with SubEpics via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Source Epic"'
+            commandText: 'story_graph.create_epic name:"Source Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Source Epic".create_sub_epic name:"SubEpic To Move"'
+            commandText: 'story_graph."Source Epic".create_sub_epic name:"SubEpic To Move"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Target Epic"'
+            commandText: 'story_graph.create_epic name:"Target Epic"'
         });
         
         // Verify initial state
@@ -1700,11 +1636,11 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // SIMULATE: User drags "SubEpic To Move" from Source Epic to Target Epic
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Source Epic"."SubEpic To Move".move_to."Target Epic"'
+            commandText: 'story_graph."Source Epic"."SubEpic To Move".move_to."Target Epic"'
         });
         
         // Verify move command executed
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Source Epic"."SubEpic To Move".move_to."Target Epic"'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Source Epic"."SubEpic To Move".move_to."Target Epic"'),
             'Move command should be executed via message handler');
         
         // Verify node was moved via message handler
@@ -1737,21 +1673,21 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // Create Epic > SubEpic structure via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Type Validation Epic"'
+            commandText: 'story_graph.create_epic name:"Type Validation Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Type Validation Epic".create_sub_epic name:"SubEpic Level 1"'
+            commandText: 'story_graph."Type Validation Epic".create_sub_epic name:"SubEpic Level 1"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Type Validation Epic"."SubEpic Level 1".create_sub_epic name:"SubEpic Level 2"'
+            commandText: 'story_graph."Type Validation Epic"."SubEpic Level 1".create_sub_epic name:"SubEpic Level 2"'
         });
         
         // Create another Epic as valid target
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Valid Target Epic"'
+            commandText: 'story_graph.create_epic name:"Valid Target Epic"'
         });
         
         // Verify initial structure
@@ -1763,7 +1699,7 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // SIMULATE: User drags SubEpic Level 2 to Valid Target Epic (compatible: Epic accepts SubEpic)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Type Validation Epic"."SubEpic Level 1"."SubEpic Level 2".move_to."Valid Target Epic"'
+            commandText: 'story_graph."Type Validation Epic"."SubEpic Level 1"."SubEpic Level 2".move_to."Valid Target Epic"'
         });
         
         // Verify move succeeded via message handler
@@ -1789,23 +1725,23 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // Create incompatible structure: SubEpic with Story children via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Incompatible Move Test"'
+            commandText: 'story_graph.create_epic name:"Incompatible Move Test"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Incompatible Move Test".create_sub_epic name:"Source SubEpic"'
+            commandText: 'story_graph."Incompatible Move Test".create_sub_epic name:"Source SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Incompatible Move Test"."Source SubEpic".create_sub_epic name:"SubEpic To Move"'
+            commandText: 'story_graph."Incompatible Move Test"."Source SubEpic".create_sub_epic name:"SubEpic To Move"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Incompatible Move Test".create_sub_epic name:"Target With Stories"'
+            commandText: 'story_graph."Incompatible Move Test".create_sub_epic name:"Target With Stories"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Incompatible Move Test"."Target With Stories".create_story name:"Story1"'
+            commandText: 'story_graph."Incompatible Move Test"."Target With Stories".create_story name:"Story1"'
         });
         
         // Verify structure
@@ -1818,7 +1754,7 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // SIMULATE: User tries to drag SubEpic to SubEpic that has Stories (incompatible)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Incompatible Move Test"."Source SubEpic"."SubEpic To Move".move_to."Target With Stories"'
+            commandText: 'story_graph."Incompatible Move Test"."Source SubEpic"."SubEpic To Move".move_to."Target With Stories"'
         });
         
         // Verify validation error through message handler
@@ -1849,23 +1785,23 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // Create Epic with four SubEpics via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Reorder Test Epic"'
+            commandText: 'story_graph.create_epic name:"Reorder Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic A"'
+            commandText: 'story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic A"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic B"'
+            commandText: 'story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic B"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic C"'
+            commandText: 'story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic C"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic D"'
+            commandText: 'story_graph."Reorder Test Epic".create_sub_epic name:"SubEpic D"'
         });
         
         // Verify initial order
@@ -1881,7 +1817,7 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // Reorder command format: move_to_position or reorder with index
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Reorder Test Epic"."SubEpic B".reorder.3'
+            commandText: 'story_graph."Reorder Test Epic"."SubEpic B".reorder.3'
         });
         
         // Verify reorder command executed
@@ -1917,19 +1853,19 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // Create nested structure: Epic > SubEpic > SubEpic via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Circular Test Epic"'
+            commandText: 'story_graph.create_epic name:"Circular Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Circular Test Epic".create_sub_epic name:"Parent SubEpic"'
+            commandText: 'story_graph."Circular Test Epic".create_sub_epic name:"Parent SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Circular Test Epic"."Parent SubEpic".create_sub_epic name:"Child SubEpic"'
+            commandText: 'story_graph."Circular Test Epic"."Parent SubEpic".create_sub_epic name:"Child SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Circular Test Epic"."Parent SubEpic"."Child SubEpic".create_sub_epic name:"Grandchild SubEpic"'
+            commandText: 'story_graph."Circular Test Epic"."Parent SubEpic"."Child SubEpic".create_sub_epic name:"Grandchild SubEpic"'
         });
         
         // Verify nested structure exists
@@ -1943,7 +1879,7 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         // SIMULATE: User tries to drag Parent SubEpic into its own descendant (Child SubEpic)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Circular Test Epic"."Parent SubEpic".move_to."Circular Test Epic"."Parent SubEpic"."Child SubEpic"'
+            commandText: 'story_graph."Circular Test Epic"."Parent SubEpic".move_to."Circular Test Epic"."Parent SubEpic"."Child SubEpic"'
         });
         
         // Verify validation error through message handler
@@ -1987,15 +1923,15 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         // Create Story structure via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Action Test Epic"'
+            commandText: 'story_graph.create_epic name:"Action Test Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Action Test Epic".create_sub_epic name:"Action SubEpic"'
+            commandText: 'story_graph."Action Test Epic".create_sub_epic name:"Action SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Action Test Epic"."Action SubEpic".create_story name:"Target Story"'
+            commandText: 'story_graph."Action Test Epic"."Action SubEpic".create_story name:"Target Story"'
         });
         
         // Verify Story exists
@@ -2008,11 +1944,11 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         // SIMULATE: User clicks action button for story (e.g., "Generate Scenarios")
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Action Test Epic"."Action SubEpic"."Target Story".generate_scenarios'
+            commandText: 'story_graph."Action Test Epic"."Action SubEpic"."Target Story".generate_scenarios'
         });
         
         // Verify action command executed with story scope
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Action Test Epic"."Action SubEpic"."Target Story".generate_scenarios'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Action Test Epic"."Action SubEpic"."Target Story".generate_scenarios'),
             'System should identify target story node and execute action with story context');
         
         // Verify result was returned
@@ -2027,11 +1963,11 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         // Simulate action execution via webview message
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Create Scenarios".generate_scenarios'
+            commandText: 'story_graph."Create Scenarios".generate_scenarios'
         });
         
         // Verify action command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('bot.story_graph."Create Scenarios".generate_scenarios'),
+        assert.ok(testPanel.executedCommands.includes('story_graph."Create Scenarios".generate_scenarios'),
             'Action command should be executed via message handler');
         
         // Verify result was sent back to webview
@@ -2055,15 +1991,15 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         // Create Story structure via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Graph Modify Epic"'
+            commandText: 'story_graph.create_epic name:"Graph Modify Epic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Graph Modify Epic".create_sub_epic name:"Modify SubEpic"'
+            commandText: 'story_graph."Graph Modify Epic".create_sub_epic name:"Modify SubEpic"'
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Graph Modify Epic"."Modify SubEpic".create_story name:"Story With Action"'
+            commandText: 'story_graph."Graph Modify Epic"."Modify SubEpic".create_story name:"Story With Action"'
         });
         
         // Get initial state
@@ -2076,7 +2012,7 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         // SIMULATE: User executes action that modifies graph (e.g., creates scenarios)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph."Graph Modify Epic"."Modify SubEpic"."Story With Action".create_scenario name:"Generated Scenario"'
+            commandText: 'story_graph."Graph Modify Epic"."Modify SubEpic"."Story With Action".create_scenario name:"Generated Scenario"'
         });
         
         // Verify action executed
@@ -2132,7 +2068,7 @@ test('TestAutomaticallyRefreshStoryGraphChanges', { concurrency: false }, async 
         // In real scenario: file watcher detects change → triggers reload
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'bot.story_graph.create_epic name:"Externally Added Epic"'
+            commandText: 'story_graph.create_epic name:"Externally Added Epic"'
         });
         
         // SIMULATE: Panel detects change and reloads via status query

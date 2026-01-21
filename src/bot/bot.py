@@ -773,6 +773,13 @@ class Bot:
         }
 
     def __getattr__(self, name: str):
+        # Special handling for story_graph property
+        # This shouldn't be needed, but there seems to be an issue with property lookup
+        # in certain test scenarios where __getattr__ is called before the property is found
+        if name == 'story_graph':
+            # Directly call the property getter using type(self) to avoid recursion
+            return type(self).story_graph.fget(self)
+        
         behavior = self.behaviors.find_by_name(name)
         if behavior:
             # Navigate to the behavior when accessed

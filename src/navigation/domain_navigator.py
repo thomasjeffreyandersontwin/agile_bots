@@ -29,11 +29,34 @@ class DomainNavigator:
                 
                 if is_last and callable(attr):
                     params = self._parse_parameters(params_part)
-                    # If it's an Action and no params, return its instructions instead of executing
-                    if type(attr).__name__ == 'Action' and not params:
-                        # Just return the action's instructions, don't execute it
-                        return self._format_object_result(attr)
-                    # For other callables or actions with params, execute them
+                    # Handle Action objects specially
+                    if type(attr).__name__ == 'Action' or type(attr).__name__.endswith('Action'):
+                        if not params:
+                            # No params - return instructions without executing
+                            return self._format_object_result(attr)
+                        else:
+                            # Has params - create context and execute
+                            try:
+                                # Get the context class from the action
+                                context_class = getattr(attr, 'context_class', None)
+                                if context_class:
+                                    context = context_class()
+                                else:
+                                    # Fallback to generic context
+                                    from actions.action_context import ActionContext
+                                    context = ActionContext()
+                                
+                                # Set params as context attributes
+                                for key, value in params.items():
+                                    setattr(context, key, value)
+                                
+                                # Execute the action with context
+                                result = attr.do_execute(context)
+                                return self._format_result(part, result, params)
+                            except Exception as e:
+                                return {'status': 'error', 'message': str(e)}
+                    
+                    # For non-Action callables, use kwargs directly
                     try:
                         result = attr(**params)
                         return self._format_result(part, result, params)
@@ -68,10 +91,13 @@ class DomainNavigator:
             
             'story_graph."Invoke Bot".create name:"Test"'
             -> ('story_graph."Invoke Bot".create', 'name:"Test"')
+            
+            'shape.clarify scope="value" depth="Workflow"'
+            -> ('shape.clarify', 'scope="value" depth="Workflow"')
         """
-        # Split by finding where the parameters start (looking for param_name:)
-        # Parameters follow pattern: word:value (with optional quotes around value)
-        param_pattern = r'\s+\w+:(?:"[^"]*"|\d+|\w+)'
+        # Split by finding where the parameters start (looking for param_name: or param_name=)
+        # Parameters follow pattern: word[:=]value (with optional quotes around value)
+        param_pattern = r'\s+[\w\.]+[:=](?:"[^"]*"|\d+|\w+)'
         param_match = re.search(param_pattern, command)
         
         if param_match:
@@ -111,6 +137,8 @@ class DomainNavigator:
     
     def _parse_parameters(self, params_str: str) -> dict:
         """Parse parameters from string like: name:"User Management" at_position:1
+        Also supports nested params like: scope="value" depth_of_shaping="Workflow"
+        For clarify/strategy actions, converts flat params to answers/decisions dict
         
         Returns:
             dict with parameter names and values
@@ -120,8 +148,12 @@ class DomainNavigator:
         
         params = {}
         
-        pattern = r'(\w+):(?:"([^"]*)"|(\d+)|(\w+))'
+        # Support both : and = for assignment
+        pattern = r'([\w\.]+)[:=](?:"([^"]*)"|(\d+)|(\w+))'
         matches = re.findall(pattern, params_str)
+        
+        # Track if we're collecting answers or decisions (for clarify/strategy)
+        collected_answers = {}
         
         for match in matches:
             param_name = match[0]
@@ -130,11 +162,21 @@ class DomainNavigator:
                 param_name = 'position'
             
             if match[1]:
-                params[param_name] = match[1]
+                value = match[1]
             elif match[2]:
-                params[param_name] = int(match[2])
+                value = int(match[2])
             elif match[3]:
-                params[param_name] = match[3]
+                value = match[3]
+            else:
+                continue
+            
+            # All params become answers by default (to avoid conflicts with internal context attributes)
+            # The key is used as-is for the answer
+            collected_answers[param_name] = value
+        
+        # All collected params become the answers dict
+        if collected_answers:
+            params['answers'] = collected_answers
         
         return params
     
