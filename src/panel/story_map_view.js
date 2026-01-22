@@ -186,22 +186,11 @@ class StoryMapView extends PanelView {
                     </button>
                 </div>
                 
-                <!-- Delete buttons: both same size -->
+                <!-- Single Delete button (always cascade) -->
                 <div style="display: flex; align-items: center; gap: 2px;">
-                    <button id="btn-delete" onclick="event.stopPropagation(); handleDeleteNode();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete">
+                    <button id="btn-delete" onclick="event.stopPropagation(); handleDelete();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete (including children)">
                         <img src="${deleteIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Delete" />
                     </button>
-                    <button id="btn-delete-all" onclick="event.stopPropagation(); handleDeleteAll();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete All">
-                        <img src="${deleteChildrenIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Delete All" />
-                    </button>
-                </div>
-                
-                <!-- Inline confirmation message -->
-                <div id="delete-confirmation" style="display: none; align-items: center; gap: 8px; margin-left: 12px;">
-                    <span style="color: #ff8c00; font-size: 18px;">⚠</span>
-                    <span id="delete-message" style="font-size: 12px; color: var(--vscode-foreground);"></span>
-                    <button onclick="event.stopPropagation(); confirmDelete();" style="background: var(--accent-color); color: #000; border: none; padding: 4px 12px; cursor: pointer; font-size: 12px; border-radius: 3px;">OK</button>
-                    <button onclick="event.stopPropagation(); cancelDelete();" style="background: transparent; color: var(--vscode-foreground); border: 1px solid var(--vscode-foreground); padding: 4px 12px; cursor: pointer; font-size: 12px; border-radius: 3px;">Cancel</button>
                 </div>
             </div>
         `;

@@ -2,7 +2,7 @@
   "epics": [
     {
       "name": "Build Agile Bots",
-      "sequential_order": null,
+      "sequential_order": 0,
       "domain_concepts": [],
       "sub_epics": [
         {
@@ -900,7 +900,7 @@
     },
     {
       "name": "Invoke Bot",
-      "sequential_order": null,
+      "sequential_order": 1,
       "domain_concepts": [],
       "sub_epics": [
         {
@@ -9110,7 +9110,7 @@
               "stories": [
                 {
                   "name": "Get Help",
-                  "sequential_order": 999.0,
+                  "sequential_order": 0.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -9153,7 +9153,7 @@
           "stories": [
             {
               "name": "Get Help",
-              "sequential_order": 999.0,
+              "sequential_order": 0.0,
               "connector": "or",
               "story_type": "user",
               "users": [
@@ -20755,6 +20755,43 @@
                   ],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
+                },
+                {
+                  "name": "a tests",
+                  "sequential_order": 5.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [
+                    {
+                      "name": "Child1",
+                      "sequential_order": 0.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": ""
+                    },
+                    {
+                      "name": "Child2",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": ""
+                    },
+                    {
+                      "name": "Child3",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
                 }
               ]
             }
@@ -20978,56 +21015,10 @@
               ],
               "scenario_outlines": [],
               "acceptance_criteria": []
-            }
-          ]
-        }
-      ],
-      "story_groups": []
-    },
-    {
-      "name": "Epic1",
-      "sequential_order": null,
-      "domain_concepts": [],
-      "sub_epics": [
-        {
-          "name": "Child1",
-          "sequential_order": 0.0,
-          "sub_epics": [],
-          "story_groups": [
+            },
             {
-              "name": "",
-              "sequential_order": 0.0,
-              "type": "and",
-              "connector": null,
-              "stories": [
-                {
-                  "name": "Story1",
-                  "sequential_order": 0.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenarios": [
-                    {
-                      "name": "Child1",
-                      "sequential_order": 0.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": ""
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                }
-              ]
-            }
-          ],
-          "stories": [
-            {
-              "name": "Story1",
-              "sequential_order": 0.0,
+              "name": "a tests",
+              "sequential_order": 5.0,
               "connector": null,
               "story_type": "user",
               "users": [],
@@ -21041,41 +21032,28 @@
                   "background": [],
                   "test_method": null,
                   "steps": ""
+                },
+                {
+                  "name": "Child2",
+                  "sequential_order": 1.0,
+                  "type": "",
+                  "background": [],
+                  "test_method": null,
+                  "steps": ""
+                },
+                {
+                  "name": "Child3",
+                  "sequential_order": 2.0,
+                  "type": "",
+                  "background": [],
+                  "test_method": null,
+                  "steps": ""
                 }
               ],
               "scenario_outlines": [],
               "acceptance_criteria": []
             }
           ]
-        },
-        {
-          "name": "Child2",
-          "sequential_order": 1.0,
-          "sub_epics": [
-            {
-              "name": "Child1",
-              "sequential_order": 0.0,
-              "sub_epics": [],
-              "story_groups": [],
-              "stories": []
-            },
-            {
-              "name": "Child2",
-              "sequential_order": 1.0,
-              "sub_epics": [],
-              "story_groups": [],
-              "stories": []
-            }
-          ],
-          "story_groups": [],
-          "stories": []
-        },
-        {
-          "name": "Child3",
-          "sequential_order": 2.0,
-          "sub_epics": [],
-          "story_groups": [],
-          "stories": []
         }
       ],
       "story_groups": []

@@ -109,7 +109,8 @@ class StoryNode(ABC):
         
         return {'node_type': node_type, 'old_name': old_name, 'new_name': name, 'operation': 'rename'}
 
-    def delete(self, cascade: bool = False) -> dict:
+    def delete(self, cascade: bool = True) -> dict:
+        """Delete this node. Always cascades to delete all children."""
         if not hasattr(self, '_parent') or not self._parent:
             raise ValueError('Cannot delete node without parent')
         
@@ -126,22 +127,10 @@ class StoryNode(ABC):
             # Save changes to disk
             self.save()
             
-            result = {'node_type': node_type, 'node_name': node_name, 'operation': 'delete'}
-            if children_count > 0 and not cascade:
-                result['children_moved'] = children_count
-            return result
+            return {'node_type': node_type, 'node_name': node_name, 'operation': 'delete', 'children_deleted': children_count}
         
-        if cascade:
-            self._children.clear()
-        else:
-            if self._children:
-                # Get actual position in parent's internal structure
-                insert_position = parent._children.index(self)
-                for child in self._children:
-                    if hasattr(child, '_parent'):
-                        child._parent = parent
-                    parent._children.insert(insert_position, child)
-                    insert_position += 1
+        # Always cascade delete
+        self._children.clear()
         
         parent._children.remove(self)
         self._resequence_siblings()
@@ -149,14 +138,7 @@ class StoryNode(ABC):
         # Save changes to disk
         self.save()
         
-        result = {'node_type': node_type, 'node_name': node_name, 'operation': 'delete'}
-        if children_count > 0 and not cascade:
-            result['children_moved'] = children_count
-        return result
-
-    def delete_including_children(self) -> dict:
-        """Alias for delete(cascade=True) - CLI-friendly method name."""
-        return self.delete(cascade=True)
+        return {'node_type': node_type, 'node_name': node_name, 'operation': 'delete', 'children_deleted': children_count}
 
     def move_to(self, target: Union[str, 'StoryNode'] = None, position: Optional[int] = None, at_position: Optional[int] = None) -> dict:
         """Move node to a different parent or reorder within same parent. Parameters 'target' and 'at_position' for CLI compatibility."""
@@ -439,17 +421,13 @@ class Epic(StoryNode):
                 return name
             counter += 1
 
-    def delete(self, cascade: bool = False) -> dict:
-        """Delete this epic from the story map."""
+    def delete(self, cascade: bool = True) -> dict:
+        """Delete this epic from the story map. Always cascades to delete all children."""
         if not self._bot:
             raise ValueError('Cannot delete epic without bot context')
         
         story_map = self._bot.story_map
         return story_map.delete_epic(self.name)
-    
-    def delete_including_children(self) -> dict:
-        """Alias for delete(cascade=True) - CLI-friendly method name."""
-        return self.delete(cascade=True)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], bot: Optional[Any]=None) -> 'Epic':
@@ -1072,7 +1050,7 @@ class StoryMap:
         return epic
     
     def delete_epic(self, name: str) -> Dict[str, Any]:
-        """Delete an epic from the story map.
+        """Delete an epic from the story map. Always cascades to delete all children.
         
         Args:
             name: Name of the epic to delete
@@ -1093,7 +1071,9 @@ class StoryMap:
         if not epic_to_delete:
             raise ValueError(f"Epic '{name}' not found")
         
-        # Remove from list
+        children_count = len(epic_to_delete._children)
+        
+        # Remove from list (cascade delete of all children)
         self._epics_list.remove(epic_to_delete)
         
         # Update sequential order
@@ -1112,7 +1092,8 @@ class StoryMap:
         return {
             'node_type': 'Epic',
             'node_name': name,
-            'operation': 'delete'
+            'operation': 'delete',
+            'children_deleted': children_count
         }
     
     def _generate_unique_epic_name(self) -> str:

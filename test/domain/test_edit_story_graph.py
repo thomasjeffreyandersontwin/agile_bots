@@ -464,33 +464,6 @@ class TestDeleteStoryNode:
         
         helper.story.assert_children_in_order(parent, remaining_children)
         helper.story.assert_parent_child_count(parent, final_count)
-    # Scenario: Delete node with children promotes children to grandparent
-    
-    @pytest.mark.parametrize('grandparent_type,grandparent,node_name,node_children,initial_child_count,final_child_count', [
-        ('Epic', 'User Management', 'Authentication', 'Login Flow, Password Reset', 3, 4),
-        ('SubEpic', 'Authentication', 'OAuth Flow', 'Google Auth, GitHub Auth', 2, 3),
-    ])
-    def test_delete_node_with_children_promotes_children_to_grandparent(self, tmp_path, grandparent_type, grandparent, node_name, node_children, initial_child_count, final_child_count):
-        """
-        SCENARIO: Delete node with children promotes children to grandparent
-        GIVEN: Node has children
-        WHEN: Node is deleted
-        THEN: Children are moved to grandparent as last children
-        """
-        helper = BotTestHelper(tmp_path)
-        helper.story.create_story_graph_with_node_and_children(
-            grandparent_type, grandparent, node_name, node_children, initial_child_count
-        )
-        
-        if grandparent_type == 'Epic':
-            grandparent_node = helper.story.bot.story_graph.epics[grandparent]
-        else:
-            grandparent_node = helper.story.find_subepic_in_story_graph(grandparent)
-        
-        node = next(child for child in grandparent_node.children if child.name == node_name)
-        node.delete()
-        
-        helper.story.assert_children_promoted_to_grandparent(grandparent_node, node_children, final_child_count)
     # Scenario: Delete node including children (cascade delete)
     
     @pytest.mark.parametrize('parent_type,parent_name,initial_children,node_name,child_count,total_descendants,remaining_children,final_count', [
@@ -515,7 +488,7 @@ class TestDeleteStoryNode:
             parent = helper.story.find_subepic_in_story_graph(parent_name)
         
         node = next(child for child in parent.children if child.name == node_name)
-        node.delete(cascade=True)
+        node.delete()
         
         helper.story.assert_children_in_order(parent, remaining_children)
         helper.story.assert_parent_child_count(parent, final_count)

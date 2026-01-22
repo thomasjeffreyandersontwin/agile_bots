@@ -381,7 +381,9 @@ class BotPanel {
                 placeHolder: 'Enter new name'
               }).then((newName) => {
                 if (newName && newName !== message.currentName) {
-                  const command = `${message.nodePath}.rename new_name:"${newName}"`;
+                  // Escape quotes and backslashes in the new name
+                  const escapedName = newName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+                  const command = `${message.nodePath}.rename name:"${escapedName}"`;
                   this._log(`[BotPanel] Rename command: ${command}`);
                   
                   // Log to file
@@ -1383,6 +1385,30 @@ class BotPanel {
             }
         }, true); // Use capture phase to catch all clicks
         
+        // Handle double-click on story nodes to enable edit mode
+        document.addEventListener('dblclick', function(e) {
+            const target = e.target;
+            
+            // Handle story node double-clicks (epic, sub-epic, story)
+            if (target.classList.contains('story-node')) {
+                const nodePath = target.getAttribute('data-path');
+                const nodeName = target.getAttribute('data-node-name');
+                
+                console.log('[WebView] DOUBLE-CLICK on story node:', nodeName, 'path:', nodePath);
+                vscode.postMessage({
+                    command: 'logToFile',
+                    message: '[WebView] Double-click on node: ' + nodeName + ', path: ' + nodePath
+                });
+                
+                if (nodePath && window.enableEditMode) {
+                    window.enableEditMode(nodePath);
+                }
+                
+                e.stopPropagation();
+                e.preventDefault();
+            }
+        }, true); // Use capture phase to catch all double-clicks
+        
         // Test if onclick handlers can access functions
         window.testFunction = function() {
             console.log('[WebView] TEST FUNCTION CALLED - functions are accessible!');
@@ -1738,7 +1764,6 @@ class BotPanel {
             const btnCreateScenario = document.getElementById('btn-create-scenario');
             const btnCreateAcceptanceCriteria = document.getElementById('btn-create-acceptance-criteria');
             const btnDelete = document.getElementById('btn-delete');
-            const btnDeleteAll = document.getElementById('btn-delete-all');
             
             // Hide all buttons first
             if (btnCreateEpic) btnCreateEpic.style.display = 'none';
@@ -1747,7 +1772,6 @@ class BotPanel {
             if (btnCreateScenario) btnCreateScenario.style.display = 'none';
             if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'none';
             if (btnDelete) btnDelete.style.display = 'none';
-            if (btnDeleteAll) btnDeleteAll.style.display = 'none';
             
             // Show buttons based on selection
             if (window.selectedNode.type === 'root') {
@@ -1755,7 +1779,6 @@ class BotPanel {
             } else if (window.selectedNode.type === 'epic') {
                 if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
                 if (btnDelete) btnDelete.style.display = 'block';
-                if (window.selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
             } else if (window.selectedNode.type === 'sub-epic') {
                 // Sub-epics can have EITHER sub-epics OR stories, not both
                 // If it has stories, only show create story button
@@ -1773,13 +1796,11 @@ class BotPanel {
                     if (btnCreateStory) btnCreateStory.style.display = 'block';
                 }
                 if (btnDelete) btnDelete.style.display = 'block';
-                if (window.selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
             } else if (window.selectedNode.type === 'story') {
                 // Stories can have both scenarios and acceptance criteria
                 if (btnCreateScenario) btnCreateScenario.style.display = 'block';
                 if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'block';
                 if (btnDelete) btnDelete.style.display = 'block';
-                if (window.selectedNode.hasChildren && btnDeleteAll) btnDeleteAll.style.display = 'block';
             }
         };
         
@@ -1801,8 +1822,27 @@ class BotPanel {
             });
             
             // Add selected class to the clicked node
-            const nodeName = name || 'Story Map';
-            const targetNode = document.querySelector(\`.story-node[data-node-type="\${type}"][data-node-name="\${nodeName}"]\`);
+            let targetNode = null;
+            
+            // First try to find by path if available (more specific for nested nodes)
+            if (options.path) {
+                const allNodes = document.querySelectorAll('.story-node[data-path]');
+                for (const node of allNodes) {
+                    if (node.getAttribute('data-path') === options.path) {
+                        targetNode = node;
+                        console.log('[WebView]   Found node by path:', options.path);
+                        break;
+                    }
+                }
+            }
+            
+            // Fallback to name+type if path not found
+            if (!targetNode) {
+                const nodeName = name || 'Story Map';
+                targetNode = document.querySelector(\`.story-node[data-node-type="\${type}"][data-node-name="\${nodeName}"]\`);
+                console.log('[WebView]   Found node by type+name:', type, nodeName);
+            }
+            
             if (targetNode) {
                 targetNode.classList.add('selected');
                 console.log('[WebView]   Added selected class to node');
@@ -1898,108 +1938,33 @@ class BotPanel {
             console.log('═══════════════════════════════════════════════════════');
         };
         
-        // Track pending delete operation
-        let pendingDelete = null;
-        
-        // Handle delete node action - show confirmation
-        window.handleDeleteNode = function() {
-            console.log('[WebView] handleDeleteNode called for node:', window.selectedNode);
+        // Handle delete action (always cascade)
+        window.handleDelete = function() {
+            console.log('[WebView] handleDelete called for node:', window.selectedNode);
             
-            if (!window.selectedNode.path && !window.selectedNode.name) {
-                console.error('[WebView] No node selected for delete');
+            if (!window.selectedNode.name) {
+                console.error('[WebView] ERROR: No node selected for delete');
                 return;
             }
             
-            // Show inline confirmation
-            const confirmDiv = document.getElementById('delete-confirmation');
-            const messageSpan = document.getElementById('delete-message');
-            const deleteBtn = document.getElementById('btn-delete');
-            const deleteAllBtn = document.getElementById('btn-delete-all');
+            const hasValidPath = window.selectedNode.path && 
+                                window.selectedNode.path.length > 'story_graph.'.length &&
+                                window.selectedNode.path.includes(window.selectedNode.name);
             
-            if (confirmDiv && messageSpan) {
-                messageSpan.textContent = \`Delete "\${window.selectedNode.name}"?\`;
-                confirmDiv.style.display = 'flex';
-                
-                // Hide delete buttons while showing confirmation
-                if (deleteBtn) deleteBtn.style.display = 'none';
-                if (deleteAllBtn) deleteAllBtn.style.display = 'none';
-                
-                // Store the operation
-                pendingDelete = {
-                    type: 'delete',
-                    path: window.selectedNode.path || \`story_graph."\${window.selectedNode.name}"\`
-                };
-            }
-        };
-        
-        // Handle delete node including children action - show confirmation
-        window.handleDeleteAll = function() {
-            console.log('[WebView] handleDeleteAll called for node:', window.selectedNode);
+            const commandText = hasValidPath 
+                ? \`\${window.selectedNode.path}.delete\`
+                : \`story_graph."\${window.selectedNode.name}".delete\`;
             
-            if (!window.selectedNode.path && !window.selectedNode.name) {
-                console.error('[WebView] No node selected for delete all');
-                return;
-            }
+            console.log('[WebView] Delete command:', commandText);
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] SENDING DELETE COMMAND: ' + commandText
+            });
             
-            // Show inline confirmation
-            const confirmDiv = document.getElementById('delete-confirmation');
-            const messageSpan = document.getElementById('delete-message');
-            const deleteBtn = document.getElementById('btn-delete');
-            const deleteAllBtn = document.getElementById('btn-delete-all');
-            
-            if (confirmDiv && messageSpan) {
-                messageSpan.textContent = \`Delete "\${window.selectedNode.name}" and all children?\`;
-                confirmDiv.style.display = 'flex';
-                
-                // Hide delete buttons while showing confirmation
-                if (deleteBtn) deleteBtn.style.display = 'none';
-                if (deleteAllBtn) deleteAllBtn.style.display = 'none';
-                
-                // Store the operation
-                pendingDelete = {
-                    type: 'delete-all',
-                    path: window.selectedNode.path || \`story_graph."\${window.selectedNode.name}"\`
-                };
-            }
-        };
-        
-        // Confirm the delete operation
-        window.confirmDelete = function() {
-            console.log('[WebView] confirmDelete called, pending:', pendingDelete);
-            
-            if (!pendingDelete) return;
-            
-            const nodePath = pendingDelete.path;
-            
-            if (pendingDelete.type === 'delete') {
-                window.deleteNode(nodePath);
-            } else if (pendingDelete.type === 'delete-all') {
-                window.deleteNodeIncludingChildren(nodePath);
-            }
-            
-            // Hide confirmation
-            const confirmDiv = document.getElementById('delete-confirmation');
-            if (confirmDiv) {
-                confirmDiv.style.display = 'none';
-            }
-            
-            pendingDelete = null;
-        };
-        
-        // Cancel the delete operation
-        window.cancelDelete = function() {
-            console.log('[WebView] cancelDelete called');
-            
-            // Hide confirmation
-            const confirmDiv = document.getElementById('delete-confirmation');
-            if (confirmDiv) {
-                confirmDiv.style.display = 'none';
-            }
-            
-            // Restore delete buttons
-            window.updateContextualButtons();
-            
-            pendingDelete = null;
+            vscode.postMessage({
+                command: 'executeCommand',
+                commandText: commandText
+            });
         };
         
         // Initialize: show Create Epic button by default
