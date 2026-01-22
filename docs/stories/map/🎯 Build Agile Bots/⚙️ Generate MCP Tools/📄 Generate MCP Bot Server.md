@@ -4,7 +4,7 @@
 
 **User:** MCP Server Generator
 **Path:** [🎯 Build Agile Bots](../..) / [⚙️ Generate MCP Tools](.)  
-**Sequential Order:** 1
+**Sequential Order:** 2.0
 **Story Type:** user
 
 ## Story Description
@@ -26,7 +26,7 @@ Generate MCP Bot Server functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-generator-creates-mcp-server-for-test_bot"></a>
-### Scenario: [Generator creates MCP server for test_bot](#scenario-generator-creates-mcp-server-for-test_bot) (happy_path)
+### Scenario: [Generator creates MCP server for test_bot](#scenario-generator-creates-mcp-server-for-test_bot) ()
 
 **Steps:**
 ```gherkin
@@ -38,7 +38,7 @@ Then Generator creates MCP Server instance with unique server name
 
 
 <a id="scenario-generator-fails-when-bot-config-is-missing"></a>
-### Scenario: [Generator fails when Bot Config is missing](#scenario-generator-fails-when-bot-config-is-missing) (happy_path)
+### Scenario: [Generator fails when Bot Config is missing](#scenario-generator-fails-when-bot-config-is-missing) ()
 
 **Steps:**
 ```gherkin
@@ -50,7 +50,7 @@ Then Generator raises FileNotFoundError and does not create MCP Server instance
 
 
 <a id="scenario-generator-fails-when-bot-config-is-malformed"></a>
-### Scenario: [Generator fails when Bot Config is malformed](#scenario-generator-fails-when-bot-config-is-malformed) (happy_path)
+### Scenario: [Generator fails when Bot Config is malformed](#scenario-generator-fails-when-bot-config-is-malformed) ()
 
 **Steps:**
 ```gherkin

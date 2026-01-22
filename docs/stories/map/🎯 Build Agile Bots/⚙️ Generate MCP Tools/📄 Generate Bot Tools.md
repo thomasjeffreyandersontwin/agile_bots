@@ -4,7 +4,7 @@
 
 **User:** MCP Server Generator
 **Path:** [🎯 Build Agile Bots](../..) / [⚙️ Generate MCP Tools](.)  
-**Sequential Order:** 0.5
+**Sequential Order:** 0.0
 **Story Type:** user
 
 ## Story Description
@@ -22,7 +22,7 @@ Generate Bot Tools functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-generator-creates-bot-tool-for-test_bot"></a>
-### Scenario: [Generator creates bot tool for test_bot](#scenario-generator-creates-bot-tool-for-test_bot) (happy_path)
+### Scenario: [Generator creates bot tool for test_bot](#scenario-generator-creates-bot-tool-for-test_bot) ()
 
 **Steps:**
 ```gherkin

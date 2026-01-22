@@ -4,7 +4,7 @@
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Invoke Bot Through Panel](..) / [⚙️ Manage Story Graph Through Panel](../..) / [⚙️ Manage Story Scope Through Panel](..) / [⚙️ Filter on Story Scope in Panel](.)  
-**Sequential Order:** 3
+**Sequential Order:** 3.0
 **Story Type:** user
 
 ## Story Description
@@ -23,8 +23,8 @@ Filter File Scope functionality for the mob minion system.
 
 ## Scenarios
 
-<a id="scenario-unnamed-scenario"></a>
-### Scenario: [Unnamed Scenario](#scenario-unnamed-scenario) (happy_path)
+<a id="scenario-"></a>
+### Scenario: [](#scenario-) ()
 
 **Steps:**
 ```gherkin
@@ -36,8 +36,8 @@ And File paths are displayed in monospace font
 ```
 
 
-<a id="scenario-unnamed-scenario"></a>
-### Scenario: [Unnamed Scenario](#scenario-unnamed-scenario) (happy_path)
+<a id="scenario-"></a>
+### Scenario: [](#scenario-) ()
 
 **Steps:**
 ```gherkin

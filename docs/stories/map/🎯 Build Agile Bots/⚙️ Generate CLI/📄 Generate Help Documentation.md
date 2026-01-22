@@ -4,7 +4,7 @@
 
 **User:** Generator
 **Path:** [🎯 Build Agile Bots](../..) / [⚙️ Generate CLI](.)  
-**Sequential Order:** 4
+**Sequential Order:** 3.0
 **Story Type:** user
 
 ## Story Description

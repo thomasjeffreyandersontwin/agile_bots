@@ -4,7 +4,7 @@
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Invoke Bot Directly](..) / [⚙️ Manage Story Graph](../..) / [⚙️ Manage Story Scope](..) / [⚙️ Filter on Increment Scope](.)  
-**Sequential Order:** 999
+**Sequential Order:** 999.0
 **Story Type:** user
 
 ## Story Description

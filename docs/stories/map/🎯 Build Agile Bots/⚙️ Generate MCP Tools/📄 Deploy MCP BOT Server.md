@@ -4,7 +4,7 @@
 
 **User:** System
 **Path:** [🎯 Build Agile Bots](../..) / [⚙️ Generate MCP Tools](.)  
-**Sequential Order:** 3
+**Sequential Order:** 4.0
 **Story Type:** user
 
 ## Story Description
@@ -30,7 +30,7 @@ Deploy MCP BOT Server functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-mcp-server-deployed-with-tools"></a>
-### Scenario: [MCP server deployed with tools](#scenario-mcp-server-deployed-with-tools) (happy_path)
+### Scenario: [MCP server deployed with tools](#scenario-mcp-server-deployed-with-tools) ()
 
 **Steps:**
 ```gherkin

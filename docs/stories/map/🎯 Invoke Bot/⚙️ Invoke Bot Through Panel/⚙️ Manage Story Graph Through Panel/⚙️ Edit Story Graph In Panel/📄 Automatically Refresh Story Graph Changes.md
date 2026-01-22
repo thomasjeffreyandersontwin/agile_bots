@@ -2,9 +2,9 @@
 
 **Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
 
-**User:** Bot Behavior
+**User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Invoke Bot Through Panel](..) / [⚙️ Manage Story Graph Through Panel](..) / [⚙️ Edit Story Graph In Panel](.)  
-**Sequential Order:** 6
+**Sequential Order:** 6.0
 **Story Type:** user
 
 ## Story Description
@@ -15,33 +15,60 @@ Automatically Refresh Story Graph Changes functionality for the mob minion syste
 
 ### Behavioral Acceptance Criteria
 
-- **When** System detects story graph file modification
-  **then** System reads updated graph structure
-  **and** System validates graph structure integrity
-  **and** System notifies Panel to refresh display
+- **When** Panel detects file modification
+  **then** Panel reads updated graph
+  **and** validates structure
+  **and** Panel refreshes StoryGraph Tree
+  **and** Panel preserves navigation state if possible
 
-- **When** Panel receives refresh notification
-  **then** Panel reloads story graph data
-  **and** Panel updates visible story structure
-  **and** Panel preserves current navigation state if possible
+- **When** System detects invalid structure
+  **then** System identifies violations
+  **and** displays error notification
+  **and** retains previous valid state
 
-- **When** System detects invalid graph structure after modification
-  **then** System identifies structure violations
-  **and** System displays error notification in Panel
-  **and** System retains previous valid graph state
+## Background
 
-- **When** Multiple rapid changes occur to story graph
-  **then** System debounces refresh requests
-  **and** System waits for stable state
-  **and** System performs single refresh after stabilization
+**Common setup steps shared across all scenarios:**
+
+```gherkin
+Given Story Graph is loaded in Panel
+```
 
 ## Scenarios
 
-### Scenario: Automatically Refresh Story Graph Changes (happy_path)
+<a id="scenario-panel-detects-file-modification-and-refreshes-with-valid-structure"></a>
+### Scenario: [Panel detects file modification and refreshes with valid structure](#scenario-panel-detects-file-modification-and-refreshes-with-valid-structure) (happy_path)
 
 **Steps:**
 ```gherkin
-Given system is ready
-When action executes
-Then action completes successfully
+And Story Graph has Epic "Invoke Bot" selected
+And Panel is displaying Epic "Invoke Bot" details
+And file monitor is watching story-graph.json
+When external process modifies story-graph.json by adding SubEpic "New Feature"
+And Panel detects file modification
+Then Panel reads updated story-graph.json
+And Panel validates graph structure
+And Panel refreshes Story Graph Tree
+And Panel preserves navigation state showing Epic "Invoke Bot"
+And Story Tree displays new SubEpic "New Feature"
 ```
+
+
+<a id="scenario-panel-detects-invalid-structure-and-displays-error-retaining-previous-state"></a>
+### Scenario: [Panel detects invalid structure and displays error retaining previous state](#scenario-panel-detects-invalid-structure-and-displays-error-retaining-previous-state) (error_case)
+
+**Steps:**
+```gherkin
+And Story Graph has Epic "Invoke Bot" with SubEpic "Manage Bot"
+And Panel is displaying valid Story Graph Tree
+And file monitor is watching story-graph.json
+When external process modifies story-graph.json with invalid JSON syntax
+And Panel detects file modification
+And Panel reads updated story-graph.json
+Then Panel validates graph structure
+And System identifies JSON parsing violations
+And Panel displays error notification "Story graph file contains invalid structure"
+And Panel retains previous valid Story Graph state
+And Story Tree still shows Epic "Invoke Bot" with SubEpic "Manage Bot"
+```
+

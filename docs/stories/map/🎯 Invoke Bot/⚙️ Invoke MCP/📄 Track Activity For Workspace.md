@@ -4,7 +4,7 @@
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Invoke MCP](.)  
-**Sequential Order:** 5
+**Sequential Order:** 5.0
 **Story Type:** user
 
 ## Story Description
@@ -22,7 +22,7 @@ Track Activity For Workspace functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-activity-logged-to-workspace_area-not-bot-area"></a>
-### Scenario: [Activity logged to workspace_area not bot area](#scenario-activity-logged-to-workspace_area-not-bot-area) (happy_path)
+### Scenario: [Activity logged to workspace_area not bot area](#scenario-activity-logged-to-workspace_area-not-bot-area) ()
 
 **Steps:**
 ```gherkin
@@ -36,7 +36,7 @@ And Activity log location matches workspace_area from WORKING_AREA environment v
 
 
 <a id="scenario-activity-log-contains-correct-entry"></a>
-### Scenario: [Activity log contains correct entry](#scenario-activity-log-contains-correct-entry) (happy_path)
+### Scenario: [Activity log contains correct entry](#scenario-activity-log-contains-correct-entry) ()
 
 **Steps:**
 ```gherkin

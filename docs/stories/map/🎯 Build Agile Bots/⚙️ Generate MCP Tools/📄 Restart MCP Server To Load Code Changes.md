@@ -4,7 +4,7 @@
 
 **User:** MCP Server Generator
 **Path:** [🎯 Build Agile Bots](../..) / [⚙️ Generate MCP Tools](.)  
-**Sequential Order:** 4
+**Sequential Order:** 5.0
 **Story Type:** user
 
 ## Story Description
@@ -28,7 +28,7 @@ Restart MCP Server To Load Code Changes functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-clear-python-bytecode-cache"></a>
-### Scenario: [Clear Python bytecode cache](#scenario-clear-python-bytecode-cache) (happy_path)
+### Scenario: [Clear Python bytecode cache](#scenario-clear-python-bytecode-cache) ()
 
 **Steps:**
 ```gherkin

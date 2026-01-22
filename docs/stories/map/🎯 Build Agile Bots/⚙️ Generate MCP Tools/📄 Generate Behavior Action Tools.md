@@ -4,7 +4,7 @@
 
 **User:** MCP Server Generator
 **Path:** [🎯 Build Agile Bots](../..) / [⚙️ Generate MCP Tools](.)  
-**Sequential Order:** 2
+**Sequential Order:** 3.0
 **Story Type:** user
 
 ## Story Description
@@ -28,7 +28,7 @@ Generate Behavior Action Tools functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-tools-generated-for-each-behavior-action"></a>
-### Scenario: [Tools generated for each behavior action](#scenario-tools-generated-for-each-behavior-action) (happy_path)
+### Scenario: [Tools generated for each behavior action](#scenario-tools-generated-for-each-behavior-action) ()
 
 **Steps:**
 ```gherkin
