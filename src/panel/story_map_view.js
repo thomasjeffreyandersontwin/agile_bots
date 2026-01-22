@@ -360,7 +360,8 @@ class StoryMapView extends PanelView {
             const epicHasChildren = (epic.sub_epics && epic.sub_epics.length > 0) || (epic.story_groups && epic.story_groups.some(sg => sg.stories && sg.stories.length > 0));
             
             // Make epic name a hyperlink if document exists, clickable to select, double-click to edit
-            const epicPath = `story_graph."${this.escapeForJs(epic.name)}"`;
+            // CRITICAL: Escape the ENTIRE path including quotes - HTML parser stops at unescaped quotes
+            const epicPath = this.escapeHtml(`story_graph."${epic.name}"`);
             const epicNameHtml = epicDocLink
                 ? `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-has-children="${epicHasChildren}" data-path="${epicPath}" data-file-link="${this.escapeHtml(epicDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(epic.name)}</span>`
                 : `<span class="story-node" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-has-children="${epicHasChildren}" data-path="${epicPath}" style="cursor: pointer;">${this.escapeHtml(epic.name)}</span>`;
@@ -375,7 +376,7 @@ class StoryMapView extends PanelView {
             
             html += `<div id="${epicId}" class="collapsible-content" style="display: none;">`;
             // Helper function to recursively render a sub-epic (can be nested any number of levels)
-            const renderSubEpic = (subEpic, subEpicIndex, parentPath, depth = 0) => {
+            const renderSubEpic = (subEpic, subEpicIndex, parentPath, depth = 0, parentStoryGraphPath = null) => {
                 const subEpicId = `${parentPath}-${subEpicIndex}`;
                 const subEpicIcon = gearIconPath ? `<img src="${gearIconPath}" style="width: 14px; height: 14px; vertical-align: middle; margin-right: 4px;" alt="Sub-Epic" />` : '';
                 
@@ -383,8 +384,12 @@ class StoryMapView extends PanelView {
                 const subEpicDocLink = subEpic.links && subEpic.links.find(l => l.icon === 'document');
                 const subEpicTestLink = subEpic.links && subEpic.links.find(l => l.icon === 'test_tube');
                 
-                // Build the full path to this SubEpic (story_graph."Epic"."SubEpic")
-                const subEpicPath = `story_graph."${this.escapeForJs(epic.name)}"."${this.escapeForJs(subEpic.name)}"`;
+                // Build the full path to this SubEpic
+                // For first-level: story_graph."Epic"."SubEpic"
+                // For nested: story_graph."Epic"."ParentSubEpic"."NestedSubEpic"
+                // CRITICAL: Escape the ENTIRE path including quotes - HTML parser stops at unescaped quotes
+                const baseStoryGraphPath = parentStoryGraphPath || `story_graph."${epic.name}"`;
+                const subEpicPath = this.escapeHtml(`${baseStoryGraphPath}."${subEpic.name}"`);
                 
                 // Determine which buttons to show for SubEpic based on children
                 const nestedSubEpics = subEpic.sub_epics || [];
@@ -411,9 +416,11 @@ class StoryMapView extends PanelView {
                 html += `<div id="${subEpicId}" class="collapsible-content" style="display: none;">`;
                 
                 // Render nested sub_epics if they exist (recursive)
+                // Pass the current sub-epic's full path as the parent for nested children
                 if (nestedSubEpics.length > 0) {
+                    const currentSubEpicStoryGraphPath = `${baseStoryGraphPath}."${subEpic.name}"`;
                     nestedSubEpics.forEach((nested, nestedIndex) => {
-                        renderSubEpic(nested, nestedIndex, subEpicId, depth + 1);
+                        renderSubEpic(nested, nestedIndex, subEpicId, depth + 1, currentSubEpicStoryGraphPath);
                     });
                 }
                 
@@ -429,7 +436,8 @@ class StoryMapView extends PanelView {
                                 const hasScenarios = story.scenarios && story.scenarios.length > 0;
                                 
                                 // Build story path for edit mode
-                                const storyPath = `story_graph."${this.escapeForJs(epic.name)}"."${this.escapeForJs(subEpic.name)}"."${this.escapeForJs(story.name)}"`;
+                                // CRITICAL: Escape the ENTIRE path including quotes - HTML parser stops at unescaped quotes
+                                const storyPath = this.escapeHtml(`story_graph."${epic.name}"."${subEpic.name}"."${story.name}"`);
                                 
                                 html += `<div style="margin-left: ${marginLeft + 7}px; margin-top: 2px; font-size: 12px;">`;
                                 

@@ -154,8 +154,9 @@ class DomainNavigator:
             if param_name == 'at_position':
                 param_name = 'position'
             
-            # Check for quoted string (match[1]) - use truthiness to handle empty strings correctly
-            if match[1]:
+            # Check for quoted string (match[1]) - check if match exists (not None), not truthiness
+            # This correctly handles empty strings: name:"" should pass empty string, not skip parameter
+            if match[1] is not None:
                 params[param_name] = match[1]
             elif match[2]:
                 params[param_name] = int(match[2])

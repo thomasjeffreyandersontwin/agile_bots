@@ -97,7 +97,7 @@ class Behavior:
     @property
     def rules(self):
         if self._rules is None:
-            from actions.rules.rules import Rules
+            from rules.rules import Rules
             self._rules = Rules(behavior=self, bot_paths=self.bot_paths)
         return self._rules
 

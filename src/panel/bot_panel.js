@@ -325,15 +325,29 @@ class BotPanel {
               this._botView?.execute(`${message.behaviorName}.rules`)
                 .then((result) => {
                   this._log('[BotPanel] Rules submitted:', result);
-                  // Check result status
-                  const status = result?.status || (result?.output?.includes('submitted') ? 'success' : 'error');
                   
-                  if (status === 'success' || (result?.output && result.output.includes('submitted'))) {
-                    vscode.window.showInformationMessage(`${message.behaviorName} rules submitted to chat!`);
+                  // Handle dictionary response from Python
+                  if (result && typeof result === 'object') {
+                    if (result.status === 'success') {
+                      const msg = result.message || `${message.behaviorName} rules submitted to chat!`;
+                      vscode.window.showInformationMessage(msg);
+                    } else if (result.status === 'error') {
+                      const errorMsg = result.message || 'Unknown error';
+                      vscode.window.showErrorMessage(`Failed to submit rules: ${errorMsg}`);
+                    } else {
+                      // Legacy format: check output field
+                      const outputStr = typeof result.output === 'string' ? result.output : '';
+                      if (outputStr.includes('submitted')) {
+                        vscode.window.showInformationMessage(`${message.behaviorName} rules submitted to chat!`);
+                      } else {
+                        const errorMsg = result.message || outputStr || 'Unknown error';
+                        vscode.window.showErrorMessage(`Failed to submit rules: ${errorMsg}`);
+                      }
+                    }
                   } else {
-                    const errorMsg = result?.message || result?.output || 'Unknown error';
-                    vscode.window.showErrorMessage(`Failed to submit rules: ${errorMsg}`);
+                    vscode.window.showWarningMessage('Submit completed with unknown result');
                   }
+                  
                   // Refresh panel to show current position
                   return this._update();
                 })
@@ -415,13 +429,16 @@ class BotPanel {
             return;
           case "executeCommand":
             if (message.commandText) {
-              this._log(`[BotPanel] executeCommand -> ${message.commandText}`);
+              this._log(`\n${'='.repeat(80)}`);
+              this._log(`[BotPanel] *** RECEIVED executeCommand MESSAGE ***`);
+              this._log(`[BotPanel] commandText: ${message.commandText}`);
+              this._log(`[BotPanel] Full message: ${JSON.stringify(message)}`);
               
               // Log to file for create/delete/rename operations
               const fs = require('fs');
               const logPath = path.join(this._workspaceRoot, 'story_graph_operations.log');
               const timestamp = new Date().toISOString();
-              const logEntry = `\n${'='.repeat(80)}\n[${timestamp}] COMMAND: ${message.commandText}\n`;
+              const logEntry = `\n${'='.repeat(80)}\n[${timestamp}] RECEIVED COMMAND: ${message.commandText}\n`;
               
               try {
                 fs.appendFileSync(logPath, logEntry);
@@ -429,23 +446,33 @@ class BotPanel {
                 this._log(`[BotPanel] Failed to write to log file: ${err.message}`);
               }
               
+              this._log(`[BotPanel] Calling botView.execute...`);
               this._botView?.execute(message.commandText)
                 .then((result) => {
-                  this._log(`[BotPanel] executeCommand success: ${message.commandText} | result: ${JSON.stringify(result).substring(0, 500)}`);
+                  this._log(`[BotPanel] *** executeCommand SUCCESS ***`);
+                  this._log(`[BotPanel] command: ${message.commandText}`);
+                  this._log(`[BotPanel] result: ${JSON.stringify(result).substring(0, 500)}`);
                   
                   // Log result to file
-                  const resultLog = `[${timestamp}] RESULT: ${JSON.stringify(result, null, 2)}\n`;
+                  const resultLog = `[${timestamp}] SUCCESS RESULT: ${JSON.stringify(result, null, 2)}\n`;
                   try {
                     fs.appendFileSync(logPath, resultLog);
                   } catch (err) {
                     this._log(`[BotPanel] Failed to write result to log file: ${err.message}`);
                   }
                   
+                  this._log(`[BotPanel] Calling _update() to refresh panel...`);
                   return this._update();
                 })
+                .then(() => {
+                  this._log(`[BotPanel] Panel update completed`);
+                  this._log(`${'='.repeat(80)}\n`);
+                })
                 .catch((error) => {
-                  this._log(`[BotPanel] executeCommand ERROR: ${error.message}`);
-                  this._log(`[BotPanel] executeCommand STACK: ${error.stack}`);
+                  this._log(`[BotPanel] *** executeCommand ERROR ***`);
+                  this._log(`[BotPanel] command: ${message.commandText}`);
+                  this._log(`[BotPanel] error: ${error.message}`);
+                  this._log(`[BotPanel] stack: ${error.stack}`);
                   
                   // Log error to file
                   const errorLog = `[${timestamp}] ERROR: ${error.message}\nSTACK: ${error.stack}\n`;
@@ -456,7 +483,10 @@ class BotPanel {
                   }
                   
                   vscode.window.showErrorMessage(`Failed to execute ${message.commandText}: ${error.message}`);
+                  this._log(`${'='.repeat(80)}\n`);
                 });
+            } else {
+              this._log(`[BotPanel] WARNING: executeCommand received with no commandText`);
             }
             return;
           case "navigateToBehavior":
@@ -528,20 +558,32 @@ class BotPanel {
               .then((output) => {
                 this._log('Bot submit command output:', output);
                 
-                // Check for success
-                if (output && (output.includes('SUCCESS:') || output.includes('submitted to Cursor chat successfully'))) {
-                  vscode.window.showInformationMessage('Instructions submitted to chat!');
+                // Handle dictionary response from Python
+                if (output && typeof output === 'object' && output.status) {
+                  if (output.status === 'success') {
+                    const msg = output.message || 'Instructions submitted to chat!';
+                    vscode.window.showInformationMessage(msg);
+                  } else {
+                    const errorMsg = output.message || 'Unknown error';
+                    vscode.window.showErrorMessage(`Submit failed: ${errorMsg}`);
+                  }
                 }
-                // Check for errors
-                else if (output && (output.includes('ERROR:') || output.includes('FAILED:'))) {
-                  const errorMatch = output.match(/ERROR:|FAILED:\s*(.+)/);
-                  const errorMsg = errorMatch ? errorMatch[1] : 'Unknown error';
-                  vscode.window.showErrorMessage(`Submit failed: ${errorMsg}`);
-                }
-                // Unknown result
+                // Handle string response (legacy/CLI format)
                 else {
-                  vscode.window.showWarningMessage('Submit completed with unknown result');
-                  this._log('[PANEL] Submit output:', output);
+                  const outputStr = typeof output === 'string' ? output : JSON.stringify(output || '');
+                  
+                  if (outputStr && (outputStr.includes('SUCCESS:') || outputStr.includes('submitted to Cursor chat successfully'))) {
+                    vscode.window.showInformationMessage('Instructions submitted to chat!');
+                  }
+                  else if (outputStr && (outputStr.includes('ERROR:') || outputStr.includes('FAILED:'))) {
+                    const errorMatch = outputStr.match(/ERROR:|FAILED:\s*(.+)/);
+                    const errorMsg = errorMatch ? errorMatch[1] : 'Unknown error';
+                    vscode.window.showErrorMessage(`Submit failed: ${errorMsg}`);
+                  }
+                  else {
+                    vscode.window.showWarningMessage('Submit completed with unknown result');
+                    this._log('[PANEL] Submit output:', output);
+                  }
                 }
               })
               .catch((error) => {
@@ -767,6 +809,12 @@ class BotPanel {
           throw botViewError;
         }
       }
+      
+      // CRITICAL: Refresh data BEFORE rendering to show latest changes
+      console.log("[BotPanel] Refreshing bot data...");
+      this._log('[BotPanel] Calling _botView.refresh() to fetch latest data');
+      await this._botView.refresh();
+      this._log('[BotPanel] Data refreshed successfully');
       
       console.log("[BotPanel] Rendering HTML");
       this._log('[BotPanel] _botView.render() starting');
@@ -1243,6 +1291,34 @@ class BotPanel {
         console.log('[WebView] vscode API acquired:', !!vscode);
         console.log('[WebView] vscode.postMessage available:', typeof vscode.postMessage);
         
+        // Restore collapse state and selected node when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Restore collapse state
+                const savedState = sessionStorage.getItem('collapseState');
+                if (savedState) {
+                    const state = JSON.parse(savedState);
+                    // Use setTimeout to ensure DOM is fully rendered
+                    setTimeout(() => window.restoreCollapseState(state), 50);
+                    console.log('[WebView] Restored collapse state for', Object.keys(state).length, 'nodes');
+                }
+                
+                // Restore selected node
+                const savedSelection = sessionStorage.getItem('selectedNode');
+                if (savedSelection) {
+                    const selection = JSON.parse(savedSelection);
+                    setTimeout(() => {
+                        if (window.selectNode) {
+                            window.selectNode(selection.type, selection.name, selection);
+                            console.log('[WebView] Restored selection for', selection.name);
+                        }
+                    }, 100);
+                }
+            } catch (err) {
+                console.error('[WebView] Error restoring state:', err);
+            }
+        });
+        
         // Global click handler using event delegation (CSP blocks inline onclick)
         document.addEventListener('click', function(e) {
             const target = e.target;
@@ -1261,6 +1337,8 @@ class BotPanel {
             
             // Handle story node clicks (epic, sub-epic, story)
             if (target.classList.contains('story-node')) {
+                console.log('═══════════════════════════════════════════════════════');
+                console.log('[WebView] STORY NODE CLICKED');
                 const nodeType = target.getAttribute('data-node-type');
                 const nodeName = target.getAttribute('data-node-name');
                 const hasChildren = target.getAttribute('data-has-children') === 'true';
@@ -1269,7 +1347,18 @@ class BotPanel {
                 const nodePath = target.getAttribute('data-path');
                 const fileLink = target.getAttribute('data-file-link');
                 
-                console.log('[WebView] Story node clicked:', { nodeType, nodeName, hasChildren, nodePath, fileLink });
+                console.log('[WebView]   nodeType:', nodeType);
+                console.log('[WebView]   nodeName:', nodeName);
+                console.log('[WebView]   hasChildren:', hasChildren);
+                console.log('[WebView]   hasStories:', hasStories);
+                console.log('[WebView]   hasNestedSubEpics:', hasNestedSubEpics);
+                console.log('[WebView]   nodePath:', nodePath);
+                console.log('[WebView]   fileLink:', fileLink);
+                
+                vscode.postMessage({
+                    command: 'logToFile',
+                    message: '[WebView] Story node clicked: type=' + nodeType + ', name=' + nodeName + ', path=' + nodePath
+                });
                 
                 // Call selectNode
                 if (window.selectNode && nodeType && nodeName !== null) {
@@ -1279,15 +1368,18 @@ class BotPanel {
                         hasNestedSubEpics: hasNestedSubEpics,
                         path: nodePath
                     };
+                    console.log('[WebView]   Calling selectNode with options:', JSON.stringify(options, null, 2));
                     window.selectNode(nodeType, nodeName, options);
                 }
                 
                 // Call openFile if there's a file link
                 if (window.openFile && fileLink) {
+                    console.log('[WebView]   Opening file:', fileLink);
                     window.openFile(fileLink);
                 }
                 
                 e.stopPropagation();
+                console.log('═══════════════════════════════════════════════════════');
             }
         }, true); // Use capture phase to catch all clicks
         
@@ -1336,6 +1428,44 @@ class BotPanel {
             }
         };
         
+        // Save/restore collapse state across panel refreshes
+        window.getCollapseState = function() {
+            const state = {};
+            document.querySelectorAll('.collapsible-content').forEach(content => {
+                if (content.id) {
+                    state[content.id] = content.style.display !== 'none';
+                }
+            });
+            return state;
+        };
+        
+        window.restoreCollapseState = function(state) {
+            if (!state) return;
+            Object.keys(state).forEach(id => {
+                const content = document.getElementById(id);
+                if (content) {
+                    const shouldBeExpanded = state[id];
+                    content.style.display = shouldBeExpanded ? 'block' : 'none';
+                    
+                    // Update icon
+                    const header = content.previousElementSibling;
+                    if (header) {
+                        const icon = header.querySelector('span[id$="-icon"]');
+                        if (icon) {
+                            const plusSrc = icon.getAttribute('data-plus');
+                            const subtractSrc = icon.getAttribute('data-subtract');
+                            if (plusSrc && subtractSrc) {
+                                const img = icon.querySelector('img');
+                                if (img) {
+                                    img.src = shouldBeExpanded ? subtractSrc : plusSrc;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        };
+        
         window.toggleCollapse = function(elementId) {
             const content = document.getElementById(elementId);
             if (content) {
@@ -1362,6 +1492,10 @@ class BotPanel {
                         }
                     }
                 }
+                
+                // Save state to sessionStorage
+                const currentState = window.getCollapseState();
+                sessionStorage.setItem('collapseState', JSON.stringify(currentState));
             }
         };
         
@@ -1493,11 +1627,19 @@ class BotPanel {
         
         // Story Graph Edit functions
         window.createEpic = function() {
-            console.log('[WebView] createEpic called');
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('[WebView] createEpic CALLED');
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] createEpic called'
+            });
+            console.log('[WebView] SENDING COMMAND: story_graph.create_epic');
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: 'story_graph.create_epic'
             });
+            console.log('[WebView] postMessage sent successfully');
+            console.log('═══════════════════════════════════════════════════════');
         };
         
         window.createSubEpic = function(parentName) {
@@ -1643,10 +1785,14 @@ class BotPanel {
         
         // Select a node (called when clicking on node name/icon)
         window.selectNode = function(type, name, options = {}) {
-            console.log('[WebView] selectNode:', type, name, options);
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('[WebView] selectNode CALLED');
+            console.log('[WebView]   type:', type);
+            console.log('[WebView]   name:', name);
+            console.log('[WebView]   options:', JSON.stringify(options, null, 2));
             vscode.postMessage({
                 command: 'logToFile',
-                message: '[WebView] selectNode called: type=' + type + ', name=' + name + ', options=' + JSON.stringify(options)
+                message: '[WebView] selectNode: type=' + type + ', name=' + name + ', options=' + JSON.stringify(options)
             });
             
             // Remove selected class from all nodes
@@ -1659,6 +1805,9 @@ class BotPanel {
             const targetNode = document.querySelector(\`.story-node[data-node-type="\${type}"][data-node-name="\${nodeName}"]\`);
             if (targetNode) {
                 targetNode.classList.add('selected');
+                console.log('[WebView]   Added selected class to node');
+            } else {
+                console.log('[WebView]   WARNING: Target node not found');
             }
             
             window.selectedNode = {
@@ -1672,42 +1821,81 @@ class BotPanel {
                 hasStories: options.hasStories || false,
                 hasNestedSubEpics: options.hasNestedSubEpics || false
             };
+            console.log('[WebView]   window.selectedNode updated:', JSON.stringify(window.selectedNode, null, 2));
+            
+            // Save selection to sessionStorage
+            try {
+                sessionStorage.setItem('selectedNode', JSON.stringify(window.selectedNode));
+            } catch (err) {
+                console.error('[WebView] Error saving selection:', err);
+            }
+            
             window.updateContextualButtons();
+            console.log('[WebView]   updateContextualButtons called');
+            console.log('═══════════════════════════════════════════════════════');
         };
         
         // Handle contextual create actions
         window.handleContextualCreate = function(actionType) {
-            console.log('[WebView] handleContextualCreate:', actionType, 'for node:', window.selectedNode);
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('[WebView] handleContextualCreate CALLED');
+            console.log('[WebView]   actionType:', actionType);
+            console.log('[WebView]   window.selectedNode:', JSON.stringify(window.selectedNode, null, 2));
             
-            if (!window.selectedNode.path && !window.selectedNode.name) {
-                console.error('[WebView] No node selected for contextual create');
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] handleContextualCreate: ' + actionType + ' | selectedNode: ' + JSON.stringify(window.selectedNode)
+            });
+            
+            if (!window.selectedNode.name) {
+                console.error('[WebView] ERROR: No node name for contextual create');
+                vscode.postMessage({
+                    command: 'logToFile',
+                    message: '[WebView] ERROR: No node name for contextual create'
+                });
                 return;
             }
             
-            // For create operations, send the command using the path
+            // Validate path: must contain node name, not just "story_graph."
+            const hasValidPath = window.selectedNode.path && 
+                                window.selectedNode.path.length > 'story_graph.'.length &&
+                                window.selectedNode.path.includes(window.selectedNode.name);
+            
+            console.log('[WebView]   path:', window.selectedNode.path);
+            console.log('[WebView]   hasValidPath:', hasValidPath);
+            
+            // For create operations, send the command using the path or construct from name
             let commandText;
             switch(actionType) {
                 case 'sub-epic':
-                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create\` : \`story_graph."\${window.selectedNode.name}".create\`;
+                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create\` : \`story_graph."\${window.selectedNode.name}".create\`;
                     break;
                 case 'story':
-                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create_story\` : \`story_graph."\${window.selectedNode.name}".create_story\`;
+                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create_story\` : \`story_graph."\${window.selectedNode.name}".create_story\`;
                     break;
                 case 'scenario':
-                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create_scenario\` : \`story_graph."\${window.selectedNode.name}".create_scenario\`;
+                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create_scenario\` : \`story_graph."\${window.selectedNode.name}".create_scenario\`;
                     break;
                 case 'acceptance-criteria':
-                    commandText = window.selectedNode.path ? \`\${window.selectedNode.path}.create_acceptance_criteria\` : \`story_graph."\${window.selectedNode.name}".create_acceptance_criteria\`;
+                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create_acceptance_criteria\` : \`story_graph."\${window.selectedNode.name}".create_acceptance_criteria\`;
                     break;
             }
             
             if (commandText) {
-                console.log('[WebView] Executing command:', commandText);
+                console.log('[WebView]   SENDING COMMAND:', commandText);
+                vscode.postMessage({
+                    command: 'logToFile',
+                    message: '[WebView] SENDING COMMAND: ' + commandText
+                });
                 vscode.postMessage({
                     command: 'executeCommand',
                     commandText: commandText
                 });
+                console.log('[WebView]   postMessage sent successfully');
+            } else {
+                console.error('[WebView] ERROR: No commandText generated');
             }
+            console.log('═══════════════════════════════════════════════════════');
         };
         
         // Track pending delete operation

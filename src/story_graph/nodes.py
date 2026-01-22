@@ -40,6 +40,22 @@ class StoryNode(ABC):
         order = f', order={self.sequential_order}' if self.sequential_order is not None else ''
         return f"{self.__class__.__name__}(name='{self.name}'{order})"
 
+    def save(self) -> None:
+        """Save this node's changes to the story graph and persist to disk."""
+        if not self._bot:
+            return  # Cannot save without bot context
+        
+        story_map = self._bot.story_map
+        # Update the story_graph dict
+        story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+        # Trigger file save
+        story_map.save()
+    
+    def save_all(self) -> None:
+        """Save this node and all children's changes to the story graph and persist to disk."""
+        # Same as save() since updating the parent updates all children
+        self.save()
+
     @staticmethod
     def _parse_steps_from_data(steps_value: Any) -> List[str]:
         if isinstance(steps_value, str):
@@ -88,10 +104,8 @@ class StoryNode(ABC):
         old_name = self.name
         self.name = name
         
-        # Update the StoryMap's story_graph dict to persist changes
-        if self._bot:
-            story_map = self._bot.story_map
-            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+        # Save changes to disk
+        self.save()
         
         return {'node_type': node_type, 'old_name': old_name, 'new_name': name, 'operation': 'rename'}
 
@@ -109,10 +123,8 @@ class StoryNode(ABC):
             parent._children.remove(self)
             parent._resequence_children()
             
-            # Update the StoryMap's story_graph dict to persist changes
-            if self._bot:
-                story_map = self._bot.story_map
-                story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+            # Save changes to disk
+            self.save()
             
             result = {'node_type': node_type, 'node_name': node_name, 'operation': 'delete'}
             if children_count > 0 and not cascade:
@@ -134,10 +146,8 @@ class StoryNode(ABC):
         parent._children.remove(self)
         self._resequence_siblings()
         
-        # Update the StoryMap's story_graph dict to persist changes
-        if self._bot:
-            story_map = self._bot.story_map
-            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+        # Save changes to disk
+        self.save()
         
         result = {'node_type': node_type, 'node_name': node_name, 'operation': 'delete'}
         if children_count > 0 and not cascade:
@@ -189,10 +199,8 @@ class StoryNode(ABC):
                         actual_parent._children.insert(adjusted_position, self)
                         actual_parent._resequence_children()
                         
-                        # Update the StoryMap's story_graph dict to persist changes
-                        if self._bot:
-                            story_map = self._bot.story_map
-                            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+                        # Save changes to disk
+                        self.save()
                 else:
                     raise ValueError(f"Node '{self.name}' already exists under parent '{target.name}'")
                 return {'node_type': node_type, 'node_name': node_name, 'source_parent': source_parent_name, 'target_parent': target_parent_name, 'position': position, 'operation': 'move'}
@@ -206,10 +214,8 @@ class StoryNode(ABC):
                     self._parent._children.insert(adjusted_position, self)
                     self._resequence_siblings()
                     
-                    # Update the StoryMap's story_graph dict to persist changes
-                    if self._bot:
-                        story_map = self._bot.story_map
-                        story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+                    # Save changes to disk
+                    self.save()
             else:
                 raise ValueError(f"Node '{self.name}' already exists under parent '{target.name}'")
             return {'node_type': node_type, 'node_name': node_name, 'source_parent': source_parent_name, 'target_parent': target_parent_name, 'position': position, 'operation': 'move'}
@@ -229,10 +235,8 @@ class StoryNode(ABC):
             target._children.append(self)
         target._resequence_children()
         
-        # Update the StoryMap's story_graph dict to persist changes
-        if self._bot:
-            story_map = self._bot.story_map
-            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+        # Save changes to disk
+        self.save()
         
         return {'node_type': node_type, 'node_name': node_name, 'source_parent': source_parent_name, 'target_parent': target_parent_name, 'position': position, 'operation': 'move'}
 
@@ -422,10 +426,8 @@ class Epic(StoryNode):
             child.sequential_order = float(len(self._children))
             self._children.append(child)
         
-        # Update the StoryMap's story_graph dict to persist changes
-        if self._bot:
-            story_map = self._bot.story_map
-            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+        # Save changes to disk
+        child.save()
         
         return child
 
@@ -436,6 +438,18 @@ class Epic(StoryNode):
             if not any(child.name == name for child in self.children):
                 return name
             counter += 1
+
+    def delete(self, cascade: bool = False) -> dict:
+        """Delete this epic from the story map."""
+        if not self._bot:
+            raise ValueError('Cannot delete epic without bot context')
+        
+        story_map = self._bot.story_map
+        return story_map.delete_epic(self.name)
+    
+    def delete_including_children(self) -> dict:
+        """Alias for delete(cascade=True) - CLI-friendly method name."""
+        return self.delete(cascade=True)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], bot: Optional[Any]=None) -> 'Epic':
@@ -565,10 +579,8 @@ class SubEpic(StoryNode):
                 child.sequential_order = float(len(story_group._children))
                 story_group._children.append(child)
             
-            # Update the StoryMap's story_graph dict to persist changes
-            if self._bot:
-                story_map = self._bot.story_map
-                story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+            # Save changes to disk
+            child.save()
             
             return child
         else:
@@ -581,10 +593,8 @@ class SubEpic(StoryNode):
             child.sequential_order = float(len(self._children))
             self._children.append(child)
         
-        # Update the StoryMap's story_graph dict to persist changes
-        if self._bot:
-            story_map = self._bot.story_map
-            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+        # Save changes to disk
+        child.save()
         
         return child
 
@@ -736,10 +746,8 @@ class Story(StoryNode):
         else:
             self._children.append(child)
         
-        # Update the StoryMap's story_graph dict to persist changes
-        if self._bot:
-            story_map = self._bot.story_map
-            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
+        # Save changes to disk
+        child.save()
         
         return child
 
@@ -931,6 +939,15 @@ class StoryMap:
             story_graph = json.load(f)
         return cls(story_graph, bot=bot)
 
+    def save(self) -> None:
+        """Save the story graph to disk."""
+        if not self._bot or not hasattr(self._bot, 'bot_paths'):
+            return  # Cannot save without bot context
+        
+        story_graph_path = Path(self._bot.bot_paths.workspace_directory) / 'docs' / 'stories' / 'story-graph.json'
+        with open(story_graph_path, 'w', encoding='utf-8') as f:
+            json.dump(self.story_graph, f, indent=2, ensure_ascii=False)
+
     def _set_bot_on_all_nodes(self, bot: Any) -> None:
         for epic in self._epics_list:
             epic._bot = bot
@@ -1049,7 +1066,54 @@ class StoryMap:
         # Update story_graph dict
         self.story_graph['epics'] = [self._epic_to_dict(e) for e in self._epics_list]
         
+        # Save to disk
+        self.save()
+        
         return epic
+    
+    def delete_epic(self, name: str) -> Dict[str, Any]:
+        """Delete an epic from the story map.
+        
+        Args:
+            name: Name of the epic to delete
+            
+        Returns:
+            Dict with operation details
+            
+        Raises:
+            ValueError: If epic not found
+        """
+        # Find the epic
+        epic_to_delete = None
+        for epic in self._epics_list:
+            if epic.name == name:
+                epic_to_delete = epic
+                break
+        
+        if not epic_to_delete:
+            raise ValueError(f"Epic '{name}' not found")
+        
+        # Remove from list
+        self._epics_list.remove(epic_to_delete)
+        
+        # Update sequential order
+        for idx, e in enumerate(self._epics_list):
+            e.sequential_order = idx
+        
+        # Rebuild epics collection
+        self._epics = EpicsCollection(self._epics_list)
+        
+        # Update story_graph dict
+        self.story_graph['epics'] = [self._epic_to_dict(e) for e in self._epics_list]
+        
+        # Save to disk
+        self.save()
+        
+        return {
+            'node_type': 'Epic',
+            'node_name': name,
+            'operation': 'delete'
+        }
     
     def _generate_unique_epic_name(self) -> str:
         """Generate a unique Epic name (Epic1, Epic2, etc.)"""
