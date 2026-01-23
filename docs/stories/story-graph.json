@@ -920,7 +920,7 @@
                   "stories": [
                     {
                       "name": "Persist Behavior Action State",
-                      "sequential_order": 3.0,
+                      "sequential_order": 0.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -974,47 +974,8 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Inject Context Into Instructions",
-                      "sequential_order": 5.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestInjectContextIntoInstructions",
-                      "scenarios": [
-                        {
-                          "name": "Action Loads Context Data Into Instructions",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_action_loads_context_data_into_instructions",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Next behavior reminder is NOT injected when action is not final",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_next_behavior_reminder_not_injected_when_not_final_action",
-                          "steps": "Given validate is NOT the final action (render comes after)\nWhen validate action executes\nThen base_instructions do NOT include next behavior reminder\nThen And bot_config.json defines behavior sequence"
-                        },
-                        {
-                          "name": "Next behavior reminder is NOT injected when current behavior is last in sequence",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_next_behavior_reminder_not_injected_when_no_next_behavior",
-                          "steps": "Given discovery is the last behavior in bot_config.json\nWhen render action executes\nThen base_instructions do NOT include next behavior reminder\nThen And render is the final action"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
                       "name": "Execute End To End Workflow",
-                      "sequential_order": 5.0,
+                      "sequential_order": 1.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -1045,7 +1006,7 @@
                     },
                     {
                       "name": "Track Activity For Workspace",
-                      "sequential_order": 6.0,
+                      "sequential_order": 2.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -1080,7 +1041,7 @@
               "stories": [
                 {
                   "name": "Persist Behavior Action State",
-                  "sequential_order": 3.0,
+                  "sequential_order": 0.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -1134,47 +1095,8 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Inject Context Into Instructions",
-                  "sequential_order": 5.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestInjectContextIntoInstructions",
-                  "scenarios": [
-                    {
-                      "name": "Action Loads Context Data Into Instructions",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_action_loads_context_data_into_instructions",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Next behavior reminder is NOT injected when action is not final",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_next_behavior_reminder_not_injected_when_not_final_action",
-                      "steps": "Given validate is NOT the final action (render comes after)\nWhen validate action executes\nThen base_instructions do NOT include next behavior reminder\nThen And bot_config.json defines behavior sequence"
-                    },
-                    {
-                      "name": "Next behavior reminder is NOT injected when current behavior is last in sequence",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_next_behavior_reminder_not_injected_when_no_next_behavior",
-                      "steps": "Given discovery is the last behavior in bot_config.json\nWhen render action executes\nThen base_instructions do NOT include next behavior reminder\nThen And render is the final action"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
                   "name": "Execute End To End Workflow",
-                  "sequential_order": 5.0,
+                  "sequential_order": 1.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -1205,7 +1127,7 @@
                 },
                 {
                   "name": "Track Activity For Workspace",
-                  "sequential_order": 6.0,
+                  "sequential_order": 2.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -1249,7 +1171,7 @@
                   "stories": [
                     {
                       "name": "Exit CLI REPL",
-                      "sequential_order": 3.0,
+                      "sequential_order": 0.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -1345,7 +1267,7 @@
               "stories": [
                 {
                   "name": "Exit CLI REPL",
-                  "sequential_order": 3.0,
+                  "sequential_order": 0.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -1427,7 +1349,7 @@
                   "stories": [
                     {
                       "name": "Display Hierarchy",
-                      "sequential_order": 1.0,
+                      "sequential_order": 0.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [
@@ -1583,7 +1505,7 @@
                     },
                     {
                       "name": "Execute Behavior Action",
-                      "sequential_order": 3.0,
+                      "sequential_order": 1.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -1687,7 +1609,7 @@
               "stories": [
                 {
                   "name": "Display Hierarchy",
-                  "sequential_order": 1.0,
+                  "sequential_order": 0.0,
                   "connector": null,
                   "story_type": "user",
                   "users": [
@@ -1843,7 +1765,7 @@
                 },
                 {
                   "name": "Execute Behavior Action",
-                  "sequential_order": 3.0,
+                  "sequential_order": 1.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -3185,6 +3107,45 @@
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Inject Context Into Instructions",
+                      "sequential_order": 7.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestInjectContextIntoInstructions",
+                      "scenarios": [
+                        {
+                          "name": "Action Loads Context Data Into Instructions",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_action_loads_context_data_into_instructions",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Next behavior reminder is NOT injected when action is not final",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_next_behavior_reminder_not_injected_when_not_final_action",
+                          "steps": "Given validate is NOT the final action (render comes after)\nWhen validate action executes\nThen base_instructions do NOT include next behavior reminder\nThen And bot_config.json defines behavior sequence"
+                        },
+                        {
+                          "name": "Next behavior reminder is NOT injected when current behavior is last in sequence",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_next_behavior_reminder_not_injected_when_no_next_behavior",
+                          "steps": "Given discovery is the last behavior in bot_config.json\nWhen render action executes\nThen base_instructions do NOT include next behavior reminder\nThen And render is the final action"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -3731,6 +3692,45 @@
                       "background": [],
                       "test_method": "test_iterate_all_actions",
                       "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Inject Context Into Instructions",
+                  "sequential_order": 7.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestInjectContextIntoInstructions",
+                  "scenarios": [
+                    {
+                      "name": "Action Loads Context Data Into Instructions",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_action_loads_context_data_into_instructions",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Next behavior reminder is NOT injected when action is not final",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_next_behavior_reminder_not_injected_when_not_final_action",
+                      "steps": "Given validate is NOT the final action (render comes after)\nWhen validate action executes\nThen base_instructions do NOT include next behavior reminder\nThen And bot_config.json defines behavior sequence"
+                    },
+                    {
+                      "name": "Next behavior reminder is NOT injected when current behavior is last in sequence",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_next_behavior_reminder_not_injected_when_no_next_behavior",
+                      "steps": "Given discovery is the last behavior in bot_config.json\nWhen render action executes\nThen base_instructions do NOT include next behavior reminder\nThen And render is the final action"
                     }
                   ],
                   "scenario_outlines": [],
