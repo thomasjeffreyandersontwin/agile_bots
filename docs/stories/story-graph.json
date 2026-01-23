@@ -6802,13 +6802,6 @@
               "sequential_order": 1.0,
               "sub_epics": [
                 {
-                  "name": "Manage File Scope Using REPL",
-                  "sequential_order": 0.0,
-                  "sub_epics": [],
-                  "story_groups": [],
-                  "stories": []
-                },
-                {
                   "name": "Edit Story Graph In CLI",
                   "sequential_order": 1.0,
                   "sub_epics": [],
@@ -7924,1423 +7917,14 @@
               "sub_epics": [
                 {
                   "name": "Manage Story Scope Through Panel",
-                  "sequential_order": 3.0,
-                  "sub_epics": [
-                    {
-                      "name": "Filter on Story Scope in Panel",
-                      "sequential_order": 1.0,
-                      "sub_epics": [],
-                      "story_groups": [
-                        {
-                          "name": "",
-                          "sequential_order": 0.0,
-                          "type": "and",
-                          "connector": null,
-                          "stories": [
-                            {
-                              "name": "Filter Story Scope",
-                              "sequential_order": 1.0,
-                              "connector": null,
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestFilterStoryScope",
-                              "scenarios": [
-                                {
-                                  "name": "",
-                                  "sequential_order": 18.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays scope section with full story hierarchy\nWhen User types Open Panel in scope filter\nThen Panel displays filtered hierarchy showing Open Panel story\nAnd Panel displays Open Panel parent sub-epic (Manage Panel Session)\nAnd Panel displays parent epic (Invoke Bot Through Panel)"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 19.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays full story hierarchy\nWhen User types Invoke Bot in scope filter\nThen Panel displays Invoke Bot epic\nAnd Panel displays all sub-epics under Invoke Bot\nAnd Sub-epics are initially collapsed"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 20.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays filtered scope showing only Open Panel story\nWhen User clicks clear filter button\nThen Panel displays all stories in full hierarchy\nAnd All epics are visible"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 21.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel is open\nWhen User types Open Panel in scope filter\nAnd Panel displays filtered hierarchy\nAnd User refreshes panel\nThen Panel displays same filtered hierarchy\nAnd Scope filter input shows Open Panel\nAnd Filter value was persisted and restored"
-                                }
-                              ],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": [
-                                {
-                                  "name": "WHEN User types story name in filter",
-                                  "text": "WHEN User types story name in filter",
-                                  "sequential_order": 0.0
-                                },
-                                {
-                                  "name": "THEN System refreshes story hierarchy based on new story scope",
-                                  "text": "THEN System refreshes story hierarchy based on new story scope",
-                                  "sequential_order": 1.0
-                                },
-                                {
-                                  "name": "WHEN Filter matches epic",
-                                  "text": "WHEN Filter matches epic",
-                                  "sequential_order": 2.0
-                                },
-                                {
-                                  "name": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
-                                  "text": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
-                                  "sequential_order": 3.0
-                                },
-                                {
-                                  "name": "WHEN Filter matches sub-epic",
-                                  "text": "WHEN Filter matches sub-epic",
-                                  "sequential_order": 4.0
-                                },
-                                {
-                                  "name": "THEN System displays sub-epic with all stories collapsed beneath it",
-                                  "text": "THEN System displays sub-epic with all stories collapsed beneath it",
-                                  "sequential_order": 5.0
-                                },
-                                {
-                                  "name": "WHEN Filter matches story",
-                                  "text": "WHEN Filter matches story",
-                                  "sequential_order": 6.0
-                                },
-                                {
-                                  "name": "THEN System displays that story with its acceptance criteria",
-                                  "text": "THEN System displays that story with its acceptance criteria",
-                                  "sequential_order": 7.0
-                                },
-                                {
-                                  "name": "WHEN User clicks story with acceptance criteria",
-                                  "text": "WHEN User clicks story with acceptance criteria",
-                                  "sequential_order": 8.0
-                                },
-                                {
-                                  "name": "THEN System expands story showing acceptance criteria list",
-                                  "text": "THEN System expands story showing acceptance criteria list",
-                                  "sequential_order": 9.0
-                                },
-                                {
-                                  "name": "WHEN Filter matches multiple items",
-                                  "text": "WHEN Filter matches multiple items",
-                                  "sequential_order": 10.0
-                                },
-                                {
-                                  "name": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
-                                  "text": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
-                                  "sequential_order": 11.0
-                                },
-                                {
-                                  "name": "WHEN User clicks clear filter button",
-                                  "text": "WHEN User clicks clear filter button",
-                                  "sequential_order": 12.0
-                                },
-                                {
-                                  "name": "THEN System displays all stories",
-                                  "text": "THEN System displays all stories",
-                                  "sequential_order": 13.0
-                                },
-                                {
-                                  "name": "WHEN User sets scope filter",
-                                  "text": "WHEN User sets scope filter",
-                                  "sequential_order": 14.0
-                                },
-                                {
-                                  "name": "THEN System persists scope filter value",
-                                  "text": "THEN System persists scope filter value",
-                                  "sequential_order": 15.0
-                                },
-                                {
-                                  "name": "WHEN Panel refreshes",
-                                  "text": "WHEN Panel refreshes",
-                                  "sequential_order": 16.0
-                                },
-                                {
-                                  "name": "THEN System restores previously set scope filter",
-                                  "text": "THEN System restores previously set scope filter",
-                                  "sequential_order": 17.0
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Show All Scope Through Panel",
-                              "sequential_order": 1.5,
-                              "connector": "and",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestShowAllScopeThroughPanel",
-                              "scenarios": [
-                                {
-                                  "name": "",
-                                  "sequential_order": 1.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": "test_user_clicks_show_all_to_clear_filter",
-                                  "steps": "Given Panel displays filtered scope showing only Open Panel story\nAnd Show All button is visible\nWhen User clicks Show All button\nThen Panel calls scope showall via CLI\nAnd Scope filter is cleared\nAnd Panel displays all epics, sub-epics, and stories\nAnd Filter input is empty"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 2.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": "test_show_all_button_is_visible_when_scope_is_filtered",
-                                  "steps": "Given Panel has no scope filter applied\nWhen User views scope section\nThen Show All button is not visible\nWhen User applies filter to scope\nThen Show All button becomes visible"
-                                }
-                              ],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": [
-                                {
-                                  "name": "WHEN User has filtered scope",
-                                  "text": "WHEN User has filtered scope",
-                                  "sequential_order": 1.0
-                                },
-                                {
-                                  "name": "THEN System displays Show All button",
-                                  "text": "THEN System displays Show All button",
-                                  "sequential_order": 2.0
-                                },
-                                {
-                                  "name": "WHEN User clicks Show All button",
-                                  "text": "WHEN User clicks Show All button",
-                                  "sequential_order": 3.0
-                                },
-                                {
-                                  "name": "THEN System calls scope showall command via CLI",
-                                  "text": "THEN System calls scope showall command via CLI",
-                                  "sequential_order": 4.0
-                                },
-                                {
-                                  "name": "AND System clears scope filter",
-                                  "text": "AND System clears scope filter",
-                                  "sequential_order": 5.0
-                                },
-                                {
-                                  "name": "AND Panel displays complete unfiltered story hierarchy",
-                                  "text": "AND Panel displays complete unfiltered story hierarchy",
-                                  "sequential_order": 6.0
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Display Story Scope Hierarchy",
-                              "sequential_order": 2.0,
-                              "connector": "and",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestDisplayStoryScopeHierarchy",
-                              "scenarios": [
-                                {
-                                  "name": "",
-                                  "sequential_order": 1.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Story graph has epics with nested sub-epics\nWhen User views scope section\nThen Panel displays epic names (Invoke Bot)\nWhen User expands Invoke Bot epic\nThen Panel displays sub-epics (Invoke Bot Through Panel, Invoke Bot Through REPL)\nWhen User expands Invoke Bot Through Panel sub-epic\nThen Panel displays nested sub-epics (Manage Panel Session, Navigate Behaviors)\nWhen User expands Manage Panel Session sub-epic\nThen Panel displays stories (Open Panel, Display Session Status)"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 2.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Story has test link displayed\nAnd Test file is test_manage_panel_session.spec.js\nAnd Test class is TestOpenPanel\nWhen User clicks test link for Open Panel story\nThen VS Code opens test_manage_panel_session.spec.js file\nAnd Editor scrolls to TestOpenPanel class"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 3.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Story has story file link displayed\nAnd Story file is Open Panel.md\nWhen User clicks story link for Open Panel\nThen VS Code opens Open Panel.md file in editor"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 4.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Story has test link displayed\nAnd Test file does not exist\nWhen User clicks test link\nThen Panel displays error message\nAnd Error message indicates file not found"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 5.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Epic has test file\nAnd Sub-epic has test file\nAnd Story has test class\nAnd Scenario has test method\nWhen Panel renders scope hierarchy\nThen Test tube icon appears next to epic name\nAnd Test tube icon appears next to sub-epic name\nAnd Test tube icon appears next to story name\nAnd Test tube icon appears next to scenario name\nAnd All test tube icons show correct test_tube.png image\nAnd Test tube icons are large enough to see clearly"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 6.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays scope hierarchy with epics and sub-epics\nWhen User clicks epic name\nThen VS Code reveals epic folder in explorer\nWhen User clicks sub-epic name\nThen VS Code reveals sub-epic folder in explorer"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 7.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays scope hierarchy with stories\nAnd Story has matching markdown file\nWhen User clicks story name\nThen VS Code opens story markdown file in editor"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 8.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Story has scenarios with test methods\nAnd Scenario test method is at line 145 in test file\nWhen User clicks scenario test tube icon\nThen VS Code opens test file\nAnd Editor scrolls to line 145\nAnd Test method definition is visible at cursor"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 9.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Story markdown file has scenario sections with anchors\nAnd Scenario is named User expands collapsed section\nWhen User clicks scenario name in panel\nThen VS Code opens story markdown file\nAnd Editor scrolls to scenario anchor\nAnd Scenario section is visible with heading"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 10.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Epic has matching folder in docs/stories/map\nAnd Sub-epic has matching folder\nWhen User clicks epic name link\nThen VS Code reveals folder in explorer view\nWhen User clicks sub-epic name link\nThen VS Code reveals sub-epic folder in explorer view"
-                                }
-                              ],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": [
-                                {
-                                  "name": "WHEN User views story scope",
-                                  "text": "WHEN User views story scope",
-                                  "sequential_order": 1.0
-                                },
-                                {
-                                  "name": "THEN System displays epic list collapsed",
-                                  "text": "THEN System displays epic list collapsed",
-                                  "sequential_order": 2.0
-                                },
-                                {
-                                  "name": "WHEN User clicks collapsed epic expand icon",
-                                  "text": "WHEN User clicks collapsed epic expand icon",
-                                  "sequential_order": 3.0
-                                },
-                                {
-                                  "name": "AND epic has sub-epics",
-                                  "text": "AND epic has sub-epics",
-                                  "sequential_order": 4.0
-                                },
-                                {
-                                  "name": "THEN System expands epic showing sub-epics collapsed beneath it",
-                                  "text": "THEN System expands epic showing sub-epics collapsed beneath it",
-                                  "sequential_order": 5.0
-                                },
-                                {
-                                  "name": "WHEN User clicks epic name",
-                                  "text": "WHEN User clicks epic name",
-                                  "sequential_order": 6.0
-                                },
-                                {
-                                  "name": "AND matching epic folder exists",
-                                  "text": "AND matching epic folder exists",
-                                  "sequential_order": 7.0
-                                },
-                                {
-                                  "name": "THEN System opens epic folder in IDE explorer",
-                                  "text": "THEN System opens epic folder in IDE explorer",
-                                  "sequential_order": 8.0
-                                },
-                                {
-                                  "name": "WHEN Epic has test file",
-                                  "text": "WHEN Epic has test file",
-                                  "sequential_order": 9.0
-                                },
-                                {
-                                  "name": "THEN System displays test tube icon next to epic name",
-                                  "text": "THEN System displays test tube icon next to epic name",
-                                  "sequential_order": 10.0
-                                },
-                                {
-                                  "name": "WHEN User clicks epic test link",
-                                  "text": "WHEN User clicks epic test link",
-                                  "sequential_order": 11.0
-                                },
-                                {
-                                  "name": "THEN System opens test file in editor",
-                                  "text": "THEN System opens test file in editor",
-                                  "sequential_order": 12.0
-                                },
-                                {
-                                  "name": "WHEN User clicks collapsed sub-epic expand icon",
-                                  "text": "WHEN User clicks collapsed sub-epic expand icon",
-                                  "sequential_order": 13.0
-                                },
-                                {
-                                  "name": "AND matching sub-epic has stories",
-                                  "text": "AND matching sub-epic has stories",
-                                  "sequential_order": 14.0
-                                },
-                                {
-                                  "name": "THEN System expands sub-epic showing stories collapsed beneath it",
-                                  "text": "THEN System expands sub-epic showing stories collapsed beneath it",
-                                  "sequential_order": 15.0
-                                },
-                                {
-                                  "name": "WHEN Sub-epic has test file",
-                                  "text": "WHEN Sub-epic has test file",
-                                  "sequential_order": 16.0
-                                },
-                                {
-                                  "name": "THEN System displays test tube icon next to sub-epic name",
-                                  "text": "THEN System displays test tube icon next to sub-epic name",
-                                  "sequential_order": 17.0
-                                },
-                                {
-                                  "name": "WHEN User clicks sub-epic test link",
-                                  "text": "WHEN User clicks sub-epic test link",
-                                  "sequential_order": 18.0
-                                },
-                                {
-                                  "name": "THEN System opens test file in editor",
-                                  "text": "THEN System opens test file in editor",
-                                  "sequential_order": 19.0
-                                },
-                                {
-                                  "name": "WHEN User clicks sub-epic name",
-                                  "text": "WHEN User clicks sub-epic name",
-                                  "sequential_order": 20.0
-                                },
-                                {
-                                  "name": "THEN System opens sub-epic folder in IDE explorer",
-                                  "text": "THEN System opens sub-epic folder in IDE explorer",
-                                  "sequential_order": 21.0
-                                },
-                                {
-                                  "name": "WHEN User clicks collapsed story expand icon",
-                                  "text": "WHEN User clicks collapsed story expand icon",
-                                  "sequential_order": 22.0
-                                },
-                                {
-                                  "name": "AND matching sub-epic has stories",
-                                  "text": "AND matching sub-epic has stories",
-                                  "sequential_order": 23.0
-                                },
-                                {
-                                  "name": "THEN System expands story showing scenarios collapsed beneath it",
-                                  "text": "THEN System expands story showing scenarios collapsed beneath it",
-                                  "sequential_order": 24.0
-                                },
-                                {
-                                  "name": "WHEN User clicks story name",
-                                  "text": "WHEN User clicks story name",
-                                  "sequential_order": 25.0
-                                },
-                                {
-                                  "name": "THEN System opens story markdown file in editor",
-                                  "text": "THEN System opens story markdown file in editor",
-                                  "sequential_order": 26.0
-                                },
-                                {
-                                  "name": "WHEN Story has test file",
-                                  "text": "WHEN Story has test file",
-                                  "sequential_order": 27.0
-                                },
-                                {
-                                  "name": "THEN System displays test tube icon next to story name",
-                                  "text": "THEN System displays test tube icon next to story name",
-                                  "sequential_order": 28.0
-                                },
-                                {
-                                  "name": "WHEN User clicks story test link",
-                                  "text": "WHEN User clicks story test link",
-                                  "sequential_order": 29.0
-                                },
-                                {
-                                  "name": "THEN System opens test file at test class",
-                                  "text": "THEN System opens test file at test class",
-                                  "sequential_order": 30.0
-                                },
-                                {
-                                  "name": "WHEN User clicks collapsed story expand icon",
-                                  "text": "WHEN User clicks collapsed story expand icon",
-                                  "sequential_order": 31.0
-                                },
-                                {
-                                  "name": "THEN System expands story showing scenarios",
-                                  "text": "THEN System expands story showing scenarios",
-                                  "sequential_order": 32.0
-                                },
-                                {
-                                  "name": "WHEN User clicks scenario name",
-                                  "text": "WHEN User clicks scenario name",
-                                  "sequential_order": 33.0
-                                },
-                                {
-                                  "name": "THEN System opens story markdown file at scenario anchor",
-                                  "text": "THEN System opens story markdown file at scenario anchor",
-                                  "sequential_order": 34.0
-                                },
-                                {
-                                  "name": "WHEN Scenario has test method",
-                                  "text": "WHEN Scenario has test method",
-                                  "sequential_order": 35.0
-                                },
-                                {
-                                  "name": "THEN System displays test tube icon next to scenario name",
-                                  "text": "THEN System displays test tube icon next to scenario name",
-                                  "sequential_order": 36.0
-                                },
-                                {
-                                  "name": "WHEN User clicks scenario test link",
-                                  "text": "WHEN User clicks scenario test link",
-                                  "sequential_order": 37.0
-                                },
-                                {
-                                  "name": "THEN System opens test file at scenario test method line",
-                                  "text": "THEN System opens test file at scenario test method line",
-                                  "sequential_order": 38.0
-                                },
-                                {
-                                  "name": "WHEN Test tube icon is displayed",
-                                  "text": "WHEN Test tube icon is displayed",
-                                  "sequential_order": 39.0
-                                },
-                                {
-                                  "name": "THEN System shows correct test tube image",
-                                  "text": "THEN System shows correct test tube image",
-                                  "sequential_order": 40.0
-                                },
-                                {
-                                  "name": "WHEN User clicks epic or sub-epic or story name",
-                                  "text": "WHEN User clicks epic or sub-epic or story name",
-                                  "sequential_order": 41.0
-                                },
-                                {
-                                  "name": "THEN System opens corresponding file or folder",
-                                  "text": "THEN System opens corresponding file or folder",
-                                  "sequential_order": 42.0
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Display Files Filtered By Story Scope",
-                              "sequential_order": 2.5,
-                              "connector": "and",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestDisplayFilesFilteredByStoryScope",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            },
-                            {
-                              "name": "Filter File Scope",
-                              "sequential_order": 3.0,
-                              "connector": "and",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestFilterFileScope",
-                              "scenarios": [
-                                {
-                                  "name": "",
-                                  "sequential_order": 1.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays scope section\nWhen User types file:src/**/*.py in scope filter\nThen Panel displays file scope mode\nAnd Panel displays list of Python files in src directory\nAnd File paths are displayed in monospace font"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 2.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays scope section\nWhen User types file:**/*.spec.js in scope filter\nThen Panel displays all JavaScript test files\nAnd Files are displayed with full relative paths"
-                                }
-                              ],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": [
-                                {
-                                  "name": "WHEN User types file pattern in filter",
-                                  "text": "WHEN User types file pattern in filter",
-                                  "sequential_order": 1.0
-                                },
-                                {
-                                  "name": "THEN System displays filtered file list",
-                                  "text": "THEN System displays filtered file list",
-                                  "sequential_order": 2.0
-                                },
-                                {
-                                  "name": "AND System displays file list with monospace paths",
-                                  "text": "AND System displays file list with monospace paths",
-                                  "sequential_order": 3.0
-                                }
-                              ]
-                            },
-                            {
-                              "name": "Open Story Files",
-                              "sequential_order": 9.0,
-                              "connector": "and",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestOpenStoryFiles",
-                              "scenarios": [
-                                {
-                                  "name": "",
-                                  "sequential_order": 1.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays scope section with graph link\nWhen User clicks Graph link\nThen VS Code opens story-graph.json in editor\nAnd File is displayed with JSON syntax highlighting"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 2.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays scope section with map link\nWhen User clicks map link\nThen VS Code opens story-map.drawio in diagram viewer\nAnd Diagram is displayed with Draw.io extension"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 3.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": null,
-                                  "steps": "Given Panel displays link to non-existent file\nWhen User clicks link\nThen Panel displays error message\nAnd Error message indicates file not found"
-                                },
-                                {
-                                  "name": "",
-                                  "sequential_order": 4.0,
-                                  "type": "",
-                                  "background": [],
-                                  "test_method": "test_story_graph_and_story_map_links_always_visible",
-                                  "steps": "Given Panel displays scope section\nAnd Scope may be filtered or showing all stories\nWhen User views scope header\nThen story-graph.json link is always visible\nAnd story-map.md link is always visible\nAnd Links persist regardless of filter state\nAnd Links are positioned consistently in header"
-                                }
-                              ],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": [
-                                {
-                                  "name": "WHEN User clicks graph link",
-                                  "text": "WHEN User clicks graph link",
-                                  "sequential_order": 1.0
-                                },
-                                {
-                                  "name": "THEN System opens story-graph.json in editor",
-                                  "text": "THEN System opens story-graph.json in editor",
-                                  "sequential_order": 2.0
-                                },
-                                {
-                                  "name": "WHEN User clicks map link",
-                                  "text": "WHEN User clicks map link",
-                                  "sequential_order": 3.0
-                                },
-                                {
-                                  "name": "THEN System opens story-map.drawio in diagram viewer",
-                                  "text": "THEN System opens story-map.drawio in diagram viewer",
-                                  "sequential_order": 4.0
-                                },
-                                {
-                                  "name": "WHEN System cannot open file",
-                                  "text": "WHEN System cannot open file",
-                                  "sequential_order": 5.0
-                                },
-                                {
-                                  "name": "THEN System displays error message",
-                                  "text": "THEN System displays error message",
-                                  "sequential_order": 6.0
-                                }
-                              ]
-                            }
-                          ]
-                        }
-                      ],
-                      "stories": [
-                        {
-                          "name": "Filter Story Scope",
-                          "sequential_order": 1.0,
-                          "connector": null,
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestFilterStoryScope",
-                          "scenarios": [
-                            {
-                              "name": "",
-                              "sequential_order": 18.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays scope section with full story hierarchy\nWhen User types Open Panel in scope filter\nThen Panel displays filtered hierarchy showing Open Panel story\nAnd Panel displays Open Panel parent sub-epic (Manage Panel Session)\nAnd Panel displays parent epic (Invoke Bot Through Panel)"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 19.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays full story hierarchy\nWhen User types Invoke Bot in scope filter\nThen Panel displays Invoke Bot epic\nAnd Panel displays all sub-epics under Invoke Bot\nAnd Sub-epics are initially collapsed"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 20.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays filtered scope showing only Open Panel story\nWhen User clicks clear filter button\nThen Panel displays all stories in full hierarchy\nAnd All epics are visible"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 21.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel is open\nWhen User types Open Panel in scope filter\nAnd Panel displays filtered hierarchy\nAnd User refreshes panel\nThen Panel displays same filtered hierarchy\nAnd Scope filter input shows Open Panel\nAnd Filter value was persisted and restored"
-                            }
-                          ],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": [
-                            {
-                              "name": "WHEN User types story name in filter",
-                              "text": "WHEN User types story name in filter",
-                              "sequential_order": 0.0
-                            },
-                            {
-                              "name": "THEN System refreshes story hierarchy based on new story scope",
-                              "text": "THEN System refreshes story hierarchy based on new story scope",
-                              "sequential_order": 1.0
-                            },
-                            {
-                              "name": "WHEN Filter matches epic",
-                              "text": "WHEN Filter matches epic",
-                              "sequential_order": 2.0
-                            },
-                            {
-                              "name": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
-                              "text": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
-                              "sequential_order": 3.0
-                            },
-                            {
-                              "name": "WHEN Filter matches sub-epic",
-                              "text": "WHEN Filter matches sub-epic",
-                              "sequential_order": 4.0
-                            },
-                            {
-                              "name": "THEN System displays sub-epic with all stories collapsed beneath it",
-                              "text": "THEN System displays sub-epic with all stories collapsed beneath it",
-                              "sequential_order": 5.0
-                            },
-                            {
-                              "name": "WHEN Filter matches story",
-                              "text": "WHEN Filter matches story",
-                              "sequential_order": 6.0
-                            },
-                            {
-                              "name": "THEN System displays that story with its acceptance criteria",
-                              "text": "THEN System displays that story with its acceptance criteria",
-                              "sequential_order": 7.0
-                            },
-                            {
-                              "name": "WHEN User clicks story with acceptance criteria",
-                              "text": "WHEN User clicks story with acceptance criteria",
-                              "sequential_order": 8.0
-                            },
-                            {
-                              "name": "THEN System expands story showing acceptance criteria list",
-                              "text": "THEN System expands story showing acceptance criteria list",
-                              "sequential_order": 9.0
-                            },
-                            {
-                              "name": "WHEN Filter matches multiple items",
-                              "text": "WHEN Filter matches multiple items",
-                              "sequential_order": 10.0
-                            },
-                            {
-                              "name": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
-                              "text": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
-                              "sequential_order": 11.0
-                            },
-                            {
-                              "name": "WHEN User clicks clear filter button",
-                              "text": "WHEN User clicks clear filter button",
-                              "sequential_order": 12.0
-                            },
-                            {
-                              "name": "THEN System displays all stories",
-                              "text": "THEN System displays all stories",
-                              "sequential_order": 13.0
-                            },
-                            {
-                              "name": "WHEN User sets scope filter",
-                              "text": "WHEN User sets scope filter",
-                              "sequential_order": 14.0
-                            },
-                            {
-                              "name": "THEN System persists scope filter value",
-                              "text": "THEN System persists scope filter value",
-                              "sequential_order": 15.0
-                            },
-                            {
-                              "name": "WHEN Panel refreshes",
-                              "text": "WHEN Panel refreshes",
-                              "sequential_order": 16.0
-                            },
-                            {
-                              "name": "THEN System restores previously set scope filter",
-                              "text": "THEN System restores previously set scope filter",
-                              "sequential_order": 17.0
-                            }
-                          ]
-                        },
-                        {
-                          "name": "Show All Scope Through Panel",
-                          "sequential_order": 1.5,
-                          "connector": "and",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestShowAllScopeThroughPanel",
-                          "scenarios": [
-                            {
-                              "name": "",
-                              "sequential_order": 1.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": "test_user_clicks_show_all_to_clear_filter",
-                              "steps": "Given Panel displays filtered scope showing only Open Panel story\nAnd Show All button is visible\nWhen User clicks Show All button\nThen Panel calls scope showall via CLI\nAnd Scope filter is cleared\nAnd Panel displays all epics, sub-epics, and stories\nAnd Filter input is empty"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 2.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": "test_show_all_button_is_visible_when_scope_is_filtered",
-                              "steps": "Given Panel has no scope filter applied\nWhen User views scope section\nThen Show All button is not visible\nWhen User applies filter to scope\nThen Show All button becomes visible"
-                            }
-                          ],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": [
-                            {
-                              "name": "WHEN User has filtered scope",
-                              "text": "WHEN User has filtered scope",
-                              "sequential_order": 1.0
-                            },
-                            {
-                              "name": "THEN System displays Show All button",
-                              "text": "THEN System displays Show All button",
-                              "sequential_order": 2.0
-                            },
-                            {
-                              "name": "WHEN User clicks Show All button",
-                              "text": "WHEN User clicks Show All button",
-                              "sequential_order": 3.0
-                            },
-                            {
-                              "name": "THEN System calls scope showall command via CLI",
-                              "text": "THEN System calls scope showall command via CLI",
-                              "sequential_order": 4.0
-                            },
-                            {
-                              "name": "AND System clears scope filter",
-                              "text": "AND System clears scope filter",
-                              "sequential_order": 5.0
-                            },
-                            {
-                              "name": "AND Panel displays complete unfiltered story hierarchy",
-                              "text": "AND Panel displays complete unfiltered story hierarchy",
-                              "sequential_order": 6.0
-                            }
-                          ]
-                        },
-                        {
-                          "name": "Display Story Scope Hierarchy",
-                          "sequential_order": 2.0,
-                          "connector": "and",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestDisplayStoryScopeHierarchy",
-                          "scenarios": [
-                            {
-                              "name": "",
-                              "sequential_order": 1.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Story graph has epics with nested sub-epics\nWhen User views scope section\nThen Panel displays epic names (Invoke Bot)\nWhen User expands Invoke Bot epic\nThen Panel displays sub-epics (Invoke Bot Through Panel, Invoke Bot Through REPL)\nWhen User expands Invoke Bot Through Panel sub-epic\nThen Panel displays nested sub-epics (Manage Panel Session, Navigate Behaviors)\nWhen User expands Manage Panel Session sub-epic\nThen Panel displays stories (Open Panel, Display Session Status)"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 2.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Story has test link displayed\nAnd Test file is test_manage_panel_session.spec.js\nAnd Test class is TestOpenPanel\nWhen User clicks test link for Open Panel story\nThen VS Code opens test_manage_panel_session.spec.js file\nAnd Editor scrolls to TestOpenPanel class"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 3.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Story has story file link displayed\nAnd Story file is Open Panel.md\nWhen User clicks story link for Open Panel\nThen VS Code opens Open Panel.md file in editor"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 4.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Story has test link displayed\nAnd Test file does not exist\nWhen User clicks test link\nThen Panel displays error message\nAnd Error message indicates file not found"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 5.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Epic has test file\nAnd Sub-epic has test file\nAnd Story has test class\nAnd Scenario has test method\nWhen Panel renders scope hierarchy\nThen Test tube icon appears next to epic name\nAnd Test tube icon appears next to sub-epic name\nAnd Test tube icon appears next to story name\nAnd Test tube icon appears next to scenario name\nAnd All test tube icons show correct test_tube.png image\nAnd Test tube icons are large enough to see clearly"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 6.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays scope hierarchy with epics and sub-epics\nWhen User clicks epic name\nThen VS Code reveals epic folder in explorer\nWhen User clicks sub-epic name\nThen VS Code reveals sub-epic folder in explorer"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 7.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays scope hierarchy with stories\nAnd Story has matching markdown file\nWhen User clicks story name\nThen VS Code opens story markdown file in editor"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 8.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Story has scenarios with test methods\nAnd Scenario test method is at line 145 in test file\nWhen User clicks scenario test tube icon\nThen VS Code opens test file\nAnd Editor scrolls to line 145\nAnd Test method definition is visible at cursor"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 9.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Story markdown file has scenario sections with anchors\nAnd Scenario is named User expands collapsed section\nWhen User clicks scenario name in panel\nThen VS Code opens story markdown file\nAnd Editor scrolls to scenario anchor\nAnd Scenario section is visible with heading"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 10.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Epic has matching folder in docs/stories/map\nAnd Sub-epic has matching folder\nWhen User clicks epic name link\nThen VS Code reveals folder in explorer view\nWhen User clicks sub-epic name link\nThen VS Code reveals sub-epic folder in explorer view"
-                            }
-                          ],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": [
-                            {
-                              "name": "WHEN User views story scope",
-                              "text": "WHEN User views story scope",
-                              "sequential_order": 1.0
-                            },
-                            {
-                              "name": "THEN System displays epic list collapsed",
-                              "text": "THEN System displays epic list collapsed",
-                              "sequential_order": 2.0
-                            },
-                            {
-                              "name": "WHEN User clicks collapsed epic expand icon",
-                              "text": "WHEN User clicks collapsed epic expand icon",
-                              "sequential_order": 3.0
-                            },
-                            {
-                              "name": "AND epic has sub-epics",
-                              "text": "AND epic has sub-epics",
-                              "sequential_order": 4.0
-                            },
-                            {
-                              "name": "THEN System expands epic showing sub-epics collapsed beneath it",
-                              "text": "THEN System expands epic showing sub-epics collapsed beneath it",
-                              "sequential_order": 5.0
-                            },
-                            {
-                              "name": "WHEN User clicks epic name",
-                              "text": "WHEN User clicks epic name",
-                              "sequential_order": 6.0
-                            },
-                            {
-                              "name": "AND matching epic folder exists",
-                              "text": "AND matching epic folder exists",
-                              "sequential_order": 7.0
-                            },
-                            {
-                              "name": "THEN System opens epic folder in IDE explorer",
-                              "text": "THEN System opens epic folder in IDE explorer",
-                              "sequential_order": 8.0
-                            },
-                            {
-                              "name": "WHEN Epic has test file",
-                              "text": "WHEN Epic has test file",
-                              "sequential_order": 9.0
-                            },
-                            {
-                              "name": "THEN System displays test tube icon next to epic name",
-                              "text": "THEN System displays test tube icon next to epic name",
-                              "sequential_order": 10.0
-                            },
-                            {
-                              "name": "WHEN User clicks epic test link",
-                              "text": "WHEN User clicks epic test link",
-                              "sequential_order": 11.0
-                            },
-                            {
-                              "name": "THEN System opens test file in editor",
-                              "text": "THEN System opens test file in editor",
-                              "sequential_order": 12.0
-                            },
-                            {
-                              "name": "WHEN User clicks collapsed sub-epic expand icon",
-                              "text": "WHEN User clicks collapsed sub-epic expand icon",
-                              "sequential_order": 13.0
-                            },
-                            {
-                              "name": "AND matching sub-epic has stories",
-                              "text": "AND matching sub-epic has stories",
-                              "sequential_order": 14.0
-                            },
-                            {
-                              "name": "THEN System expands sub-epic showing stories collapsed beneath it",
-                              "text": "THEN System expands sub-epic showing stories collapsed beneath it",
-                              "sequential_order": 15.0
-                            },
-                            {
-                              "name": "WHEN Sub-epic has test file",
-                              "text": "WHEN Sub-epic has test file",
-                              "sequential_order": 16.0
-                            },
-                            {
-                              "name": "THEN System displays test tube icon next to sub-epic name",
-                              "text": "THEN System displays test tube icon next to sub-epic name",
-                              "sequential_order": 17.0
-                            },
-                            {
-                              "name": "WHEN User clicks sub-epic test link",
-                              "text": "WHEN User clicks sub-epic test link",
-                              "sequential_order": 18.0
-                            },
-                            {
-                              "name": "THEN System opens test file in editor",
-                              "text": "THEN System opens test file in editor",
-                              "sequential_order": 19.0
-                            },
-                            {
-                              "name": "WHEN User clicks sub-epic name",
-                              "text": "WHEN User clicks sub-epic name",
-                              "sequential_order": 20.0
-                            },
-                            {
-                              "name": "THEN System opens sub-epic folder in IDE explorer",
-                              "text": "THEN System opens sub-epic folder in IDE explorer",
-                              "sequential_order": 21.0
-                            },
-                            {
-                              "name": "WHEN User clicks collapsed story expand icon",
-                              "text": "WHEN User clicks collapsed story expand icon",
-                              "sequential_order": 22.0
-                            },
-                            {
-                              "name": "AND matching sub-epic has stories",
-                              "text": "AND matching sub-epic has stories",
-                              "sequential_order": 23.0
-                            },
-                            {
-                              "name": "THEN System expands story showing scenarios collapsed beneath it",
-                              "text": "THEN System expands story showing scenarios collapsed beneath it",
-                              "sequential_order": 24.0
-                            },
-                            {
-                              "name": "WHEN User clicks story name",
-                              "text": "WHEN User clicks story name",
-                              "sequential_order": 25.0
-                            },
-                            {
-                              "name": "THEN System opens story markdown file in editor",
-                              "text": "THEN System opens story markdown file in editor",
-                              "sequential_order": 26.0
-                            },
-                            {
-                              "name": "WHEN Story has test file",
-                              "text": "WHEN Story has test file",
-                              "sequential_order": 27.0
-                            },
-                            {
-                              "name": "THEN System displays test tube icon next to story name",
-                              "text": "THEN System displays test tube icon next to story name",
-                              "sequential_order": 28.0
-                            },
-                            {
-                              "name": "WHEN User clicks story test link",
-                              "text": "WHEN User clicks story test link",
-                              "sequential_order": 29.0
-                            },
-                            {
-                              "name": "THEN System opens test file at test class",
-                              "text": "THEN System opens test file at test class",
-                              "sequential_order": 30.0
-                            },
-                            {
-                              "name": "WHEN User clicks collapsed story expand icon",
-                              "text": "WHEN User clicks collapsed story expand icon",
-                              "sequential_order": 31.0
-                            },
-                            {
-                              "name": "THEN System expands story showing scenarios",
-                              "text": "THEN System expands story showing scenarios",
-                              "sequential_order": 32.0
-                            },
-                            {
-                              "name": "WHEN User clicks scenario name",
-                              "text": "WHEN User clicks scenario name",
-                              "sequential_order": 33.0
-                            },
-                            {
-                              "name": "THEN System opens story markdown file at scenario anchor",
-                              "text": "THEN System opens story markdown file at scenario anchor",
-                              "sequential_order": 34.0
-                            },
-                            {
-                              "name": "WHEN Scenario has test method",
-                              "text": "WHEN Scenario has test method",
-                              "sequential_order": 35.0
-                            },
-                            {
-                              "name": "THEN System displays test tube icon next to scenario name",
-                              "text": "THEN System displays test tube icon next to scenario name",
-                              "sequential_order": 36.0
-                            },
-                            {
-                              "name": "WHEN User clicks scenario test link",
-                              "text": "WHEN User clicks scenario test link",
-                              "sequential_order": 37.0
-                            },
-                            {
-                              "name": "THEN System opens test file at scenario test method line",
-                              "text": "THEN System opens test file at scenario test method line",
-                              "sequential_order": 38.0
-                            },
-                            {
-                              "name": "WHEN Test tube icon is displayed",
-                              "text": "WHEN Test tube icon is displayed",
-                              "sequential_order": 39.0
-                            },
-                            {
-                              "name": "THEN System shows correct test tube image",
-                              "text": "THEN System shows correct test tube image",
-                              "sequential_order": 40.0
-                            },
-                            {
-                              "name": "WHEN User clicks epic or sub-epic or story name",
-                              "text": "WHEN User clicks epic or sub-epic or story name",
-                              "sequential_order": 41.0
-                            },
-                            {
-                              "name": "THEN System opens corresponding file or folder",
-                              "text": "THEN System opens corresponding file or folder",
-                              "sequential_order": 42.0
-                            }
-                          ]
-                        },
-                        {
-                          "name": "Display Files Filtered By Story Scope",
-                          "sequential_order": 2.5,
-                          "connector": "and",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestDisplayFilesFilteredByStoryScope",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        },
-                        {
-                          "name": "Filter File Scope",
-                          "sequential_order": 3.0,
-                          "connector": "and",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestFilterFileScope",
-                          "scenarios": [
-                            {
-                              "name": "",
-                              "sequential_order": 1.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays scope section\nWhen User types file:src/**/*.py in scope filter\nThen Panel displays file scope mode\nAnd Panel displays list of Python files in src directory\nAnd File paths are displayed in monospace font"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 2.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays scope section\nWhen User types file:**/*.spec.js in scope filter\nThen Panel displays all JavaScript test files\nAnd Files are displayed with full relative paths"
-                            }
-                          ],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": [
-                            {
-                              "name": "WHEN User types file pattern in filter",
-                              "text": "WHEN User types file pattern in filter",
-                              "sequential_order": 1.0
-                            },
-                            {
-                              "name": "THEN System displays filtered file list",
-                              "text": "THEN System displays filtered file list",
-                              "sequential_order": 2.0
-                            },
-                            {
-                              "name": "AND System displays file list with monospace paths",
-                              "text": "AND System displays file list with monospace paths",
-                              "sequential_order": 3.0
-                            }
-                          ]
-                        },
-                        {
-                          "name": "Open Story Files",
-                          "sequential_order": 9.0,
-                          "connector": "and",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestOpenStoryFiles",
-                          "scenarios": [
-                            {
-                              "name": "",
-                              "sequential_order": 1.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays scope section with graph link\nWhen User clicks Graph link\nThen VS Code opens story-graph.json in editor\nAnd File is displayed with JSON syntax highlighting"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 2.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays scope section with map link\nWhen User clicks map link\nThen VS Code opens story-map.drawio in diagram viewer\nAnd Diagram is displayed with Draw.io extension"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 3.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": null,
-                              "steps": "Given Panel displays link to non-existent file\nWhen User clicks link\nThen Panel displays error message\nAnd Error message indicates file not found"
-                            },
-                            {
-                              "name": "",
-                              "sequential_order": 4.0,
-                              "type": "",
-                              "background": [],
-                              "test_method": "test_story_graph_and_story_map_links_always_visible",
-                              "steps": "Given Panel displays scope section\nAnd Scope may be filtered or showing all stories\nWhen User views scope header\nThen story-graph.json link is always visible\nAnd story-map.md link is always visible\nAnd Links persist regardless of filter state\nAnd Links are positioned consistently in header"
-                            }
-                          ],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": [
-                            {
-                              "name": "WHEN User clicks graph link",
-                              "text": "WHEN User clicks graph link",
-                              "sequential_order": 1.0
-                            },
-                            {
-                              "name": "THEN System opens story-graph.json in editor",
-                              "text": "THEN System opens story-graph.json in editor",
-                              "sequential_order": 2.0
-                            },
-                            {
-                              "name": "WHEN User clicks map link",
-                              "text": "WHEN User clicks map link",
-                              "sequential_order": 3.0
-                            },
-                            {
-                              "name": "THEN System opens story-map.drawio in diagram viewer",
-                              "text": "THEN System opens story-map.drawio in diagram viewer",
-                              "sequential_order": 4.0
-                            },
-                            {
-                              "name": "WHEN System cannot open file",
-                              "text": "WHEN System cannot open file",
-                              "sequential_order": 5.0
-                            },
-                            {
-                              "name": "THEN System displays error message",
-                              "text": "THEN System displays error message",
-                              "sequential_order": 6.0
-                            }
-                          ]
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Filter on Increment Scope in Panel",
-                      "sequential_order": 2.0,
-                      "sub_epics": [],
-                      "story_groups": [
-                        {
-                          "name": "",
-                          "sequential_order": 0.0,
-                          "type": "and",
-                          "connector": null,
-                          "stories": [
-                            {
-                              "name": "Display Increment Scope View",
-                              "sequential_order": 1.0,
-                              "connector": "or",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestDisplayIncrementScopeView",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            },
-                            {
-                              "name": "Add Increment Filter Part To Story Scope",
-                              "sequential_order": 2.0,
-                              "connector": "or",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestAddIncrementFilterPartToStoryScope",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            },
-                            {
-                              "name": "Remove Increment Filter Part From Story Scope",
-                              "sequential_order": 3.0,
-                              "connector": "or",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            }
-                          ]
-                        }
-                      ],
-                      "stories": [
-                        {
-                          "name": "Display Increment Scope View",
-                          "sequential_order": 1.0,
-                          "connector": "or",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestDisplayIncrementScopeView",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        },
-                        {
-                          "name": "Add Increment Filter Part To Story Scope",
-                          "sequential_order": 2.0,
-                          "connector": "or",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestAddIncrementFilterPartToStoryScope",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        },
-                        {
-                          "name": "Remove Increment Filter Part From Story Scope",
-                          "sequential_order": 3.0,
-                          "connector": "or",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        }
-                      ]
-                    }
-                  ],
+                  "sequential_order": 0.0,
+                  "sub_epics": [],
                   "story_groups": [],
                   "stories": []
                 },
                 {
                   "name": "Manage File Scope Through Panel",
-                  "sequential_order": 2.0,
+                  "sequential_order": 1.0,
                   "sub_epics": [
                     {
                       "name": "Filter on File Scope in Panel",
@@ -9477,7 +8061,7 @@
                 },
                 {
                   "name": "Edit Story Graph In Panel",
-                  "sequential_order": 3.0,
+                  "sequential_order": 2.0,
                   "sub_epics": [],
                   "story_groups": [
                     {
@@ -10636,7 +9220,7 @@
                 },
                 {
                   "name": "Edit Increments In Panel",
-                  "sequential_order": 4.0,
+                  "sequential_order": 3.0,
                   "sub_epics": [],
                   "story_groups": [
                     {
@@ -10801,7 +9385,7 @@
               "sub_epics": [
                 {
                   "name": "Scope Stories",
-                  "sequential_order": 5.0,
+                  "sequential_order": 0.0,
                   "sub_epics": [
                     {
                       "name": "Filter Story Scope",
@@ -12217,7 +10801,7 @@
                 },
                 {
                   "name": "Scope Files",
-                  "sequential_order": 4.0,
+                  "sequential_order": 1.0,
                   "sub_epics": [
                     {
                       "name": "Set File Filter",
@@ -12360,6 +10944,1421 @@
                       "stories": []
                     }
                   ],
+                  "story_groups": [],
+                  "stories": []
+                },
+                {
+                  "name": "Filter on Story Scope in Panel",
+                  "sequential_order": 2.0,
+                  "sub_epics": [],
+                  "story_groups": [
+                    {
+                      "name": "",
+                      "sequential_order": 0.0,
+                      "type": "and",
+                      "connector": null,
+                      "stories": [
+                        {
+                          "name": "Filter Story Scope",
+                          "sequential_order": 1.0,
+                          "connector": null,
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestFilterStoryScope",
+                          "scenarios": [
+                            {
+                              "name": "",
+                              "sequential_order": 18.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays scope section with full story hierarchy\nWhen User types Open Panel in scope filter\nThen Panel displays filtered hierarchy showing Open Panel story\nAnd Panel displays Open Panel parent sub-epic (Manage Panel Session)\nAnd Panel displays parent epic (Invoke Bot Through Panel)"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 19.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays full story hierarchy\nWhen User types Invoke Bot in scope filter\nThen Panel displays Invoke Bot epic\nAnd Panel displays all sub-epics under Invoke Bot\nAnd Sub-epics are initially collapsed"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 20.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays filtered scope showing only Open Panel story\nWhen User clicks clear filter button\nThen Panel displays all stories in full hierarchy\nAnd All epics are visible"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 21.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel is open\nWhen User types Open Panel in scope filter\nAnd Panel displays filtered hierarchy\nAnd User refreshes panel\nThen Panel displays same filtered hierarchy\nAnd Scope filter input shows Open Panel\nAnd Filter value was persisted and restored"
+                            }
+                          ],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": [
+                            {
+                              "name": "WHEN User types story name in filter",
+                              "text": "WHEN User types story name in filter",
+                              "sequential_order": 0.0
+                            },
+                            {
+                              "name": "THEN System refreshes story hierarchy based on new story scope",
+                              "text": "THEN System refreshes story hierarchy based on new story scope",
+                              "sequential_order": 1.0
+                            },
+                            {
+                              "name": "WHEN Filter matches epic",
+                              "text": "WHEN Filter matches epic",
+                              "sequential_order": 2.0
+                            },
+                            {
+                              "name": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
+                              "text": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
+                              "sequential_order": 3.0
+                            },
+                            {
+                              "name": "WHEN Filter matches sub-epic",
+                              "text": "WHEN Filter matches sub-epic",
+                              "sequential_order": 4.0
+                            },
+                            {
+                              "name": "THEN System displays sub-epic with all stories collapsed beneath it",
+                              "text": "THEN System displays sub-epic with all stories collapsed beneath it",
+                              "sequential_order": 5.0
+                            },
+                            {
+                              "name": "WHEN Filter matches story",
+                              "text": "WHEN Filter matches story",
+                              "sequential_order": 6.0
+                            },
+                            {
+                              "name": "THEN System displays that story with its acceptance criteria",
+                              "text": "THEN System displays that story with its acceptance criteria",
+                              "sequential_order": 7.0
+                            },
+                            {
+                              "name": "WHEN User clicks story with acceptance criteria",
+                              "text": "WHEN User clicks story with acceptance criteria",
+                              "sequential_order": 8.0
+                            },
+                            {
+                              "name": "THEN System expands story showing acceptance criteria list",
+                              "text": "THEN System expands story showing acceptance criteria list",
+                              "sequential_order": 9.0
+                            },
+                            {
+                              "name": "WHEN Filter matches multiple items",
+                              "text": "WHEN Filter matches multiple items",
+                              "sequential_order": 10.0
+                            },
+                            {
+                              "name": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
+                              "text": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
+                              "sequential_order": 11.0
+                            },
+                            {
+                              "name": "WHEN User clicks clear filter button",
+                              "text": "WHEN User clicks clear filter button",
+                              "sequential_order": 12.0
+                            },
+                            {
+                              "name": "THEN System displays all stories",
+                              "text": "THEN System displays all stories",
+                              "sequential_order": 13.0
+                            },
+                            {
+                              "name": "WHEN User sets scope filter",
+                              "text": "WHEN User sets scope filter",
+                              "sequential_order": 14.0
+                            },
+                            {
+                              "name": "THEN System persists scope filter value",
+                              "text": "THEN System persists scope filter value",
+                              "sequential_order": 15.0
+                            },
+                            {
+                              "name": "WHEN Panel refreshes",
+                              "text": "WHEN Panel refreshes",
+                              "sequential_order": 16.0
+                            },
+                            {
+                              "name": "THEN System restores previously set scope filter",
+                              "text": "THEN System restores previously set scope filter",
+                              "sequential_order": 17.0
+                            }
+                          ]
+                        },
+                        {
+                          "name": "Show All Scope Through Panel",
+                          "sequential_order": 1.5,
+                          "connector": "and",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestShowAllScopeThroughPanel",
+                          "scenarios": [
+                            {
+                              "name": "",
+                              "sequential_order": 1.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": "test_user_clicks_show_all_to_clear_filter",
+                              "steps": "Given Panel displays filtered scope showing only Open Panel story\nAnd Show All button is visible\nWhen User clicks Show All button\nThen Panel calls scope showall via CLI\nAnd Scope filter is cleared\nAnd Panel displays all epics, sub-epics, and stories\nAnd Filter input is empty"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 2.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": "test_show_all_button_is_visible_when_scope_is_filtered",
+                              "steps": "Given Panel has no scope filter applied\nWhen User views scope section\nThen Show All button is not visible\nWhen User applies filter to scope\nThen Show All button becomes visible"
+                            }
+                          ],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": [
+                            {
+                              "name": "WHEN User has filtered scope",
+                              "text": "WHEN User has filtered scope",
+                              "sequential_order": 1.0
+                            },
+                            {
+                              "name": "THEN System displays Show All button",
+                              "text": "THEN System displays Show All button",
+                              "sequential_order": 2.0
+                            },
+                            {
+                              "name": "WHEN User clicks Show All button",
+                              "text": "WHEN User clicks Show All button",
+                              "sequential_order": 3.0
+                            },
+                            {
+                              "name": "THEN System calls scope showall command via CLI",
+                              "text": "THEN System calls scope showall command via CLI",
+                              "sequential_order": 4.0
+                            },
+                            {
+                              "name": "AND System clears scope filter",
+                              "text": "AND System clears scope filter",
+                              "sequential_order": 5.0
+                            },
+                            {
+                              "name": "AND Panel displays complete unfiltered story hierarchy",
+                              "text": "AND Panel displays complete unfiltered story hierarchy",
+                              "sequential_order": 6.0
+                            }
+                          ]
+                        },
+                        {
+                          "name": "Display Story Scope Hierarchy",
+                          "sequential_order": 2.0,
+                          "connector": "and",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestDisplayStoryScopeHierarchy",
+                          "scenarios": [
+                            {
+                              "name": "",
+                              "sequential_order": 1.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Story graph has epics with nested sub-epics\nWhen User views scope section\nThen Panel displays epic names (Invoke Bot)\nWhen User expands Invoke Bot epic\nThen Panel displays sub-epics (Invoke Bot Through Panel, Invoke Bot Through REPL)\nWhen User expands Invoke Bot Through Panel sub-epic\nThen Panel displays nested sub-epics (Manage Panel Session, Navigate Behaviors)\nWhen User expands Manage Panel Session sub-epic\nThen Panel displays stories (Open Panel, Display Session Status)"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 2.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Story has test link displayed\nAnd Test file is test_manage_panel_session.spec.js\nAnd Test class is TestOpenPanel\nWhen User clicks test link for Open Panel story\nThen VS Code opens test_manage_panel_session.spec.js file\nAnd Editor scrolls to TestOpenPanel class"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 3.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Story has story file link displayed\nAnd Story file is Open Panel.md\nWhen User clicks story link for Open Panel\nThen VS Code opens Open Panel.md file in editor"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 4.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Story has test link displayed\nAnd Test file does not exist\nWhen User clicks test link\nThen Panel displays error message\nAnd Error message indicates file not found"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 5.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Epic has test file\nAnd Sub-epic has test file\nAnd Story has test class\nAnd Scenario has test method\nWhen Panel renders scope hierarchy\nThen Test tube icon appears next to epic name\nAnd Test tube icon appears next to sub-epic name\nAnd Test tube icon appears next to story name\nAnd Test tube icon appears next to scenario name\nAnd All test tube icons show correct test_tube.png image\nAnd Test tube icons are large enough to see clearly"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 6.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays scope hierarchy with epics and sub-epics\nWhen User clicks epic name\nThen VS Code reveals epic folder in explorer\nWhen User clicks sub-epic name\nThen VS Code reveals sub-epic folder in explorer"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 7.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays scope hierarchy with stories\nAnd Story has matching markdown file\nWhen User clicks story name\nThen VS Code opens story markdown file in editor"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 8.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Story has scenarios with test methods\nAnd Scenario test method is at line 145 in test file\nWhen User clicks scenario test tube icon\nThen VS Code opens test file\nAnd Editor scrolls to line 145\nAnd Test method definition is visible at cursor"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 9.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Story markdown file has scenario sections with anchors\nAnd Scenario is named User expands collapsed section\nWhen User clicks scenario name in panel\nThen VS Code opens story markdown file\nAnd Editor scrolls to scenario anchor\nAnd Scenario section is visible with heading"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 10.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Epic has matching folder in docs/stories/map\nAnd Sub-epic has matching folder\nWhen User clicks epic name link\nThen VS Code reveals folder in explorer view\nWhen User clicks sub-epic name link\nThen VS Code reveals sub-epic folder in explorer view"
+                            }
+                          ],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": [
+                            {
+                              "name": "WHEN User views story scope",
+                              "text": "WHEN User views story scope",
+                              "sequential_order": 1.0
+                            },
+                            {
+                              "name": "THEN System displays epic list collapsed",
+                              "text": "THEN System displays epic list collapsed",
+                              "sequential_order": 2.0
+                            },
+                            {
+                              "name": "WHEN User clicks collapsed epic expand icon",
+                              "text": "WHEN User clicks collapsed epic expand icon",
+                              "sequential_order": 3.0
+                            },
+                            {
+                              "name": "AND epic has sub-epics",
+                              "text": "AND epic has sub-epics",
+                              "sequential_order": 4.0
+                            },
+                            {
+                              "name": "THEN System expands epic showing sub-epics collapsed beneath it",
+                              "text": "THEN System expands epic showing sub-epics collapsed beneath it",
+                              "sequential_order": 5.0
+                            },
+                            {
+                              "name": "WHEN User clicks epic name",
+                              "text": "WHEN User clicks epic name",
+                              "sequential_order": 6.0
+                            },
+                            {
+                              "name": "AND matching epic folder exists",
+                              "text": "AND matching epic folder exists",
+                              "sequential_order": 7.0
+                            },
+                            {
+                              "name": "THEN System opens epic folder in IDE explorer",
+                              "text": "THEN System opens epic folder in IDE explorer",
+                              "sequential_order": 8.0
+                            },
+                            {
+                              "name": "WHEN Epic has test file",
+                              "text": "WHEN Epic has test file",
+                              "sequential_order": 9.0
+                            },
+                            {
+                              "name": "THEN System displays test tube icon next to epic name",
+                              "text": "THEN System displays test tube icon next to epic name",
+                              "sequential_order": 10.0
+                            },
+                            {
+                              "name": "WHEN User clicks epic test link",
+                              "text": "WHEN User clicks epic test link",
+                              "sequential_order": 11.0
+                            },
+                            {
+                              "name": "THEN System opens test file in editor",
+                              "text": "THEN System opens test file in editor",
+                              "sequential_order": 12.0
+                            },
+                            {
+                              "name": "WHEN User clicks collapsed sub-epic expand icon",
+                              "text": "WHEN User clicks collapsed sub-epic expand icon",
+                              "sequential_order": 13.0
+                            },
+                            {
+                              "name": "AND matching sub-epic has stories",
+                              "text": "AND matching sub-epic has stories",
+                              "sequential_order": 14.0
+                            },
+                            {
+                              "name": "THEN System expands sub-epic showing stories collapsed beneath it",
+                              "text": "THEN System expands sub-epic showing stories collapsed beneath it",
+                              "sequential_order": 15.0
+                            },
+                            {
+                              "name": "WHEN Sub-epic has test file",
+                              "text": "WHEN Sub-epic has test file",
+                              "sequential_order": 16.0
+                            },
+                            {
+                              "name": "THEN System displays test tube icon next to sub-epic name",
+                              "text": "THEN System displays test tube icon next to sub-epic name",
+                              "sequential_order": 17.0
+                            },
+                            {
+                              "name": "WHEN User clicks sub-epic test link",
+                              "text": "WHEN User clicks sub-epic test link",
+                              "sequential_order": 18.0
+                            },
+                            {
+                              "name": "THEN System opens test file in editor",
+                              "text": "THEN System opens test file in editor",
+                              "sequential_order": 19.0
+                            },
+                            {
+                              "name": "WHEN User clicks sub-epic name",
+                              "text": "WHEN User clicks sub-epic name",
+                              "sequential_order": 20.0
+                            },
+                            {
+                              "name": "THEN System opens sub-epic folder in IDE explorer",
+                              "text": "THEN System opens sub-epic folder in IDE explorer",
+                              "sequential_order": 21.0
+                            },
+                            {
+                              "name": "WHEN User clicks collapsed story expand icon",
+                              "text": "WHEN User clicks collapsed story expand icon",
+                              "sequential_order": 22.0
+                            },
+                            {
+                              "name": "AND matching sub-epic has stories",
+                              "text": "AND matching sub-epic has stories",
+                              "sequential_order": 23.0
+                            },
+                            {
+                              "name": "THEN System expands story showing scenarios collapsed beneath it",
+                              "text": "THEN System expands story showing scenarios collapsed beneath it",
+                              "sequential_order": 24.0
+                            },
+                            {
+                              "name": "WHEN User clicks story name",
+                              "text": "WHEN User clicks story name",
+                              "sequential_order": 25.0
+                            },
+                            {
+                              "name": "THEN System opens story markdown file in editor",
+                              "text": "THEN System opens story markdown file in editor",
+                              "sequential_order": 26.0
+                            },
+                            {
+                              "name": "WHEN Story has test file",
+                              "text": "WHEN Story has test file",
+                              "sequential_order": 27.0
+                            },
+                            {
+                              "name": "THEN System displays test tube icon next to story name",
+                              "text": "THEN System displays test tube icon next to story name",
+                              "sequential_order": 28.0
+                            },
+                            {
+                              "name": "WHEN User clicks story test link",
+                              "text": "WHEN User clicks story test link",
+                              "sequential_order": 29.0
+                            },
+                            {
+                              "name": "THEN System opens test file at test class",
+                              "text": "THEN System opens test file at test class",
+                              "sequential_order": 30.0
+                            },
+                            {
+                              "name": "WHEN User clicks collapsed story expand icon",
+                              "text": "WHEN User clicks collapsed story expand icon",
+                              "sequential_order": 31.0
+                            },
+                            {
+                              "name": "THEN System expands story showing scenarios",
+                              "text": "THEN System expands story showing scenarios",
+                              "sequential_order": 32.0
+                            },
+                            {
+                              "name": "WHEN User clicks scenario name",
+                              "text": "WHEN User clicks scenario name",
+                              "sequential_order": 33.0
+                            },
+                            {
+                              "name": "THEN System opens story markdown file at scenario anchor",
+                              "text": "THEN System opens story markdown file at scenario anchor",
+                              "sequential_order": 34.0
+                            },
+                            {
+                              "name": "WHEN Scenario has test method",
+                              "text": "WHEN Scenario has test method",
+                              "sequential_order": 35.0
+                            },
+                            {
+                              "name": "THEN System displays test tube icon next to scenario name",
+                              "text": "THEN System displays test tube icon next to scenario name",
+                              "sequential_order": 36.0
+                            },
+                            {
+                              "name": "WHEN User clicks scenario test link",
+                              "text": "WHEN User clicks scenario test link",
+                              "sequential_order": 37.0
+                            },
+                            {
+                              "name": "THEN System opens test file at scenario test method line",
+                              "text": "THEN System opens test file at scenario test method line",
+                              "sequential_order": 38.0
+                            },
+                            {
+                              "name": "WHEN Test tube icon is displayed",
+                              "text": "WHEN Test tube icon is displayed",
+                              "sequential_order": 39.0
+                            },
+                            {
+                              "name": "THEN System shows correct test tube image",
+                              "text": "THEN System shows correct test tube image",
+                              "sequential_order": 40.0
+                            },
+                            {
+                              "name": "WHEN User clicks epic or sub-epic or story name",
+                              "text": "WHEN User clicks epic or sub-epic or story name",
+                              "sequential_order": 41.0
+                            },
+                            {
+                              "name": "THEN System opens corresponding file or folder",
+                              "text": "THEN System opens corresponding file or folder",
+                              "sequential_order": 42.0
+                            }
+                          ]
+                        },
+                        {
+                          "name": "Display Files Filtered By Story Scope",
+                          "sequential_order": 2.5,
+                          "connector": "and",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestDisplayFilesFilteredByStoryScope",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Filter File Scope",
+                          "sequential_order": 3.0,
+                          "connector": "and",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestFilterFileScope",
+                          "scenarios": [
+                            {
+                              "name": "",
+                              "sequential_order": 1.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays scope section\nWhen User types file:src/**/*.py in scope filter\nThen Panel displays file scope mode\nAnd Panel displays list of Python files in src directory\nAnd File paths are displayed in monospace font"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 2.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays scope section\nWhen User types file:**/*.spec.js in scope filter\nThen Panel displays all JavaScript test files\nAnd Files are displayed with full relative paths"
+                            }
+                          ],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": [
+                            {
+                              "name": "WHEN User types file pattern in filter",
+                              "text": "WHEN User types file pattern in filter",
+                              "sequential_order": 1.0
+                            },
+                            {
+                              "name": "THEN System displays filtered file list",
+                              "text": "THEN System displays filtered file list",
+                              "sequential_order": 2.0
+                            },
+                            {
+                              "name": "AND System displays file list with monospace paths",
+                              "text": "AND System displays file list with monospace paths",
+                              "sequential_order": 3.0
+                            }
+                          ]
+                        },
+                        {
+                          "name": "Open Story Files",
+                          "sequential_order": 9.0,
+                          "connector": "and",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestOpenStoryFiles",
+                          "scenarios": [
+                            {
+                              "name": "",
+                              "sequential_order": 1.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays scope section with graph link\nWhen User clicks Graph link\nThen VS Code opens story-graph.json in editor\nAnd File is displayed with JSON syntax highlighting"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 2.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays scope section with map link\nWhen User clicks map link\nThen VS Code opens story-map.drawio in diagram viewer\nAnd Diagram is displayed with Draw.io extension"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 3.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": null,
+                              "steps": "Given Panel displays link to non-existent file\nWhen User clicks link\nThen Panel displays error message\nAnd Error message indicates file not found"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 4.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": "test_story_graph_and_story_map_links_always_visible",
+                              "steps": "Given Panel displays scope section\nAnd Scope may be filtered or showing all stories\nWhen User views scope header\nThen story-graph.json link is always visible\nAnd story-map.md link is always visible\nAnd Links persist regardless of filter state\nAnd Links are positioned consistently in header"
+                            }
+                          ],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": [
+                            {
+                              "name": "WHEN User clicks graph link",
+                              "text": "WHEN User clicks graph link",
+                              "sequential_order": 1.0
+                            },
+                            {
+                              "name": "THEN System opens story-graph.json in editor",
+                              "text": "THEN System opens story-graph.json in editor",
+                              "sequential_order": 2.0
+                            },
+                            {
+                              "name": "WHEN User clicks map link",
+                              "text": "WHEN User clicks map link",
+                              "sequential_order": 3.0
+                            },
+                            {
+                              "name": "THEN System opens story-map.drawio in diagram viewer",
+                              "text": "THEN System opens story-map.drawio in diagram viewer",
+                              "sequential_order": 4.0
+                            },
+                            {
+                              "name": "WHEN System cannot open file",
+                              "text": "WHEN System cannot open file",
+                              "sequential_order": 5.0
+                            },
+                            {
+                              "name": "THEN System displays error message",
+                              "text": "THEN System displays error message",
+                              "sequential_order": 6.0
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "stories": [
+                    {
+                      "name": "Filter Story Scope",
+                      "sequential_order": 1.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestFilterStoryScope",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 18.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays scope section with full story hierarchy\nWhen User types Open Panel in scope filter\nThen Panel displays filtered hierarchy showing Open Panel story\nAnd Panel displays Open Panel parent sub-epic (Manage Panel Session)\nAnd Panel displays parent epic (Invoke Bot Through Panel)"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 19.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays full story hierarchy\nWhen User types Invoke Bot in scope filter\nThen Panel displays Invoke Bot epic\nAnd Panel displays all sub-epics under Invoke Bot\nAnd Sub-epics are initially collapsed"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 20.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays filtered scope showing only Open Panel story\nWhen User clicks clear filter button\nThen Panel displays all stories in full hierarchy\nAnd All epics are visible"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 21.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is open\nWhen User types Open Panel in scope filter\nAnd Panel displays filtered hierarchy\nAnd User refreshes panel\nThen Panel displays same filtered hierarchy\nAnd Scope filter input shows Open Panel\nAnd Filter value was persisted and restored"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User types story name in filter",
+                          "text": "WHEN User types story name in filter",
+                          "sequential_order": 0.0
+                        },
+                        {
+                          "name": "THEN System refreshes story hierarchy based on new story scope",
+                          "text": "THEN System refreshes story hierarchy based on new story scope",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "WHEN Filter matches epic",
+                          "text": "WHEN Filter matches epic",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
+                          "text": "THEN System displays epic with all sub-epics and stories collapsed beneath it",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "WHEN Filter matches sub-epic",
+                          "text": "WHEN Filter matches sub-epic",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "THEN System displays sub-epic with all stories collapsed beneath it",
+                          "text": "THEN System displays sub-epic with all stories collapsed beneath it",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "WHEN Filter matches story",
+                          "text": "WHEN Filter matches story",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "THEN System displays that story with its acceptance criteria",
+                          "text": "THEN System displays that story with its acceptance criteria",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "WHEN User clicks story with acceptance criteria",
+                          "text": "WHEN User clicks story with acceptance criteria",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "THEN System expands story showing acceptance criteria list",
+                          "text": "THEN System expands story showing acceptance criteria list",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "WHEN Filter matches multiple items",
+                          "text": "WHEN Filter matches multiple items",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
+                          "text": "THEN System displays all matches in hierarchical format preserving parent-child relationships",
+                          "sequential_order": 11.0
+                        },
+                        {
+                          "name": "WHEN User clicks clear filter button",
+                          "text": "WHEN User clicks clear filter button",
+                          "sequential_order": 12.0
+                        },
+                        {
+                          "name": "THEN System displays all stories",
+                          "text": "THEN System displays all stories",
+                          "sequential_order": 13.0
+                        },
+                        {
+                          "name": "WHEN User sets scope filter",
+                          "text": "WHEN User sets scope filter",
+                          "sequential_order": 14.0
+                        },
+                        {
+                          "name": "THEN System persists scope filter value",
+                          "text": "THEN System persists scope filter value",
+                          "sequential_order": 15.0
+                        },
+                        {
+                          "name": "WHEN Panel refreshes",
+                          "text": "WHEN Panel refreshes",
+                          "sequential_order": 16.0
+                        },
+                        {
+                          "name": "THEN System restores previously set scope filter",
+                          "text": "THEN System restores previously set scope filter",
+                          "sequential_order": 17.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Show All Scope Through Panel",
+                      "sequential_order": 1.5,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestShowAllScopeThroughPanel",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_clicks_show_all_to_clear_filter",
+                          "steps": "Given Panel displays filtered scope showing only Open Panel story\nAnd Show All button is visible\nWhen User clicks Show All button\nThen Panel calls scope showall via CLI\nAnd Scope filter is cleared\nAnd Panel displays all epics, sub-epics, and stories\nAnd Filter input is empty"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_show_all_button_is_visible_when_scope_is_filtered",
+                          "steps": "Given Panel has no scope filter applied\nWhen User views scope section\nThen Show All button is not visible\nWhen User applies filter to scope\nThen Show All button becomes visible"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User has filtered scope",
+                          "text": "WHEN User has filtered scope",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays Show All button",
+                          "text": "THEN System displays Show All button",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "WHEN User clicks Show All button",
+                          "text": "WHEN User clicks Show All button",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "THEN System calls scope showall command via CLI",
+                          "text": "THEN System calls scope showall command via CLI",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "AND System clears scope filter",
+                          "text": "AND System clears scope filter",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "AND Panel displays complete unfiltered story hierarchy",
+                          "text": "AND Panel displays complete unfiltered story hierarchy",
+                          "sequential_order": 6.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Display Story Scope Hierarchy",
+                      "sequential_order": 2.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplayStoryScopeHierarchy",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Story graph has epics with nested sub-epics\nWhen User views scope section\nThen Panel displays epic names (Invoke Bot)\nWhen User expands Invoke Bot epic\nThen Panel displays sub-epics (Invoke Bot Through Panel, Invoke Bot Through REPL)\nWhen User expands Invoke Bot Through Panel sub-epic\nThen Panel displays nested sub-epics (Manage Panel Session, Navigate Behaviors)\nWhen User expands Manage Panel Session sub-epic\nThen Panel displays stories (Open Panel, Display Session Status)"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Story has test link displayed\nAnd Test file is test_manage_panel_session.spec.js\nAnd Test class is TestOpenPanel\nWhen User clicks test link for Open Panel story\nThen VS Code opens test_manage_panel_session.spec.js file\nAnd Editor scrolls to TestOpenPanel class"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Story has story file link displayed\nAnd Story file is Open Panel.md\nWhen User clicks story link for Open Panel\nThen VS Code opens Open Panel.md file in editor"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Story has test link displayed\nAnd Test file does not exist\nWhen User clicks test link\nThen Panel displays error message\nAnd Error message indicates file not found"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 5.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Epic has test file\nAnd Sub-epic has test file\nAnd Story has test class\nAnd Scenario has test method\nWhen Panel renders scope hierarchy\nThen Test tube icon appears next to epic name\nAnd Test tube icon appears next to sub-epic name\nAnd Test tube icon appears next to story name\nAnd Test tube icon appears next to scenario name\nAnd All test tube icons show correct test_tube.png image\nAnd Test tube icons are large enough to see clearly"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 6.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays scope hierarchy with epics and sub-epics\nWhen User clicks epic name\nThen VS Code reveals epic folder in explorer\nWhen User clicks sub-epic name\nThen VS Code reveals sub-epic folder in explorer"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 7.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays scope hierarchy with stories\nAnd Story has matching markdown file\nWhen User clicks story name\nThen VS Code opens story markdown file in editor"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 8.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Story has scenarios with test methods\nAnd Scenario test method is at line 145 in test file\nWhen User clicks scenario test tube icon\nThen VS Code opens test file\nAnd Editor scrolls to line 145\nAnd Test method definition is visible at cursor"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 9.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Story markdown file has scenario sections with anchors\nAnd Scenario is named User expands collapsed section\nWhen User clicks scenario name in panel\nThen VS Code opens story markdown file\nAnd Editor scrolls to scenario anchor\nAnd Scenario section is visible with heading"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 10.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Epic has matching folder in docs/stories/map\nAnd Sub-epic has matching folder\nWhen User clicks epic name link\nThen VS Code reveals folder in explorer view\nWhen User clicks sub-epic name link\nThen VS Code reveals sub-epic folder in explorer view"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User views story scope",
+                          "text": "WHEN User views story scope",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays epic list collapsed",
+                          "text": "THEN System displays epic list collapsed",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed epic expand icon",
+                          "text": "WHEN User clicks collapsed epic expand icon",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "AND epic has sub-epics",
+                          "text": "AND epic has sub-epics",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "THEN System expands epic showing sub-epics collapsed beneath it",
+                          "text": "THEN System expands epic showing sub-epics collapsed beneath it",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "WHEN User clicks epic name",
+                          "text": "WHEN User clicks epic name",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "AND matching epic folder exists",
+                          "text": "AND matching epic folder exists",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "THEN System opens epic folder in IDE explorer",
+                          "text": "THEN System opens epic folder in IDE explorer",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "WHEN Epic has test file",
+                          "text": "WHEN Epic has test file",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "THEN System displays test tube icon next to epic name",
+                          "text": "THEN System displays test tube icon next to epic name",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "WHEN User clicks epic test link",
+                          "text": "WHEN User clicks epic test link",
+                          "sequential_order": 11.0
+                        },
+                        {
+                          "name": "THEN System opens test file in editor",
+                          "text": "THEN System opens test file in editor",
+                          "sequential_order": 12.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed sub-epic expand icon",
+                          "text": "WHEN User clicks collapsed sub-epic expand icon",
+                          "sequential_order": 13.0
+                        },
+                        {
+                          "name": "AND matching sub-epic has stories",
+                          "text": "AND matching sub-epic has stories",
+                          "sequential_order": 14.0
+                        },
+                        {
+                          "name": "THEN System expands sub-epic showing stories collapsed beneath it",
+                          "text": "THEN System expands sub-epic showing stories collapsed beneath it",
+                          "sequential_order": 15.0
+                        },
+                        {
+                          "name": "WHEN Sub-epic has test file",
+                          "text": "WHEN Sub-epic has test file",
+                          "sequential_order": 16.0
+                        },
+                        {
+                          "name": "THEN System displays test tube icon next to sub-epic name",
+                          "text": "THEN System displays test tube icon next to sub-epic name",
+                          "sequential_order": 17.0
+                        },
+                        {
+                          "name": "WHEN User clicks sub-epic test link",
+                          "text": "WHEN User clicks sub-epic test link",
+                          "sequential_order": 18.0
+                        },
+                        {
+                          "name": "THEN System opens test file in editor",
+                          "text": "THEN System opens test file in editor",
+                          "sequential_order": 19.0
+                        },
+                        {
+                          "name": "WHEN User clicks sub-epic name",
+                          "text": "WHEN User clicks sub-epic name",
+                          "sequential_order": 20.0
+                        },
+                        {
+                          "name": "THEN System opens sub-epic folder in IDE explorer",
+                          "text": "THEN System opens sub-epic folder in IDE explorer",
+                          "sequential_order": 21.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed story expand icon",
+                          "text": "WHEN User clicks collapsed story expand icon",
+                          "sequential_order": 22.0
+                        },
+                        {
+                          "name": "AND matching sub-epic has stories",
+                          "text": "AND matching sub-epic has stories",
+                          "sequential_order": 23.0
+                        },
+                        {
+                          "name": "THEN System expands story showing scenarios collapsed beneath it",
+                          "text": "THEN System expands story showing scenarios collapsed beneath it",
+                          "sequential_order": 24.0
+                        },
+                        {
+                          "name": "WHEN User clicks story name",
+                          "text": "WHEN User clicks story name",
+                          "sequential_order": 25.0
+                        },
+                        {
+                          "name": "THEN System opens story markdown file in editor",
+                          "text": "THEN System opens story markdown file in editor",
+                          "sequential_order": 26.0
+                        },
+                        {
+                          "name": "WHEN Story has test file",
+                          "text": "WHEN Story has test file",
+                          "sequential_order": 27.0
+                        },
+                        {
+                          "name": "THEN System displays test tube icon next to story name",
+                          "text": "THEN System displays test tube icon next to story name",
+                          "sequential_order": 28.0
+                        },
+                        {
+                          "name": "WHEN User clicks story test link",
+                          "text": "WHEN User clicks story test link",
+                          "sequential_order": 29.0
+                        },
+                        {
+                          "name": "THEN System opens test file at test class",
+                          "text": "THEN System opens test file at test class",
+                          "sequential_order": 30.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed story expand icon",
+                          "text": "WHEN User clicks collapsed story expand icon",
+                          "sequential_order": 31.0
+                        },
+                        {
+                          "name": "THEN System expands story showing scenarios",
+                          "text": "THEN System expands story showing scenarios",
+                          "sequential_order": 32.0
+                        },
+                        {
+                          "name": "WHEN User clicks scenario name",
+                          "text": "WHEN User clicks scenario name",
+                          "sequential_order": 33.0
+                        },
+                        {
+                          "name": "THEN System opens story markdown file at scenario anchor",
+                          "text": "THEN System opens story markdown file at scenario anchor",
+                          "sequential_order": 34.0
+                        },
+                        {
+                          "name": "WHEN Scenario has test method",
+                          "text": "WHEN Scenario has test method",
+                          "sequential_order": 35.0
+                        },
+                        {
+                          "name": "THEN System displays test tube icon next to scenario name",
+                          "text": "THEN System displays test tube icon next to scenario name",
+                          "sequential_order": 36.0
+                        },
+                        {
+                          "name": "WHEN User clicks scenario test link",
+                          "text": "WHEN User clicks scenario test link",
+                          "sequential_order": 37.0
+                        },
+                        {
+                          "name": "THEN System opens test file at scenario test method line",
+                          "text": "THEN System opens test file at scenario test method line",
+                          "sequential_order": 38.0
+                        },
+                        {
+                          "name": "WHEN Test tube icon is displayed",
+                          "text": "WHEN Test tube icon is displayed",
+                          "sequential_order": 39.0
+                        },
+                        {
+                          "name": "THEN System shows correct test tube image",
+                          "text": "THEN System shows correct test tube image",
+                          "sequential_order": 40.0
+                        },
+                        {
+                          "name": "WHEN User clicks epic or sub-epic or story name",
+                          "text": "WHEN User clicks epic or sub-epic or story name",
+                          "sequential_order": 41.0
+                        },
+                        {
+                          "name": "THEN System opens corresponding file or folder",
+                          "text": "THEN System opens corresponding file or folder",
+                          "sequential_order": 42.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Display Files Filtered By Story Scope",
+                      "sequential_order": 2.5,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplayFilesFilteredByStoryScope",
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Filter File Scope",
+                      "sequential_order": 3.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestFilterFileScope",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays scope section\nWhen User types file:src/**/*.py in scope filter\nThen Panel displays file scope mode\nAnd Panel displays list of Python files in src directory\nAnd File paths are displayed in monospace font"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays scope section\nWhen User types file:**/*.spec.js in scope filter\nThen Panel displays all JavaScript test files\nAnd Files are displayed with full relative paths"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User types file pattern in filter",
+                          "text": "WHEN User types file pattern in filter",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays filtered file list",
+                          "text": "THEN System displays filtered file list",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System displays file list with monospace paths",
+                          "text": "AND System displays file list with monospace paths",
+                          "sequential_order": 3.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Open Story Files",
+                      "sequential_order": 9.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestOpenStoryFiles",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays scope section with graph link\nWhen User clicks Graph link\nThen VS Code opens story-graph.json in editor\nAnd File is displayed with JSON syntax highlighting"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays scope section with map link\nWhen User clicks map link\nThen VS Code opens story-map.drawio in diagram viewer\nAnd Diagram is displayed with Draw.io extension"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays link to non-existent file\nWhen User clicks link\nThen Panel displays error message\nAnd Error message indicates file not found"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_story_graph_and_story_map_links_always_visible",
+                          "steps": "Given Panel displays scope section\nAnd Scope may be filtered or showing all stories\nWhen User views scope header\nThen story-graph.json link is always visible\nAnd story-map.md link is always visible\nAnd Links persist regardless of filter state\nAnd Links are positioned consistently in header"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User clicks graph link",
+                          "text": "WHEN User clicks graph link",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System opens story-graph.json in editor",
+                          "text": "THEN System opens story-graph.json in editor",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "WHEN User clicks map link",
+                          "text": "WHEN User clicks map link",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "THEN System opens story-map.drawio in diagram viewer",
+                          "text": "THEN System opens story-map.drawio in diagram viewer",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "WHEN System cannot open file",
+                          "text": "WHEN System cannot open file",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "THEN System displays error message",
+                          "text": "THEN System displays error message",
+                          "sequential_order": 6.0
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "Filter on Increment Scope in Panel",
+                  "sequential_order": 3.0,
+                  "sub_epics": [],
+                  "story_groups": [
+                    {
+                      "name": "",
+                      "sequential_order": 0.0,
+                      "type": "and",
+                      "connector": null,
+                      "stories": [
+                        {
+                          "name": "Display Increment Scope View",
+                          "sequential_order": 1.0,
+                          "connector": "or",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestDisplayIncrementScopeView",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Add Increment Filter Part To Story Scope",
+                          "sequential_order": 2.0,
+                          "connector": "or",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestAddIncrementFilterPartToStoryScope",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Remove Increment Filter Part From Story Scope",
+                          "sequential_order": 3.0,
+                          "connector": "or",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        }
+                      ]
+                    }
+                  ],
+                  "stories": [
+                    {
+                      "name": "Display Increment Scope View",
+                      "sequential_order": 1.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplayIncrementScopeView",
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Add Increment Filter Part To Story Scope",
+                      "sequential_order": 2.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestAddIncrementFilterPartToStoryScope",
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Remove Increment Filter Part From Story Scope",
+                      "sequential_order": 3.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Manage File Scope Using REPL",
+                  "sequential_order": 4.0,
+                  "sub_epics": [],
                   "story_groups": [],
                   "stories": []
                 }
