@@ -908,7 +908,7 @@
           "sequential_order": 0.0,
           "sub_epics": [
             {
-              "name": "Navigate And Execute Behaviors",
+              "name": "Perform Behaviors Using Action State",
               "sequential_order": 0.0,
               "sub_epics": [],
               "story_groups": [
@@ -974,8 +974,119 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Execute End To End Workflow",
+                      "name": "Manage Behaviors",
                       "sequential_order": 1.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestManageBehaviors",
+                      "scenarios": [
+                        {
+                          "name": "Behaviors current property returns current behavior",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_current_property_returns_current_behavior",
+                          "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
+                        },
+                        {
+                          "name": "Behaviors navigate to behavior updates current behavior",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
+                          "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
+                        },
+                        {
+                          "name": "Behaviors close current marks behavior and action complete",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
+                          "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
+                        },
+                        {
+                          "name": "Behaviors execute current executes current behavior",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_execute_current_executes_current_behavior",
+                          "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
+                        },
+                        {
+                          "name": "Behavior can be found by name when it exists.",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_behavior_by_name",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Finding behavior by name returns None when behavior doesn't exist.",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_behavior_returns_none_when_not_found",
+                          "steps": ""
+                        },
+                        {
+                          "name": "All behaviors can be iterated.",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_iterate_all_behaviors",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Can check if a behavior exists.",
+                          "sequential_order": 8.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_check_behavior_exists",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Action can be found by name when it exists.",
+                          "sequential_order": 9.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_action_by_name",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Finding action by name returns None when action doesn't exist.",
+                          "sequential_order": 10.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_action_returns_none_when_not_found",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Action can be found by order when it exists.",
+                          "sequential_order": 11.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_action_by_order",
+                          "steps": ""
+                        },
+                        {
+                          "name": "All actions can be iterated.",
+                          "sequential_order": 12.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_iterate_all_actions",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Proceed across End To End Workflow",
+                      "sequential_order": 2.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -1006,7 +1117,7 @@
                     },
                     {
                       "name": "Track Activity For Workspace",
-                      "sequential_order": 2.0,
+                      "sequential_order": 4.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -1036,148 +1147,115 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Advance Action And Persist State",
-                      "sequential_order": 3.0,
-                      "connector": "and",
-                      "story_type": "system",
-                      "users": [
-                        "System"
-                      ],
-                      "test_file": null,
-                      "test_class": null,
-                      "scenarios": [
-                        {
-                          "name": "Close current advances and persists state",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_close_current_advances_and_persists_state",
-                          "steps": "GIVEN: bot.behaviors.current is at clarify action\nWHEN: actions.close_current() is called\nTHEN: actions.current_action_name == 'strategy'\nAND: 'story_bot.shape.clarify' in completed_actions\nAND: state.current_action == 'story_bot.shape.strategy'"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Show Remaining Actions After Completion",
-                      "sequential_order": 4.0,
-                      "connector": "and",
-                      "story_type": "system",
-                      "users": [
-                        "System"
-                      ],
-                      "test_file": null,
-                      "test_class": null,
-                      "scenarios": [
-                        {
-                          "name": "Remaining actions respects completion",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_remaining_actions_respects_completion",
-                          "steps": "GIVEN: bot.behaviors.current is at clarify action\nWHEN: actions.close_current() is called\nTHEN: 'clarify' not in actions.remaining_actions\nAND: actions.remaining_actions == ['validate', 'render']"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Execute Behavior Action Panel",
+                      "name": "Track Action Start",
                       "sequential_order": 5.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
-                        "User"
+                        "Bot Behavior"
                       ],
                       "test_file": null,
-                      "test_class": "TestExecuteBehaviorAction",
+                      "test_class": "TestTrackActionStart",
                       "scenarios": [
                         {
-                          "name": "",
-                          "sequential_order": 12.0,
+                          "name": "Activity logging infrastructure exists",
+                          "sequential_order": 1.0,
                           "type": "",
                           "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 13.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 14.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
+                          "test_method": "test_activity_log_exists_after_action_execution",
+                          "steps": "Given Bot is ready to execute action\nWhen Action starts execution\nThen Activity log file exists or activity is trackable"
                         }
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": [
                         {
-                          "name": "WHEN User clicks behavior",
-                          "text": "WHEN User clicks behavior",
-                          "sequential_order": 0.0
-                        },
-                        {
-                          "name": "THEN System displays that behavior as current",
-                          "text": "THEN System displays that behavior as current",
+                          "name": "WHEN Action starts execution",
+                          "text": "WHEN Action starts execution",
                           "sequential_order": 1.0
                         },
                         {
-                          "name": "AND System expands behavior",
-                          "text": "AND System expands behavior",
+                          "name": "THEN Activity entry is created with timestamp and action state",
+                          "text": "THEN Activity entry is created with timestamp and action state",
                           "sequential_order": 2.0
                         },
                         {
-                          "name": "AND System expands first action to display operations",
-                          "text": "AND System expands first action to display operations",
+                          "name": "AND Entry appended to activity_log.json",
+                          "text": "AND Entry appended to activity_log.json",
+                          "sequential_order": 3.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Track Action Completion",
+                      "sequential_order": 6.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestTrackActionCompletion",
+                      "scenarios": [
+                        {
+                          "name": "Action completion tracking",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_action_completion_is_tracked",
+                          "steps": "Given Action has executed\nWhen Action completes\nThen Completion is tracked in completed_actions"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN Action completes execution",
+                          "text": "WHEN Action completes execution",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN Activity entry is updated with outputs and duration",
+                          "text": "THEN Activity entry is updated with outputs and duration",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND Entry appended to activity_log.json",
+                          "text": "AND Entry appended to activity_log.json",
+                          "sequential_order": 3.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Record Activity Metrics And Paths",
+                      "sequential_order": 7.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestRecordActivityMetricsAndPaths",
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN Activity is tracked",
+                          "text": "WHEN Activity is tracked",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN Metrics include file counts and content types",
+                          "text": "THEN Metrics include file counts and content types",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND Paths include file paths not content",
+                          "text": "AND Paths include file paths not content",
                           "sequential_order": 3.0
                         },
                         {
-                          "name": "AND System sets first action as current",
-                          "text": "AND System sets first action as current",
+                          "name": "AND Activity log captures metrics and paths",
+                          "text": "AND Activity log captures metrics and paths",
                           "sequential_order": 4.0
-                        },
-                        {
-                          "name": "AND System sets first operation as current",
-                          "text": "AND System sets first operation as current",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "AND System executes first operation of first action of that behavior",
-                          "text": "AND System executes first operation of first action of that behavior",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "WHEN User clicks action",
-                          "text": "WHEN User clicks action",
-                          "sequential_order": 7.0
-                        },
-                        {
-                          "name": "THEN System displays that action as current",
-                          "text": "THEN System displays that action as current",
-                          "sequential_order": 8.0
-                        },
-                        {
-                          "name": "AND System expands action to display operations",
-                          "text": "AND System expands action to display operations",
-                          "sequential_order": 9.0
-                        },
-                        {
-                          "name": "AND System sets first operation as current",
-                          "text": "AND System sets first operation as current",
-                          "sequential_order": 10.0
-                        },
-                        {
-                          "name": "AND System executes first operation of that action",
-                          "text": "AND System executes first operation of that action",
-                          "sequential_order": 11.0
                         }
                       ]
                     }
@@ -1241,8 +1319,119 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Execute End To End Workflow",
+                  "name": "Manage Behaviors",
                   "sequential_order": 1.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestManageBehaviors",
+                  "scenarios": [
+                    {
+                      "name": "Behaviors current property returns current behavior",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_current_property_returns_current_behavior",
+                      "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
+                    },
+                    {
+                      "name": "Behaviors navigate to behavior updates current behavior",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
+                      "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
+                    },
+                    {
+                      "name": "Behaviors close current marks behavior and action complete",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
+                      "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
+                    },
+                    {
+                      "name": "Behaviors execute current executes current behavior",
+                      "sequential_order": 4.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_execute_current_executes_current_behavior",
+                      "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
+                    },
+                    {
+                      "name": "Behavior can be found by name when it exists.",
+                      "sequential_order": 5.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_behavior_by_name",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Finding behavior by name returns None when behavior doesn't exist.",
+                      "sequential_order": 6.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_behavior_returns_none_when_not_found",
+                      "steps": ""
+                    },
+                    {
+                      "name": "All behaviors can be iterated.",
+                      "sequential_order": 7.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_iterate_all_behaviors",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Can check if a behavior exists.",
+                      "sequential_order": 8.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_check_behavior_exists",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Action can be found by name when it exists.",
+                      "sequential_order": 9.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_action_by_name",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Finding action by name returns None when action doesn't exist.",
+                      "sequential_order": 10.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_action_returns_none_when_not_found",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Action can be found by order when it exists.",
+                      "sequential_order": 11.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_action_by_order",
+                      "steps": ""
+                    },
+                    {
+                      "name": "All actions can be iterated.",
+                      "sequential_order": 12.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_iterate_all_actions",
+                      "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Proceed across End To End Workflow",
+                  "sequential_order": 2.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -1273,7 +1462,7 @@
                 },
                 {
                   "name": "Track Activity For Workspace",
-                  "sequential_order": 2.0,
+                  "sequential_order": 4.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -1303,155 +1492,122 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Advance Action And Persist State",
-                  "sequential_order": 3.0,
-                  "connector": "and",
-                  "story_type": "system",
-                  "users": [
-                    "System"
-                  ],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenarios": [
-                    {
-                      "name": "Close current advances and persists state",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_close_current_advances_and_persists_state",
-                      "steps": "GIVEN: bot.behaviors.current is at clarify action\nWHEN: actions.close_current() is called\nTHEN: actions.current_action_name == 'strategy'\nAND: 'story_bot.shape.clarify' in completed_actions\nAND: state.current_action == 'story_bot.shape.strategy'"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Show Remaining Actions After Completion",
-                  "sequential_order": 4.0,
-                  "connector": "and",
-                  "story_type": "system",
-                  "users": [
-                    "System"
-                  ],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenarios": [
-                    {
-                      "name": "Remaining actions respects completion",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_remaining_actions_respects_completion",
-                      "steps": "GIVEN: bot.behaviors.current is at clarify action\nWHEN: actions.close_current() is called\nTHEN: 'clarify' not in actions.remaining_actions\nAND: actions.remaining_actions == ['validate', 'render']"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Execute Behavior Action Panel",
+                  "name": "Track Action Start",
                   "sequential_order": 5.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
-                    "User"
+                    "Bot Behavior"
                   ],
                   "test_file": null,
-                  "test_class": "TestExecuteBehaviorAction",
+                  "test_class": "TestTrackActionStart",
                   "scenarios": [
                     {
-                      "name": "",
-                      "sequential_order": 12.0,
+                      "name": "Activity logging infrastructure exists",
+                      "sequential_order": 1.0,
                       "type": "",
                       "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 13.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 14.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
+                      "test_method": "test_activity_log_exists_after_action_execution",
+                      "steps": "Given Bot is ready to execute action\nWhen Action starts execution\nThen Activity log file exists or activity is trackable"
                     }
                   ],
                   "scenario_outlines": [],
                   "acceptance_criteria": [
                     {
-                      "name": "WHEN User clicks behavior",
-                      "text": "WHEN User clicks behavior",
-                      "sequential_order": 0.0
-                    },
-                    {
-                      "name": "THEN System displays that behavior as current",
-                      "text": "THEN System displays that behavior as current",
+                      "name": "WHEN Action starts execution",
+                      "text": "WHEN Action starts execution",
                       "sequential_order": 1.0
                     },
                     {
-                      "name": "AND System expands behavior",
-                      "text": "AND System expands behavior",
+                      "name": "THEN Activity entry is created with timestamp and action state",
+                      "text": "THEN Activity entry is created with timestamp and action state",
                       "sequential_order": 2.0
                     },
                     {
-                      "name": "AND System expands first action to display operations",
-                      "text": "AND System expands first action to display operations",
+                      "name": "AND Entry appended to activity_log.json",
+                      "text": "AND Entry appended to activity_log.json",
+                      "sequential_order": 3.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Track Action Completion",
+                  "sequential_order": 6.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestTrackActionCompletion",
+                  "scenarios": [
+                    {
+                      "name": "Action completion tracking",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_action_completion_is_tracked",
+                      "steps": "Given Action has executed\nWhen Action completes\nThen Completion is tracked in completed_actions"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN Action completes execution",
+                      "text": "WHEN Action completes execution",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN Activity entry is updated with outputs and duration",
+                      "text": "THEN Activity entry is updated with outputs and duration",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND Entry appended to activity_log.json",
+                      "text": "AND Entry appended to activity_log.json",
+                      "sequential_order": 3.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Record Activity Metrics And Paths",
+                  "sequential_order": 7.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestRecordActivityMetricsAndPaths",
+                  "scenarios": [],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN Activity is tracked",
+                      "text": "WHEN Activity is tracked",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN Metrics include file counts and content types",
+                      "text": "THEN Metrics include file counts and content types",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND Paths include file paths not content",
+                      "text": "AND Paths include file paths not content",
                       "sequential_order": 3.0
                     },
                     {
-                      "name": "AND System sets first action as current",
-                      "text": "AND System sets first action as current",
+                      "name": "AND Activity log captures metrics and paths",
+                      "text": "AND Activity log captures metrics and paths",
                       "sequential_order": 4.0
-                    },
-                    {
-                      "name": "AND System sets first operation as current",
-                      "text": "AND System sets first operation as current",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "AND System executes first operation of first action of that behavior",
-                      "text": "AND System executes first operation of first action of that behavior",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "WHEN User clicks action",
-                      "text": "WHEN User clicks action",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "THEN System displays that action as current",
-                      "text": "THEN System displays that action as current",
-                      "sequential_order": 8.0
-                    },
-                    {
-                      "name": "AND System expands action to display operations",
-                      "text": "AND System expands action to display operations",
-                      "sequential_order": 9.0
-                    },
-                    {
-                      "name": "AND System sets first operation as current",
-                      "text": "AND System sets first operation as current",
-                      "sequential_order": 10.0
-                    },
-                    {
-                      "name": "AND System executes first operation of that action",
-                      "text": "AND System executes first operation of that action",
-                      "sequential_order": 11.0
                     }
                   ]
                 }
               ]
             },
             {
-              "name": "Display State Using REPL",
+              "name": "Display Behavior Action State",
               "sequential_order": 1.0,
               "sub_epics": [],
               "story_groups": [
@@ -1463,7 +1619,7 @@
                   "stories": [
                     {
                       "name": "Display Bot Hierarchy Tree with Progress Indicators CLI",
-                      "sequential_order": 2.0,
+                      "sequential_order": 0.0,
                       "connector": "and",
                       "story_type": "system",
                       "users": [
@@ -1520,7 +1676,7 @@
                     },
                     {
                       "name": "Display Current Position in CLI",
-                      "sequential_order": 3.0,
+                      "sequential_order": 1.0,
                       "connector": "and",
                       "story_type": "system",
                       "users": [
@@ -1571,68 +1727,8 @@
                       ]
                     },
                     {
-                      "name": "Display Active Scope in CLI Status",
-                      "sequential_order": 4.0,
-                      "connector": "and",
-                      "story_type": "system",
-                      "users": [
-                        "CLI"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestViewActiveScope",
-                      "scenarios": [
-                        {
-                          "name": "User views active scope in status",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_views_active_scope_in_status",
-                          "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'status'\nTHEN: CLI displays active scope section"
-                        },
-                        {
-                          "name": "Status shows no active scope when cleared",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_status_shows_no_active_scope_when_cleared",
-                          "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'status'\nTHEN: CLI displays 'No active scope filters'"
-                        },
-                        {
-                          "name": "Status shows combined scope filters",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_status_shows_combined_scope_filters",
-                          "steps": "GIVEN: CLI is at code.validate.instructions\nWHEN: user enters 'status'\nTHEN: CLI displays both knowledge graph and files scope"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN user views status with active scope\nTHEN CLI displays active scope section",
-                          "text": "WHEN user views status with active scope\nTHEN CLI displays active scope section",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "WHEN no scope is active\nTHEN CLI displays no active scope filters message",
-                          "text": "WHEN no scope is active\nTHEN CLI displays no active scope filters message",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "WHEN multiple scope filters are active\nTHEN CLI displays all active filters",
-                          "text": "WHEN multiple scope filters are active\nTHEN CLI displays all active filters",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "WHEN scope is cleared\nTHEN CLI updates status to show no active scope",
-                          "text": "WHEN scope is cleared\nTHEN CLI updates status to show no active scope",
-                          "sequential_order": 4.0
-                        }
-                      ]
-                    },
-                    {
                       "name": "Display CLI Navigation Menu Footer",
-                      "sequential_order": 5.0,
+                      "sequential_order": 2.0,
                       "connector": "and",
                       "story_type": "system",
                       "users": [
@@ -1673,6 +1769,185 @@
                           "sequential_order": 4.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Display Hierarchy In Panel",
+                      "sequential_order": 3.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplayHierarchy",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 5.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User views panel",
+                          "text": "WHEN User views panel",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays behavior list with actions",
+                          "text": "THEN System displays behavior list with actions",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "WHEN Action is current",
+                          "text": "WHEN Action is current",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "THEN System displays current action in-progress indicator",
+                          "text": "THEN System displays current action in-progress indicator",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "WHEN Action is completed",
+                          "text": "WHEN Action is completed",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "THEN System displays completed indicator",
+                          "text": "THEN System displays completed indicator",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "WHEN Action is pending",
+                          "text": "WHEN Action is pending",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "THEN System displays pending indicator",
+                          "text": "THEN System displays pending indicator",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed behavior",
+                          "text": "WHEN User clicks collapsed behavior",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "THEN System expands behavior showing actions",
+                          "text": "THEN System expands behavior showing actions",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "WHEN User clicks expanded behavior",
+                          "text": "WHEN User clicks expanded behavior",
+                          "sequential_order": 11.0
+                        },
+                        {
+                          "name": "THEN System collapses behavior hiding actions",
+                          "text": "THEN System collapses behavior hiding actions",
+                          "sequential_order": 12.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed action",
+                          "text": "WHEN User clicks collapsed action",
+                          "sequential_order": 13.0
+                        },
+                        {
+                          "name": "THEN System expands action showing operations",
+                          "text": "THEN System expands action showing operations",
+                          "sequential_order": 14.0
+                        },
+                        {
+                          "name": "WHEN User clicks expanded action",
+                          "text": "WHEN User clicks expanded action",
+                          "sequential_order": 15.0
+                        },
+                        {
+                          "name": "THEN System collapses action hiding operations",
+                          "text": "THEN System collapses action hiding operations",
+                          "sequential_order": 16.0
+                        },
+                        {
+                          "name": "WHEN User views behavior list",
+                          "text": "WHEN User views behavior list",
+                          "sequential_order": 17.0
+                        },
+                        {
+                          "name": "THEN System displays all behaviors expandable regardless of current position",
+                          "text": "THEN System displays all behaviors expandable regardless of current position",
+                          "sequential_order": 18.0
+                        },
+                        {
+                          "name": "WHEN User views behavior list",
+                          "text": "WHEN User views behavior list",
+                          "sequential_order": 19.0
+                        },
+                        {
+                          "name": "THEN System displays behaviors in correct sequential order",
+                          "text": "THEN System displays behaviors in correct sequential order",
+                          "sequential_order": 20.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Show Remaining Actions After Completion",
+                      "sequential_order": 4.0,
+                      "connector": "and",
+                      "story_type": "system",
+                      "users": [
+                        "System"
+                      ],
+                      "test_file": null,
+                      "test_class": null,
+                      "scenarios": [
+                        {
+                          "name": "Remaining actions respects completion",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_remaining_actions_respects_completion",
+                          "steps": "GIVEN: bot.behaviors.current is at clarify action\nWHEN: actions.close_current() is called\nTHEN: 'clarify' not in actions.remaining_actions\nAND: actions.remaining_actions == ['validate', 'render']"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -1680,7 +1955,7 @@
               "stories": [
                 {
                   "name": "Display Bot Hierarchy Tree with Progress Indicators CLI",
-                  "sequential_order": 2.0,
+                  "sequential_order": 0.0,
                   "connector": "and",
                   "story_type": "system",
                   "users": [
@@ -1737,7 +2012,7 @@
                 },
                 {
                   "name": "Display Current Position in CLI",
-                  "sequential_order": 3.0,
+                  "sequential_order": 1.0,
                   "connector": "and",
                   "story_type": "system",
                   "users": [
@@ -1788,68 +2063,8 @@
                   ]
                 },
                 {
-                  "name": "Display Active Scope in CLI Status",
-                  "sequential_order": 4.0,
-                  "connector": "and",
-                  "story_type": "system",
-                  "users": [
-                    "CLI"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestViewActiveScope",
-                  "scenarios": [
-                    {
-                      "name": "User views active scope in status",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_views_active_scope_in_status",
-                      "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'status'\nTHEN: CLI displays active scope section"
-                    },
-                    {
-                      "name": "Status shows no active scope when cleared",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_status_shows_no_active_scope_when_cleared",
-                      "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'status'\nTHEN: CLI displays 'No active scope filters'"
-                    },
-                    {
-                      "name": "Status shows combined scope filters",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_status_shows_combined_scope_filters",
-                      "steps": "GIVEN: CLI is at code.validate.instructions\nWHEN: user enters 'status'\nTHEN: CLI displays both knowledge graph and files scope"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN user views status with active scope\nTHEN CLI displays active scope section",
-                      "text": "WHEN user views status with active scope\nTHEN CLI displays active scope section",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "WHEN no scope is active\nTHEN CLI displays no active scope filters message",
-                      "text": "WHEN no scope is active\nTHEN CLI displays no active scope filters message",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "WHEN multiple scope filters are active\nTHEN CLI displays all active filters",
-                      "text": "WHEN multiple scope filters are active\nTHEN CLI displays all active filters",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "WHEN scope is cleared\nTHEN CLI updates status to show no active scope",
-                      "text": "WHEN scope is cleared\nTHEN CLI updates status to show no active scope",
-                      "sequential_order": 4.0
-                    }
-                  ]
-                },
-                {
                   "name": "Display CLI Navigation Menu Footer",
-                  "sequential_order": 5.0,
+                  "sequential_order": 2.0,
                   "connector": "and",
                   "story_type": "system",
                   "users": [
@@ -1890,255 +2105,191 @@
                       "sequential_order": 4.0
                     }
                   ]
-                }
-              ]
-            },
-            {
-              "name": "Track Activity",
-              "sequential_order": 2.0,
-              "sub_epics": [],
-              "story_groups": [
-                {
-                  "name": "",
-                  "sequential_order": 0.0,
-                  "type": "and",
-                  "connector": null,
-                  "stories": [
-                    {
-                      "name": "Track Action Start",
-                      "sequential_order": 1.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestTrackActionStart",
-                      "scenarios": [
-                        {
-                          "name": "Activity logging infrastructure exists",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_activity_log_exists_after_action_execution",
-                          "steps": "Given Bot is ready to execute action\nWhen Action starts execution\nThen Activity log file exists or activity is trackable"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN Action starts execution",
-                          "text": "WHEN Action starts execution",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN Activity entry is created with timestamp and action state",
-                          "text": "THEN Activity entry is created with timestamp and action state",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND Entry appended to activity_log.json",
-                          "text": "AND Entry appended to activity_log.json",
-                          "sequential_order": 3.0
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Track Action Completion",
-                      "sequential_order": 2.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestTrackActionCompletion",
-                      "scenarios": [
-                        {
-                          "name": "Action completion tracking",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_action_completion_is_tracked",
-                          "steps": "Given Action has executed\nWhen Action completes\nThen Completion is tracked in completed_actions"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN Action completes execution",
-                          "text": "WHEN Action completes execution",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN Activity entry is updated with outputs and duration",
-                          "text": "THEN Activity entry is updated with outputs and duration",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND Entry appended to activity_log.json",
-                          "text": "AND Entry appended to activity_log.json",
-                          "sequential_order": 3.0
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Record Activity Metrics And Paths",
-                      "sequential_order": 3.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestRecordActivityMetricsAndPaths",
-                      "scenarios": [],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN Activity is tracked",
-                          "text": "WHEN Activity is tracked",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN Metrics include file counts and content types",
-                          "text": "THEN Metrics include file counts and content types",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND Paths include file paths not content",
-                          "text": "AND Paths include file paths not content",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "AND Activity log captures metrics and paths",
-                          "text": "AND Activity log captures metrics and paths",
-                          "sequential_order": 4.0
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ],
-              "stories": [
-                {
-                  "name": "Track Action Start",
-                  "sequential_order": 1.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestTrackActionStart",
-                  "scenarios": [
-                    {
-                      "name": "Activity logging infrastructure exists",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_activity_log_exists_after_action_execution",
-                      "steps": "Given Bot is ready to execute action\nWhen Action starts execution\nThen Activity log file exists or activity is trackable"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN Action starts execution",
-                      "text": "WHEN Action starts execution",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN Activity entry is created with timestamp and action state",
-                      "text": "THEN Activity entry is created with timestamp and action state",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND Entry appended to activity_log.json",
-                      "text": "AND Entry appended to activity_log.json",
-                      "sequential_order": 3.0
-                    }
-                  ]
                 },
                 {
-                  "name": "Track Action Completion",
-                  "sequential_order": 2.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestTrackActionCompletion",
-                  "scenarios": [
-                    {
-                      "name": "Action completion tracking",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_action_completion_is_tracked",
-                      "steps": "Given Action has executed\nWhen Action completes\nThen Completion is tracked in completed_actions"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN Action completes execution",
-                      "text": "WHEN Action completes execution",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN Activity entry is updated with outputs and duration",
-                      "text": "THEN Activity entry is updated with outputs and duration",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND Entry appended to activity_log.json",
-                      "text": "AND Entry appended to activity_log.json",
-                      "sequential_order": 3.0
-                    }
-                  ]
-                },
-                {
-                  "name": "Record Activity Metrics And Paths",
+                  "name": "Display Hierarchy In Panel",
                   "sequential_order": 3.0,
-                  "connector": "and",
+                  "connector": null,
                   "story_type": "user",
                   "users": [
-                    "Bot Behavior"
+                    "User"
                   ],
                   "test_file": null,
-                  "test_class": "TestRecordActivityMetricsAndPaths",
-                  "scenarios": [],
+                  "test_class": "TestDisplayHierarchy",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 4.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 5.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
+                    }
+                  ],
                   "scenario_outlines": [],
                   "acceptance_criteria": [
                     {
-                      "name": "WHEN Activity is tracked",
-                      "text": "WHEN Activity is tracked",
+                      "name": "WHEN User views panel",
+                      "text": "WHEN User views panel",
                       "sequential_order": 1.0
                     },
                     {
-                      "name": "THEN Metrics include file counts and content types",
-                      "text": "THEN Metrics include file counts and content types",
+                      "name": "THEN System displays behavior list with actions",
+                      "text": "THEN System displays behavior list with actions",
                       "sequential_order": 2.0
                     },
                     {
-                      "name": "AND Paths include file paths not content",
-                      "text": "AND Paths include file paths not content",
+                      "name": "WHEN Action is current",
+                      "text": "WHEN Action is current",
                       "sequential_order": 3.0
                     },
                     {
-                      "name": "AND Activity log captures metrics and paths",
-                      "text": "AND Activity log captures metrics and paths",
+                      "name": "THEN System displays current action in-progress indicator",
+                      "text": "THEN System displays current action in-progress indicator",
                       "sequential_order": 4.0
+                    },
+                    {
+                      "name": "WHEN Action is completed",
+                      "text": "WHEN Action is completed",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "THEN System displays completed indicator",
+                      "text": "THEN System displays completed indicator",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "WHEN Action is pending",
+                      "text": "WHEN Action is pending",
+                      "sequential_order": 7.0
+                    },
+                    {
+                      "name": "THEN System displays pending indicator",
+                      "text": "THEN System displays pending indicator",
+                      "sequential_order": 8.0
+                    },
+                    {
+                      "name": "WHEN User clicks collapsed behavior",
+                      "text": "WHEN User clicks collapsed behavior",
+                      "sequential_order": 9.0
+                    },
+                    {
+                      "name": "THEN System expands behavior showing actions",
+                      "text": "THEN System expands behavior showing actions",
+                      "sequential_order": 10.0
+                    },
+                    {
+                      "name": "WHEN User clicks expanded behavior",
+                      "text": "WHEN User clicks expanded behavior",
+                      "sequential_order": 11.0
+                    },
+                    {
+                      "name": "THEN System collapses behavior hiding actions",
+                      "text": "THEN System collapses behavior hiding actions",
+                      "sequential_order": 12.0
+                    },
+                    {
+                      "name": "WHEN User clicks collapsed action",
+                      "text": "WHEN User clicks collapsed action",
+                      "sequential_order": 13.0
+                    },
+                    {
+                      "name": "THEN System expands action showing operations",
+                      "text": "THEN System expands action showing operations",
+                      "sequential_order": 14.0
+                    },
+                    {
+                      "name": "WHEN User clicks expanded action",
+                      "text": "WHEN User clicks expanded action",
+                      "sequential_order": 15.0
+                    },
+                    {
+                      "name": "THEN System collapses action hiding operations",
+                      "text": "THEN System collapses action hiding operations",
+                      "sequential_order": 16.0
+                    },
+                    {
+                      "name": "WHEN User views behavior list",
+                      "text": "WHEN User views behavior list",
+                      "sequential_order": 17.0
+                    },
+                    {
+                      "name": "THEN System displays all behaviors expandable regardless of current position",
+                      "text": "THEN System displays all behaviors expandable regardless of current position",
+                      "sequential_order": 18.0
+                    },
+                    {
+                      "name": "WHEN User views behavior list",
+                      "text": "WHEN User views behavior list",
+                      "sequential_order": 19.0
+                    },
+                    {
+                      "name": "THEN System displays behaviors in correct sequential order",
+                      "text": "THEN System displays behaviors in correct sequential order",
+                      "sequential_order": 20.0
                     }
                   ]
+                },
+                {
+                  "name": "Show Remaining Actions After Completion",
+                  "sequential_order": 4.0,
+                  "connector": "and",
+                  "story_type": "system",
+                  "users": [
+                    "System"
+                  ],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [
+                    {
+                      "name": "Remaining actions respects completion",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_remaining_actions_respects_completion",
+                      "steps": "GIVEN: bot.behaviors.current is at clarify action\nWHEN: actions.close_current() is called\nTHEN: 'clarify' not in actions.remaining_actions\nAND: actions.remaining_actions == ['validate', 'render']"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
                 }
               ]
             },
             {
               "name": "Navigate Behavior And Actions",
-              "sequential_order": 3.0,
+              "sequential_order": 2.0,
               "sub_epics": [],
               "story_groups": [
                 {
@@ -2323,101 +2474,6 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Navigate To Behavior Action And Execute",
-                      "sequential_order": 2.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestNavigateToBehaviorActionAndExecute",
-                      "scenarios": [
-                        {
-                          "name": "Execute behavior with action parameter",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_execute_behavior_with_action_parameter",
-                          "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
-                        },
-                        {
-                          "name": "Execute behavior without action parameter forwards to current action",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_execute_behavior_without_action_forwards_to_current",
-                          "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
-                        },
-                        {
-                          "name": "Execute behavior executes directly when no workflow state exists",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
-                          "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
-                        },
-                        {
-                          "name": "Behavior action order determines next action from current_action",
-                          "sequential_order": 4.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
-                          "steps": ""
-                        },
-                        {
-                          "name": "No completed actions yet",
-                          "sequential_order": 5.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Behavior action order falls back to completed_actions when current_action is missing",
-                          "sequential_order": 6.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
-                          "steps": ""
-                        },
-                        {
-                          "name": "No behavior_action_state.json file exists (fresh start)",
-                          "sequential_order": 7.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
-                          "sequential_order": 8.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Different behaviors can have different action orders",
-                          "sequential_order": 9.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_different_behaviors_can_have_different_action_orders",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Workflow transitions are built correctly from behavior.json",
-                          "sequential_order": 10.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
-                          "steps": ""
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
                       "name": "Navigate Sequentially",
                       "sequential_order": 3.0,
                       "connector": "or",
@@ -2581,273 +2637,6 @@
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Manage Behaviors",
-                      "sequential_order": 6.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestManageBehaviors",
-                      "scenarios": [
-                        {
-                          "name": "Behaviors current property returns current behavior",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_current_property_returns_current_behavior",
-                          "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
-                        },
-                        {
-                          "name": "Behaviors navigate to behavior updates current behavior",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
-                          "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
-                        },
-                        {
-                          "name": "Behaviors close current marks behavior and action complete",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
-                          "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
-                        },
-                        {
-                          "name": "Behaviors execute current executes current behavior",
-                          "sequential_order": 4.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_execute_current_executes_current_behavior",
-                          "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
-                        },
-                        {
-                          "name": "Behavior can be found by name when it exists.",
-                          "sequential_order": 5.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_behavior_by_name",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Finding behavior by name returns None when behavior doesn't exist.",
-                          "sequential_order": 6.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_behavior_returns_none_when_not_found",
-                          "steps": ""
-                        },
-                        {
-                          "name": "All behaviors can be iterated.",
-                          "sequential_order": 7.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_iterate_all_behaviors",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Can check if a behavior exists.",
-                          "sequential_order": 8.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_check_behavior_exists",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Action can be found by name when it exists.",
-                          "sequential_order": 9.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_action_by_name",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Finding action by name returns None when action doesn't exist.",
-                          "sequential_order": 10.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_action_returns_none_when_not_found",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Action can be found by order when it exists.",
-                          "sequential_order": 11.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_action_by_order",
-                          "steps": ""
-                        },
-                        {
-                          "name": "All actions can be iterated.",
-                          "sequential_order": 12.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_iterate_all_actions",
-                          "steps": ""
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Display Hierarchy In Panel",
-                      "sequential_order": 7.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestDisplayHierarchy",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 4.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 5.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User views panel",
-                          "text": "WHEN User views panel",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System displays behavior list with actions",
-                          "text": "THEN System displays behavior list with actions",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "WHEN Action is current",
-                          "text": "WHEN Action is current",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "THEN System displays current action in-progress indicator",
-                          "text": "THEN System displays current action in-progress indicator",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "WHEN Action is completed",
-                          "text": "WHEN Action is completed",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "THEN System displays completed indicator",
-                          "text": "THEN System displays completed indicator",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "WHEN Action is pending",
-                          "text": "WHEN Action is pending",
-                          "sequential_order": 7.0
-                        },
-                        {
-                          "name": "THEN System displays pending indicator",
-                          "text": "THEN System displays pending indicator",
-                          "sequential_order": 8.0
-                        },
-                        {
-                          "name": "WHEN User clicks collapsed behavior",
-                          "text": "WHEN User clicks collapsed behavior",
-                          "sequential_order": 9.0
-                        },
-                        {
-                          "name": "THEN System expands behavior showing actions",
-                          "text": "THEN System expands behavior showing actions",
-                          "sequential_order": 10.0
-                        },
-                        {
-                          "name": "WHEN User clicks expanded behavior",
-                          "text": "WHEN User clicks expanded behavior",
-                          "sequential_order": 11.0
-                        },
-                        {
-                          "name": "THEN System collapses behavior hiding actions",
-                          "text": "THEN System collapses behavior hiding actions",
-                          "sequential_order": 12.0
-                        },
-                        {
-                          "name": "WHEN User clicks collapsed action",
-                          "text": "WHEN User clicks collapsed action",
-                          "sequential_order": 13.0
-                        },
-                        {
-                          "name": "THEN System expands action showing operations",
-                          "text": "THEN System expands action showing operations",
-                          "sequential_order": 14.0
-                        },
-                        {
-                          "name": "WHEN User clicks expanded action",
-                          "text": "WHEN User clicks expanded action",
-                          "sequential_order": 15.0
-                        },
-                        {
-                          "name": "THEN System collapses action hiding operations",
-                          "text": "THEN System collapses action hiding operations",
-                          "sequential_order": 16.0
-                        },
-                        {
-                          "name": "WHEN User views behavior list",
-                          "text": "WHEN User views behavior list",
-                          "sequential_order": 17.0
-                        },
-                        {
-                          "name": "THEN System displays all behaviors expandable regardless of current position",
-                          "text": "THEN System displays all behaviors expandable regardless of current position",
-                          "sequential_order": 18.0
-                        },
-                        {
-                          "name": "WHEN User views behavior list",
-                          "text": "WHEN User views behavior list",
-                          "sequential_order": 19.0
-                        },
-                        {
-                          "name": "THEN System displays behaviors in correct sequential order",
-                          "text": "THEN System displays behaviors in correct sequential order",
-                          "sequential_order": 20.0
-                        }
-                      ]
                     }
                   ]
                 }
@@ -3029,101 +2818,6 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Navigate To Behavior Action And Execute",
-                  "sequential_order": 2.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestNavigateToBehaviorActionAndExecute",
-                  "scenarios": [
-                    {
-                      "name": "Execute behavior with action parameter",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_with_action_parameter",
-                      "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
-                    },
-                    {
-                      "name": "Execute behavior without action parameter forwards to current action",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_without_action_forwards_to_current",
-                      "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
-                    },
-                    {
-                      "name": "Execute behavior executes directly when no workflow state exists",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
-                      "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
-                    },
-                    {
-                      "name": "Behavior action order determines next action from current_action",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
-                      "steps": ""
-                    },
-                    {
-                      "name": "No completed actions yet",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Behavior action order falls back to completed_actions when current_action is missing",
-                      "sequential_order": 6.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
-                      "steps": ""
-                    },
-                    {
-                      "name": "No behavior_action_state.json file exists (fresh start)",
-                      "sequential_order": 7.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
-                      "sequential_order": 8.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Different behaviors can have different action orders",
-                      "sequential_order": 9.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_different_behaviors_can_have_different_action_orders",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Workflow transitions are built correctly from behavior.json",
-                      "sequential_order": 10.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
-                      "steps": ""
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
                   "name": "Navigate Sequentially",
                   "sequential_order": 3.0,
                   "connector": "or",
@@ -3287,279 +2981,12 @@
                   ],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
-                },
-                {
-                  "name": "Manage Behaviors",
-                  "sequential_order": 6.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestManageBehaviors",
-                  "scenarios": [
-                    {
-                      "name": "Behaviors current property returns current behavior",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_current_property_returns_current_behavior",
-                      "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
-                    },
-                    {
-                      "name": "Behaviors navigate to behavior updates current behavior",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
-                      "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
-                    },
-                    {
-                      "name": "Behaviors close current marks behavior and action complete",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
-                      "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
-                    },
-                    {
-                      "name": "Behaviors execute current executes current behavior",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_execute_current_executes_current_behavior",
-                      "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
-                    },
-                    {
-                      "name": "Behavior can be found by name when it exists.",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_behavior_by_name",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Finding behavior by name returns None when behavior doesn't exist.",
-                      "sequential_order": 6.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_behavior_returns_none_when_not_found",
-                      "steps": ""
-                    },
-                    {
-                      "name": "All behaviors can be iterated.",
-                      "sequential_order": 7.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_iterate_all_behaviors",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Can check if a behavior exists.",
-                      "sequential_order": 8.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_check_behavior_exists",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Action can be found by name when it exists.",
-                      "sequential_order": 9.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_action_by_name",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Finding action by name returns None when action doesn't exist.",
-                      "sequential_order": 10.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_action_returns_none_when_not_found",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Action can be found by order when it exists.",
-                      "sequential_order": 11.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_action_by_order",
-                      "steps": ""
-                    },
-                    {
-                      "name": "All actions can be iterated.",
-                      "sequential_order": 12.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_iterate_all_actions",
-                      "steps": ""
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Display Hierarchy In Panel",
-                  "sequential_order": 7.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestDisplayHierarchy",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 4.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 5.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User views panel",
-                      "text": "WHEN User views panel",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System displays behavior list with actions",
-                      "text": "THEN System displays behavior list with actions",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "WHEN Action is current",
-                      "text": "WHEN Action is current",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "THEN System displays current action in-progress indicator",
-                      "text": "THEN System displays current action in-progress indicator",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "WHEN Action is completed",
-                      "text": "WHEN Action is completed",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "THEN System displays completed indicator",
-                      "text": "THEN System displays completed indicator",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "WHEN Action is pending",
-                      "text": "WHEN Action is pending",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "THEN System displays pending indicator",
-                      "text": "THEN System displays pending indicator",
-                      "sequential_order": 8.0
-                    },
-                    {
-                      "name": "WHEN User clicks collapsed behavior",
-                      "text": "WHEN User clicks collapsed behavior",
-                      "sequential_order": 9.0
-                    },
-                    {
-                      "name": "THEN System expands behavior showing actions",
-                      "text": "THEN System expands behavior showing actions",
-                      "sequential_order": 10.0
-                    },
-                    {
-                      "name": "WHEN User clicks expanded behavior",
-                      "text": "WHEN User clicks expanded behavior",
-                      "sequential_order": 11.0
-                    },
-                    {
-                      "name": "THEN System collapses behavior hiding actions",
-                      "text": "THEN System collapses behavior hiding actions",
-                      "sequential_order": 12.0
-                    },
-                    {
-                      "name": "WHEN User clicks collapsed action",
-                      "text": "WHEN User clicks collapsed action",
-                      "sequential_order": 13.0
-                    },
-                    {
-                      "name": "THEN System expands action showing operations",
-                      "text": "THEN System expands action showing operations",
-                      "sequential_order": 14.0
-                    },
-                    {
-                      "name": "WHEN User clicks expanded action",
-                      "text": "WHEN User clicks expanded action",
-                      "sequential_order": 15.0
-                    },
-                    {
-                      "name": "THEN System collapses action hiding operations",
-                      "text": "THEN System collapses action hiding operations",
-                      "sequential_order": 16.0
-                    },
-                    {
-                      "name": "WHEN User views behavior list",
-                      "text": "WHEN User views behavior list",
-                      "sequential_order": 17.0
-                    },
-                    {
-                      "name": "THEN System displays all behaviors expandable regardless of current position",
-                      "text": "THEN System displays all behaviors expandable regardless of current position",
-                      "sequential_order": 18.0
-                    },
-                    {
-                      "name": "WHEN User views behavior list",
-                      "text": "WHEN User views behavior list",
-                      "sequential_order": 19.0
-                    },
-                    {
-                      "name": "THEN System displays behaviors in correct sequential order",
-                      "text": "THEN System displays behaviors in correct sequential order",
-                      "sequential_order": 20.0
-                    }
-                  ]
                 }
               ]
             },
             {
               "name": "Execute Behavior Action",
-              "sequential_order": 4.0,
+              "sequential_order": 3.0,
               "sub_epics": [],
               "story_groups": [
                 {
@@ -3569,8 +2996,203 @@
                   "connector": null,
                   "stories": [
                     {
-                      "name": "Inject Context Into Instructions",
+                      "name": "Execute Behavior Action",
                       "sequential_order": 0.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestNavigateToBehaviorActionAndExecute",
+                      "scenarios": [
+                        {
+                          "name": "Execute behavior with action parameter",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_execute_behavior_with_action_parameter",
+                          "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
+                        },
+                        {
+                          "name": "Execute behavior without action parameter forwards to current action",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_execute_behavior_without_action_forwards_to_current",
+                          "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
+                        },
+                        {
+                          "name": "Execute behavior executes directly when no workflow state exists",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
+                          "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
+                        },
+                        {
+                          "name": "Behavior action order determines next action from current_action",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
+                          "steps": ""
+                        },
+                        {
+                          "name": "No completed actions yet",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Behavior action order falls back to completed_actions when current_action is missing",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
+                          "steps": ""
+                        },
+                        {
+                          "name": "No behavior_action_state.json file exists (fresh start)",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
+                          "sequential_order": 8.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Different behaviors can have different action orders",
+                          "sequential_order": 9.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_different_behaviors_can_have_different_action_orders",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Workflow transitions are built correctly from behavior.json",
+                          "sequential_order": 10.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Execute Behavior Action Panel",
+                      "sequential_order": 1.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestExecuteBehaviorAction",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 12.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 13.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 14.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User clicks behavior",
+                          "text": "WHEN User clicks behavior",
+                          "sequential_order": 0.0
+                        },
+                        {
+                          "name": "THEN System displays that behavior as current",
+                          "text": "THEN System displays that behavior as current",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "AND System expands behavior",
+                          "text": "AND System expands behavior",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System expands first action to display operations",
+                          "text": "AND System expands first action to display operations",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "AND System sets first action as current",
+                          "text": "AND System sets first action as current",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "AND System sets first operation as current",
+                          "text": "AND System sets first operation as current",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "AND System executes first operation of first action of that behavior",
+                          "text": "AND System executes first operation of first action of that behavior",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "WHEN User clicks action",
+                          "text": "WHEN User clicks action",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "THEN System displays that action as current",
+                          "text": "THEN System displays that action as current",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "AND System expands action to display operations",
+                          "text": "AND System expands action to display operations",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "AND System sets first operation as current",
+                          "text": "AND System sets first operation as current",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "AND System executes first operation of that action",
+                          "text": "AND System executes first operation of that action",
+                          "sequential_order": 11.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Inject Context Into Instructions",
+                      "sequential_order": 2.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -3612,8 +3234,203 @@
               ],
               "stories": [
                 {
-                  "name": "Inject Context Into Instructions",
+                  "name": "Execute Behavior Action",
                   "sequential_order": 0.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestNavigateToBehaviorActionAndExecute",
+                  "scenarios": [
+                    {
+                      "name": "Execute behavior with action parameter",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_with_action_parameter",
+                      "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
+                    },
+                    {
+                      "name": "Execute behavior without action parameter forwards to current action",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_without_action_forwards_to_current",
+                      "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
+                    },
+                    {
+                      "name": "Execute behavior executes directly when no workflow state exists",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
+                      "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
+                    },
+                    {
+                      "name": "Behavior action order determines next action from current_action",
+                      "sequential_order": 4.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
+                      "steps": ""
+                    },
+                    {
+                      "name": "No completed actions yet",
+                      "sequential_order": 5.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Behavior action order falls back to completed_actions when current_action is missing",
+                      "sequential_order": 6.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
+                      "steps": ""
+                    },
+                    {
+                      "name": "No behavior_action_state.json file exists (fresh start)",
+                      "sequential_order": 7.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
+                      "sequential_order": 8.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Different behaviors can have different action orders",
+                      "sequential_order": 9.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_different_behaviors_can_have_different_action_orders",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Workflow transitions are built correctly from behavior.json",
+                      "sequential_order": 10.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
+                      "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Execute Behavior Action Panel",
+                  "sequential_order": 1.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestExecuteBehaviorAction",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 12.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 13.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 14.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User clicks behavior",
+                      "text": "WHEN User clicks behavior",
+                      "sequential_order": 0.0
+                    },
+                    {
+                      "name": "THEN System displays that behavior as current",
+                      "text": "THEN System displays that behavior as current",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "AND System expands behavior",
+                      "text": "AND System expands behavior",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND System expands first action to display operations",
+                      "text": "AND System expands first action to display operations",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "AND System sets first action as current",
+                      "text": "AND System sets first action as current",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "AND System sets first operation as current",
+                      "text": "AND System sets first operation as current",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "AND System executes first operation of first action of that behavior",
+                      "text": "AND System executes first operation of first action of that behavior",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "WHEN User clicks action",
+                      "text": "WHEN User clicks action",
+                      "sequential_order": 7.0
+                    },
+                    {
+                      "name": "THEN System displays that action as current",
+                      "text": "THEN System displays that action as current",
+                      "sequential_order": 8.0
+                    },
+                    {
+                      "name": "AND System expands action to display operations",
+                      "text": "AND System expands action to display operations",
+                      "sequential_order": 9.0
+                    },
+                    {
+                      "name": "AND System sets first operation as current",
+                      "text": "AND System sets first operation as current",
+                      "sequential_order": 10.0
+                    },
+                    {
+                      "name": "AND System executes first operation of that action",
+                      "text": "AND System executes first operation of that action",
+                      "sequential_order": 11.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Inject Context Into Instructions",
+                  "sequential_order": 2.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
