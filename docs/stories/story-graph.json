@@ -3486,6 +3486,62 @@
                               "scenarios": [],
                               "scenario_outlines": [],
                               "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Add Increment Filter Part To Story Scope Panel",
+                              "sequential_order": 8.0,
+                              "connector": "or",
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestAddIncrementFilterPartToStoryScope",
+                              "scenarios": [],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Remove Increment Filter Part From Story Scope CLI",
+                              "sequential_order": 9.0,
+                              "connector": "or",
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                              "scenarios": [],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Remove Increment Filter Part From Story Scope Panel",
+                              "sequential_order": 10.0,
+                              "connector": "or",
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                              "scenarios": [],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Add Increment Filter Part To Story Scope CLI",
+                              "sequential_order": 11.0,
+                              "connector": "or",
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestAddIncrementFilterPartToStoryScope",
+                              "scenarios": [],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
                             }
                           ]
                         }
@@ -3599,6 +3655,62 @@
                           ],
                           "test_file": null,
                           "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Add Increment Filter Part To Story Scope Panel",
+                          "sequential_order": 8.0,
+                          "connector": "or",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestAddIncrementFilterPartToStoryScope",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Remove Increment Filter Part From Story Scope CLI",
+                          "sequential_order": 9.0,
+                          "connector": "or",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Remove Increment Filter Part From Story Scope Panel",
+                          "sequential_order": 10.0,
+                          "connector": "or",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                          "scenarios": [],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Add Increment Filter Part To Story Scope CLI",
+                          "sequential_order": 11.0,
+                          "connector": "or",
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": null,
+                          "test_class": "TestAddIncrementFilterPartToStoryScope",
                           "scenarios": [],
                           "scenario_outlines": [],
                           "acceptance_criteria": []
@@ -4248,68 +4360,10 @@
                           "sequential_order": 0.0,
                           "type": "and",
                           "connector": "null",
-                          "stories": [
-                            {
-                              "name": "Add Increment Filter Part To Story Scope",
-                              "sequential_order": 2.0,
-                              "connector": "or",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestAddIncrementFilterPartToStoryScope",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            },
-                            {
-                              "name": "Remove Increment Filter Part From Story Scope",
-                              "sequential_order": 3.0,
-                              "connector": "or",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            }
-                          ]
+                          "stories": []
                         }
                       ],
-                      "stories": [
-                        {
-                          "name": "Add Increment Filter Part To Story Scope",
-                          "sequential_order": 2.0,
-                          "connector": "or",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestAddIncrementFilterPartToStoryScope",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        },
-                        {
-                          "name": "Remove Increment Filter Part From Story Scope",
-                          "sequential_order": 3.0,
-                          "connector": "or",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        }
-                      ]
+                      "stories": []
                     },
                     {
                       "name": "Manage Story Scope Using CLI",
@@ -4328,68 +4382,10 @@
                           "sequential_order": 0.0,
                           "type": "and",
                           "connector": null,
-                          "stories": [
-                            {
-                              "name": "Add Increment Filter Part To Story Scope CLI",
-                              "sequential_order": 2.0,
-                              "connector": "or",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestAddIncrementFilterPartToStoryScope",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            },
-                            {
-                              "name": "Remove Increment Filter Part From Story Scope",
-                              "sequential_order": 3.0,
-                              "connector": "or",
-                              "story_type": "user",
-                              "users": [
-                                "User"
-                              ],
-                              "test_file": null,
-                              "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
-                              "scenarios": [],
-                              "scenario_outlines": [],
-                              "acceptance_criteria": []
-                            }
-                          ]
+                          "stories": []
                         }
                       ],
-                      "stories": [
-                        {
-                          "name": "Add Increment Filter Part To Story Scope CLI",
-                          "sequential_order": 2.0,
-                          "connector": "or",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestAddIncrementFilterPartToStoryScope",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        },
-                        {
-                          "name": "Remove Increment Filter Part From Story Scope",
-                          "sequential_order": 3.0,
-                          "connector": "or",
-                          "story_type": "user",
-                          "users": [
-                            "User"
-                          ],
-                          "test_file": null,
-                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
-                          "scenarios": [],
-                          "scenario_outlines": [],
-                          "acceptance_criteria": []
-                        }
-                      ]
+                      "stories": []
                     },
                     {
                       "name": "Filter on Story Scope in Panel",
