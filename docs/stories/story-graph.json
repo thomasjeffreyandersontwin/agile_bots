@@ -1080,6 +1080,106 @@
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Execute Behavior Action Panel",
+                      "sequential_order": 5.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestExecuteBehaviorAction",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 12.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 13.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 14.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User clicks behavior",
+                          "text": "WHEN User clicks behavior",
+                          "sequential_order": 0.0
+                        },
+                        {
+                          "name": "THEN System displays that behavior as current",
+                          "text": "THEN System displays that behavior as current",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "AND System expands behavior",
+                          "text": "AND System expands behavior",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System expands first action to display operations",
+                          "text": "AND System expands first action to display operations",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "AND System sets first action as current",
+                          "text": "AND System sets first action as current",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "AND System sets first operation as current",
+                          "text": "AND System sets first operation as current",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "AND System executes first operation of first action of that behavior",
+                          "text": "AND System executes first operation of first action of that behavior",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "WHEN User clicks action",
+                          "text": "WHEN User clicks action",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "THEN System displays that action as current",
+                          "text": "THEN System displays that action as current",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "AND System expands action to display operations",
+                          "text": "AND System expands action to display operations",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "AND System sets first operation as current",
+                          "text": "AND System sets first operation as current",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "AND System executes first operation of that action",
+                          "text": "AND System executes first operation of that action",
+                          "sequential_order": 11.0
+                        }
+                      ]
                     }
                   ]
                 }
@@ -1247,439 +1347,10 @@
                   ],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
-                }
-              ]
-            },
-            {
-              "name": "Navigate And Execute Behaviors Through Panel",
-              "sequential_order": 1.0,
-              "sub_epics": [],
-              "story_groups": [
-                {
-                  "name": "",
-                  "sequential_order": 0.0,
-                  "type": "and",
-                  "connector": null,
-                  "stories": [
-                    {
-                      "name": "Display Hierarchy",
-                      "sequential_order": 0.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestDisplayHierarchy",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 4.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 5.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User views panel",
-                          "text": "WHEN User views panel",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System displays behavior list with actions",
-                          "text": "THEN System displays behavior list with actions",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "WHEN Action is current",
-                          "text": "WHEN Action is current",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "THEN System displays current action in-progress indicator",
-                          "text": "THEN System displays current action in-progress indicator",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "WHEN Action is completed",
-                          "text": "WHEN Action is completed",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "THEN System displays completed indicator",
-                          "text": "THEN System displays completed indicator",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "WHEN Action is pending",
-                          "text": "WHEN Action is pending",
-                          "sequential_order": 7.0
-                        },
-                        {
-                          "name": "THEN System displays pending indicator",
-                          "text": "THEN System displays pending indicator",
-                          "sequential_order": 8.0
-                        },
-                        {
-                          "name": "WHEN User clicks collapsed behavior",
-                          "text": "WHEN User clicks collapsed behavior",
-                          "sequential_order": 9.0
-                        },
-                        {
-                          "name": "THEN System expands behavior showing actions",
-                          "text": "THEN System expands behavior showing actions",
-                          "sequential_order": 10.0
-                        },
-                        {
-                          "name": "WHEN User clicks expanded behavior",
-                          "text": "WHEN User clicks expanded behavior",
-                          "sequential_order": 11.0
-                        },
-                        {
-                          "name": "THEN System collapses behavior hiding actions",
-                          "text": "THEN System collapses behavior hiding actions",
-                          "sequential_order": 12.0
-                        },
-                        {
-                          "name": "WHEN User clicks collapsed action",
-                          "text": "WHEN User clicks collapsed action",
-                          "sequential_order": 13.0
-                        },
-                        {
-                          "name": "THEN System expands action showing operations",
-                          "text": "THEN System expands action showing operations",
-                          "sequential_order": 14.0
-                        },
-                        {
-                          "name": "WHEN User clicks expanded action",
-                          "text": "WHEN User clicks expanded action",
-                          "sequential_order": 15.0
-                        },
-                        {
-                          "name": "THEN System collapses action hiding operations",
-                          "text": "THEN System collapses action hiding operations",
-                          "sequential_order": 16.0
-                        },
-                        {
-                          "name": "WHEN User views behavior list",
-                          "text": "WHEN User views behavior list",
-                          "sequential_order": 17.0
-                        },
-                        {
-                          "name": "THEN System displays all behaviors expandable regardless of current position",
-                          "text": "THEN System displays all behaviors expandable regardless of current position",
-                          "sequential_order": 18.0
-                        },
-                        {
-                          "name": "WHEN User views behavior list",
-                          "text": "WHEN User views behavior list",
-                          "sequential_order": 19.0
-                        },
-                        {
-                          "name": "THEN System displays behaviors in correct sequential order",
-                          "text": "THEN System displays behaviors in correct sequential order",
-                          "sequential_order": 20.0
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Execute Behavior Action",
-                      "sequential_order": 1.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestExecuteBehaviorAction",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 12.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 13.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 14.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User clicks behavior",
-                          "text": "WHEN User clicks behavior",
-                          "sequential_order": 0.0
-                        },
-                        {
-                          "name": "THEN System displays that behavior as current",
-                          "text": "THEN System displays that behavior as current",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "AND System expands behavior",
-                          "text": "AND System expands behavior",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND System expands first action to display operations",
-                          "text": "AND System expands first action to display operations",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "AND System sets first action as current",
-                          "text": "AND System sets first action as current",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "AND System sets first operation as current",
-                          "text": "AND System sets first operation as current",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "AND System executes first operation of first action of that behavior",
-                          "text": "AND System executes first operation of first action of that behavior",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "WHEN User clicks action",
-                          "text": "WHEN User clicks action",
-                          "sequential_order": 7.0
-                        },
-                        {
-                          "name": "THEN System displays that action as current",
-                          "text": "THEN System displays that action as current",
-                          "sequential_order": 8.0
-                        },
-                        {
-                          "name": "AND System expands action to display operations",
-                          "text": "AND System expands action to display operations",
-                          "sequential_order": 9.0
-                        },
-                        {
-                          "name": "AND System sets first operation as current",
-                          "text": "AND System sets first operation as current",
-                          "sequential_order": 10.0
-                        },
-                        {
-                          "name": "AND System executes first operation of that action",
-                          "text": "AND System executes first operation of that action",
-                          "sequential_order": 11.0
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ],
-              "stories": [
-                {
-                  "name": "Display Hierarchy",
-                  "sequential_order": 0.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestDisplayHierarchy",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 4.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 5.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User views panel",
-                      "text": "WHEN User views panel",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System displays behavior list with actions",
-                      "text": "THEN System displays behavior list with actions",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "WHEN Action is current",
-                      "text": "WHEN Action is current",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "THEN System displays current action in-progress indicator",
-                      "text": "THEN System displays current action in-progress indicator",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "WHEN Action is completed",
-                      "text": "WHEN Action is completed",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "THEN System displays completed indicator",
-                      "text": "THEN System displays completed indicator",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "WHEN Action is pending",
-                      "text": "WHEN Action is pending",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "THEN System displays pending indicator",
-                      "text": "THEN System displays pending indicator",
-                      "sequential_order": 8.0
-                    },
-                    {
-                      "name": "WHEN User clicks collapsed behavior",
-                      "text": "WHEN User clicks collapsed behavior",
-                      "sequential_order": 9.0
-                    },
-                    {
-                      "name": "THEN System expands behavior showing actions",
-                      "text": "THEN System expands behavior showing actions",
-                      "sequential_order": 10.0
-                    },
-                    {
-                      "name": "WHEN User clicks expanded behavior",
-                      "text": "WHEN User clicks expanded behavior",
-                      "sequential_order": 11.0
-                    },
-                    {
-                      "name": "THEN System collapses behavior hiding actions",
-                      "text": "THEN System collapses behavior hiding actions",
-                      "sequential_order": 12.0
-                    },
-                    {
-                      "name": "WHEN User clicks collapsed action",
-                      "text": "WHEN User clicks collapsed action",
-                      "sequential_order": 13.0
-                    },
-                    {
-                      "name": "THEN System expands action showing operations",
-                      "text": "THEN System expands action showing operations",
-                      "sequential_order": 14.0
-                    },
-                    {
-                      "name": "WHEN User clicks expanded action",
-                      "text": "WHEN User clicks expanded action",
-                      "sequential_order": 15.0
-                    },
-                    {
-                      "name": "THEN System collapses action hiding operations",
-                      "text": "THEN System collapses action hiding operations",
-                      "sequential_order": 16.0
-                    },
-                    {
-                      "name": "WHEN User views behavior list",
-                      "text": "WHEN User views behavior list",
-                      "sequential_order": 17.0
-                    },
-                    {
-                      "name": "THEN System displays all behaviors expandable regardless of current position",
-                      "text": "THEN System displays all behaviors expandable regardless of current position",
-                      "sequential_order": 18.0
-                    },
-                    {
-                      "name": "WHEN User views behavior list",
-                      "text": "WHEN User views behavior list",
-                      "sequential_order": 19.0
-                    },
-                    {
-                      "name": "THEN System displays behaviors in correct sequential order",
-                      "text": "THEN System displays behaviors in correct sequential order",
-                      "sequential_order": 20.0
-                    }
-                  ]
                 },
                 {
-                  "name": "Execute Behavior Action",
-                  "sequential_order": 1.0,
+                  "name": "Execute Behavior Action Panel",
+                  "sequential_order": 5.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -1781,7 +1452,7 @@
             },
             {
               "name": "Display State Using REPL",
-              "sequential_order": 2.0,
+              "sequential_order": 1.0,
               "sub_epics": [],
               "story_groups": [
                 {
@@ -2224,7 +1895,7 @@
             },
             {
               "name": "Track Activity",
-              "sequential_order": 3.0,
+              "sequential_order": 2.0,
               "sub_epics": [],
               "story_groups": [
                 {
@@ -2467,7 +2138,7 @@
             },
             {
               "name": "Navigate Behavior And Actions",
-              "sequential_order": 4.0,
+              "sequential_order": 3.0,
               "sub_epics": [],
               "story_groups": [
                 {
@@ -3021,6 +2692,162 @@
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Display Hierarchy In Panel",
+                      "sequential_order": 7.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplayHierarchy",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 5.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User views panel",
+                          "text": "WHEN User views panel",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays behavior list with actions",
+                          "text": "THEN System displays behavior list with actions",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "WHEN Action is current",
+                          "text": "WHEN Action is current",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "THEN System displays current action in-progress indicator",
+                          "text": "THEN System displays current action in-progress indicator",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "WHEN Action is completed",
+                          "text": "WHEN Action is completed",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "THEN System displays completed indicator",
+                          "text": "THEN System displays completed indicator",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "WHEN Action is pending",
+                          "text": "WHEN Action is pending",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "THEN System displays pending indicator",
+                          "text": "THEN System displays pending indicator",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed behavior",
+                          "text": "WHEN User clicks collapsed behavior",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "THEN System expands behavior showing actions",
+                          "text": "THEN System expands behavior showing actions",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "WHEN User clicks expanded behavior",
+                          "text": "WHEN User clicks expanded behavior",
+                          "sequential_order": 11.0
+                        },
+                        {
+                          "name": "THEN System collapses behavior hiding actions",
+                          "text": "THEN System collapses behavior hiding actions",
+                          "sequential_order": 12.0
+                        },
+                        {
+                          "name": "WHEN User clicks collapsed action",
+                          "text": "WHEN User clicks collapsed action",
+                          "sequential_order": 13.0
+                        },
+                        {
+                          "name": "THEN System expands action showing operations",
+                          "text": "THEN System expands action showing operations",
+                          "sequential_order": 14.0
+                        },
+                        {
+                          "name": "WHEN User clicks expanded action",
+                          "text": "WHEN User clicks expanded action",
+                          "sequential_order": 15.0
+                        },
+                        {
+                          "name": "THEN System collapses action hiding operations",
+                          "text": "THEN System collapses action hiding operations",
+                          "sequential_order": 16.0
+                        },
+                        {
+                          "name": "WHEN User views behavior list",
+                          "text": "WHEN User views behavior list",
+                          "sequential_order": 17.0
+                        },
+                        {
+                          "name": "THEN System displays all behaviors expandable regardless of current position",
+                          "text": "THEN System displays all behaviors expandable regardless of current position",
+                          "sequential_order": 18.0
+                        },
+                        {
+                          "name": "WHEN User views behavior list",
+                          "text": "WHEN User views behavior list",
+                          "sequential_order": 19.0
+                        },
+                        {
+                          "name": "THEN System displays behaviors in correct sequential order",
+                          "text": "THEN System displays behaviors in correct sequential order",
+                          "sequential_order": 20.0
+                        }
+                      ]
                     }
                   ]
                 }
@@ -3571,12 +3398,168 @@
                   ],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
+                },
+                {
+                  "name": "Display Hierarchy In Panel",
+                  "sequential_order": 7.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestDisplayHierarchy",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot has multiple behaviors with completed and pending actions\nAnd Bot is currently at shape.clarify\nWhen Panel renders hierarchy section\nThen User sees behavior names (shape, discovery)\nAnd User sees action names under behaviors\nAnd Current action (clarify) shows in-progress indicator\nAnd Completed actions show checkmark indicator\nAnd Pending actions show empty indicator"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays collapsed behavior tree\nWhen User clicks collapsed shape behavior\nThen Shape behavior expands showing actions (clarify, strategy)\nWhen User clicks expanded shape behavior again\nThen Shape behavior collapses hiding actions"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Shape behavior is expanded showing actions\nAnd Clarify action is collapsed\nWhen User clicks collapsed clarify action\nThen Clarify action expands showing operations (instructions, execute, confirm)\nWhen User clicks expanded clarify action again\nThen Clarify action collapses hiding operations"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 4.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays behavior tree\nAnd Bot is currently at shape.clarify\nWhen User clicks collapsed discovery behavior\nThen Discovery behavior expands showing actions\nAnd Discovery actions are visible even though bot is at shape\nWhen User clicks collapsed scenarios behavior\nThen Scenarios behavior expands showing actions\nAnd Scenarios actions are visible even though bot is at shape"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 5.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot has behaviors with defined sequential order\nWhen Panel renders behavior tree\nThen Behaviors appear in order (shape, prioritization, discovery, exploration, scenarios, tests, code)\nAnd Actions under each behavior appear in their configured order\nAnd Order matches behavior configuration JSON"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User views panel",
+                      "text": "WHEN User views panel",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN System displays behavior list with actions",
+                      "text": "THEN System displays behavior list with actions",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "WHEN Action is current",
+                      "text": "WHEN Action is current",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "THEN System displays current action in-progress indicator",
+                      "text": "THEN System displays current action in-progress indicator",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "WHEN Action is completed",
+                      "text": "WHEN Action is completed",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "THEN System displays completed indicator",
+                      "text": "THEN System displays completed indicator",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "WHEN Action is pending",
+                      "text": "WHEN Action is pending",
+                      "sequential_order": 7.0
+                    },
+                    {
+                      "name": "THEN System displays pending indicator",
+                      "text": "THEN System displays pending indicator",
+                      "sequential_order": 8.0
+                    },
+                    {
+                      "name": "WHEN User clicks collapsed behavior",
+                      "text": "WHEN User clicks collapsed behavior",
+                      "sequential_order": 9.0
+                    },
+                    {
+                      "name": "THEN System expands behavior showing actions",
+                      "text": "THEN System expands behavior showing actions",
+                      "sequential_order": 10.0
+                    },
+                    {
+                      "name": "WHEN User clicks expanded behavior",
+                      "text": "WHEN User clicks expanded behavior",
+                      "sequential_order": 11.0
+                    },
+                    {
+                      "name": "THEN System collapses behavior hiding actions",
+                      "text": "THEN System collapses behavior hiding actions",
+                      "sequential_order": 12.0
+                    },
+                    {
+                      "name": "WHEN User clicks collapsed action",
+                      "text": "WHEN User clicks collapsed action",
+                      "sequential_order": 13.0
+                    },
+                    {
+                      "name": "THEN System expands action showing operations",
+                      "text": "THEN System expands action showing operations",
+                      "sequential_order": 14.0
+                    },
+                    {
+                      "name": "WHEN User clicks expanded action",
+                      "text": "WHEN User clicks expanded action",
+                      "sequential_order": 15.0
+                    },
+                    {
+                      "name": "THEN System collapses action hiding operations",
+                      "text": "THEN System collapses action hiding operations",
+                      "sequential_order": 16.0
+                    },
+                    {
+                      "name": "WHEN User views behavior list",
+                      "text": "WHEN User views behavior list",
+                      "sequential_order": 17.0
+                    },
+                    {
+                      "name": "THEN System displays all behaviors expandable regardless of current position",
+                      "text": "THEN System displays all behaviors expandable regardless of current position",
+                      "sequential_order": 18.0
+                    },
+                    {
+                      "name": "WHEN User views behavior list",
+                      "text": "WHEN User views behavior list",
+                      "sequential_order": 19.0
+                    },
+                    {
+                      "name": "THEN System displays behaviors in correct sequential order",
+                      "text": "THEN System displays behaviors in correct sequential order",
+                      "sequential_order": 20.0
+                    }
+                  ]
                 }
               ]
             },
             {
               "name": "Execute Behavior Action",
-              "sequential_order": 5.0,
+              "sequential_order": 4.0,
               "sub_epics": [],
               "story_groups": [
                 {
