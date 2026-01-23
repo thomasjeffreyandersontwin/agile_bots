@@ -1028,6 +1028,10 @@ class StoryMap:
         story_graph_path = Path(self._bot.bot_paths.workspace_directory) / 'docs' / 'stories' / 'story-graph.json'
         with open(story_graph_path, 'w', encoding='utf-8') as f:
             json.dump(self.story_graph, f, indent=2, ensure_ascii=False)
+        
+        # Invalidate the bot's cached story_graph to force reload on next access
+        if hasattr(self._bot, '_story_graph'):
+            self._bot._story_graph = None
 
     def _set_bot_on_all_nodes(self, bot: Any) -> None:
         for epic in self._epics_list:

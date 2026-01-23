@@ -659,15 +659,21 @@ class Bot:
             import pyperclip
             import pyautogui
             import time
+            import platform
             
-            pyperclip.copy(content_str)
             clipboard_status = 'success'
             time.sleep(0.2)
             
-            pyautogui.hotkey('ctrl', 'l')
+            if (platform.system()) == 'Darwin':
+                pyautogui.hotkey('ctrl', 'command', 'i')
+            else:
+                pyautogui.hotkey('ctrl', 'l')
             time.sleep(0.3)
-            
-            pyautogui.hotkey('ctrl', 'v')
+
+            if (platform.system()) == 'Darwin':                            
+                pyautogui.hotkey('command', 'v')
+            else:
+                pyautogui.hotkey('ctrl', 'v')
             time.sleep(0.2)
             
             cursor_status = 'opened'

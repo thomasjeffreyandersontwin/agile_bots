@@ -1,0 +1,12 @@
+# Development Dependencies for agile_bots
+# Generated from pyproject.toml [project.optional-dependencies.dev] + actual environment
+
+# Include core dependencies
+-r requirements.txt
+
+# Testing Framework
+pytest>=8.3.0
+pytest-watch>=4.2.0
+pytest-cov>=4.0.0
+pytest-asyncio>=0.23.0
+pytest-describe>=3.0.0

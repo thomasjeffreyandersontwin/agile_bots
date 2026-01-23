@@ -1,0 +1,11 @@
+# Core Dependencies
+
+# MCP Server Support (for Story Bot MCP integration)
+fastmcp>=0.2.0
+
+# Natural Language Processing (for code scanners linguistic analysis)
+# Used by vocabulary_helper for verb/noun detection, POS tagging
+nltk>=3.8.0
+
+pyperclip>=1.8.2
+pyautogui>=0.9.54
