@@ -8820,7 +8820,7 @@
                   "stories": [
                     {
                       "name": "Load Bot",
-                      "sequential_order": 1.0,
+                      "sequential_order": 0.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -8851,7 +8851,7 @@
                     },
                     {
                       "name": "Load Bot Behaviors",
-                      "sequential_order": 2.0,
+                      "sequential_order": 1.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -8890,7 +8890,7 @@
                     },
                     {
                       "name": "Resolve Bot Path",
-                      "sequential_order": 4.0,
+                      "sequential_order": 2.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -8945,7 +8945,7 @@
                     },
                     {
                       "name": "Load Actions",
-                      "sequential_order": 999.0,
+                      "sequential_order": 3.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -8984,7 +8984,7 @@
                     },
                     {
                       "name": "Manage Bot Registry",
-                      "sequential_order": 5.0,
+                      "sequential_order": 4.0,
                       "connector": "or",
                       "story_type": "system",
                       "users": [
@@ -8995,7 +8995,7 @@
                       "scenarios": [
                         {
                           "name": "Get List of Registered Bots",
-                          "sequential_order": 1.0,
+                          "sequential_order": 0.0,
                           "type": "happy_path",
                           "background": [],
                           "test_method": "test_get_list_of_registered_bots",
@@ -9003,7 +9003,7 @@
                         },
                         {
                           "name": "Get Active Bot",
-                          "sequential_order": 2.0,
+                          "sequential_order": 1.0,
                           "type": "happy_path",
                           "background": [],
                           "test_method": "test_get_active_bot",
@@ -9011,7 +9011,7 @@
                         },
                         {
                           "name": "Set Active Bot to Registered Bot",
-                          "sequential_order": 3.0,
+                          "sequential_order": 2.0,
                           "type": "happy_path",
                           "background": [],
                           "test_method": "test_set_active_bot_to_registered_bot",
@@ -9019,7 +9019,7 @@
                         },
                         {
                           "name": "Attempt to Set Unregistered Bot",
-                          "sequential_order": 4.0,
+                          "sequential_order": 3.0,
                           "type": "error_path",
                           "background": [],
                           "test_method": "test_attempt_to_set_unregistered_bot",
@@ -9027,7 +9027,7 @@
                         },
                         {
                           "name": "Set Active Bot to Current Bot",
-                          "sequential_order": 5.0,
+                          "sequential_order": 4.0,
                           "type": "happy_path",
                           "background": [],
                           "test_method": "test_set_active_bot_to_current_bot",
@@ -9036,6 +9036,275 @@
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Open Panel",
+                      "sequential_order": 5.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestOpenPanel",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_opens_panel_via_command_palette_happy_path",
+                          "steps": "Given VS Code workspace with bot installed\nWhen User executes 'Open Status Panel' command\nThen Panel webview appears\nAnd Panel displays bot name\nAnd Panel displays workspace path\nAnd Panel displays behavior action section\nAnd Panel displays scope section\nAnd Panel displays instructions section"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is already open in VS Code\nWhen User executes 'Open Status Panel' command again\nThen Existing panel is brought to front\nAnd No duplicate panel is created"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given VS Code workspace with no bots installed\nWhen User executes 'Open Status Panel' command\nThen Panel displays error message\nAnd Error message indicates no bots found"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User activates panel command",
+                          "text": "WHEN User activates panel command",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays bot name",
+                          "text": "THEN System displays bot name",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System displays workspace path",
+                          "text": "AND System displays workspace path",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "AND System displays bot path",
+                          "text": "AND System displays bot path",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "AND System displays available botss",
+                          "text": "AND System displays available botss",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "AND System displays behavior action section",
+                          "text": "AND System displays behavior action section",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "AND System displays scope section",
+                          "text": "AND System displays scope section",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "AND System displays instructions section",
+                          "text": "AND System displays instructions section",
+                          "sequential_order": 8.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Display Session Status panel",
+                      "sequential_order": 6.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplaySessionStatus",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is open displaying current bot status\nAnd Bot state has changed since panel was opened\nWhen User clicks refresh button\nThen Panel displays updated bot name\nAnd Panel displays updated workspace path\nAnd Panel displays updated behavior action section\nAnd Panel displays updated scope\nAnd Panel displays updated instructions"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot is at behavior shape and action clarify\nWhen Panel opens\nThen Panel displays current bot name\nAnd Panel displays current workspace path\nAnd Panel displays shape.clarify as current action"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User clicks refresh button",
+                          "text": "WHEN User clicks refresh button",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays bot name",
+                          "text": "THEN System displays bot name",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System displays updated workspace path",
+                          "text": "AND System displays updated workspace path",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "AND System displays updated bot path",
+                          "text": "AND System displays updated bot path",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "AND System displays updated available botss",
+                          "text": "AND System displays updated available botss",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "AND System displays updated behavior action section",
+                          "text": "AND System displays updated behavior action section",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "AND System displays updated scope section",
+                          "text": "AND System displays updated scope section",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "AND System displays updated instructions section",
+                          "text": "AND System displays updated instructions section",
+                          "sequential_order": 8.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Change Workspace Path panel",
+                      "sequential_order": 7.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestChangeWorkspacePath",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is open showing workspace at c:/dev/project_a\nAnd Workspace at c:/dev/project_b exists with different bot state\nWhen User changes workspace path to c:/dev/project_b\nThen Panel displays c:/dev/project_b as current workspace\nAnd Panel displays behavior action state from project_b\nAnd Panel refreshes all sections with project_b data"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is open showing valid workspace\nWhen User changes workspace path to non-existent directory\nThen Panel displays error message\nAnd Error message indicates directory not found\nAnd Panel retains previous valid workspace"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is open showing default workspace c:/dev/project_a\nWhen User changes workspace path to c:/dev/project_b\nAnd Panel displays project_b workspace and state\nAnd User refreshes panel\nThen Panel displays c:/dev/project_b as current workspace\nAnd Workspace path was persisted and restored"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User changes workspace path",
+                          "text": "WHEN User changes workspace path",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays updated workspace path",
+                          "text": "THEN System displays updated workspace path",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System displays behavior action state of new workspace",
+                          "text": "AND System displays behavior action state of new workspace",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "WHEN User sets workspace path",
+                          "text": "WHEN User sets workspace path",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "THEN System persists workspace path value",
+                          "text": "THEN System persists workspace path value",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "WHEN Panel refreshes",
+                          "text": "WHEN Panel refreshes",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "THEN System restores previously set workspace path",
+                          "text": "THEN System restores previously set workspace path",
+                          "sequential_order": 7.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Toggle Panel Section",
+                      "sequential_order": 8.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestTogglePanelSection",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is open with behaviors section collapsed\nWhen User clicks behaviors section header\nThen Behaviors section expands\nAnd User sees behavior tree content"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel is open with instructions section expanded\nWhen User clicks instructions section header\nThen Instructions section collapses\nAnd User no longer sees instructions content"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User clicks section header",
+                          "text": "WHEN User clicks section header",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System expands or collapses section",
+                          "text": "THEN System expands or collapses section",
+                          "sequential_order": 2.0
+                        }
+                      ]
                     }
                   ]
                 }
@@ -9043,7 +9312,7 @@
               "stories": [
                 {
                   "name": "Load Bot",
-                  "sequential_order": 1.0,
+                  "sequential_order": 0.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -9074,7 +9343,7 @@
                 },
                 {
                   "name": "Load Bot Behaviors",
-                  "sequential_order": 2.0,
+                  "sequential_order": 1.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -9113,7 +9382,7 @@
                 },
                 {
                   "name": "Resolve Bot Path",
-                  "sequential_order": 4.0,
+                  "sequential_order": 2.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -9168,7 +9437,7 @@
                 },
                 {
                   "name": "Load Actions",
-                  "sequential_order": 999.0,
+                  "sequential_order": 3.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -9207,7 +9476,7 @@
                 },
                 {
                   "name": "Manage Bot Registry",
-                  "sequential_order": 5.0,
+                  "sequential_order": 4.0,
                   "connector": "or",
                   "story_type": "system",
                   "users": [
@@ -9218,7 +9487,7 @@
                   "scenarios": [
                     {
                       "name": "Get List of Registered Bots",
-                      "sequential_order": 1.0,
+                      "sequential_order": 0.0,
                       "type": "happy_path",
                       "background": [],
                       "test_method": "test_get_list_of_registered_bots",
@@ -9226,7 +9495,7 @@
                     },
                     {
                       "name": "Get Active Bot",
-                      "sequential_order": 2.0,
+                      "sequential_order": 1.0,
                       "type": "happy_path",
                       "background": [],
                       "test_method": "test_get_active_bot",
@@ -9234,7 +9503,7 @@
                     },
                     {
                       "name": "Set Active Bot to Registered Bot",
-                      "sequential_order": 3.0,
+                      "sequential_order": 2.0,
                       "type": "happy_path",
                       "background": [],
                       "test_method": "test_set_active_bot_to_registered_bot",
@@ -9242,7 +9511,7 @@
                     },
                     {
                       "name": "Attempt to Set Unregistered Bot",
-                      "sequential_order": 4.0,
+                      "sequential_order": 3.0,
                       "type": "error_path",
                       "background": [],
                       "test_method": "test_attempt_to_set_unregistered_bot",
@@ -9250,7 +9519,7 @@
                     },
                     {
                       "name": "Set Active Bot to Current Bot",
-                      "sequential_order": 5.0,
+                      "sequential_order": 4.0,
                       "type": "happy_path",
                       "background": [],
                       "test_method": "test_set_active_bot_to_current_bot",
@@ -9259,6 +9528,275 @@
                   ],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
+                },
+                {
+                  "name": "Open Panel",
+                  "sequential_order": 5.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestOpenPanel",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_opens_panel_via_command_palette_happy_path",
+                      "steps": "Given VS Code workspace with bot installed\nWhen User executes 'Open Status Panel' command\nThen Panel webview appears\nAnd Panel displays bot name\nAnd Panel displays workspace path\nAnd Panel displays behavior action section\nAnd Panel displays scope section\nAnd Panel displays instructions section"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel is already open in VS Code\nWhen User executes 'Open Status Panel' command again\nThen Existing panel is brought to front\nAnd No duplicate panel is created"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given VS Code workspace with no bots installed\nWhen User executes 'Open Status Panel' command\nThen Panel displays error message\nAnd Error message indicates no bots found"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User activates panel command",
+                      "text": "WHEN User activates panel command",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN System displays bot name",
+                      "text": "THEN System displays bot name",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND System displays workspace path",
+                      "text": "AND System displays workspace path",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "AND System displays bot path",
+                      "text": "AND System displays bot path",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "AND System displays available botss",
+                      "text": "AND System displays available botss",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "AND System displays behavior action section",
+                      "text": "AND System displays behavior action section",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "AND System displays scope section",
+                      "text": "AND System displays scope section",
+                      "sequential_order": 7.0
+                    },
+                    {
+                      "name": "AND System displays instructions section",
+                      "text": "AND System displays instructions section",
+                      "sequential_order": 8.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Display Session Status panel",
+                  "sequential_order": 6.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestDisplaySessionStatus",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel is open displaying current bot status\nAnd Bot state has changed since panel was opened\nWhen User clicks refresh button\nThen Panel displays updated bot name\nAnd Panel displays updated workspace path\nAnd Panel displays updated behavior action section\nAnd Panel displays updated scope\nAnd Panel displays updated instructions"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot is at behavior shape and action clarify\nWhen Panel opens\nThen Panel displays current bot name\nAnd Panel displays current workspace path\nAnd Panel displays shape.clarify as current action"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User clicks refresh button",
+                      "text": "WHEN User clicks refresh button",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN System displays bot name",
+                      "text": "THEN System displays bot name",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND System displays updated workspace path",
+                      "text": "AND System displays updated workspace path",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "AND System displays updated bot path",
+                      "text": "AND System displays updated bot path",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "AND System displays updated available botss",
+                      "text": "AND System displays updated available botss",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "AND System displays updated behavior action section",
+                      "text": "AND System displays updated behavior action section",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "AND System displays updated scope section",
+                      "text": "AND System displays updated scope section",
+                      "sequential_order": 7.0
+                    },
+                    {
+                      "name": "AND System displays updated instructions section",
+                      "text": "AND System displays updated instructions section",
+                      "sequential_order": 8.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Change Workspace Path panel",
+                  "sequential_order": 7.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestChangeWorkspacePath",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel is open showing workspace at c:/dev/project_a\nAnd Workspace at c:/dev/project_b exists with different bot state\nWhen User changes workspace path to c:/dev/project_b\nThen Panel displays c:/dev/project_b as current workspace\nAnd Panel displays behavior action state from project_b\nAnd Panel refreshes all sections with project_b data"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel is open showing valid workspace\nWhen User changes workspace path to non-existent directory\nThen Panel displays error message\nAnd Error message indicates directory not found\nAnd Panel retains previous valid workspace"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel is open showing default workspace c:/dev/project_a\nWhen User changes workspace path to c:/dev/project_b\nAnd Panel displays project_b workspace and state\nAnd User refreshes panel\nThen Panel displays c:/dev/project_b as current workspace\nAnd Workspace path was persisted and restored"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User changes workspace path",
+                      "text": "WHEN User changes workspace path",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN System displays updated workspace path",
+                      "text": "THEN System displays updated workspace path",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND System displays behavior action state of new workspace",
+                      "text": "AND System displays behavior action state of new workspace",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "WHEN User sets workspace path",
+                      "text": "WHEN User sets workspace path",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "THEN System persists workspace path value",
+                      "text": "THEN System persists workspace path value",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "WHEN Panel refreshes",
+                      "text": "WHEN Panel refreshes",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "THEN System restores previously set workspace path",
+                      "text": "THEN System restores previously set workspace path",
+                      "sequential_order": 7.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Toggle Panel Section",
+                  "sequential_order": 8.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestTogglePanelSection",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel is open with behaviors section collapsed\nWhen User clicks behaviors section header\nThen Behaviors section expands\nAnd User sees behavior tree content"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel is open with instructions section expanded\nWhen User clicks instructions section header\nThen Instructions section collapses\nAnd User no longer sees instructions content"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User clicks section header",
+                      "text": "WHEN User clicks section header",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN System expands or collapses section",
+                      "text": "THEN System expands or collapses section",
+                      "sequential_order": 2.0
+                    }
+                  ]
                 }
               ]
             },
@@ -9893,234 +10431,7 @@
                   "connector": null,
                   "stories": [
                     {
-                      "name": "Open Panel",
-                      "sequential_order": 1.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestOpenPanel",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_opens_panel_via_command_palette_happy_path",
-                          "steps": "Given VS Code workspace with bot installed\nWhen User executes 'Open Status Panel' command\nThen Panel webview appears\nAnd Panel displays bot name\nAnd Panel displays workspace path\nAnd Panel displays behavior action section\nAnd Panel displays scope section\nAnd Panel displays instructions section"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel is already open in VS Code\nWhen User executes 'Open Status Panel' command again\nThen Existing panel is brought to front\nAnd No duplicate panel is created"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given VS Code workspace with no bots installed\nWhen User executes 'Open Status Panel' command\nThen Panel displays error message\nAnd Error message indicates no bots found"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User activates panel command",
-                          "text": "WHEN User activates panel command",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System displays bot name",
-                          "text": "THEN System displays bot name",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND System displays workspace path",
-                          "text": "AND System displays workspace path",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "AND System displays bot path",
-                          "text": "AND System displays bot path",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "AND System displays available botss",
-                          "text": "AND System displays available botss",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "AND System displays behavior action section",
-                          "text": "AND System displays behavior action section",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "AND System displays scope section",
-                          "text": "AND System displays scope section",
-                          "sequential_order": 7.0
-                        },
-                        {
-                          "name": "AND System displays instructions section",
-                          "text": "AND System displays instructions section",
-                          "sequential_order": 8.0
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Display Session Status",
-                      "sequential_order": 2.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestDisplaySessionStatus",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel is open displaying current bot status\nAnd Bot state has changed since panel was opened\nWhen User clicks refresh button\nThen Panel displays updated bot name\nAnd Panel displays updated workspace path\nAnd Panel displays updated behavior action section\nAnd Panel displays updated scope\nAnd Panel displays updated instructions"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot is at behavior shape and action clarify\nWhen Panel opens\nThen Panel displays current bot name\nAnd Panel displays current workspace path\nAnd Panel displays shape.clarify as current action"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User clicks refresh button",
-                          "text": "WHEN User clicks refresh button",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System displays bot name",
-                          "text": "THEN System displays bot name",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND System displays updated workspace path",
-                          "text": "AND System displays updated workspace path",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "AND System displays updated bot path",
-                          "text": "AND System displays updated bot path",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "AND System displays updated available botss",
-                          "text": "AND System displays updated available botss",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "AND System displays updated behavior action section",
-                          "text": "AND System displays updated behavior action section",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "AND System displays updated scope section",
-                          "text": "AND System displays updated scope section",
-                          "sequential_order": 7.0
-                        },
-                        {
-                          "name": "AND System displays updated instructions section",
-                          "text": "AND System displays updated instructions section",
-                          "sequential_order": 8.0
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Change Workspace Path",
-                      "sequential_order": 3.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestChangeWorkspacePath",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel is open showing workspace at c:/dev/project_a\nAnd Workspace at c:/dev/project_b exists with different bot state\nWhen User changes workspace path to c:/dev/project_b\nThen Panel displays c:/dev/project_b as current workspace\nAnd Panel displays behavior action state from project_b\nAnd Panel refreshes all sections with project_b data"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel is open showing valid workspace\nWhen User changes workspace path to non-existent directory\nThen Panel displays error message\nAnd Error message indicates directory not found\nAnd Panel retains previous valid workspace"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel is open showing default workspace c:/dev/project_a\nWhen User changes workspace path to c:/dev/project_b\nAnd Panel displays project_b workspace and state\nAnd User refreshes panel\nThen Panel displays c:/dev/project_b as current workspace\nAnd Workspace path was persisted and restored"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User changes workspace path",
-                          "text": "WHEN User changes workspace path",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System displays updated workspace path",
-                          "text": "THEN System displays updated workspace path",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND System displays behavior action state of new workspace",
-                          "text": "AND System displays behavior action state of new workspace",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "WHEN User sets workspace path",
-                          "text": "WHEN User sets workspace path",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "THEN System persists workspace path value",
-                          "text": "THEN System persists workspace path value",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "WHEN Panel refreshes",
-                          "text": "WHEN Panel refreshes",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "THEN System restores previously set workspace path",
-                          "text": "THEN System restores previously set workspace path",
-                          "sequential_order": 7.0
-                        }
-                      ]
-                    },
-                    {
-                      "name": "Switch Bot",
+                      "name": "Switch Bot panel",
                       "sequential_order": 4.0,
                       "connector": "and",
                       "story_type": "user",
@@ -10170,282 +10481,13 @@
                           "sequential_order": 4.0
                         }
                       ]
-                    },
-                    {
-                      "name": "Toggle Panel Section",
-                      "sequential_order": 5.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestTogglePanelSection",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel is open with behaviors section collapsed\nWhen User clicks behaviors section header\nThen Behaviors section expands\nAnd User sees behavior tree content"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel is open with instructions section expanded\nWhen User clicks instructions section header\nThen Instructions section collapses\nAnd User no longer sees instructions content"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User clicks section header",
-                          "text": "WHEN User clicks section header",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System expands or collapses section",
-                          "text": "THEN System expands or collapses section",
-                          "sequential_order": 2.0
-                        }
-                      ]
                     }
                   ]
                 }
               ],
               "stories": [
                 {
-                  "name": "Open Panel",
-                  "sequential_order": 1.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestOpenPanel",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_opens_panel_via_command_palette_happy_path",
-                      "steps": "Given VS Code workspace with bot installed\nWhen User executes 'Open Status Panel' command\nThen Panel webview appears\nAnd Panel displays bot name\nAnd Panel displays workspace path\nAnd Panel displays behavior action section\nAnd Panel displays scope section\nAnd Panel displays instructions section"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel is already open in VS Code\nWhen User executes 'Open Status Panel' command again\nThen Existing panel is brought to front\nAnd No duplicate panel is created"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given VS Code workspace with no bots installed\nWhen User executes 'Open Status Panel' command\nThen Panel displays error message\nAnd Error message indicates no bots found"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User activates panel command",
-                      "text": "WHEN User activates panel command",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System displays bot name",
-                      "text": "THEN System displays bot name",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND System displays workspace path",
-                      "text": "AND System displays workspace path",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "AND System displays bot path",
-                      "text": "AND System displays bot path",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "AND System displays available botss",
-                      "text": "AND System displays available botss",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "AND System displays behavior action section",
-                      "text": "AND System displays behavior action section",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "AND System displays scope section",
-                      "text": "AND System displays scope section",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "AND System displays instructions section",
-                      "text": "AND System displays instructions section",
-                      "sequential_order": 8.0
-                    }
-                  ]
-                },
-                {
-                  "name": "Display Session Status",
-                  "sequential_order": 2.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestDisplaySessionStatus",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel is open displaying current bot status\nAnd Bot state has changed since panel was opened\nWhen User clicks refresh button\nThen Panel displays updated bot name\nAnd Panel displays updated workspace path\nAnd Panel displays updated behavior action section\nAnd Panel displays updated scope\nAnd Panel displays updated instructions"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot is at behavior shape and action clarify\nWhen Panel opens\nThen Panel displays current bot name\nAnd Panel displays current workspace path\nAnd Panel displays shape.clarify as current action"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User clicks refresh button",
-                      "text": "WHEN User clicks refresh button",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System displays bot name",
-                      "text": "THEN System displays bot name",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND System displays updated workspace path",
-                      "text": "AND System displays updated workspace path",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "AND System displays updated bot path",
-                      "text": "AND System displays updated bot path",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "AND System displays updated available botss",
-                      "text": "AND System displays updated available botss",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "AND System displays updated behavior action section",
-                      "text": "AND System displays updated behavior action section",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "AND System displays updated scope section",
-                      "text": "AND System displays updated scope section",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "AND System displays updated instructions section",
-                      "text": "AND System displays updated instructions section",
-                      "sequential_order": 8.0
-                    }
-                  ]
-                },
-                {
-                  "name": "Change Workspace Path",
-                  "sequential_order": 3.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestChangeWorkspacePath",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel is open showing workspace at c:/dev/project_a\nAnd Workspace at c:/dev/project_b exists with different bot state\nWhen User changes workspace path to c:/dev/project_b\nThen Panel displays c:/dev/project_b as current workspace\nAnd Panel displays behavior action state from project_b\nAnd Panel refreshes all sections with project_b data"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel is open showing valid workspace\nWhen User changes workspace path to non-existent directory\nThen Panel displays error message\nAnd Error message indicates directory not found\nAnd Panel retains previous valid workspace"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel is open showing default workspace c:/dev/project_a\nWhen User changes workspace path to c:/dev/project_b\nAnd Panel displays project_b workspace and state\nAnd User refreshes panel\nThen Panel displays c:/dev/project_b as current workspace\nAnd Workspace path was persisted and restored"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User changes workspace path",
-                      "text": "WHEN User changes workspace path",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System displays updated workspace path",
-                      "text": "THEN System displays updated workspace path",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND System displays behavior action state of new workspace",
-                      "text": "AND System displays behavior action state of new workspace",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "WHEN User sets workspace path",
-                      "text": "WHEN User sets workspace path",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "THEN System persists workspace path value",
-                      "text": "THEN System persists workspace path value",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "WHEN Panel refreshes",
-                      "text": "WHEN Panel refreshes",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "THEN System restores previously set workspace path",
-                      "text": "THEN System restores previously set workspace path",
-                      "sequential_order": 7.0
-                    }
-                  ]
-                },
-                {
-                  "name": "Switch Bot",
+                  "name": "Switch Bot panel",
                   "sequential_order": 4.0,
                   "connector": "and",
                   "story_type": "user",
@@ -10493,48 +10535,6 @@
                       "name": "AND System displays behavior action stateof workspace for new bot",
                       "text": "AND System displays behavior action stateof workspace for new bot",
                       "sequential_order": 4.0
-                    }
-                  ]
-                },
-                {
-                  "name": "Toggle Panel Section",
-                  "sequential_order": 5.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestTogglePanelSection",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel is open with behaviors section collapsed\nWhen User clicks behaviors section header\nThen Behaviors section expands\nAnd User sees behavior tree content"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel is open with instructions section expanded\nWhen User clicks instructions section header\nThen Instructions section collapses\nAnd User no longer sees instructions content"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User clicks section header",
-                      "text": "WHEN User clicks section header",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System expands or collapses section",
-                      "text": "THEN System expands or collapses section",
-                      "sequential_order": 2.0
                     }
                   ]
                 }
