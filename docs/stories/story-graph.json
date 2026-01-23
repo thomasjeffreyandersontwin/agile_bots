@@ -919,323 +919,6 @@
                   "connector": null,
                   "stories": [
                     {
-                      "name": "Manage Behaviors",
-                      "sequential_order": 0.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestManageBehaviors",
-                      "scenarios": [
-                        {
-                          "name": "Behaviors current property returns current behavior",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_current_property_returns_current_behavior",
-                          "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
-                        },
-                        {
-                          "name": "Behaviors navigate to behavior updates current behavior",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
-                          "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
-                        },
-                        {
-                          "name": "Behaviors close current marks behavior and action complete",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
-                          "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
-                        },
-                        {
-                          "name": "Behaviors execute current executes current behavior",
-                          "sequential_order": 4.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behaviors_execute_current_executes_current_behavior",
-                          "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
-                        },
-                        {
-                          "name": "Behavior can be found by name when it exists.",
-                          "sequential_order": 5.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_behavior_by_name",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Finding behavior by name returns None when behavior doesn't exist.",
-                          "sequential_order": 6.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_behavior_returns_none_when_not_found",
-                          "steps": ""
-                        },
-                        {
-                          "name": "All behaviors can be iterated.",
-                          "sequential_order": 7.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_iterate_all_behaviors",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Can check if a behavior exists.",
-                          "sequential_order": 8.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_check_behavior_exists",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Action can be found by name when it exists.",
-                          "sequential_order": 9.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_action_by_name",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Finding action by name returns None when action doesn't exist.",
-                          "sequential_order": 10.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_action_returns_none_when_not_found",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Action can be found by order when it exists.",
-                          "sequential_order": 11.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_find_action_by_order",
-                          "steps": ""
-                        },
-                        {
-                          "name": "All actions can be iterated.",
-                          "sequential_order": 12.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_iterate_all_actions",
-                          "steps": ""
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Navigate To Behavior Action And Execute",
-                      "sequential_order": 1.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestNavigateToBehaviorActionAndExecute",
-                      "scenarios": [
-                        {
-                          "name": "Execute behavior with action parameter",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_execute_behavior_with_action_parameter",
-                          "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
-                        },
-                        {
-                          "name": "Execute behavior without action parameter forwards to current action",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_execute_behavior_without_action_forwards_to_current",
-                          "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
-                        },
-                        {
-                          "name": "Execute behavior executes directly when no workflow state exists",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
-                          "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
-                        },
-                        {
-                          "name": "Behavior action order determines next action from current_action",
-                          "sequential_order": 4.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
-                          "steps": ""
-                        },
-                        {
-                          "name": "No completed actions yet",
-                          "sequential_order": 5.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Behavior action order falls back to completed_actions when current_action is missing",
-                          "sequential_order": 6.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
-                          "steps": ""
-                        },
-                        {
-                          "name": "No behavior_action_state.json file exists (fresh start)",
-                          "sequential_order": 7.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
-                          "sequential_order": 8.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Different behaviors can have different action orders",
-                          "sequential_order": 9.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_different_behaviors_can_have_different_action_orders",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Workflow transitions are built correctly from behavior.json",
-                          "sequential_order": 10.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
-                          "steps": ""
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Navigate Sequentially",
-                      "sequential_order": 2.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestNavigateSequentially",
-                      "scenarios": [
-                        {
-                          "name": "bot.next() moves to next action",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_bot_next_navigates_to_next_action_in_workflow",
-                          "steps": "Given Bot is at clarify action\nWhen bot.next() is called\nThen Bot moves to strategy (next action in workflow)"
-                        },
-                        {
-                          "name": "bot.next() progresses through workflow sequence",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_bot_next_progresses_through_entire_workflow",
-                          "steps": "Given Bot is at first action\nWhen bot.next() is called multiple times\nThen Bot progresses through clarify -> strategy -> build -> validate -> render"
-                        },
-                        {
-                          "name": "bot.next() at final action advances to next behavior",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_bot_next_at_final_action_advances_to_next_behavior",
-                          "steps": "Given Bot is at render (final action of shape)\nWhen bot.next() is called\nThen Bot advances to next behavior (discovery) first action (clarify)"
-                        },
-                        {
-                          "name": "bot.current() returns current action instructions",
-                          "sequential_order": 4.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_bot_current_returns_current_action_instructions",
-                          "steps": "Given Bot is at a specific action\nWhen bot.current() is called\nThen Current action instructions object is returned"
-                        },
-                        {
-                          "name": "bot.next() respects behavior.json workflow sequence",
-                          "sequential_order": 5.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_bot_next_respects_workflow_sequence",
-                          "steps": "Given Bot is at strategy (second action)\nWhen bot.next() is called\nThen Bot moves to build (third action), following behavior.json order"
-                        },
-                        {
-                          "name": "bot.next() with no behavior selected starts workflow",
-                          "sequential_order": 6.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_bot_next_with_no_behavior_starts_at_first_behavior",
-                          "steps": "Given No behavior is selected\nWhen bot.next() is called\nThen Bot starts at first behavior (shape), first action (clarify)\nThen NOTE: Currently bot.next() returns an error when no behavior is selected.\nThen This test documents the DESIRED behavior - bot should be smart enough\nThen to start at the beginning of the workflow automatically."
-                        },
-                        {
-                          "name": "Can navigate to a specific behavior",
-                          "sequential_order": 7.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_navigate_to_behavior",
-                          "steps": "Given Bot exists with multiple behaviors\nWhen behaviors.navigate_to('discovery') called\nThen Current behavior is set to discovery"
-                        },
-                        {
-                          "name": "Next behavior in sequence can be retrieved",
-                          "sequential_order": 8.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_get_next_behavior",
-                          "steps": "Given Bot is at scenarios behavior\nWhen behaviors.next() called\nThen Returns next behavior (tests) with complete structure"
-                        },
-                        {
-                          "name": "Getting next behavior returns None when at last behavior",
-                          "sequential_order": 9.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_get_next_behavior_returns_none_at_end",
-                          "steps": "Given Bot is at last behavior in list\nWhen behaviors.next() called\nThen Returns None"
-                        },
-                        {
-                          "name": "Can navigate to a specific action",
-                          "sequential_order": 10.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_navigate_to_action",
-                          "steps": "Given Bot is at a behavior with multiple actions\nWhen actions.navigate_to('build') called\nThen Current action is set to build"
-                        },
-                        {
-                          "name": "Next action in sequence can be retrieved",
-                          "sequential_order": 11.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_get_next_action",
-                          "steps": "Given Bot is at clarify action (first action)\nWhen actions.next() called\nThen Returns strategy action (second action)"
-                        },
-                        {
-                          "name": "Getting next action returns None when at last action",
-                          "sequential_order": 12.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_get_next_action_returns_none_at_end",
-                          "steps": "Given Bot is at last action in behavior\nWhen actions.next() called\nThen Returns None"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
                       "name": "Persist Behavior Action State",
                       "sequential_order": 3.0,
                       "connector": "or",
@@ -1292,7 +975,7 @@
                     },
                     {
                       "name": "Inject Context Into Instructions",
-                      "sequential_order": 4.0,
+                      "sequential_order": 5.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -1396,323 +1079,6 @@
               ],
               "stories": [
                 {
-                  "name": "Manage Behaviors",
-                  "sequential_order": 0.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestManageBehaviors",
-                  "scenarios": [
-                    {
-                      "name": "Behaviors current property returns current behavior",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_current_property_returns_current_behavior",
-                      "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
-                    },
-                    {
-                      "name": "Behaviors navigate to behavior updates current behavior",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
-                      "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
-                    },
-                    {
-                      "name": "Behaviors close current marks behavior and action complete",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
-                      "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
-                    },
-                    {
-                      "name": "Behaviors execute current executes current behavior",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behaviors_execute_current_executes_current_behavior",
-                      "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
-                    },
-                    {
-                      "name": "Behavior can be found by name when it exists.",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_behavior_by_name",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Finding behavior by name returns None when behavior doesn't exist.",
-                      "sequential_order": 6.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_behavior_returns_none_when_not_found",
-                      "steps": ""
-                    },
-                    {
-                      "name": "All behaviors can be iterated.",
-                      "sequential_order": 7.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_iterate_all_behaviors",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Can check if a behavior exists.",
-                      "sequential_order": 8.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_check_behavior_exists",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Action can be found by name when it exists.",
-                      "sequential_order": 9.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_action_by_name",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Finding action by name returns None when action doesn't exist.",
-                      "sequential_order": 10.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_action_returns_none_when_not_found",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Action can be found by order when it exists.",
-                      "sequential_order": 11.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_find_action_by_order",
-                      "steps": ""
-                    },
-                    {
-                      "name": "All actions can be iterated.",
-                      "sequential_order": 12.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_iterate_all_actions",
-                      "steps": ""
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Navigate To Behavior Action And Execute",
-                  "sequential_order": 1.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestNavigateToBehaviorActionAndExecute",
-                  "scenarios": [
-                    {
-                      "name": "Execute behavior with action parameter",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_with_action_parameter",
-                      "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
-                    },
-                    {
-                      "name": "Execute behavior without action parameter forwards to current action",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_without_action_forwards_to_current",
-                      "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
-                    },
-                    {
-                      "name": "Execute behavior executes directly when no workflow state exists",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
-                      "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
-                    },
-                    {
-                      "name": "Behavior action order determines next action from current_action",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
-                      "steps": ""
-                    },
-                    {
-                      "name": "No completed actions yet",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Behavior action order falls back to completed_actions when current_action is missing",
-                      "sequential_order": 6.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
-                      "steps": ""
-                    },
-                    {
-                      "name": "No behavior_action_state.json file exists (fresh start)",
-                      "sequential_order": 7.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
-                      "sequential_order": 8.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Different behaviors can have different action orders",
-                      "sequential_order": 9.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_different_behaviors_can_have_different_action_orders",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Workflow transitions are built correctly from behavior.json",
-                      "sequential_order": 10.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
-                      "steps": ""
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Navigate Sequentially",
-                  "sequential_order": 2.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestNavigateSequentially",
-                  "scenarios": [
-                    {
-                      "name": "bot.next() moves to next action",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_bot_next_navigates_to_next_action_in_workflow",
-                      "steps": "Given Bot is at clarify action\nWhen bot.next() is called\nThen Bot moves to strategy (next action in workflow)"
-                    },
-                    {
-                      "name": "bot.next() progresses through workflow sequence",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_bot_next_progresses_through_entire_workflow",
-                      "steps": "Given Bot is at first action\nWhen bot.next() is called multiple times\nThen Bot progresses through clarify -> strategy -> build -> validate -> render"
-                    },
-                    {
-                      "name": "bot.next() at final action advances to next behavior",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_bot_next_at_final_action_advances_to_next_behavior",
-                      "steps": "Given Bot is at render (final action of shape)\nWhen bot.next() is called\nThen Bot advances to next behavior (discovery) first action (clarify)"
-                    },
-                    {
-                      "name": "bot.current() returns current action instructions",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_bot_current_returns_current_action_instructions",
-                      "steps": "Given Bot is at a specific action\nWhen bot.current() is called\nThen Current action instructions object is returned"
-                    },
-                    {
-                      "name": "bot.next() respects behavior.json workflow sequence",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_bot_next_respects_workflow_sequence",
-                      "steps": "Given Bot is at strategy (second action)\nWhen bot.next() is called\nThen Bot moves to build (third action), following behavior.json order"
-                    },
-                    {
-                      "name": "bot.next() with no behavior selected starts workflow",
-                      "sequential_order": 6.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_bot_next_with_no_behavior_starts_at_first_behavior",
-                      "steps": "Given No behavior is selected\nWhen bot.next() is called\nThen Bot starts at first behavior (shape), first action (clarify)\nThen NOTE: Currently bot.next() returns an error when no behavior is selected.\nThen This test documents the DESIRED behavior - bot should be smart enough\nThen to start at the beginning of the workflow automatically."
-                    },
-                    {
-                      "name": "Can navigate to a specific behavior",
-                      "sequential_order": 7.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_navigate_to_behavior",
-                      "steps": "Given Bot exists with multiple behaviors\nWhen behaviors.navigate_to('discovery') called\nThen Current behavior is set to discovery"
-                    },
-                    {
-                      "name": "Next behavior in sequence can be retrieved",
-                      "sequential_order": 8.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_get_next_behavior",
-                      "steps": "Given Bot is at scenarios behavior\nWhen behaviors.next() called\nThen Returns next behavior (tests) with complete structure"
-                    },
-                    {
-                      "name": "Getting next behavior returns None when at last behavior",
-                      "sequential_order": 9.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_get_next_behavior_returns_none_at_end",
-                      "steps": "Given Bot is at last behavior in list\nWhen behaviors.next() called\nThen Returns None"
-                    },
-                    {
-                      "name": "Can navigate to a specific action",
-                      "sequential_order": 10.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_navigate_to_action",
-                      "steps": "Given Bot is at a behavior with multiple actions\nWhen actions.navigate_to('build') called\nThen Current action is set to build"
-                    },
-                    {
-                      "name": "Next action in sequence can be retrieved",
-                      "sequential_order": 11.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_get_next_action",
-                      "steps": "Given Bot is at clarify action (first action)\nWhen actions.next() called\nThen Returns strategy action (second action)"
-                    },
-                    {
-                      "name": "Getting next action returns None when at last action",
-                      "sequential_order": 12.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_get_next_action_returns_none_at_end",
-                      "steps": "Given Bot is at last action in behavior\nWhen actions.next() called\nThen Returns None"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
                   "name": "Persist Behavior Action State",
                   "sequential_order": 3.0,
                   "connector": "or",
@@ -1769,7 +1135,7 @@
                 },
                 {
                   "name": "Inject Context Into Instructions",
-                  "sequential_order": 4.0,
+                  "sequential_order": 5.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -1882,84 +1248,6 @@
                   "connector": null,
                   "stories": [
                     {
-                      "name": "Navigate Using CLI Dot Notation",
-                      "sequential_order": 1.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": "test_navigate_behaviors_using_repl_commands.py",
-                      "test_class": "TestNavigateToBehaviorActionAndExecute",
-                      "scenarios": [
-                        {
-                          "name": "User navigates with behavior only (no dots)",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_navigates_with_behavior_only",
-                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery'\nTHEN: CLI navigates to discovery.clarify (first action)"
-                        },
-                        {
-                          "name": "User navigates with behavior.action (one dot)",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_navigates_with_behavior_dot_action",
-                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build'\nTHEN: CLI navigates to discovery.build.instructions"
-                        },
-                        {
-                          "name": "User navigates with behavior.action.operation (two dots)",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_navigates_with_full_dot_notation",
-                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build.instructions'\nTHEN: CLI executes discovery.build.instructions"
-                        },
-                        {
-                          "name": "User enters invalid behavior in dot notation",
-                          "sequential_order": 4.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_enters_invalid_behavior_in_dot_notation",
-                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'invalid_behavior.build.instructions'\nTHEN: CLI displays error message"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Navigate Sequentially Using CLI Commands",
-                      "sequential_order": 2.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": "test_navigate_behaviors_using_repl_commands.py",
-                      "test_class": "TestNavigateSequentially",
-                      "scenarios": [
-                        {
-                          "name": "User navigates with next command",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_navigates_with_next_command",
-                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'next'\nTHEN: CLI navigates to shape.strategy"
-                        },
-                        {
-                          "name": "User navigates with back command",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_user_navigates_with_back_command",
-                          "steps": "GIVEN: CLI is at shape.strategy.instructions\nWHEN: user enters 'back'\nTHEN: CLI navigates to shape.clarify"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
                       "name": "Exit CLI REPL",
                       "sequential_order": 3.0,
                       "connector": "and",
@@ -1986,38 +1274,14 @@
                 },
                 {
                   "name": "",
-                  "sequential_order": 0.0,
+                  "sequential_order": 1.0,
                   "type": "and",
                   "connector": null,
-                  "stories": [
-                    {
-                      "name": "Navigate To First Behavior Action",
-                      "sequential_order": 0.0,
-                      "connector": null,
-                      "story_type": "system",
-                      "users": [
-                        "System"
-                      ],
-                      "test_file": null,
-                      "test_class": null,
-                      "scenarios": [
-                        {
-                          "name": "Navigate sets current behavior and first action",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_navigate_sets_current_behavior_and_first_action",
-                          "steps": "GIVEN: Bot has behaviors configured\nWHEN: bot.behaviors.navigate_to('shape') is called\nTHEN: bot.behaviors.current.name == 'shape'\nAND: bot.behaviors.current.actions.current_action_name == 'clarify'"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    }
-                  ]
+                  "stories": []
                 },
                 {
                   "name": "",
-                  "sequential_order": 0.0,
+                  "sequential_order": 2.0,
                   "type": "and",
                   "connector": null,
                   "stories": [
@@ -2048,7 +1312,7 @@
                 },
                 {
                   "name": "",
-                  "sequential_order": 0.0,
+                  "sequential_order": 3.0,
                   "type": "and",
                   "connector": null,
                   "stories": [
@@ -2080,84 +1344,6 @@
               ],
               "stories": [
                 {
-                  "name": "Navigate Using CLI Dot Notation",
-                  "sequential_order": 1.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": "test_navigate_behaviors_using_repl_commands.py",
-                  "test_class": "TestNavigateToBehaviorActionAndExecute",
-                  "scenarios": [
-                    {
-                      "name": "User navigates with behavior only (no dots)",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_navigates_with_behavior_only",
-                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery'\nTHEN: CLI navigates to discovery.clarify (first action)"
-                    },
-                    {
-                      "name": "User navigates with behavior.action (one dot)",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_navigates_with_behavior_dot_action",
-                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build'\nTHEN: CLI navigates to discovery.build.instructions"
-                    },
-                    {
-                      "name": "User navigates with behavior.action.operation (two dots)",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_navigates_with_full_dot_notation",
-                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build.instructions'\nTHEN: CLI executes discovery.build.instructions"
-                    },
-                    {
-                      "name": "User enters invalid behavior in dot notation",
-                      "sequential_order": 4.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_enters_invalid_behavior_in_dot_notation",
-                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'invalid_behavior.build.instructions'\nTHEN: CLI displays error message"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Navigate Sequentially Using CLI Commands",
-                  "sequential_order": 2.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": "test_navigate_behaviors_using_repl_commands.py",
-                  "test_class": "TestNavigateSequentially",
-                  "scenarios": [
-                    {
-                      "name": "User navigates with next command",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_navigates_with_next_command",
-                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'next'\nTHEN: CLI navigates to shape.strategy"
-                    },
-                    {
-                      "name": "User navigates with back command",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_user_navigates_with_back_command",
-                      "steps": "GIVEN: CLI is at shape.strategy.instructions\nWHEN: user enters 'back'\nTHEN: CLI navigates to shape.clarify"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
                   "name": "Exit CLI REPL",
                   "sequential_order": 3.0,
                   "connector": "and",
@@ -2175,29 +1361,6 @@
                       "background": [],
                       "test_method": "test_user_exits_repl_with_exit_command",
                       "steps": "GIVEN: CLI is running\nWHEN: user enters 'exit'\nTHEN: CLI terminates REPL loop"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Navigate To First Behavior Action",
-                  "sequential_order": 0.0,
-                  "connector": null,
-                  "story_type": "system",
-                  "users": [
-                    "System"
-                  ],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenarios": [
-                    {
-                      "name": "Navigate sets current behavior and first action",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_navigate_sets_current_behavior_and_first_action",
-                      "steps": "GIVEN: Bot has behaviors configured\nWHEN: bot.behaviors.navigate_to('shape') is called\nTHEN: bot.behaviors.current.name == 'shape'\nAND: bot.behaviors.current.actions.current_action_name == 'clarify'"
                     }
                   ],
                   "scenario_outlines": [],
@@ -2419,134 +1582,6 @@
                       ]
                     },
                     {
-                      "name": "Navigate Behavior Action",
-                      "sequential_order": 2.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestNavigateBehaviorAction",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks on discovery.build action link\nThen Bot navigates to discovery.build\nAnd Panel refreshes to show new current position\nAnd discovery.build is highlighted as current action"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot is at shape.clarify\nWhen User clicks next button\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current\nAnd Panel displays shape.strategy in-progress indicator"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot is at shape.strategy\nWhen User clicks back button\nThen Bot navigates to shape.clarify\nAnd Panel displays shape.clarify as current\nAnd Panel displays shape.clarify in-progress indicator"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 4.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": null,
-                          "steps": "Given Bot is at last action of last behavior\nWhen User views next button\nThen Next button is disabled"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User clicks back button",
-                          "text": "WHEN User clicks back button",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System  sets previous action as current",
-                          "text": "THEN System  sets previous action as current",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND System displays previous action in-progress indicator",
-                          "text": "AND System displays previous action in-progress indicator",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "AND System reruns previous action details",
-                          "text": "AND System reruns previous action details",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "WHEN User clicks next button",
-                          "text": "WHEN User clicks next button",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "THEN System sets next action as current",
-                          "text": "THEN System sets next action as current",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "AND System displays next action in-progress indicator",
-                          "text": "AND System displays next action in-progress indicator",
-                          "sequential_order": 7.0
-                        },
-                        {
-                          "name": "AND System reruns next action details",
-                          "text": "AND System reruns next action details",
-                          "sequential_order": 8.0
-                        },
-                        {
-                          "name": "WHEN User clicks current button",
-                          "text": "WHEN User clicks current button",
-                          "sequential_order": 9.0
-                        },
-                        {
-                          "name": "THEN System reruns current action details",
-                          "text": "THEN System reruns current action details",
-                          "sequential_order": 10.0
-                        },
-                        {
-                          "name": "WHEN User is on the last operation of an action",
-                          "text": "WHEN User is on the last operation of an action",
-                          "sequential_order": 11.0
-                        },
-                        {
-                          "name": "THEN System moves to the next action and selects its first operation",
-                          "text": "THEN System moves to the next action and selects its first operation",
-                          "sequential_order": 12.0
-                        },
-                        {
-                          "name": "WHEN User is on the last action of a behavior",
-                          "text": "WHEN User is on the last action of a behavior",
-                          "sequential_order": 13.0
-                        },
-                        {
-                          "name": "THEN System moves to the next behavior and selects its first action and first operation",
-                          "text": "THEN System moves to the next behavior and selects its first action and first operation",
-                          "sequential_order": 14.0
-                        },
-                        {
-                          "name": "WHEN User is on the last behavior of a bot",
-                          "text": "WHEN User is on the last behavior of a bot",
-                          "sequential_order": 15.0
-                        },
-                        {
-                          "name": "THEN System disables next behavior navigation",
-                          "text": "THEN System disables next behavior navigation",
-                          "sequential_order": 16.0
-                        }
-                      ]
-                    },
-                    {
                       "name": "Execute Behavior Action",
                       "sequential_order": 3.0,
                       "connector": "and",
@@ -2559,7 +1594,7 @@
                       "scenarios": [
                         {
                           "name": "",
-                          "sequential_order": 1.0,
+                          "sequential_order": 12.0,
                           "type": "",
                           "background": [],
                           "test_method": null,
@@ -2567,7 +1602,7 @@
                         },
                         {
                           "name": "",
-                          "sequential_order": 2.0,
+                          "sequential_order": 13.0,
                           "type": "",
                           "background": [],
                           "test_method": null,
@@ -2575,7 +1610,7 @@
                         },
                         {
                           "name": "",
-                          "sequential_order": 3.0,
+                          "sequential_order": 14.0,
                           "type": "",
                           "background": [],
                           "test_method": null,
@@ -2587,62 +1622,62 @@
                         {
                           "name": "WHEN User clicks behavior",
                           "text": "WHEN User clicks behavior",
-                          "sequential_order": 1.0
+                          "sequential_order": 0.0
                         },
                         {
                           "name": "THEN System displays that behavior as current",
                           "text": "THEN System displays that behavior as current",
-                          "sequential_order": 2.0
+                          "sequential_order": 1.0
                         },
                         {
                           "name": "AND System expands behavior",
                           "text": "AND System expands behavior",
-                          "sequential_order": 3.0
+                          "sequential_order": 2.0
                         },
                         {
                           "name": "AND System expands first action to display operations",
                           "text": "AND System expands first action to display operations",
-                          "sequential_order": 4.0
+                          "sequential_order": 3.0
                         },
                         {
                           "name": "AND System sets first action as current",
                           "text": "AND System sets first action as current",
-                          "sequential_order": 5.0
+                          "sequential_order": 4.0
                         },
                         {
                           "name": "AND System sets first operation as current",
                           "text": "AND System sets first operation as current",
-                          "sequential_order": 6.0
+                          "sequential_order": 5.0
                         },
                         {
                           "name": "AND System executes first operation of first action of that behavior",
                           "text": "AND System executes first operation of first action of that behavior",
-                          "sequential_order": 7.0
+                          "sequential_order": 6.0
                         },
                         {
                           "name": "WHEN User clicks action",
                           "text": "WHEN User clicks action",
-                          "sequential_order": 8.0
+                          "sequential_order": 7.0
                         },
                         {
                           "name": "THEN System displays that action as current",
                           "text": "THEN System displays that action as current",
-                          "sequential_order": 9.0
+                          "sequential_order": 8.0
                         },
                         {
                           "name": "AND System expands action to display operations",
                           "text": "AND System expands action to display operations",
-                          "sequential_order": 10.0
+                          "sequential_order": 9.0
                         },
                         {
                           "name": "AND System sets first operation as current",
                           "text": "AND System sets first operation as current",
-                          "sequential_order": 11.0
+                          "sequential_order": 10.0
                         },
                         {
                           "name": "AND System executes first operation of that action",
                           "text": "AND System executes first operation of that action",
-                          "sequential_order": 12.0
+                          "sequential_order": 11.0
                         }
                       ]
                     }
@@ -2807,134 +1842,6 @@
                   ]
                 },
                 {
-                  "name": "Navigate Behavior Action",
-                  "sequential_order": 2.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestNavigateBehaviorAction",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks on discovery.build action link\nThen Bot navigates to discovery.build\nAnd Panel refreshes to show new current position\nAnd discovery.build is highlighted as current action"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot is at shape.clarify\nWhen User clicks next button\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current\nAnd Panel displays shape.strategy in-progress indicator"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot is at shape.strategy\nWhen User clicks back button\nThen Bot navigates to shape.clarify\nAnd Panel displays shape.clarify as current\nAnd Panel displays shape.clarify in-progress indicator"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 4.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Bot is at last action of last behavior\nWhen User views next button\nThen Next button is disabled"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User clicks back button",
-                      "text": "WHEN User clicks back button",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System  sets previous action as current",
-                      "text": "THEN System  sets previous action as current",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND System displays previous action in-progress indicator",
-                      "text": "AND System displays previous action in-progress indicator",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "AND System reruns previous action details",
-                      "text": "AND System reruns previous action details",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "WHEN User clicks next button",
-                      "text": "WHEN User clicks next button",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "THEN System sets next action as current",
-                      "text": "THEN System sets next action as current",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "AND System displays next action in-progress indicator",
-                      "text": "AND System displays next action in-progress indicator",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "AND System reruns next action details",
-                      "text": "AND System reruns next action details",
-                      "sequential_order": 8.0
-                    },
-                    {
-                      "name": "WHEN User clicks current button",
-                      "text": "WHEN User clicks current button",
-                      "sequential_order": 9.0
-                    },
-                    {
-                      "name": "THEN System reruns current action details",
-                      "text": "THEN System reruns current action details",
-                      "sequential_order": 10.0
-                    },
-                    {
-                      "name": "WHEN User is on the last operation of an action",
-                      "text": "WHEN User is on the last operation of an action",
-                      "sequential_order": 11.0
-                    },
-                    {
-                      "name": "THEN System moves to the next action and selects its first operation",
-                      "text": "THEN System moves to the next action and selects its first operation",
-                      "sequential_order": 12.0
-                    },
-                    {
-                      "name": "WHEN User is on the last action of a behavior",
-                      "text": "WHEN User is on the last action of a behavior",
-                      "sequential_order": 13.0
-                    },
-                    {
-                      "name": "THEN System moves to the next behavior and selects its first action and first operation",
-                      "text": "THEN System moves to the next behavior and selects its first action and first operation",
-                      "sequential_order": 14.0
-                    },
-                    {
-                      "name": "WHEN User is on the last behavior of a bot",
-                      "text": "WHEN User is on the last behavior of a bot",
-                      "sequential_order": 15.0
-                    },
-                    {
-                      "name": "THEN System disables next behavior navigation",
-                      "text": "THEN System disables next behavior navigation",
-                      "sequential_order": 16.0
-                    }
-                  ]
-                },
-                {
                   "name": "Execute Behavior Action",
                   "sequential_order": 3.0,
                   "connector": "and",
@@ -2947,7 +1854,7 @@
                   "scenarios": [
                     {
                       "name": "",
-                      "sequential_order": 1.0,
+                      "sequential_order": 12.0,
                       "type": "",
                       "background": [],
                       "test_method": null,
@@ -2955,7 +1862,7 @@
                     },
                     {
                       "name": "",
-                      "sequential_order": 2.0,
+                      "sequential_order": 13.0,
                       "type": "",
                       "background": [],
                       "test_method": null,
@@ -2963,7 +1870,7 @@
                     },
                     {
                       "name": "",
-                      "sequential_order": 3.0,
+                      "sequential_order": 14.0,
                       "type": "",
                       "background": [],
                       "test_method": null,
@@ -2975,62 +1882,62 @@
                     {
                       "name": "WHEN User clicks behavior",
                       "text": "WHEN User clicks behavior",
-                      "sequential_order": 1.0
+                      "sequential_order": 0.0
                     },
                     {
                       "name": "THEN System displays that behavior as current",
                       "text": "THEN System displays that behavior as current",
-                      "sequential_order": 2.0
+                      "sequential_order": 1.0
                     },
                     {
                       "name": "AND System expands behavior",
                       "text": "AND System expands behavior",
-                      "sequential_order": 3.0
+                      "sequential_order": 2.0
                     },
                     {
                       "name": "AND System expands first action to display operations",
                       "text": "AND System expands first action to display operations",
-                      "sequential_order": 4.0
+                      "sequential_order": 3.0
                     },
                     {
                       "name": "AND System sets first action as current",
                       "text": "AND System sets first action as current",
-                      "sequential_order": 5.0
+                      "sequential_order": 4.0
                     },
                     {
                       "name": "AND System sets first operation as current",
                       "text": "AND System sets first operation as current",
-                      "sequential_order": 6.0
+                      "sequential_order": 5.0
                     },
                     {
                       "name": "AND System executes first operation of first action of that behavior",
                       "text": "AND System executes first operation of first action of that behavior",
-                      "sequential_order": 7.0
+                      "sequential_order": 6.0
                     },
                     {
                       "name": "WHEN User clicks action",
                       "text": "WHEN User clicks action",
-                      "sequential_order": 8.0
+                      "sequential_order": 7.0
                     },
                     {
                       "name": "THEN System displays that action as current",
                       "text": "THEN System displays that action as current",
-                      "sequential_order": 9.0
+                      "sequential_order": 8.0
                     },
                     {
                       "name": "AND System expands action to display operations",
                       "text": "AND System expands action to display operations",
-                      "sequential_order": 10.0
+                      "sequential_order": 9.0
                     },
                     {
                       "name": "AND System sets first operation as current",
                       "text": "AND System sets first operation as current",
-                      "sequential_order": 11.0
+                      "sequential_order": 10.0
                     },
                     {
                       "name": "AND System executes first operation of that action",
                       "text": "AND System executes first operation of that action",
-                      "sequential_order": 12.0
+                      "sequential_order": 11.0
                     }
                   ]
                 }
@@ -3721,6 +2628,1122 @@
                   ]
                 }
               ]
+            },
+            {
+              "name": "Navigate Behavior And Actions",
+              "sequential_order": 5.0,
+              "sub_epics": [],
+              "story_groups": [
+                {
+                  "name": "",
+                  "sequential_order": 0.0,
+                  "type": "and",
+                  "connector": null,
+                  "stories": [
+                    {
+                      "name": "Navigate Behavior Action Panel",
+                      "sequential_order": 0.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestNavigateBehaviorAction",
+                      "scenarios": [
+                        {
+                          "name": "",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks on discovery.build action link\nThen Bot navigates to discovery.build\nAnd Panel refreshes to show new current position\nAnd discovery.build is highlighted as current action"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot is at shape.clarify\nWhen User clicks next button\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current\nAnd Panel displays shape.strategy in-progress indicator"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot is at shape.strategy\nWhen User clicks back button\nThen Bot navigates to shape.clarify\nAnd Panel displays shape.clarify as current\nAnd Panel displays shape.clarify in-progress indicator"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": null,
+                          "steps": "Given Bot is at last action of last behavior\nWhen User views next button\nThen Next button is disabled"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User clicks back button",
+                          "text": "WHEN User clicks back button",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System  sets previous action as current",
+                          "text": "THEN System  sets previous action as current",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System displays previous action in-progress indicator",
+                          "text": "AND System displays previous action in-progress indicator",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "AND System reruns previous action details",
+                          "text": "AND System reruns previous action details",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "WHEN User clicks next button",
+                          "text": "WHEN User clicks next button",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "THEN System sets next action as current",
+                          "text": "THEN System sets next action as current",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "AND System displays next action in-progress indicator",
+                          "text": "AND System displays next action in-progress indicator",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "AND System reruns next action details",
+                          "text": "AND System reruns next action details",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "WHEN User clicks current button",
+                          "text": "WHEN User clicks current button",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "THEN System reruns current action details",
+                          "text": "THEN System reruns current action details",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "WHEN User is on the last operation of an action",
+                          "text": "WHEN User is on the last operation of an action",
+                          "sequential_order": 11.0
+                        },
+                        {
+                          "name": "THEN System moves to the next action and selects its first operation",
+                          "text": "THEN System moves to the next action and selects its first operation",
+                          "sequential_order": 12.0
+                        },
+                        {
+                          "name": "WHEN User is on the last action of a behavior",
+                          "text": "WHEN User is on the last action of a behavior",
+                          "sequential_order": 13.0
+                        },
+                        {
+                          "name": "THEN System moves to the next behavior and selects its first action and first operation",
+                          "text": "THEN System moves to the next behavior and selects its first action and first operation",
+                          "sequential_order": 14.0
+                        },
+                        {
+                          "name": "WHEN User is on the last behavior of a bot",
+                          "text": "WHEN User is on the last behavior of a bot",
+                          "sequential_order": 15.0
+                        },
+                        {
+                          "name": "THEN System disables next behavior navigation",
+                          "text": "THEN System disables next behavior navigation",
+                          "sequential_order": 16.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Navigate Using CLI Dot Notation",
+                      "sequential_order": 1.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": "test_navigate_behaviors_using_repl_commands.py",
+                      "test_class": "TestNavigateToBehaviorActionAndExecute",
+                      "scenarios": [
+                        {
+                          "name": "User navigates with behavior only (no dots)",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_navigates_with_behavior_only",
+                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery'\nTHEN: CLI navigates to discovery.clarify (first action)"
+                        },
+                        {
+                          "name": "User navigates with behavior.action (one dot)",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_navigates_with_behavior_dot_action",
+                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build'\nTHEN: CLI navigates to discovery.build.instructions"
+                        },
+                        {
+                          "name": "User navigates with behavior.action.operation (two dots)",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_navigates_with_full_dot_notation",
+                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build.instructions'\nTHEN: CLI executes discovery.build.instructions"
+                        },
+                        {
+                          "name": "User enters invalid behavior in dot notation",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_enters_invalid_behavior_in_dot_notation",
+                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'invalid_behavior.build.instructions'\nTHEN: CLI displays error message"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Navigate To Behavior Action And Execute",
+                      "sequential_order": 2.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestNavigateToBehaviorActionAndExecute",
+                      "scenarios": [
+                        {
+                          "name": "Execute behavior with action parameter",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_execute_behavior_with_action_parameter",
+                          "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
+                        },
+                        {
+                          "name": "Execute behavior without action parameter forwards to current action",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_execute_behavior_without_action_forwards_to_current",
+                          "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
+                        },
+                        {
+                          "name": "Execute behavior executes directly when no workflow state exists",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
+                          "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
+                        },
+                        {
+                          "name": "Behavior action order determines next action from current_action",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
+                          "steps": ""
+                        },
+                        {
+                          "name": "No completed actions yet",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Behavior action order falls back to completed_actions when current_action is missing",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
+                          "steps": ""
+                        },
+                        {
+                          "name": "No behavior_action_state.json file exists (fresh start)",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
+                          "sequential_order": 8.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Different behaviors can have different action orders",
+                          "sequential_order": 9.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_different_behaviors_can_have_different_action_orders",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Workflow transitions are built correctly from behavior.json",
+                          "sequential_order": 10.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Navigate Sequentially",
+                      "sequential_order": 3.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestNavigateSequentially",
+                      "scenarios": [
+                        {
+                          "name": "bot.next() moves to next action",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_bot_next_navigates_to_next_action_in_workflow",
+                          "steps": "Given Bot is at clarify action\nWhen bot.next() is called\nThen Bot moves to strategy (next action in workflow)"
+                        },
+                        {
+                          "name": "bot.next() progresses through workflow sequence",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_bot_next_progresses_through_entire_workflow",
+                          "steps": "Given Bot is at first action\nWhen bot.next() is called multiple times\nThen Bot progresses through clarify -> strategy -> build -> validate -> render"
+                        },
+                        {
+                          "name": "bot.next() at final action advances to next behavior",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_bot_next_at_final_action_advances_to_next_behavior",
+                          "steps": "Given Bot is at render (final action of shape)\nWhen bot.next() is called\nThen Bot advances to next behavior (discovery) first action (clarify)"
+                        },
+                        {
+                          "name": "bot.current() returns current action instructions",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_bot_current_returns_current_action_instructions",
+                          "steps": "Given Bot is at a specific action\nWhen bot.current() is called\nThen Current action instructions object is returned"
+                        },
+                        {
+                          "name": "bot.next() respects behavior.json workflow sequence",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_bot_next_respects_workflow_sequence",
+                          "steps": "Given Bot is at strategy (second action)\nWhen bot.next() is called\nThen Bot moves to build (third action), following behavior.json order"
+                        },
+                        {
+                          "name": "bot.next() with no behavior selected starts workflow",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_bot_next_with_no_behavior_starts_at_first_behavior",
+                          "steps": "Given No behavior is selected\nWhen bot.next() is called\nThen Bot starts at first behavior (shape), first action (clarify)\nThen NOTE: Currently bot.next() returns an error when no behavior is selected.\nThen This test documents the DESIRED behavior - bot should be smart enough\nThen to start at the beginning of the workflow automatically."
+                        },
+                        {
+                          "name": "Can navigate to a specific behavior",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_navigate_to_behavior",
+                          "steps": "Given Bot exists with multiple behaviors\nWhen behaviors.navigate_to('discovery') called\nThen Current behavior is set to discovery"
+                        },
+                        {
+                          "name": "Next behavior in sequence can be retrieved",
+                          "sequential_order": 8.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_get_next_behavior",
+                          "steps": "Given Bot is at scenarios behavior\nWhen behaviors.next() called\nThen Returns next behavior (tests) with complete structure"
+                        },
+                        {
+                          "name": "Getting next behavior returns None when at last behavior",
+                          "sequential_order": 9.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_get_next_behavior_returns_none_at_end",
+                          "steps": "Given Bot is at last behavior in list\nWhen behaviors.next() called\nThen Returns None"
+                        },
+                        {
+                          "name": "Can navigate to a specific action",
+                          "sequential_order": 10.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_navigate_to_action",
+                          "steps": "Given Bot is at a behavior with multiple actions\nWhen actions.navigate_to('build') called\nThen Current action is set to build"
+                        },
+                        {
+                          "name": "Next action in sequence can be retrieved",
+                          "sequential_order": 11.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_get_next_action",
+                          "steps": "Given Bot is at clarify action (first action)\nWhen actions.next() called\nThen Returns strategy action (second action)"
+                        },
+                        {
+                          "name": "Getting next action returns None when at last action",
+                          "sequential_order": 12.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_get_next_action_returns_none_at_end",
+                          "steps": "Given Bot is at last action in behavior\nWhen actions.next() called\nThen Returns None"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Navigate To First Behavior Action",
+                      "sequential_order": 4.0,
+                      "connector": null,
+                      "story_type": "system",
+                      "users": [
+                        "System"
+                      ],
+                      "test_file": null,
+                      "test_class": null,
+                      "scenarios": [
+                        {
+                          "name": "Navigate sets current behavior and first action",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_navigate_sets_current_behavior_and_first_action",
+                          "steps": "GIVEN: Bot has behaviors configured\nWHEN: bot.behaviors.navigate_to('shape') is called\nTHEN: bot.behaviors.current.name == 'shape'\nAND: bot.behaviors.current.actions.current_action_name == 'clarify'"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Navigate Sequentially Using CLI Commands",
+                      "sequential_order": 5.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": "test_navigate_behaviors_using_repl_commands.py",
+                      "test_class": "TestNavigateSequentially",
+                      "scenarios": [
+                        {
+                          "name": "User navigates with next command",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_navigates_with_next_command",
+                          "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'next'\nTHEN: CLI navigates to shape.strategy"
+                        },
+                        {
+                          "name": "User navigates with back command",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_navigates_with_back_command",
+                          "steps": "GIVEN: CLI is at shape.strategy.instructions\nWHEN: user enters 'back'\nTHEN: CLI navigates to shape.clarify"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Manage Behaviors",
+                      "sequential_order": 6.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestManageBehaviors",
+                      "scenarios": [
+                        {
+                          "name": "Behaviors current property returns current behavior",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_current_property_returns_current_behavior",
+                          "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
+                        },
+                        {
+                          "name": "Behaviors navigate to behavior updates current behavior",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
+                          "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
+                        },
+                        {
+                          "name": "Behaviors close current marks behavior and action complete",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
+                          "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
+                        },
+                        {
+                          "name": "Behaviors execute current executes current behavior",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_behaviors_execute_current_executes_current_behavior",
+                          "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
+                        },
+                        {
+                          "name": "Behavior can be found by name when it exists.",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_behavior_by_name",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Finding behavior by name returns None when behavior doesn't exist.",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_behavior_returns_none_when_not_found",
+                          "steps": ""
+                        },
+                        {
+                          "name": "All behaviors can be iterated.",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_iterate_all_behaviors",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Can check if a behavior exists.",
+                          "sequential_order": 8.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_check_behavior_exists",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Action can be found by name when it exists.",
+                          "sequential_order": 9.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_action_by_name",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Finding action by name returns None when action doesn't exist.",
+                          "sequential_order": 10.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_action_returns_none_when_not_found",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Action can be found by order when it exists.",
+                          "sequential_order": 11.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_find_action_by_order",
+                          "steps": ""
+                        },
+                        {
+                          "name": "All actions can be iterated.",
+                          "sequential_order": 12.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_iterate_all_actions",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    }
+                  ]
+                }
+              ],
+              "stories": [
+                {
+                  "name": "Navigate Behavior Action Panel",
+                  "sequential_order": 0.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestNavigateBehaviorAction",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks on discovery.build action link\nThen Bot navigates to discovery.build\nAnd Panel refreshes to show new current position\nAnd discovery.build is highlighted as current action"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot is at shape.clarify\nWhen User clicks next button\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current\nAnd Panel displays shape.strategy in-progress indicator"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot is at shape.strategy\nWhen User clicks back button\nThen Bot navigates to shape.clarify\nAnd Panel displays shape.clarify as current\nAnd Panel displays shape.clarify in-progress indicator"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 4.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Bot is at last action of last behavior\nWhen User views next button\nThen Next button is disabled"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User clicks back button",
+                      "text": "WHEN User clicks back button",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN System  sets previous action as current",
+                      "text": "THEN System  sets previous action as current",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND System displays previous action in-progress indicator",
+                      "text": "AND System displays previous action in-progress indicator",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "AND System reruns previous action details",
+                      "text": "AND System reruns previous action details",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "WHEN User clicks next button",
+                      "text": "WHEN User clicks next button",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "THEN System sets next action as current",
+                      "text": "THEN System sets next action as current",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "AND System displays next action in-progress indicator",
+                      "text": "AND System displays next action in-progress indicator",
+                      "sequential_order": 7.0
+                    },
+                    {
+                      "name": "AND System reruns next action details",
+                      "text": "AND System reruns next action details",
+                      "sequential_order": 8.0
+                    },
+                    {
+                      "name": "WHEN User clicks current button",
+                      "text": "WHEN User clicks current button",
+                      "sequential_order": 9.0
+                    },
+                    {
+                      "name": "THEN System reruns current action details",
+                      "text": "THEN System reruns current action details",
+                      "sequential_order": 10.0
+                    },
+                    {
+                      "name": "WHEN User is on the last operation of an action",
+                      "text": "WHEN User is on the last operation of an action",
+                      "sequential_order": 11.0
+                    },
+                    {
+                      "name": "THEN System moves to the next action and selects its first operation",
+                      "text": "THEN System moves to the next action and selects its first operation",
+                      "sequential_order": 12.0
+                    },
+                    {
+                      "name": "WHEN User is on the last action of a behavior",
+                      "text": "WHEN User is on the last action of a behavior",
+                      "sequential_order": 13.0
+                    },
+                    {
+                      "name": "THEN System moves to the next behavior and selects its first action and first operation",
+                      "text": "THEN System moves to the next behavior and selects its first action and first operation",
+                      "sequential_order": 14.0
+                    },
+                    {
+                      "name": "WHEN User is on the last behavior of a bot",
+                      "text": "WHEN User is on the last behavior of a bot",
+                      "sequential_order": 15.0
+                    },
+                    {
+                      "name": "THEN System disables next behavior navigation",
+                      "text": "THEN System disables next behavior navigation",
+                      "sequential_order": 16.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Navigate Using CLI Dot Notation",
+                  "sequential_order": 1.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": "test_navigate_behaviors_using_repl_commands.py",
+                  "test_class": "TestNavigateToBehaviorActionAndExecute",
+                  "scenarios": [
+                    {
+                      "name": "User navigates with behavior only (no dots)",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_navigates_with_behavior_only",
+                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery'\nTHEN: CLI navigates to discovery.clarify (first action)"
+                    },
+                    {
+                      "name": "User navigates with behavior.action (one dot)",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_navigates_with_behavior_dot_action",
+                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build'\nTHEN: CLI navigates to discovery.build.instructions"
+                    },
+                    {
+                      "name": "User navigates with behavior.action.operation (two dots)",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_navigates_with_full_dot_notation",
+                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'discovery.build.instructions'\nTHEN: CLI executes discovery.build.instructions"
+                    },
+                    {
+                      "name": "User enters invalid behavior in dot notation",
+                      "sequential_order": 4.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_enters_invalid_behavior_in_dot_notation",
+                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'invalid_behavior.build.instructions'\nTHEN: CLI displays error message"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Navigate To Behavior Action And Execute",
+                  "sequential_order": 2.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestNavigateToBehaviorActionAndExecute",
+                  "scenarios": [
+                    {
+                      "name": "Execute behavior with action parameter",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_with_action_parameter",
+                      "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
+                    },
+                    {
+                      "name": "Execute behavior without action parameter forwards to current action",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_without_action_forwards_to_current",
+                      "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
+                    },
+                    {
+                      "name": "Execute behavior executes directly when no workflow state exists",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
+                      "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
+                    },
+                    {
+                      "name": "Behavior action order determines next action from current_action",
+                      "sequential_order": 4.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
+                      "steps": ""
+                    },
+                    {
+                      "name": "No completed actions yet",
+                      "sequential_order": 5.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Behavior action order falls back to completed_actions when current_action is missing",
+                      "sequential_order": 6.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
+                      "steps": ""
+                    },
+                    {
+                      "name": "No behavior_action_state.json file exists (fresh start)",
+                      "sequential_order": 7.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
+                      "sequential_order": 8.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Different behaviors can have different action orders",
+                      "sequential_order": 9.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_different_behaviors_can_have_different_action_orders",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Workflow transitions are built correctly from behavior.json",
+                      "sequential_order": 10.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
+                      "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Navigate Sequentially",
+                  "sequential_order": 3.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestNavigateSequentially",
+                  "scenarios": [
+                    {
+                      "name": "bot.next() moves to next action",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_bot_next_navigates_to_next_action_in_workflow",
+                      "steps": "Given Bot is at clarify action\nWhen bot.next() is called\nThen Bot moves to strategy (next action in workflow)"
+                    },
+                    {
+                      "name": "bot.next() progresses through workflow sequence",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_bot_next_progresses_through_entire_workflow",
+                      "steps": "Given Bot is at first action\nWhen bot.next() is called multiple times\nThen Bot progresses through clarify -> strategy -> build -> validate -> render"
+                    },
+                    {
+                      "name": "bot.next() at final action advances to next behavior",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_bot_next_at_final_action_advances_to_next_behavior",
+                      "steps": "Given Bot is at render (final action of shape)\nWhen bot.next() is called\nThen Bot advances to next behavior (discovery) first action (clarify)"
+                    },
+                    {
+                      "name": "bot.current() returns current action instructions",
+                      "sequential_order": 4.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_bot_current_returns_current_action_instructions",
+                      "steps": "Given Bot is at a specific action\nWhen bot.current() is called\nThen Current action instructions object is returned"
+                    },
+                    {
+                      "name": "bot.next() respects behavior.json workflow sequence",
+                      "sequential_order": 5.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_bot_next_respects_workflow_sequence",
+                      "steps": "Given Bot is at strategy (second action)\nWhen bot.next() is called\nThen Bot moves to build (third action), following behavior.json order"
+                    },
+                    {
+                      "name": "bot.next() with no behavior selected starts workflow",
+                      "sequential_order": 6.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_bot_next_with_no_behavior_starts_at_first_behavior",
+                      "steps": "Given No behavior is selected\nWhen bot.next() is called\nThen Bot starts at first behavior (shape), first action (clarify)\nThen NOTE: Currently bot.next() returns an error when no behavior is selected.\nThen This test documents the DESIRED behavior - bot should be smart enough\nThen to start at the beginning of the workflow automatically."
+                    },
+                    {
+                      "name": "Can navigate to a specific behavior",
+                      "sequential_order": 7.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_navigate_to_behavior",
+                      "steps": "Given Bot exists with multiple behaviors\nWhen behaviors.navigate_to('discovery') called\nThen Current behavior is set to discovery"
+                    },
+                    {
+                      "name": "Next behavior in sequence can be retrieved",
+                      "sequential_order": 8.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_get_next_behavior",
+                      "steps": "Given Bot is at scenarios behavior\nWhen behaviors.next() called\nThen Returns next behavior (tests) with complete structure"
+                    },
+                    {
+                      "name": "Getting next behavior returns None when at last behavior",
+                      "sequential_order": 9.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_get_next_behavior_returns_none_at_end",
+                      "steps": "Given Bot is at last behavior in list\nWhen behaviors.next() called\nThen Returns None"
+                    },
+                    {
+                      "name": "Can navigate to a specific action",
+                      "sequential_order": 10.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_navigate_to_action",
+                      "steps": "Given Bot is at a behavior with multiple actions\nWhen actions.navigate_to('build') called\nThen Current action is set to build"
+                    },
+                    {
+                      "name": "Next action in sequence can be retrieved",
+                      "sequential_order": 11.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_get_next_action",
+                      "steps": "Given Bot is at clarify action (first action)\nWhen actions.next() called\nThen Returns strategy action (second action)"
+                    },
+                    {
+                      "name": "Getting next action returns None when at last action",
+                      "sequential_order": 12.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_get_next_action_returns_none_at_end",
+                      "steps": "Given Bot is at last action in behavior\nWhen actions.next() called\nThen Returns None"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Navigate To First Behavior Action",
+                  "sequential_order": 4.0,
+                  "connector": null,
+                  "story_type": "system",
+                  "users": [
+                    "System"
+                  ],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [
+                    {
+                      "name": "Navigate sets current behavior and first action",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_navigate_sets_current_behavior_and_first_action",
+                      "steps": "GIVEN: Bot has behaviors configured\nWHEN: bot.behaviors.navigate_to('shape') is called\nTHEN: bot.behaviors.current.name == 'shape'\nAND: bot.behaviors.current.actions.current_action_name == 'clarify'"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Navigate Sequentially Using CLI Commands",
+                  "sequential_order": 5.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": "test_navigate_behaviors_using_repl_commands.py",
+                  "test_class": "TestNavigateSequentially",
+                  "scenarios": [
+                    {
+                      "name": "User navigates with next command",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_navigates_with_next_command",
+                      "steps": "GIVEN: CLI is at shape.clarify.instructions\nWHEN: user enters 'next'\nTHEN: CLI navigates to shape.strategy"
+                    },
+                    {
+                      "name": "User navigates with back command",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_navigates_with_back_command",
+                      "steps": "GIVEN: CLI is at shape.strategy.instructions\nWHEN: user enters 'back'\nTHEN: CLI navigates to shape.clarify"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Manage Behaviors",
+                  "sequential_order": 6.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestManageBehaviors",
+                  "scenarios": [
+                    {
+                      "name": "Behaviors current property returns current behavior",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_current_property_returns_current_behavior",
+                      "steps": "Given Behaviors collection with current behavior set\nWhen current property accessed\nThen Returns current Behavior object"
+                    },
+                    {
+                      "name": "Behaviors navigate to behavior updates current behavior",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_navigate_to_behavior_updates_current_behavior",
+                      "steps": "Given Behaviors collection\nWhen navigate_to('discovery') called\nThen Current behavior updated to 'discovery'"
+                    },
+                    {
+                      "name": "Behaviors close current marks behavior and action complete",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_close_current_marks_behavior_and_action_complete",
+                      "steps": "Given Behaviors collection with current behavior and current action\nWhen close_current() called\nThen Current behavior marked complete and current action closed"
+                    },
+                    {
+                      "name": "Behaviors execute current executes current behavior",
+                      "sequential_order": 4.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behaviors_execute_current_executes_current_behavior",
+                      "steps": "Given Behaviors collection with current behavior\nWhen execute_current() called\nThen Current behavior's execute() method called"
+                    },
+                    {
+                      "name": "Behavior can be found by name when it exists.",
+                      "sequential_order": 5.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_behavior_by_name",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Finding behavior by name returns None when behavior doesn't exist.",
+                      "sequential_order": 6.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_behavior_returns_none_when_not_found",
+                      "steps": ""
+                    },
+                    {
+                      "name": "All behaviors can be iterated.",
+                      "sequential_order": 7.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_iterate_all_behaviors",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Can check if a behavior exists.",
+                      "sequential_order": 8.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_check_behavior_exists",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Action can be found by name when it exists.",
+                      "sequential_order": 9.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_action_by_name",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Finding action by name returns None when action doesn't exist.",
+                      "sequential_order": 10.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_action_returns_none_when_not_found",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Action can be found by order when it exists.",
+                      "sequential_order": 11.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_find_action_by_order",
+                      "steps": ""
+                    },
+                    {
+                      "name": "All actions can be iterated.",
+                      "sequential_order": 12.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_iterate_all_actions",
+                      "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                }
+              ]
+            },
+            {
+              "name": "Execute Behavior Action",
+              "sequential_order": 6.0,
+              "sub_epics": [],
+              "story_groups": [],
+              "stories": []
             }
           ],
           "story_groups": [],
