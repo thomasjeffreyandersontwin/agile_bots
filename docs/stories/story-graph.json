@@ -3474,21 +3474,21 @@
                               "acceptance_criteria": []
                             },
                             {
-                              "name": "Remove Increment Filter Part From Story Scope",
+                              "name": "Add Increment Filter Part To Story Scope Panel",
                               "sequential_order": 7.0,
                               "connector": "or",
                               "story_type": "user",
                               "users": [
-                                "Bot Behavior"
+                                "User"
                               ],
                               "test_file": null,
-                              "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                              "test_class": "TestAddIncrementFilterPartToStoryScope",
                               "scenarios": [],
                               "scenario_outlines": [],
                               "acceptance_criteria": []
                             },
                             {
-                              "name": "Add Increment Filter Part To Story Scope Panel",
+                              "name": "Add Increment Filter Part To Story Scope CLI",
                               "sequential_order": 8.0,
                               "connector": "or",
                               "story_type": "user",
@@ -3530,15 +3530,15 @@
                               "acceptance_criteria": []
                             },
                             {
-                              "name": "Add Increment Filter Part To Story Scope CLI",
+                              "name": "Remove Increment Filter Part From Story Scope",
                               "sequential_order": 11.0,
                               "connector": "or",
                               "story_type": "user",
                               "users": [
-                                "User"
+                                "Bot Behavior"
                               ],
                               "test_file": null,
-                              "test_class": "TestAddIncrementFilterPartToStoryScope",
+                              "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
                               "scenarios": [],
                               "scenario_outlines": [],
                               "acceptance_criteria": []
@@ -3646,21 +3646,21 @@
                           "acceptance_criteria": []
                         },
                         {
-                          "name": "Remove Increment Filter Part From Story Scope",
+                          "name": "Add Increment Filter Part To Story Scope Panel",
                           "sequential_order": 7.0,
                           "connector": "or",
                           "story_type": "user",
                           "users": [
-                            "Bot Behavior"
+                            "User"
                           ],
                           "test_file": null,
-                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
+                          "test_class": "TestAddIncrementFilterPartToStoryScope",
                           "scenarios": [],
                           "scenario_outlines": [],
                           "acceptance_criteria": []
                         },
                         {
-                          "name": "Add Increment Filter Part To Story Scope Panel",
+                          "name": "Add Increment Filter Part To Story Scope CLI",
                           "sequential_order": 8.0,
                           "connector": "or",
                           "story_type": "user",
@@ -3702,15 +3702,15 @@
                           "acceptance_criteria": []
                         },
                         {
-                          "name": "Add Increment Filter Part To Story Scope CLI",
+                          "name": "Remove Increment Filter Part From Story Scope",
                           "sequential_order": 11.0,
                           "connector": "or",
                           "story_type": "user",
                           "users": [
-                            "User"
+                            "Bot Behavior"
                           ],
                           "test_file": null,
-                          "test_class": "TestAddIncrementFilterPartToStoryScope",
+                          "test_class": "TestRemoveIncrementFilterPartFromStoryScope",
                           "scenarios": [],
                           "scenario_outlines": [],
                           "acceptance_criteria": []
@@ -4373,23 +4373,8 @@
                       "stories": []
                     },
                     {
-                      "name": "Filter on Increment Scope in Panel",
-                      "sequential_order": 5.0,
-                      "sub_epics": [],
-                      "story_groups": [
-                        {
-                          "name": "",
-                          "sequential_order": 0.0,
-                          "type": "and",
-                          "connector": null,
-                          "stories": []
-                        }
-                      ],
-                      "stories": []
-                    },
-                    {
                       "name": "Filter on Story Scope in Panel",
-                      "sequential_order": 6.0,
+                      "sequential_order": 5.0,
                       "sub_epics": [],
                       "story_groups": [
                         {
