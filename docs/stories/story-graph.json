@@ -9038,8 +9038,276 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Open Panel",
+                      "name": "Switch Registered Bots in CLI",
                       "sequential_order": 5.0,
+                      "connector": "and",
+                      "story_type": "system",
+                      "users": [
+                        "CLI"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestSwitchRegisteredBots",
+                      "scenarios": [
+                        {
+                          "name": "Display Registered Bots in CLI STATUS",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_display_registered_bots_in_cli_status",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Switch to Valid Registered Bot",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_switch_to_valid_registered_bot",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Attempt to Switch to Unregistered Bot",
+                          "sequential_order": 3.0,
+                          "type": "error_path",
+                          "background": [],
+                          "test_method": "test_attempt_to_switch_to_unregistered_bot",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
+                          "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
+                          "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
+                          "text": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
+                          "text": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
+                          "text": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
+                          "sequential_order": 5.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Switch Bot panel",
+                      "sequential_order": 6.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestSwitchBot",
+                      "scenarios": [
+                        {
+                          "name": "Panel shows story_bot and multiple bots available",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_panel_shows_story_bot_and_multiple_bots_available",
+                          "steps": "Given Panel is open showing story_bot\nAnd Multiple bots are available (story_bot, crc_bot)\nWhen User selects crc_bot from bot selector dropdown\nThen Panel displays crc_bot as current bot\nAnd Panel displays crc_bot's behaviors\nAnd Panel displays crc_bot's current action\nAnd Panel refreshes all sections with crc_bot data"
+                        },
+                        {
+                          "name": "User switches to crc_bot",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_switches_to_crc_bot",
+                          "steps": "Given Panel is open with story_bot at workspace c:/dev/project_a\nWhen User switches to crc_bot\nThen Panel displays crc_bot\nAnd Panel retains workspace c:/dev/project_a\nAnd Panel displays crc_bot state for that workspace"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User switches bot",
+                          "text": "WHEN User switches bot",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System displays updated bot name",
+                          "text": "THEN System displays updated bot name",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System displays behavior action section for new bot",
+                          "text": "AND System displays behavior action section for new bot",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "AND System displays behavior action stateof workspace for new bot",
+                          "text": "AND System displays behavior action stateof workspace for new bot",
+                          "sequential_order": 4.0
+                        }
+                      ]
+                    },
+                    {
+                      "name": "Launch CLI in Interactive Mode",
+                      "sequential_order": 7.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestStartCLISessionInTTYMode",
+                      "scenarios": [
+                        {
+                          "name": "CLI launches in interactive mode",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_launches_in_interactive_mode",
+                          "steps": "GIVEN: CLISession is configured for interactive mode (TTY detected)\nWHEN: user runs CLI\nTHEN: CLISession wraps Bot\nAND: CLI can execute commands\nAND: CLI uses TTY adapters for output"
+                        },
+                        {
+                          "name": "CLI loads existing behavior action state on launch",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_loads_existing_behavior_action_state_on_launch",
+                          "steps": "GIVEN: CLISession is configured for interactive mode\nAND: behavior action state file exists\nWHEN: user runs CLI\nTHEN: Bot loads stored behavior action state"
+                        },
+                        {
+                          "name": "CLI displays status on launch",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_status_on_launch",
+                          "steps": "GIVEN: CLISession is initialized in interactive mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output with all required sections in correct order\nAND: Output format matches TTY adapter format (hard-coded expectations)"
+                        },
+                        {
+                          "name": "CLI displays header section",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_header_section",
+                          "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with exact format\nAND: Header includes separator lines, centered bold text, description, and warning"
+                        },
+                        {
+                          "name": "CLI displays bot section",
+                          "sequential_order": 5.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_bot_section",
+                          "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with exact format\nAND: Bot section includes bot name, bot path, workspace path, and change path instructions"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Launch CLI in Pipe Mode",
+                      "sequential_order": 8.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "AI Agent",
+                        "Automation"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestStartCLISessionInPipeMode",
+                      "scenarios": [
+                        {
+                          "name": "CLI launches in pipe mode",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_launches_in_pipe_mode",
+                          "steps": "GIVEN: CLISession is configured for pipe mode (non-TTY detected)\nWHEN: commands are piped\nTHEN: CLISession creates session without interactive prompts\nAND: CLI can execute commands in pipe mode\nAND: CLI uses markdown adapters for output"
+                        },
+                        {
+                          "name": "CLI displays status in markdown format",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_status_in_markdown_format",
+                          "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in markdown format\nAND: Output includes markdown syntax (headers, bold, code blocks, lists)"
+                        },
+                        {
+                          "name": "CLI displays header section in markdown",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_header_section_in_markdown",
+                          "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with markdown formatting\nAND: Header uses markdown separators and headers"
+                        },
+                        {
+                          "name": "CLI displays bot section in markdown",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_bot_section_in_markdown",
+                          "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with markdown formatting\nAND: Bot section uses markdown headers, bold, and code blocks"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Launch CLI in JSON Mode",
+                      "sequential_order": 9.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "Web View",
+                        "API Client"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestStartCLISessionInJSONMode",
+                      "scenarios": [
+                        {
+                          "name": "CLI launches in JSON mode",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_launches_in_json_mode",
+                          "steps": "GIVEN: CLISession is configured for JSON mode (mode='json' set explicitly)\nWHEN: commands are executed\nTHEN: CLISession creates session\nAND: CLI can execute commands in JSON mode\nAND: CLI uses JSON adapters for output"
+                        },
+                        {
+                          "name": "CLI displays status in JSON format",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_status_in_json_format",
+                          "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in JSON format\nAND: Output is valid JSON with required fields (name, bot_directory, workspace_directory, behavior_names, current_behavior)"
+                        },
+                        {
+                          "name": "CLI displays header section in JSON",
+                          "sequential_order": 3.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_header_section_in_json",
+                          "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with JSON structure\nAND: Output is valid JSON dictionary"
+                        },
+                        {
+                          "name": "CLI displays bot section in JSON",
+                          "sequential_order": 4.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_displays_bot_section_in_json",
+                          "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with JSON structure\nAND: JSON includes bot name and directory fields"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Open Panel",
+                      "sequential_order": 10.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [
@@ -9119,7 +9387,7 @@
                     },
                     {
                       "name": "Display Session Status panel",
-                      "sequential_order": 6.0,
+                      "sequential_order": 11.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -9191,7 +9459,7 @@
                     },
                     {
                       "name": "Change Workspace Path panel",
-                      "sequential_order": 7.0,
+                      "sequential_order": 12.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -9266,7 +9534,7 @@
                     },
                     {
                       "name": "Toggle Panel Section",
-                      "sequential_order": 8.0,
+                      "sequential_order": 13.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -9307,56 +9575,89 @@
                       ]
                     },
                     {
-                      "name": "Switch Bot panel",
-                      "sequential_order": 9.0,
+                      "name": "Display Piped Mode Instructions for AI Agents",
+                      "sequential_order": 14.0,
                       "connector": "and",
-                      "story_type": "user",
+                      "story_type": "system",
                       "users": [
-                        "User"
+                        "CLI"
                       ],
                       "test_file": null,
-                      "test_class": "TestSwitchBot",
+                      "test_class": "TestDisplayPipedModeInstructionsForAIAgents",
                       "scenarios": [
                         {
-                          "name": "Panel shows story_bot and multiple bots available",
+                          "name": "CLI displays piped mode instructions in pipe mode",
                           "sequential_order": 1.0,
-                          "type": "happy_path",
+                          "type": "",
                           "background": [],
-                          "test_method": "test_panel_shows_story_bot_and_multiple_bots_available",
-                          "steps": "Given Panel is open showing story_bot\nAnd Multiple bots are available (story_bot, crc_bot)\nWhen User selects crc_bot from bot selector dropdown\nThen Panel displays crc_bot as current bot\nAnd Panel displays crc_bot's behaviors\nAnd Panel displays crc_bot's current action\nAnd Panel refreshes all sections with crc_bot data"
+                          "test_method": "test_cli_displays_piped_mode_instructions_in_pipe_mode",
+                          "steps": "GIVEN: REPLSession detects piped input\nWHEN: CLI initializes\nTHEN: CLI displays piped mode instructions header"
                         },
                         {
-                          "name": "User switches to crc_bot",
+                          "name": "CLI omits piped mode instructions in interactive mode",
                           "sequential_order": 2.0,
-                          "type": "happy_path",
+                          "type": "",
                           "background": [],
-                          "test_method": "test_user_switches_to_crc_bot",
-                          "steps": "Given Panel is open with story_bot at workspace c:/dev/project_a\nWhen User switches to crc_bot\nThen Panel displays crc_bot\nAnd Panel retains workspace c:/dev/project_a\nAnd Panel displays crc_bot state for that workspace"
+                          "test_method": "test_cli_omits_piped_mode_instructions_in_interactive_mode",
+                          "steps": "GIVEN: REPLSession detects interactive TTY\nWHEN: CLI initializes\nTHEN: CLI does not display piped mode instructions"
                         }
                       ],
                       "scenario_outlines": [],
-                      "acceptance_criteria": [
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Detect and Configure TTY/Non-TTY Input",
+                      "sequential_order": 15.0,
+                      "connector": "and",
+                      "story_type": "system",
+                      "users": [
+                        "TTYDetector"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDetectAndConfigureTTYNonTTYInput",
+                      "scenarios": [
                         {
-                          "name": "WHEN User switches bot",
-                          "text": "WHEN User switches bot",
-                          "sequential_order": 1.0
+                          "name": "TTY detector identifies interactive terminal",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_tty_detector_identifies_interactive_terminal",
+                          "steps": "GIVEN: stdin is connected to a TTY terminal\nWHEN: CLI detects TTY status\nTHEN: Interactive mode is detected\nAND: TTY adapters are used"
                         },
                         {
-                          "name": "THEN System displays updated bot name",
-                          "text": "THEN System displays updated bot name",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND System displays behavior action section for new bot",
-                          "text": "AND System displays behavior action section for new bot",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "AND System displays behavior action stateof workspace for new bot",
-                          "text": "AND System displays behavior action stateof workspace for new bot",
-                          "sequential_order": 4.0
+                          "name": "TTY detector identifies piped input",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_tty_detector_identifies_piped_input",
+                          "steps": "GIVEN: stdin is piped from another process\nWHEN: CLI detects TTY status\nTHEN: Pipe mode is detected\nAND: Markdown adapters are used"
                         }
-                      ]
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Load and Display Workspace Context in CLI",
+                      "sequential_order": 16.0,
+                      "connector": "and",
+                      "story_type": "system",
+                      "users": [
+                        "CLI"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestLoadWorkspaceContext",
+                      "scenarios": [
+                        {
+                          "name": "CLI loads and displays workspace context",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_cli_loads_and_displays_workspace_context",
+                          "steps": "GIVEN: Bot has workspace path\nAND: workspace contains story-graph.json\nWHEN: REPLSession initializes CLIBot\nTHEN: CLIBot loads workspace context from bot paths"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -9582,8 +9883,276 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Open Panel",
+                  "name": "Switch Registered Bots in CLI",
                   "sequential_order": 5.0,
+                  "connector": "and",
+                  "story_type": "system",
+                  "users": [
+                    "CLI"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestSwitchRegisteredBots",
+                  "scenarios": [
+                    {
+                      "name": "Display Registered Bots in CLI STATUS",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_display_registered_bots_in_cli_status",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Switch to Valid Registered Bot",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_switch_to_valid_registered_bot",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Attempt to Switch to Unregistered Bot",
+                      "sequential_order": 3.0,
+                      "type": "error_path",
+                      "background": [],
+                      "test_method": "test_attempt_to_switch_to_unregistered_bot",
+                      "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
+                      "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
+                      "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
+                      "text": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
+                      "text": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
+                      "text": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
+                      "sequential_order": 5.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Switch Bot panel",
+                  "sequential_order": 6.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestSwitchBot",
+                  "scenarios": [
+                    {
+                      "name": "Panel shows story_bot and multiple bots available",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_panel_shows_story_bot_and_multiple_bots_available",
+                      "steps": "Given Panel is open showing story_bot\nAnd Multiple bots are available (story_bot, crc_bot)\nWhen User selects crc_bot from bot selector dropdown\nThen Panel displays crc_bot as current bot\nAnd Panel displays crc_bot's behaviors\nAnd Panel displays crc_bot's current action\nAnd Panel refreshes all sections with crc_bot data"
+                    },
+                    {
+                      "name": "User switches to crc_bot",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_user_switches_to_crc_bot",
+                      "steps": "Given Panel is open with story_bot at workspace c:/dev/project_a\nWhen User switches to crc_bot\nThen Panel displays crc_bot\nAnd Panel retains workspace c:/dev/project_a\nAnd Panel displays crc_bot state for that workspace"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User switches bot",
+                      "text": "WHEN User switches bot",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "THEN System displays updated bot name",
+                      "text": "THEN System displays updated bot name",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND System displays behavior action section for new bot",
+                      "text": "AND System displays behavior action section for new bot",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "AND System displays behavior action stateof workspace for new bot",
+                      "text": "AND System displays behavior action stateof workspace for new bot",
+                      "sequential_order": 4.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Launch CLI in Interactive Mode",
+                  "sequential_order": 7.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestStartCLISessionInTTYMode",
+                  "scenarios": [
+                    {
+                      "name": "CLI launches in interactive mode",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_launches_in_interactive_mode",
+                      "steps": "GIVEN: CLISession is configured for interactive mode (TTY detected)\nWHEN: user runs CLI\nTHEN: CLISession wraps Bot\nAND: CLI can execute commands\nAND: CLI uses TTY adapters for output"
+                    },
+                    {
+                      "name": "CLI loads existing behavior action state on launch",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_loads_existing_behavior_action_state_on_launch",
+                      "steps": "GIVEN: CLISession is configured for interactive mode\nAND: behavior action state file exists\nWHEN: user runs CLI\nTHEN: Bot loads stored behavior action state"
+                    },
+                    {
+                      "name": "CLI displays status on launch",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_status_on_launch",
+                      "steps": "GIVEN: CLISession is initialized in interactive mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output with all required sections in correct order\nAND: Output format matches TTY adapter format (hard-coded expectations)"
+                    },
+                    {
+                      "name": "CLI displays header section",
+                      "sequential_order": 4.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_header_section",
+                      "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with exact format\nAND: Header includes separator lines, centered bold text, description, and warning"
+                    },
+                    {
+                      "name": "CLI displays bot section",
+                      "sequential_order": 5.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_bot_section",
+                      "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with exact format\nAND: Bot section includes bot name, bot path, workspace path, and change path instructions"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Launch CLI in Pipe Mode",
+                  "sequential_order": 8.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "AI Agent",
+                    "Automation"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestStartCLISessionInPipeMode",
+                  "scenarios": [
+                    {
+                      "name": "CLI launches in pipe mode",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_launches_in_pipe_mode",
+                      "steps": "GIVEN: CLISession is configured for pipe mode (non-TTY detected)\nWHEN: commands are piped\nTHEN: CLISession creates session without interactive prompts\nAND: CLI can execute commands in pipe mode\nAND: CLI uses markdown adapters for output"
+                    },
+                    {
+                      "name": "CLI displays status in markdown format",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_status_in_markdown_format",
+                      "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in markdown format\nAND: Output includes markdown syntax (headers, bold, code blocks, lists)"
+                    },
+                    {
+                      "name": "CLI displays header section in markdown",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_header_section_in_markdown",
+                      "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with markdown formatting\nAND: Header uses markdown separators and headers"
+                    },
+                    {
+                      "name": "CLI displays bot section in markdown",
+                      "sequential_order": 4.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_bot_section_in_markdown",
+                      "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with markdown formatting\nAND: Bot section uses markdown headers, bold, and code blocks"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Launch CLI in JSON Mode",
+                  "sequential_order": 9.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "Web View",
+                    "API Client"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestStartCLISessionInJSONMode",
+                  "scenarios": [
+                    {
+                      "name": "CLI launches in JSON mode",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_launches_in_json_mode",
+                      "steps": "GIVEN: CLISession is configured for JSON mode (mode='json' set explicitly)\nWHEN: commands are executed\nTHEN: CLISession creates session\nAND: CLI can execute commands in JSON mode\nAND: CLI uses JSON adapters for output"
+                    },
+                    {
+                      "name": "CLI displays status in JSON format",
+                      "sequential_order": 2.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_status_in_json_format",
+                      "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in JSON format\nAND: Output is valid JSON with required fields (name, bot_directory, workspace_directory, behavior_names, current_behavior)"
+                    },
+                    {
+                      "name": "CLI displays header section in JSON",
+                      "sequential_order": 3.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_header_section_in_json",
+                      "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with JSON structure\nAND: Output is valid JSON dictionary"
+                    },
+                    {
+                      "name": "CLI displays bot section in JSON",
+                      "sequential_order": 4.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_cli_displays_bot_section_in_json",
+                      "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with JSON structure\nAND: JSON includes bot name and directory fields"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Open Panel",
+                  "sequential_order": 10.0,
                   "connector": null,
                   "story_type": "user",
                   "users": [
@@ -9663,7 +10232,7 @@
                 },
                 {
                   "name": "Display Session Status panel",
-                  "sequential_order": 6.0,
+                  "sequential_order": 11.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -9735,7 +10304,7 @@
                 },
                 {
                   "name": "Change Workspace Path panel",
-                  "sequential_order": 7.0,
+                  "sequential_order": 12.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -9810,7 +10379,7 @@
                 },
                 {
                   "name": "Toggle Panel Section",
-                  "sequential_order": 8.0,
+                  "sequential_order": 13.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -9851,529 +10420,8 @@
                   ]
                 },
                 {
-                  "name": "Switch Bot panel",
-                  "sequential_order": 9.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestSwitchBot",
-                  "scenarios": [
-                    {
-                      "name": "Panel shows story_bot and multiple bots available",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_panel_shows_story_bot_and_multiple_bots_available",
-                      "steps": "Given Panel is open showing story_bot\nAnd Multiple bots are available (story_bot, crc_bot)\nWhen User selects crc_bot from bot selector dropdown\nThen Panel displays crc_bot as current bot\nAnd Panel displays crc_bot's behaviors\nAnd Panel displays crc_bot's current action\nAnd Panel refreshes all sections with crc_bot data"
-                    },
-                    {
-                      "name": "User switches to crc_bot",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_user_switches_to_crc_bot",
-                      "steps": "Given Panel is open with story_bot at workspace c:/dev/project_a\nWhen User switches to crc_bot\nThen Panel displays crc_bot\nAnd Panel retains workspace c:/dev/project_a\nAnd Panel displays crc_bot state for that workspace"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User switches bot",
-                      "text": "WHEN User switches bot",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System displays updated bot name",
-                      "text": "THEN System displays updated bot name",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND System displays behavior action section for new bot",
-                      "text": "AND System displays behavior action section for new bot",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "AND System displays behavior action stateof workspace for new bot",
-                      "text": "AND System displays behavior action stateof workspace for new bot",
-                      "sequential_order": 4.0
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "Initialize CLI Session",
-              "sequential_order": 1.0,
-              "sub_epics": [],
-              "story_groups": [
-                {
-                  "name": "",
-                  "sequential_order": 0.0,
-                  "type": "and",
-                  "connector": null,
-                  "stories": [
-                    {
-                      "name": "Launch CLI in Interactive Mode",
-                      "sequential_order": 1.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestStartCLISessionInTTYMode",
-                      "scenarios": [
-                        {
-                          "name": "CLI launches in interactive mode",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_launches_in_interactive_mode",
-                          "steps": "GIVEN: CLISession is configured for interactive mode (TTY detected)\nWHEN: user runs CLI\nTHEN: CLISession wraps Bot\nAND: CLI can execute commands\nAND: CLI uses TTY adapters for output"
-                        },
-                        {
-                          "name": "CLI loads existing behavior action state on launch",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_loads_existing_behavior_action_state_on_launch",
-                          "steps": "GIVEN: CLISession is configured for interactive mode\nAND: behavior action state file exists\nWHEN: user runs CLI\nTHEN: Bot loads stored behavior action state"
-                        },
-                        {
-                          "name": "CLI displays status on launch",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_status_on_launch",
-                          "steps": "GIVEN: CLISession is initialized in interactive mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output with all required sections in correct order\nAND: Output format matches TTY adapter format (hard-coded expectations)"
-                        },
-                        {
-                          "name": "CLI displays header section",
-                          "sequential_order": 4.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_header_section",
-                          "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with exact format\nAND: Header includes separator lines, centered bold text, description, and warning"
-                        },
-                        {
-                          "name": "CLI displays bot section",
-                          "sequential_order": 5.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_bot_section",
-                          "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with exact format\nAND: Bot section includes bot name, bot path, workspace path, and change path instructions"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Launch CLI in Pipe Mode",
-                      "sequential_order": 2.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "AI Agent",
-                        "Automation"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestStartCLISessionInPipeMode",
-                      "scenarios": [
-                        {
-                          "name": "CLI launches in pipe mode",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_launches_in_pipe_mode",
-                          "steps": "GIVEN: CLISession is configured for pipe mode (non-TTY detected)\nWHEN: commands are piped\nTHEN: CLISession creates session without interactive prompts\nAND: CLI can execute commands in pipe mode\nAND: CLI uses markdown adapters for output"
-                        },
-                        {
-                          "name": "CLI displays status in markdown format",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_status_in_markdown_format",
-                          "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in markdown format\nAND: Output includes markdown syntax (headers, bold, code blocks, lists)"
-                        },
-                        {
-                          "name": "CLI displays header section in markdown",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_header_section_in_markdown",
-                          "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with markdown formatting\nAND: Header uses markdown separators and headers"
-                        },
-                        {
-                          "name": "CLI displays bot section in markdown",
-                          "sequential_order": 4.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_bot_section_in_markdown",
-                          "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with markdown formatting\nAND: Bot section uses markdown headers, bold, and code blocks"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Launch CLI in JSON Mode",
-                      "sequential_order": 3.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "Web View",
-                        "API Client"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestStartCLISessionInJSONMode",
-                      "scenarios": [
-                        {
-                          "name": "CLI launches in JSON mode",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_launches_in_json_mode",
-                          "steps": "GIVEN: CLISession is configured for JSON mode (mode='json' set explicitly)\nWHEN: commands are executed\nTHEN: CLISession creates session\nAND: CLI can execute commands in JSON mode\nAND: CLI uses JSON adapters for output"
-                        },
-                        {
-                          "name": "CLI displays status in JSON format",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_status_in_json_format",
-                          "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in JSON format\nAND: Output is valid JSON with required fields (name, bot_directory, workspace_directory, behavior_names, current_behavior)"
-                        },
-                        {
-                          "name": "CLI displays header section in JSON",
-                          "sequential_order": 3.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_header_section_in_json",
-                          "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with JSON structure\nAND: Output is valid JSON dictionary"
-                        },
-                        {
-                          "name": "CLI displays bot section in JSON",
-                          "sequential_order": 4.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_bot_section_in_json",
-                          "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with JSON structure\nAND: JSON includes bot name and directory fields"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Display Piped Mode Instructions for AI Agents",
-                      "sequential_order": 3.0,
-                      "connector": "and",
-                      "story_type": "system",
-                      "users": [
-                        "CLI"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestDisplayPipedModeInstructionsForAIAgents",
-                      "scenarios": [
-                        {
-                          "name": "CLI displays piped mode instructions in pipe mode",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_displays_piped_mode_instructions_in_pipe_mode",
-                          "steps": "GIVEN: REPLSession detects piped input\nWHEN: CLI initializes\nTHEN: CLI displays piped mode instructions header"
-                        },
-                        {
-                          "name": "CLI omits piped mode instructions in interactive mode",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_omits_piped_mode_instructions_in_interactive_mode",
-                          "steps": "GIVEN: REPLSession detects interactive TTY\nWHEN: CLI initializes\nTHEN: CLI does not display piped mode instructions"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Detect and Configure TTY/Non-TTY Input",
-                      "sequential_order": 4.0,
-                      "connector": "and",
-                      "story_type": "system",
-                      "users": [
-                        "TTYDetector"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestDetectAndConfigureTTYNonTTYInput",
-                      "scenarios": [
-                        {
-                          "name": "TTY detector identifies interactive terminal",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_tty_detector_identifies_interactive_terminal",
-                          "steps": "GIVEN: stdin is connected to a TTY terminal\nWHEN: CLI detects TTY status\nTHEN: Interactive mode is detected\nAND: TTY adapters are used"
-                        },
-                        {
-                          "name": "TTY detector identifies piped input",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_tty_detector_identifies_piped_input",
-                          "steps": "GIVEN: stdin is piped from another process\nWHEN: CLI detects TTY status\nTHEN: Pipe mode is detected\nAND: Markdown adapters are used"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Load and Display Workspace Context in CLI",
-                      "sequential_order": 5.0,
-                      "connector": "and",
-                      "story_type": "system",
-                      "users": [
-                        "CLI"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestLoadWorkspaceContext",
-                      "scenarios": [
-                        {
-                          "name": "CLI loads and displays workspace context",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_cli_loads_and_displays_workspace_context",
-                          "steps": "GIVEN: Bot has workspace path\nAND: workspace contains story-graph.json\nWHEN: REPLSession initializes CLIBot\nTHEN: CLIBot loads workspace context from bot paths"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Switch Registered Bots",
-                      "sequential_order": 6.0,
-                      "connector": "and",
-                      "story_type": "system",
-                      "users": [
-                        "CLI"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestSwitchRegisteredBots",
-                      "scenarios": [
-                        {
-                          "name": "Display Registered Bots in CLI STATUS",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_display_registered_bots_in_cli_status",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Switch to Valid Registered Bot",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_switch_to_valid_registered_bot",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Attempt to Switch to Unregistered Bot",
-                          "sequential_order": 3.0,
-                          "type": "error_path",
-                          "background": [],
-                          "test_method": "test_attempt_to_switch_to_unregistered_bot",
-                          "steps": ""
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
-                          "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
-                          "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
-                          "text": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
-                          "text": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
-                          "text": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
-                          "sequential_order": 5.0
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ],
-              "stories": [
-                {
-                  "name": "Launch CLI in Interactive Mode",
-                  "sequential_order": 1.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestStartCLISessionInTTYMode",
-                  "scenarios": [
-                    {
-                      "name": "CLI launches in interactive mode",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_launches_in_interactive_mode",
-                      "steps": "GIVEN: CLISession is configured for interactive mode (TTY detected)\nWHEN: user runs CLI\nTHEN: CLISession wraps Bot\nAND: CLI can execute commands\nAND: CLI uses TTY adapters for output"
-                    },
-                    {
-                      "name": "CLI loads existing behavior action state on launch",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_loads_existing_behavior_action_state_on_launch",
-                      "steps": "GIVEN: CLISession is configured for interactive mode\nAND: behavior action state file exists\nWHEN: user runs CLI\nTHEN: Bot loads stored behavior action state"
-                    },
-                    {
-                      "name": "CLI displays status on launch",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_status_on_launch",
-                      "steps": "GIVEN: CLISession is initialized in interactive mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output with all required sections in correct order\nAND: Output format matches TTY adapter format (hard-coded expectations)"
-                    },
-                    {
-                      "name": "CLI displays header section",
-                      "sequential_order": 4.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_header_section",
-                      "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with exact format\nAND: Header includes separator lines, centered bold text, description, and warning"
-                    },
-                    {
-                      "name": "CLI displays bot section",
-                      "sequential_order": 5.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_bot_section",
-                      "steps": "GIVEN: CLISession is initialized\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with exact format\nAND: Bot section includes bot name, bot path, workspace path, and change path instructions"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Launch CLI in Pipe Mode",
-                  "sequential_order": 2.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "AI Agent",
-                    "Automation"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestStartCLISessionInPipeMode",
-                  "scenarios": [
-                    {
-                      "name": "CLI launches in pipe mode",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_launches_in_pipe_mode",
-                      "steps": "GIVEN: CLISession is configured for pipe mode (non-TTY detected)\nWHEN: commands are piped\nTHEN: CLISession creates session without interactive prompts\nAND: CLI can execute commands in pipe mode\nAND: CLI uses markdown adapters for output"
-                    },
-                    {
-                      "name": "CLI displays status in markdown format",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_status_in_markdown_format",
-                      "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in markdown format\nAND: Output includes markdown syntax (headers, bold, code blocks, lists)"
-                    },
-                    {
-                      "name": "CLI displays header section in markdown",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_header_section_in_markdown",
-                      "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with markdown formatting\nAND: Header uses markdown separators and headers"
-                    },
-                    {
-                      "name": "CLI displays bot section in markdown",
-                      "sequential_order": 4.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_bot_section_in_markdown",
-                      "steps": "GIVEN: CLISession is initialized in pipe mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with markdown formatting\nAND: Bot section uses markdown headers, bold, and code blocks"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Launch CLI in JSON Mode",
-                  "sequential_order": 3.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "Web View",
-                    "API Client"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestStartCLISessionInJSONMode",
-                  "scenarios": [
-                    {
-                      "name": "CLI launches in JSON mode",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_launches_in_json_mode",
-                      "steps": "GIVEN: CLISession is configured for JSON mode (mode='json' set explicitly)\nWHEN: commands are executed\nTHEN: CLISession creates session\nAND: CLI can execute commands in JSON mode\nAND: CLI uses JSON adapters for output"
-                    },
-                    {
-                      "name": "CLI displays status in JSON format",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_status_in_json_format",
-                      "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays complete status output in JSON format\nAND: Output is valid JSON with required fields (name, bot_directory, workspace_directory, behavior_names, current_behavior)"
-                    },
-                    {
-                      "name": "CLI displays header section in JSON",
-                      "sequential_order": 3.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_header_section_in_json",
-                      "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays header section with JSON structure\nAND: Output is valid JSON dictionary"
-                    },
-                    {
-                      "name": "CLI displays bot section in JSON",
-                      "sequential_order": 4.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_cli_displays_bot_section_in_json",
-                      "steps": "GIVEN: CLISession is initialized in JSON mode\nWHEN: user executes 'status' command\nTHEN: CLI displays bot section with JSON structure\nAND: JSON includes bot name and directory fields"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
                   "name": "Display Piped Mode Instructions for AI Agents",
-                  "sequential_order": 3.0,
+                  "sequential_order": 14.0,
                   "connector": "and",
                   "story_type": "system",
                   "users": [
@@ -10404,7 +10452,7 @@
                 },
                 {
                   "name": "Detect and Configure TTY/Non-TTY Input",
-                  "sequential_order": 4.0,
+                  "sequential_order": 15.0,
                   "connector": "and",
                   "story_type": "system",
                   "users": [
@@ -10435,7 +10483,7 @@
                 },
                 {
                   "name": "Load and Display Workspace Context in CLI",
-                  "sequential_order": 5.0,
+                  "sequential_order": 16.0,
                   "connector": "and",
                   "story_type": "system",
                   "users": [
@@ -10455,77 +10503,12 @@
                   ],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
-                },
-                {
-                  "name": "Switch Registered Bots",
-                  "sequential_order": 6.0,
-                  "connector": "and",
-                  "story_type": "system",
-                  "users": [
-                    "CLI"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestSwitchRegisteredBots",
-                  "scenarios": [
-                    {
-                      "name": "Display Registered Bots in CLI STATUS",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_display_registered_bots_in_cli_status",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Switch to Valid Registered Bot",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_switch_to_valid_registered_bot",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Attempt to Switch to Unregistered Bot",
-                      "sequential_order": 3.0,
-                      "type": "error_path",
-                      "background": [],
-                      "test_method": "test_attempt_to_switch_to_unregistered_bot",
-                      "steps": ""
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
-                      "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows current bot name followed by pipe-separated list of all registered bots AND format is: Bot: <current_bot> | Registered: <bot1> | <bot2> | <bot3>",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
-                      "text": "WHEN CLI STATUS section is displayed\nTHEN CLI shows bot switching instructions AND format is: To change bots: bot <name>",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
-                      "text": "WHEN user enters bot <name> command AND bot name is registered\nTHEN CLI switches to the specified bot AND updates CLI STATUS section to show new current bot",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
-                      "text": "WHEN user enters bot <name> command AND bot name is not registered\nTHEN CLI displays error message AND shows list of available registered bots AND keeps current bot active",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
-                      "text": "WHEN bot is switched\nTHEN CLI loads bot configuration from bot_config.json AND makes bot behaviors and actions available",
-                      "sequential_order": 5.0
-                    }
-                  ]
                 }
               ]
             },
             {
               "name": "Display State Using REPL",
-              "sequential_order": 2.0,
+              "sequential_order": 1.0,
               "sub_epics": [],
               "story_groups": [
                 {
@@ -11464,7 +11447,7 @@
             },
             {
               "name": "Track Activity",
-              "sequential_order": 3.0,
+              "sequential_order": 2.0,
               "sub_epics": [],
               "story_groups": [
                 {
@@ -16205,6 +16188,13 @@
               ]
             }
           ],
+          "story_groups": [],
+          "stories": []
+        },
+        {
+          "name": "Init Bot",
+          "sequential_order": -1.0,
+          "sub_epics": [],
           "story_groups": [],
           "stories": []
         }
