@@ -6102,8 +6102,20 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Delete Increment CLI",
+                      "name": "Delete Increment",
                       "sequential_order": 3.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [],
+                      "test_file": null,
+                      "test_class": null,
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Delete Increment CLI",
+                      "sequential_order": 4.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -6116,8 +6128,34 @@
                       "acceptance_criteria": []
                     },
                     {
+                      "name": "Delete Increment Panel",
+                      "sequential_order": 5.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDeleteIncrement",
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Move Story to Increment",
+                      "sequential_order": 6.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [],
+                      "test_file": null,
+                      "test_class": null,
+                      "scenarios": [],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
                       "name": "Move Story to Increment CLI",
-                      "sequential_order": 4.0,
+                      "sequential_order": 7.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -6130,22 +6168,22 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Show All Increment Scope Through CLI",
-                      "sequential_order": 5.0,
+                      "name": "Move Story to Increment Panel",
+                      "sequential_order": 8.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
                         "Bot Behavior"
                       ],
                       "test_file": null,
-                      "test_class": "TestShowAllIncrementScopeThroughCLI",
+                      "test_class": "TestMoveStorytoIncrement",
                       "scenarios": [],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
                     },
                     {
                       "name": "Display Increment Scope View CLI",
-                      "sequential_order": 7.0,
+                      "sequential_order": 9.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -6158,36 +6196,34 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Delete Increment Panel",
-                      "sequential_order": 8.0,
+                      "name": "Show All Increment Scope Through CLI",
+                      "sequential_order": 10.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
                         "Bot Behavior"
                       ],
                       "test_file": null,
-                      "test_class": "TestDeleteIncrement",
+                      "test_class": "TestShowAllIncrementScopeThroughCLI",
                       "scenarios": [],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Move Story to Increment Panel",
-                      "sequential_order": 9.0,
-                      "connector": "or",
+                      "name": "Show All Increment Scope",
+                      "sequential_order": 11.0,
+                      "connector": null,
                       "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
+                      "users": [],
                       "test_file": null,
-                      "test_class": "TestMoveStorytoIncrement",
+                      "test_class": null,
                       "scenarios": [],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
                     },
                     {
                       "name": "Show All Increment Scope Through Panel",
-                      "sequential_order": 10.0,
+                      "sequential_order": 12.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -6200,44 +6236,8 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Delete Increment",
-                      "sequential_order": 12.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [],
-                      "test_file": null,
-                      "test_class": null,
-                      "scenarios": [],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Move Story to Increment",
-                      "sequential_order": 13.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [],
-                      "test_file": null,
-                      "test_class": null,
-                      "scenarios": [],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
-                      "name": "Show All Increment Scope",
-                      "sequential_order": 14.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [],
-                      "test_file": null,
-                      "test_class": null,
-                      "scenarios": [],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
                       "name": "Display Increment Scope View",
-                      "sequential_order": 16.0,
+                      "sequential_order": 13.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -6294,8 +6294,20 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Delete Increment CLI",
+                  "name": "Delete Increment",
                   "sequential_order": 3.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Delete Increment CLI",
+                  "sequential_order": 4.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -6308,8 +6320,34 @@
                   "acceptance_criteria": []
                 },
                 {
+                  "name": "Delete Increment Panel",
+                  "sequential_order": 5.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestDeleteIncrement",
+                  "scenarios": [],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Move Story to Increment",
+                  "sequential_order": 6.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
                   "name": "Move Story to Increment CLI",
-                  "sequential_order": 4.0,
+                  "sequential_order": 7.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -6322,22 +6360,22 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Show All Increment Scope Through CLI",
-                  "sequential_order": 5.0,
+                  "name": "Move Story to Increment Panel",
+                  "sequential_order": 8.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
                     "Bot Behavior"
                   ],
                   "test_file": null,
-                  "test_class": "TestShowAllIncrementScopeThroughCLI",
+                  "test_class": "TestMoveStorytoIncrement",
                   "scenarios": [],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
                 },
                 {
                   "name": "Display Increment Scope View CLI",
-                  "sequential_order": 7.0,
+                  "sequential_order": 9.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -6350,36 +6388,34 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Delete Increment Panel",
-                  "sequential_order": 8.0,
+                  "name": "Show All Increment Scope Through CLI",
+                  "sequential_order": 10.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
                     "Bot Behavior"
                   ],
                   "test_file": null,
-                  "test_class": "TestDeleteIncrement",
+                  "test_class": "TestShowAllIncrementScopeThroughCLI",
                   "scenarios": [],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Move Story to Increment Panel",
-                  "sequential_order": 9.0,
-                  "connector": "or",
+                  "name": "Show All Increment Scope",
+                  "sequential_order": 11.0,
+                  "connector": null,
                   "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
+                  "users": [],
                   "test_file": null,
-                  "test_class": "TestMoveStorytoIncrement",
+                  "test_class": null,
                   "scenarios": [],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
                 },
                 {
                   "name": "Show All Increment Scope Through Panel",
-                  "sequential_order": 10.0,
+                  "sequential_order": 12.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -6392,44 +6428,8 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Delete Increment",
-                  "sequential_order": 12.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenarios": [],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Move Story to Increment",
-                  "sequential_order": 13.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenarios": [],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Show All Increment Scope",
-                  "sequential_order": 14.0,
-                  "connector": null,
-                  "story_type": "user",
-                  "users": [],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenarios": [],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
                   "name": "Display Increment Scope View",
-                  "sequential_order": 16.0,
+                  "sequential_order": 13.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -11627,69 +11627,6 @@
                       ]
                     },
                     {
-                      "name": "Clarify Requirements",
-                      "sequential_order": 999.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestClarifyRequirements",
-                      "scenarios": [
-                        {
-                          "name": "Action injects questions and evidence from production guardrails",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_action_injects_questions_and_evidence",
-                          "steps": "Given Production story_bot with shape behavior (has guardrails)\nWhen Action injects guardrails\nThen Instructions contain questions and evidence from production files"
-                        },
-                        {
-                          "name": "Save clarification data when parameters are provided",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_save_clarification_data_when_parameters_provided",
-                          "steps": "Given Production story_bot clarify action\nWhen do_execute is called with key_questions_answered and evidence_provided\nThen clarification.json file is created in docs/stories/ folder\nThen And file contains behavior section with key_questions and evidence"
-                        },
-                        {
-                          "name": "Preserve existing clarification data when saving",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_preserve_existing_clarification_data_when_saving",
-                          "steps": "Given clarification.json already exists with data for 'discovery' behavior\nWhen do_execute is called with parameters\nThen clarification.json contains both 'discovery' and 'shape' sections\nThen And Production story_bot clarify action for 'shape' behavior\nThen And existing 'discovery' data is preserved"
-                        },
-                        {
-                          "name": "Skip saving when no clarification parameters are provided",
-                          "sequential_order": 4.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_skip_saving_when_no_clarification_parameters_provided",
-                          "steps": "Given Production story_bot clarify action\nWhen do_execute is called with empty parameters\nThen clarification.json file is not created"
-                        },
-                        {
-                          "name": "Guardrails loads required context from workspace",
-                          "sequential_order": 5.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_guardrails_loads_required_context_from_workspace",
-                          "steps": "Given Workspace with guardrails files (questions and evidence)\nWhen Behavior loads guardrails\nThen Questions and evidence are loaded correctly"
-                        },
-                        {
-                          "name": "Guardrails loads strategy assumptions from workspace",
-                          "sequential_order": 6.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_guardrails_loads_strategy_assumptions_from_workspace",
-                          "steps": "Given Workspace with strategy guardrails files\nWhen Behavior loads guardrails\nThen Strategy assumptions are loaded correctly"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
-                    },
-                    {
                       "name": "Validate Rules",
                       "sequential_order": 999.0,
                       "connector": "or",
@@ -12103,69 +12040,6 @@
                       "sequential_order": 4.0
                     }
                   ]
-                },
-                {
-                  "name": "Clarify Requirements",
-                  "sequential_order": 999.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestClarifyRequirements",
-                  "scenarios": [
-                    {
-                      "name": "Action injects questions and evidence from production guardrails",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_action_injects_questions_and_evidence",
-                      "steps": "Given Production story_bot with shape behavior (has guardrails)\nWhen Action injects guardrails\nThen Instructions contain questions and evidence from production files"
-                    },
-                    {
-                      "name": "Save clarification data when parameters are provided",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_save_clarification_data_when_parameters_provided",
-                      "steps": "Given Production story_bot clarify action\nWhen do_execute is called with key_questions_answered and evidence_provided\nThen clarification.json file is created in docs/stories/ folder\nThen And file contains behavior section with key_questions and evidence"
-                    },
-                    {
-                      "name": "Preserve existing clarification data when saving",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_preserve_existing_clarification_data_when_saving",
-                      "steps": "Given clarification.json already exists with data for 'discovery' behavior\nWhen do_execute is called with parameters\nThen clarification.json contains both 'discovery' and 'shape' sections\nThen And Production story_bot clarify action for 'shape' behavior\nThen And existing 'discovery' data is preserved"
-                    },
-                    {
-                      "name": "Skip saving when no clarification parameters are provided",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_skip_saving_when_no_clarification_parameters_provided",
-                      "steps": "Given Production story_bot clarify action\nWhen do_execute is called with empty parameters\nThen clarification.json file is not created"
-                    },
-                    {
-                      "name": "Guardrails loads required context from workspace",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_guardrails_loads_required_context_from_workspace",
-                      "steps": "Given Workspace with guardrails files (questions and evidence)\nWhen Behavior loads guardrails\nThen Questions and evidence are loaded correctly"
-                    },
-                    {
-                      "name": "Guardrails loads strategy assumptions from workspace",
-                      "sequential_order": 6.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_guardrails_loads_strategy_assumptions_from_workspace",
-                      "steps": "Given Workspace with strategy guardrails files\nWhen Behavior loads guardrails\nThen Strategy assumptions are loaded correctly"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
                 },
                 {
                   "name": "Validate Rules",
@@ -12777,23 +12651,63 @@
                       "connector": null,
                       "stories": [
                         {
-                          "name": "Display Clarification Data Through CLI",
+                          "name": "Clarify Requirements",
                           "sequential_order": 0.0,
-                          "connector": null,
+                          "connector": "or",
                           "story_type": "user",
                           "users": [
-                            "User"
+                            "Bot Behavior"
                           ],
-                          "test_file": "test_display_clarify_instructions_using_repl.py",
-                          "test_class": "TestDisplayClarificationDataThroughCLI",
+                          "test_file": null,
+                          "test_class": "TestClarifyRequirements",
                           "scenarios": [
                             {
-                              "name": "Display stored clarification data",
+                              "name": "Action injects questions and evidence from production guardrails",
                               "sequential_order": 1.0,
-                              "type": "",
+                              "type": "happy_path",
                               "background": [],
-                              "test_method": "test_display_stored_clarification_data",
-                              "steps": "GIVEN: Clarification data exists\nWHEN: user views clarify instructions\nTHEN: CLI displays stored clarification data"
+                              "test_method": "test_action_injects_questions_and_evidence",
+                              "steps": "Given Production story_bot with shape behavior (has guardrails)\nWhen Action injects guardrails\nThen Instructions contain questions and evidence from production files"
+                            },
+                            {
+                              "name": "Save clarification data when parameters are provided",
+                              "sequential_order": 2.0,
+                              "type": "happy_path",
+                              "background": [],
+                              "test_method": "test_save_clarification_data_when_parameters_provided",
+                              "steps": "Given Production story_bot clarify action\nWhen do_execute is called with key_questions_answered and evidence_provided\nThen clarification.json file is created in docs/stories/ folder\nThen And file contains behavior section with key_questions and evidence"
+                            },
+                            {
+                              "name": "Preserve existing clarification data when saving",
+                              "sequential_order": 3.0,
+                              "type": "happy_path",
+                              "background": [],
+                              "test_method": "test_preserve_existing_clarification_data_when_saving",
+                              "steps": "Given clarification.json already exists with data for 'discovery' behavior\nWhen do_execute is called with parameters\nThen clarification.json contains both 'discovery' and 'shape' sections\nThen And Production story_bot clarify action for 'shape' behavior\nThen And existing 'discovery' data is preserved"
+                            },
+                            {
+                              "name": "Skip saving when no clarification parameters are provided",
+                              "sequential_order": 4.0,
+                              "type": "happy_path",
+                              "background": [],
+                              "test_method": "test_skip_saving_when_no_clarification_parameters_provided",
+                              "steps": "Given Production story_bot clarify action\nWhen do_execute is called with empty parameters\nThen clarification.json file is not created"
+                            },
+                            {
+                              "name": "Guardrails loads required context from workspace",
+                              "sequential_order": 5.0,
+                              "type": "happy_path",
+                              "background": [],
+                              "test_method": "test_guardrails_loads_required_context_from_workspace",
+                              "steps": "Given Workspace with guardrails files (questions and evidence)\nWhen Behavior loads guardrails\nThen Questions and evidence are loaded correctly"
+                            },
+                            {
+                              "name": "Guardrails loads strategy assumptions from workspace",
+                              "sequential_order": 6.0,
+                              "type": "happy_path",
+                              "background": [],
+                              "test_method": "test_guardrails_loads_strategy_assumptions_from_workspace",
+                              "steps": "Given Workspace with strategy guardrails files\nWhen Behavior loads guardrails\nThen Strategy assumptions are loaded correctly"
                             }
                           ],
                           "scenario_outlines": [],
@@ -12823,8 +12737,31 @@
                           "acceptance_criteria": []
                         },
                         {
-                          "name": "Get Clarify Instructions Through CLI",
+                          "name": "Display Clarification Data Through CLI",
                           "sequential_order": 2.0,
+                          "connector": null,
+                          "story_type": "user",
+                          "users": [
+                            "User"
+                          ],
+                          "test_file": "test_display_clarify_instructions_using_repl.py",
+                          "test_class": "TestDisplayClarificationDataThroughCLI",
+                          "scenarios": [
+                            {
+                              "name": "Display stored clarification data",
+                              "sequential_order": 1.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": "test_display_stored_clarification_data",
+                              "steps": "GIVEN: Clarification data exists\nWHEN: user views clarify instructions\nTHEN: CLI displays stored clarification data"
+                            }
+                          ],
+                          "scenario_outlines": [],
+                          "acceptance_criteria": []
+                        },
+                        {
+                          "name": "Get Clarify Instructions Through CLI",
+                          "sequential_order": 3.0,
                           "connector": "and",
                           "story_type": "user",
                           "users": [
@@ -12850,23 +12787,63 @@
                   ],
                   "stories": [
                     {
-                      "name": "Display Clarification Data Through CLI",
+                      "name": "Clarify Requirements",
                       "sequential_order": 0.0,
-                      "connector": null,
+                      "connector": "or",
                       "story_type": "user",
                       "users": [
-                        "User"
+                        "Bot Behavior"
                       ],
-                      "test_file": "test_display_clarify_instructions_using_repl.py",
-                      "test_class": "TestDisplayClarificationDataThroughCLI",
+                      "test_file": null,
+                      "test_class": "TestClarifyRequirements",
                       "scenarios": [
                         {
-                          "name": "Display stored clarification data",
+                          "name": "Action injects questions and evidence from production guardrails",
                           "sequential_order": 1.0,
-                          "type": "",
+                          "type": "happy_path",
                           "background": [],
-                          "test_method": "test_display_stored_clarification_data",
-                          "steps": "GIVEN: Clarification data exists\nWHEN: user views clarify instructions\nTHEN: CLI displays stored clarification data"
+                          "test_method": "test_action_injects_questions_and_evidence",
+                          "steps": "Given Production story_bot with shape behavior (has guardrails)\nWhen Action injects guardrails\nThen Instructions contain questions and evidence from production files"
+                        },
+                        {
+                          "name": "Save clarification data when parameters are provided",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_save_clarification_data_when_parameters_provided",
+                          "steps": "Given Production story_bot clarify action\nWhen do_execute is called with key_questions_answered and evidence_provided\nThen clarification.json file is created in docs/stories/ folder\nThen And file contains behavior section with key_questions and evidence"
+                        },
+                        {
+                          "name": "Preserve existing clarification data when saving",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_preserve_existing_clarification_data_when_saving",
+                          "steps": "Given clarification.json already exists with data for 'discovery' behavior\nWhen do_execute is called with parameters\nThen clarification.json contains both 'discovery' and 'shape' sections\nThen And Production story_bot clarify action for 'shape' behavior\nThen And existing 'discovery' data is preserved"
+                        },
+                        {
+                          "name": "Skip saving when no clarification parameters are provided",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_skip_saving_when_no_clarification_parameters_provided",
+                          "steps": "Given Production story_bot clarify action\nWhen do_execute is called with empty parameters\nThen clarification.json file is not created"
+                        },
+                        {
+                          "name": "Guardrails loads required context from workspace",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_guardrails_loads_required_context_from_workspace",
+                          "steps": "Given Workspace with guardrails files (questions and evidence)\nWhen Behavior loads guardrails\nThen Questions and evidence are loaded correctly"
+                        },
+                        {
+                          "name": "Guardrails loads strategy assumptions from workspace",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_guardrails_loads_strategy_assumptions_from_workspace",
+                          "steps": "Given Workspace with strategy guardrails files\nWhen Behavior loads guardrails\nThen Strategy assumptions are loaded correctly"
                         }
                       ],
                       "scenario_outlines": [],
@@ -12896,8 +12873,31 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Get Clarify Instructions Through CLI",
+                      "name": "Display Clarification Data Through CLI",
                       "sequential_order": 2.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": "test_display_clarify_instructions_using_repl.py",
+                      "test_class": "TestDisplayClarificationDataThroughCLI",
+                      "scenarios": [
+                        {
+                          "name": "Display stored clarification data",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_display_stored_clarification_data",
+                          "steps": "GIVEN: Clarification data exists\nWHEN: user views clarify instructions\nTHEN: CLI displays stored clarification data"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Get Clarify Instructions Through CLI",
+                      "sequential_order": 3.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
