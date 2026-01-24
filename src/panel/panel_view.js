@@ -6,6 +6,8 @@
 const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
+const vscode = require("vscode");
 
 // End-of-response marker that Python CLI sends after each JSON response
 const END_MARKER = '<<<END_OF_RESPONSE>>>';
@@ -70,10 +72,11 @@ class PanelView {
             BOT_DIRECTORY: this._botPath,
             WORKING_AREA: this._workspaceDir,
             CLI_MODE: 'json',
-            SUPPRESS_CLI_HEADER: '1'
+            SUPPRESS_CLI_HEADER: '1',            
+            IDE: vscode.env.uriScheme.toLowerCase().includes('cursor') ? 'cursor' : 'vscode'
         };
-        
-        let pythonExe = "";
+                
+        let pythonExe = os.platform().includes('darwin') ? 'python3' : 'python';
         if (fs.existsSync(path.join(this._workspaceDir, '.venv', 'bin'))) {            
             pythonExe = path.join(this._workspaceDir, '.venv', 'bin', 'python');
         }
@@ -81,7 +84,7 @@ class PanelView {
             pythonExe = path.join(this._workspaceDir, '.venv', 'Scripts', 'python.exe');
         }
         else {
-            throw new Error("Could not find Python virtual environment in workspace");
+            console.log("Could not find Python virtual environment in workspace. Falling back to system Python.");
         }
         
         this._pythonProcess = spawn(pythonExe, [cliPath], {        

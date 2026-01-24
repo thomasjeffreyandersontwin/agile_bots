@@ -5,6 +5,13 @@
 
 set -e  # Exit on error
 
+# Detect OS
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+    IS_WINDOWS=true
+else
+    IS_WINDOWS=false
+fi
+
 # Default values
 BUMP_TYPE="patch"
 
@@ -34,7 +41,14 @@ echo ""
 
 # Read current version from package.json
 PACKAGE_JSON_PATH="$PANEL_DIR/package.json"
-CURRENT_VERSION=$(node -p "require('$PACKAGE_JSON_PATH').version")
+
+if [ "$IS_WINDOWS" = true ]; then
+    # Convert to Windows path for Node.js compatibility
+    NODE_PACKAGE_PATH=$(cygpath -m "$PACKAGE_JSON_PATH" 2>/dev/null || echo "$PACKAGE_JSON_PATH")
+    CURRENT_VERSION=$(node -p "require('$NODE_PACKAGE_PATH').version")
+else
+    CURRENT_VERSION=$(node -p "require('$PACKAGE_JSON_PATH').version")
+fi
 echo -e "\033[0;33mCurrent version: $CURRENT_VERSION\033[0m"
 
 # Parse version

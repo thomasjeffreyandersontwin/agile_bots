@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from typing import Dict, Any, List, Tuple, Optional
 import json
@@ -664,14 +665,26 @@ class Bot:
             pyperclip.copy(content_str)
             clipboard_status = 'success'
             time.sleep(0.2)
-            
-            if (platform.system()) == 'Darwin':
-                pyautogui.hotkey('ctrl', 'command', 'i')
-            else:
-                pyautogui.hotkey('ctrl', 'l')
+
+            cursor = os.environ.get('IDE').lower() == 'cursor'
+            mac = platform.system().lower() == 'darwin'            
+
+            ## activate copilot chat window
+            if (cursor == True): ## we're using cursor
+                if (mac == True):
+                    pyautogui.hotkey('command', 'l')
+                else:
+                    pyautogui.hotkey('ctrl', 'l')
+
+            else: # assume we're using VS Code
+                if (mac == True):
+                    pyautogui.hotkey('ctrl', 'command', 'i')
+                else:
+                    pyautogui.hotkey('ctrl', 'alt', 'i')
             time.sleep(0.3)
 
-            if (platform.system()) == 'Darwin':                            
+            ## paste
+            if (mac == True):
                 pyautogui.hotkey('command', 'v')
             else:
                 pyautogui.hotkey('ctrl', 'v')
