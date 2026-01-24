@@ -10272,7 +10272,7 @@
               ]
             },
             {
-              "name": "Execute Behavior Action",
+              "name": "Perform Behaviors Using Action State",
               "sequential_order": 2.0,
               "sub_epics": [],
               "story_groups": [
@@ -10283,8 +10283,63 @@
                   "connector": null,
                   "stories": [
                     {
-                      "name": "Execute Behavior Action",
+                      "name": "Persist Behavior Action State",
                       "sequential_order": 0.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestManageBehaviorActionState",
+                      "scenarios": [
+                        {
+                          "name": "Current behavior state is persisted to behavior_action_state.json.",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_save_current_behavior_state",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Current behavior state is restored from behavior_action_state.json.",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_load_behavior_state_from_file",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Current action state is persisted to behavior_action_state.json.",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_save_current_action_state",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Current action state is restored from behavior_action_state.json.",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_load_action_state_from_file",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Closing current action marks it complete and moves to next.",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_close_current_action",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Execute Behavior Action",
+                      "sequential_order": 1.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -10379,7 +10434,7 @@
                     },
                     {
                       "name": "Execute Behavior Action Panel",
-                      "sequential_order": 1.0,
+                      "sequential_order": 2.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -10476,277 +10531,10 @@
                           "sequential_order": 11.0
                         }
                       ]
-                    }
-                  ]
-                }
-              ],
-              "stories": [
-                {
-                  "name": "Execute Behavior Action",
-                  "sequential_order": 0.0,
-                  "connector": "or",
-                  "story_type": "user",
-                  "users": [
-                    "Bot Behavior"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestNavigateToBehaviorActionAndExecute",
-                  "scenarios": [
-                    {
-                      "name": "Execute behavior with action parameter",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_with_action_parameter",
-                      "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
-                    },
-                    {
-                      "name": "Execute behavior without action parameter forwards to current action",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_without_action_forwards_to_current",
-                      "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
-                    },
-                    {
-                      "name": "Execute behavior executes directly when no workflow state exists",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
-                      "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
-                    },
-                    {
-                      "name": "Behavior action order determines next action from current_action",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
-                      "steps": ""
-                    },
-                    {
-                      "name": "No completed actions yet",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Behavior action order falls back to completed_actions when current_action is missing",
-                      "sequential_order": 6.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
-                      "steps": ""
-                    },
-                    {
-                      "name": "No behavior_action_state.json file exists (fresh start)",
-                      "sequential_order": 7.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
-                      "sequential_order": 8.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Different behaviors can have different action orders",
-                      "sequential_order": 9.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_different_behaviors_can_have_different_action_orders",
-                      "steps": ""
-                    },
-                    {
-                      "name": "Workflow transitions are built correctly from behavior.json",
-                      "sequential_order": 10.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
-                      "steps": ""
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": []
-                },
-                {
-                  "name": "Execute Behavior Action Panel",
-                  "sequential_order": 1.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestExecuteBehaviorAction",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 12.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 13.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 14.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User clicks behavior",
-                      "text": "WHEN User clicks behavior",
-                      "sequential_order": 0.0
-                    },
-                    {
-                      "name": "THEN System displays that behavior as current",
-                      "text": "THEN System displays that behavior as current",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "AND System expands behavior",
-                      "text": "AND System expands behavior",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND System expands first action to display operations",
-                      "text": "AND System expands first action to display operations",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "AND System sets first action as current",
-                      "text": "AND System sets first action as current",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "AND System sets first operation as current",
-                      "text": "AND System sets first operation as current",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "AND System executes first operation of first action of that behavior",
-                      "text": "AND System executes first operation of first action of that behavior",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "WHEN User clicks action",
-                      "text": "WHEN User clicks action",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "THEN System displays that action as current",
-                      "text": "THEN System displays that action as current",
-                      "sequential_order": 8.0
-                    },
-                    {
-                      "name": "AND System expands action to display operations",
-                      "text": "AND System expands action to display operations",
-                      "sequential_order": 9.0
-                    },
-                    {
-                      "name": "AND System sets first operation as current",
-                      "text": "AND System sets first operation as current",
-                      "sequential_order": 10.0
-                    },
-                    {
-                      "name": "AND System executes first operation of that action",
-                      "text": "AND System executes first operation of that action",
-                      "sequential_order": 11.0
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "name": "Perform Behaviors Using Action State",
-              "sequential_order": 3.0,
-              "sub_epics": [],
-              "story_groups": [
-                {
-                  "name": "",
-                  "sequential_order": 0.0,
-                  "type": "and",
-                  "connector": null,
-                  "stories": [
-                    {
-                      "name": "Persist Behavior Action State",
-                      "sequential_order": 0.0,
-                      "connector": "or",
-                      "story_type": "user",
-                      "users": [
-                        "Bot Behavior"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestManageBehaviorActionState",
-                      "scenarios": [
-                        {
-                          "name": "Current behavior state is persisted to behavior_action_state.json.",
-                          "sequential_order": 1.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_save_current_behavior_state",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Current behavior state is restored from behavior_action_state.json.",
-                          "sequential_order": 2.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_load_behavior_state_from_file",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Current action state is persisted to behavior_action_state.json.",
-                          "sequential_order": 3.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_save_current_action_state",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Current action state is restored from behavior_action_state.json.",
-                          "sequential_order": 4.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_load_action_state_from_file",
-                          "steps": ""
-                        },
-                        {
-                          "name": "Closing current action marks it complete and moves to next.",
-                          "sequential_order": 5.0,
-                          "type": "happy_path",
-                          "background": [],
-                          "test_method": "test_close_current_action",
-                          "steps": ""
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": []
                     },
                     {
                       "name": "Manage Behaviors",
-                      "sequential_order": 1.0,
+                      "sequential_order": 3.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -10857,7 +10645,7 @@
                     },
                     {
                       "name": "Proceed across End To End Workflow",
-                      "sequential_order": 2.0,
+                      "sequential_order": 4.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -10888,7 +10676,7 @@
                     },
                     {
                       "name": "Track Activity For Workspace",
-                      "sequential_order": 3.0,
+                      "sequential_order": 5.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -10919,7 +10707,7 @@
                     },
                     {
                       "name": "Track Action Start",
-                      "sequential_order": 4.0,
+                      "sequential_order": 6.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -10957,75 +10745,8 @@
                       ]
                     },
                     {
-                      "name": "Save Guardrails Through Panel",
-                      "sequential_order": 5.0,
-                      "connector": "and",
-                      "story_type": "user",
-                      "users": [
-                        "User"
-                      ],
-                      "test_file": null,
-                      "test_class": "TestSaveGuardrailsThroughPanel",
-                      "scenarios": [
-                        {
-                          "name": "",
-                          "sequential_order": 1.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_panel_displays_save_button_for_clarify_action",
-                          "steps": "Given Bot is at shape.clarify\nWhen Panel renders clarify instructions\nThen Panel displays save button for answers\nAnd Panel displays save button for evidence"
-                        },
-                        {
-                          "name": "",
-                          "sequential_order": 2.0,
-                          "type": "",
-                          "background": [],
-                          "test_method": "test_panel_displays_save_button_for_strategy_action",
-                          "steps": "Given Bot is at shape.strategy\nWhen Panel renders strategy instructions\nThen Panel displays save button for decisions\nAnd Panel displays save button for assumptions"
-                        }
-                      ],
-                      "scenario_outlines": [],
-                      "acceptance_criteria": [
-                        {
-                          "name": "WHEN User fills in answers in panel form",
-                          "text": "WHEN User fills in answers in panel form",
-                          "sequential_order": 1.0
-                        },
-                        {
-                          "name": "THEN System validates input format",
-                          "text": "THEN System validates input format",
-                          "sequential_order": 2.0
-                        },
-                        {
-                          "name": "AND System enables submit button",
-                          "text": "AND System enables submit button",
-                          "sequential_order": 3.0
-                        },
-                        {
-                          "name": "WHEN User clicks submit for answers",
-                          "text": "WHEN User clicks submit for answers",
-                          "sequential_order": 4.0
-                        },
-                        {
-                          "name": "THEN System saves answers to clarification.json under current behavior",
-                          "text": "THEN System saves answers to clarification.json under current behavior",
-                          "sequential_order": 5.0
-                        },
-                        {
-                          "name": "AND System merges with existing answers",
-                          "text": "AND System merges with existing answers",
-                          "sequential_order": 6.0
-                        },
-                        {
-                          "name": "AND System displays success message",
-                          "text": "AND System displays success message",
-                          "sequential_order": 7.0
-                        }
-                      ]
-                    },
-                    {
                       "name": "Track Action Completion",
-                      "sequential_order": 6.0,
+                      "sequential_order": 7.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -11064,7 +10785,7 @@
                     },
                     {
                       "name": "Record Activity Metrics And Paths",
-                      "sequential_order": 7.0,
+                      "sequential_order": 8.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -11096,6 +10817,29 @@
                           "sequential_order": 4.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Re-execute Current Operation Using CLI",
+                      "sequential_order": 9.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": "test_execute_actions_using_repl.py",
+                      "test_class": "TestReExecuteCurrentOperationUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "User re-executes current instructions",
+                          "sequential_order": 1.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_user_re_executes_current_instructions",
+                          "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'current'\nTHEN: CLI re-executes current instructions"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -11157,8 +10901,203 @@
                   "acceptance_criteria": []
                 },
                 {
-                  "name": "Manage Behaviors",
+                  "name": "Execute Behavior Action",
                   "sequential_order": 1.0,
+                  "connector": "or",
+                  "story_type": "user",
+                  "users": [
+                    "Bot Behavior"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestNavigateToBehaviorActionAndExecute",
+                  "scenarios": [
+                    {
+                      "name": "Execute behavior with action parameter",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_with_action_parameter",
+                      "steps": "Given Bot has behavior 'shape' with action 'clarify'\nWhen Bot.execute_behavior('shape', action='clarify') is called\nThen Action executes and returns BotResult"
+                    },
+                    {
+                      "name": "Execute behavior without action parameter forwards to current action",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_without_action_forwards_to_current",
+                      "steps": "Given Bot has behavior 'shape' and workflow state shows current_action='strategy'\nWhen Bot.execute_behavior('shape') is called (no action parameter)\nThen Forwards to current action (strategy)"
+                    },
+                    {
+                      "name": "Execute behavior executes directly when no workflow state exists",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_execute_behavior_handles_entry_workflow_when_no_state",
+                      "steps": "Given No behavior_action_state.json exists\nWhen Bot.execute_behavior('shape') is called\nThen Executes directly (entry workflow handling was in removed wrapper)"
+                    },
+                    {
+                      "name": "Behavior action order determines next action from current_action",
+                      "sequential_order": 4.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_determines_next_action_from_current_action",
+                      "steps": ""
+                    },
+                    {
+                      "name": "No completed actions yet",
+                      "sequential_order": 5.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_completed_actions",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Behavior action order falls back to completed_actions when current_action is missing",
+                      "sequential_order": 6.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_falls_back_to_completed_actions_when_current_action_missing",
+                      "steps": ""
+                    },
+                    {
+                      "name": "No behavior_action_state.json file exists (fresh start)",
+                      "sequential_order": 7.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_action_order_starts_at_first_action_when_no_state_file_exists",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Behavior loads workflow order from behaviors/{behavior_name}/behavior.json",
+                      "sequential_order": 8.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_behavior_loads_workflow_order_from_behavior_specific_actions_workflow",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Different behaviors can have different action orders",
+                      "sequential_order": 9.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_different_behaviors_can_have_different_action_orders",
+                      "steps": ""
+                    },
+                    {
+                      "name": "Workflow transitions are built correctly from behavior.json",
+                      "sequential_order": 10.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_workflow_transitions_built_correctly_from_actions_workflow_json",
+                      "steps": ""
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Execute Behavior Action Panel",
+                  "sequential_order": 2.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestExecuteBehaviorAction",
+                  "scenarios": [
+                    {
+                      "name": "",
+                      "sequential_order": 12.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays behavior hierarchy\nAnd Bot is at shape.clarify\nWhen User clicks discovery behavior\nThen Bot navigates to discovery.clarify (first action)\nAnd Panel displays discovery behavior as current\nAnd Panel expands discovery behavior\nAnd Panel displays discovery.clarify as current action\nAnd Bot executes discovery.clarify.instructions operation"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 13.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays expanded shape behavior\nAnd Bot is at shape.clarify\nWhen User clicks shape.strategy action\nThen Bot navigates to shape.strategy\nAnd Panel displays shape.strategy as current action\nAnd Panel expands shape.strategy showing operations\nAnd Bot executes shape.strategy.instructions operation"
+                    },
+                    {
+                      "name": "",
+                      "sequential_order": 14.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": "Given Panel displays expanded shape.clarify action\nAnd Operations are visible (instructions, execute, confirm)\nWhen User clicks clarify.confirm operation\nThen Bot executes clarify.confirm operation\nAnd Panel displays confirm operation as current"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": [
+                    {
+                      "name": "WHEN User clicks behavior",
+                      "text": "WHEN User clicks behavior",
+                      "sequential_order": 0.0
+                    },
+                    {
+                      "name": "THEN System displays that behavior as current",
+                      "text": "THEN System displays that behavior as current",
+                      "sequential_order": 1.0
+                    },
+                    {
+                      "name": "AND System expands behavior",
+                      "text": "AND System expands behavior",
+                      "sequential_order": 2.0
+                    },
+                    {
+                      "name": "AND System expands first action to display operations",
+                      "text": "AND System expands first action to display operations",
+                      "sequential_order": 3.0
+                    },
+                    {
+                      "name": "AND System sets first action as current",
+                      "text": "AND System sets first action as current",
+                      "sequential_order": 4.0
+                    },
+                    {
+                      "name": "AND System sets first operation as current",
+                      "text": "AND System sets first operation as current",
+                      "sequential_order": 5.0
+                    },
+                    {
+                      "name": "AND System executes first operation of first action of that behavior",
+                      "text": "AND System executes first operation of first action of that behavior",
+                      "sequential_order": 6.0
+                    },
+                    {
+                      "name": "WHEN User clicks action",
+                      "text": "WHEN User clicks action",
+                      "sequential_order": 7.0
+                    },
+                    {
+                      "name": "THEN System displays that action as current",
+                      "text": "THEN System displays that action as current",
+                      "sequential_order": 8.0
+                    },
+                    {
+                      "name": "AND System expands action to display operations",
+                      "text": "AND System expands action to display operations",
+                      "sequential_order": 9.0
+                    },
+                    {
+                      "name": "AND System sets first operation as current",
+                      "text": "AND System sets first operation as current",
+                      "sequential_order": 10.0
+                    },
+                    {
+                      "name": "AND System executes first operation of that action",
+                      "text": "AND System executes first operation of that action",
+                      "sequential_order": 11.0
+                    }
+                  ]
+                },
+                {
+                  "name": "Manage Behaviors",
+                  "sequential_order": 3.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -11269,7 +11208,7 @@
                 },
                 {
                   "name": "Proceed across End To End Workflow",
-                  "sequential_order": 2.0,
+                  "sequential_order": 4.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -11300,7 +11239,7 @@
                 },
                 {
                   "name": "Track Activity For Workspace",
-                  "sequential_order": 3.0,
+                  "sequential_order": 5.0,
                   "connector": "or",
                   "story_type": "user",
                   "users": [
@@ -11331,7 +11270,7 @@
                 },
                 {
                   "name": "Track Action Start",
-                  "sequential_order": 4.0,
+                  "sequential_order": 6.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -11369,75 +11308,8 @@
                   ]
                 },
                 {
-                  "name": "Save Guardrails Through Panel",
-                  "sequential_order": 5.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": "TestSaveGuardrailsThroughPanel",
-                  "scenarios": [
-                    {
-                      "name": "",
-                      "sequential_order": 1.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_panel_displays_save_button_for_clarify_action",
-                      "steps": "Given Bot is at shape.clarify\nWhen Panel renders clarify instructions\nThen Panel displays save button for answers\nAnd Panel displays save button for evidence"
-                    },
-                    {
-                      "name": "",
-                      "sequential_order": 2.0,
-                      "type": "",
-                      "background": [],
-                      "test_method": "test_panel_displays_save_button_for_strategy_action",
-                      "steps": "Given Bot is at shape.strategy\nWhen Panel renders strategy instructions\nThen Panel displays save button for decisions\nAnd Panel displays save button for assumptions"
-                    }
-                  ],
-                  "scenario_outlines": [],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User fills in answers in panel form",
-                      "text": "WHEN User fills in answers in panel form",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "THEN System validates input format",
-                      "text": "THEN System validates input format",
-                      "sequential_order": 2.0
-                    },
-                    {
-                      "name": "AND System enables submit button",
-                      "text": "AND System enables submit button",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "WHEN User clicks submit for answers",
-                      "text": "WHEN User clicks submit for answers",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "THEN System saves answers to clarification.json under current behavior",
-                      "text": "THEN System saves answers to clarification.json under current behavior",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "AND System merges with existing answers",
-                      "text": "AND System merges with existing answers",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "AND System displays success message",
-                      "text": "AND System displays success message",
-                      "sequential_order": 7.0
-                    }
-                  ]
-                },
-                {
                   "name": "Track Action Completion",
-                  "sequential_order": 6.0,
+                  "sequential_order": 7.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -11476,7 +11348,7 @@
                 },
                 {
                   "name": "Record Activity Metrics And Paths",
-                  "sequential_order": 7.0,
+                  "sequential_order": 8.0,
                   "connector": "and",
                   "story_type": "user",
                   "users": [
@@ -11508,6 +11380,29 @@
                       "sequential_order": 4.0
                     }
                   ]
+                },
+                {
+                  "name": "Re-execute Current Operation Using CLI",
+                  "sequential_order": 9.0,
+                  "connector": "and",
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": "test_execute_actions_using_repl.py",
+                  "test_class": "TestReExecuteCurrentOperationUsingCLI",
+                  "scenarios": [
+                    {
+                      "name": "User re-executes current instructions",
+                      "sequential_order": 1.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": "test_user_re_executes_current_instructions",
+                      "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'current'\nTHEN: CLI re-executes current instructions"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
                 }
               ]
             }
@@ -11820,31 +11715,75 @@
                           "acceptance_criteria": []
                         },
                         {
-                          "name": "Re-execute Current Operation Using CLI",
+                          "name": "Save Guardrails Through Panel",
                           "sequential_order": 6.0,
                           "connector": "and",
                           "story_type": "user",
                           "users": [
                             "User"
                           ],
-                          "test_file": "test_execute_actions_using_repl.py",
-                          "test_class": "TestReExecuteCurrentOperationUsingCLI",
+                          "test_file": null,
+                          "test_class": "TestSaveGuardrailsThroughPanel",
                           "scenarios": [
                             {
-                              "name": "User re-executes current instructions",
+                              "name": "",
                               "sequential_order": 1.0,
                               "type": "",
                               "background": [],
-                              "test_method": "test_user_re_executes_current_instructions",
-                              "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'current'\nTHEN: CLI re-executes current instructions"
+                              "test_method": "test_panel_displays_save_button_for_clarify_action",
+                              "steps": "Given Bot is at shape.clarify\nWhen Panel renders clarify instructions\nThen Panel displays save button for answers\nAnd Panel displays save button for evidence"
+                            },
+                            {
+                              "name": "",
+                              "sequential_order": 2.0,
+                              "type": "",
+                              "background": [],
+                              "test_method": "test_panel_displays_save_button_for_strategy_action",
+                              "steps": "Given Bot is at shape.strategy\nWhen Panel renders strategy instructions\nThen Panel displays save button for decisions\nAnd Panel displays save button for assumptions"
                             }
                           ],
                           "scenario_outlines": [],
-                          "acceptance_criteria": []
+                          "acceptance_criteria": [
+                            {
+                              "name": "WHEN User fills in answers in panel form",
+                              "text": "WHEN User fills in answers in panel form",
+                              "sequential_order": 1.0
+                            },
+                            {
+                              "name": "THEN System validates input format",
+                              "text": "THEN System validates input format",
+                              "sequential_order": 2.0
+                            },
+                            {
+                              "name": "AND System enables submit button",
+                              "text": "AND System enables submit button",
+                              "sequential_order": 3.0
+                            },
+                            {
+                              "name": "WHEN User clicks submit for answers",
+                              "text": "WHEN User clicks submit for answers",
+                              "sequential_order": 4.0
+                            },
+                            {
+                              "name": "THEN System saves answers to clarification.json under current behavior",
+                              "text": "THEN System saves answers to clarification.json under current behavior",
+                              "sequential_order": 5.0
+                            },
+                            {
+                              "name": "AND System merges with existing answers",
+                              "text": "AND System merges with existing answers",
+                              "sequential_order": 6.0
+                            },
+                            {
+                              "name": "AND System displays success message",
+                              "text": "AND System displays success message",
+                              "sequential_order": 7.0
+                            }
+                          ]
                         },
                         {
                           "name": "Handle Operation Errors and Validation in CLI",
-                          "sequential_order": 7.0,
+                          "sequential_order": 8.0,
                           "connector": "and",
                           "story_type": "user",
                           "users": [
@@ -12155,31 +12094,75 @@
                       "acceptance_criteria": []
                     },
                     {
-                      "name": "Re-execute Current Operation Using CLI",
+                      "name": "Save Guardrails Through Panel",
                       "sequential_order": 6.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
                         "User"
                       ],
-                      "test_file": "test_execute_actions_using_repl.py",
-                      "test_class": "TestReExecuteCurrentOperationUsingCLI",
+                      "test_file": null,
+                      "test_class": "TestSaveGuardrailsThroughPanel",
                       "scenarios": [
                         {
-                          "name": "User re-executes current instructions",
+                          "name": "",
                           "sequential_order": 1.0,
                           "type": "",
                           "background": [],
-                          "test_method": "test_user_re_executes_current_instructions",
-                          "steps": "GIVEN: CLI is at shape.build.instructions\nWHEN: user enters 'current'\nTHEN: CLI re-executes current instructions"
+                          "test_method": "test_panel_displays_save_button_for_clarify_action",
+                          "steps": "Given Bot is at shape.clarify\nWhen Panel renders clarify instructions\nThen Panel displays save button for answers\nAnd Panel displays save button for evidence"
+                        },
+                        {
+                          "name": "",
+                          "sequential_order": 2.0,
+                          "type": "",
+                          "background": [],
+                          "test_method": "test_panel_displays_save_button_for_strategy_action",
+                          "steps": "Given Bot is at shape.strategy\nWhen Panel renders strategy instructions\nThen Panel displays save button for decisions\nAnd Panel displays save button for assumptions"
                         }
                       ],
                       "scenario_outlines": [],
-                      "acceptance_criteria": []
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User fills in answers in panel form",
+                          "text": "WHEN User fills in answers in panel form",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "THEN System validates input format",
+                          "text": "THEN System validates input format",
+                          "sequential_order": 2.0
+                        },
+                        {
+                          "name": "AND System enables submit button",
+                          "text": "AND System enables submit button",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "WHEN User clicks submit for answers",
+                          "text": "WHEN User clicks submit for answers",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "THEN System saves answers to clarification.json under current behavior",
+                          "text": "THEN System saves answers to clarification.json under current behavior",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "AND System merges with existing answers",
+                          "text": "AND System merges with existing answers",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "AND System displays success message",
+                          "text": "AND System displays success message",
+                          "sequential_order": 7.0
+                        }
+                      ]
                     },
                     {
                       "name": "Handle Operation Errors and Validation in CLI",
-                      "sequential_order": 7.0,
+                      "sequential_order": 8.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
