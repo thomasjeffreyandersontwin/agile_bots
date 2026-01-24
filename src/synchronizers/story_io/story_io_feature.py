@@ -18,9 +18,10 @@ class Feature(StoryIOComponent):
     def __init__(self, name: str, sequential_order: Optional[float] = None,
                  position: Optional[Any] = None, boundary: Optional[Any] = None,
                  flag: bool = False, parent: Optional[StoryIOComponent] = None,
-                 story_count: Optional[int] = None):
+                 story_count: Optional[int] = None, test_file: Optional[str] = None):
         super().__init__(name, sequential_order, position, boundary, flag, parent)
         self._story_count = story_count
+        self._test_file = test_file
     
     @property
     def stories(self) -> List[Story]:
@@ -114,6 +115,10 @@ class Feature(StoryIOComponent):
             'name': self.name,
             'sequential_order': self.sequential_order,
         }
+        
+        # Include test_file if present (critical for test links in panel)
+        if hasattr(self, '_test_file') and self._test_file is not None:
+            result['test_file'] = self._test_file
         
         # Sub_epics have EITHER sub_epics OR story_groups, never both, never stories
         nested_sub_epics = [f.render_as_sub_epic() for f in self.sub_epics]

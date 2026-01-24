@@ -1211,6 +1211,162 @@
                           "sequential_order": 4.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Resolve Bot Path Using CLI",
+                      "sequential_order": 6.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestResolveBotPathUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "CLI session resolves bot and workspace directories",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_resolves_bot_and_workspace_directories",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: Bot paths accessed via CLI\nTHEN: Directories resolved correctly"
+                        },
+                        {
+                          "name": "Base actions directory accessible via CLI session",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_base_actions_directory_accessible",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: base_actions_directory accessed via CLI\nTHEN: Returns real agile_bots/base_actions path"
+                        },
+                        {
+                          "name": "Python workspace root accessible via CLI session",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_python_workspace_root_accessible",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: python_workspace_root accessed via CLI\nTHEN: Returns Python workspace root path"
+                        },
+                        {
+                          "name": "find_repo_root method works via CLI session",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_find_repo_root_method_works",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: find_repo_root() called via CLI\nTHEN: Returns repository root path"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Load Bot Using CLI",
+                      "sequential_order": 7.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestLoadBotUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "CLI session loads bot with name and workspace",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_loads_bot_with_name_and_workspace",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: Bot accessed via CLI\nTHEN: Bot has correct name and workspace"
+                        },
+                        {
+                          "name": "Bot name property accessible via CLI session",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_bot_name_property_accessible",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: Bot name accessed\nTHEN: Returns correct bot name"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Load Bot Behaviors Using CLI",
+                      "sequential_order": 8.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestLoadBotBehaviorsUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "CLI session loads behaviors from bot config",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_loads_behaviors_from_config",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: Behaviors accessed\nTHEN: All behaviors loaded correctly"
+                        },
+                        {
+                          "name": "CLI session sets first behavior as current",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_sets_first_behavior_as_current",
+                          "steps": "GIVEN: CLI session initialized\nWHEN: Current behavior accessed\nTHEN: First behavior is current"
+                        },
+                        {
+                          "name": "Behavior config properties accessible via CLI session",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_behavior_config_properties_accessible",
+                          "steps": "GIVEN: CLI session at prioritization behavior\nWHEN: Behavior config properties accessed\nTHEN: All properties accessible with correct structure"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Load Actions Using CLI",
+                      "sequential_order": 9.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestLoadActionsUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "CLI session loads actions from behavior config",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_loads_actions_from_behavior_config",
+                          "steps": "GIVEN: CLI session at shape behavior\nWHEN: Actions accessed\nTHEN: All actions loaded correctly"
+                        },
+                        {
+                          "name": "CLI session sets first action as current",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_sets_first_action_as_current",
+                          "steps": "GIVEN: CLI session at shape behavior\nWHEN: Current action accessed\nTHEN: First action is current"
+                        },
+                        {
+                          "name": "Action instructions accessible via CLI session",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_action_instructions_accessible",
+                          "steps": "GIVEN: CLI session at shape.clarify\nWHEN: Action instructions accessed\nTHEN: Merged instructions from base and behavior available"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -1798,6 +1954,84 @@
                           "background": [],
                           "test_method": "test_user_exits_repl_with_exit_command",
                           "steps": "GIVEN: CLI is running\nWHEN: user enters 'exit'\nTHEN: CLI terminates REPL loop"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Detect CLI Mode",
+                      "sequential_order": 6.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDetectCLIMode",
+                      "scenarios": [
+                        {
+                          "name": "CLI detects TTY mode",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_detects_tty_mode",
+                          "steps": "GIVEN: stdin/stdout are TTY\nWHEN: CLISession created without explicit mode\nTHEN: Session uses TTY mode"
+                        },
+                        {
+                          "name": "CLI detects pipe mode",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_detects_pipe_mode",
+                          "steps": "GIVEN: stdin/stdout are piped (not TTY)\nWHEN: CLISession created without explicit mode\nTHEN: Session uses markdown mode"
+                        },
+                        {
+                          "name": "CLI accepts JSON mode flag",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_accepts_json_mode_flag",
+                          "steps": "GIVEN: JSON mode explicitly requested\nWHEN: CLISession created with mode='json'\nTHEN: Session uses JSON mode"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Initialize CLI Session",
+                      "sequential_order": 7.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestInitializeCLISession",
+                      "scenarios": [
+                        {
+                          "name": "CLI session initializes bot (all channels)",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_initializes_bot",
+                          "steps": "GIVEN: Bot and workspace configured\nWHEN: CLISession is created\nTHEN: Session wraps bot"
+                        },
+                        {
+                          "name": "CLI session loads existing state (all channels)",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_loads_existing_state",
+                          "steps": "GIVEN: Bot with saved state\nWHEN: CLISession is created\nTHEN: Bot loads previous state"
+                        },
+                        {
+                          "name": "CLI session can execute commands (all channels)",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_session_can_execute_commands",
+                          "steps": "GIVEN: Initialized CLI session\nWHEN: Command is executed\nTHEN: Session returns response"
                         }
                       ],
                       "scenario_outlines": [],
@@ -3331,6 +3565,61 @@
                               "scenarios": [],
                               "scenario_outlines": [],
                               "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Filter Scope By Stories Using CLI",
+                              "sequential_order": 12.0,
+                              "connector": null,
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestFilterScopeByStoriesUsingCLI",
+                              "scenarios": [
+                                {
+                                  "name": "Scope 'all' returns all stories via CLI",
+                                  "sequential_order": 1.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_all_returns_all_stories_via_cli",
+                                  "steps": "GIVEN: CLI session with story graph\nWHEN: scope set to 'all'\nTHEN: All stories accessible"
+                                },
+                                {
+                                  "name": "Scope single story via CLI",
+                                  "sequential_order": 2.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_single_story_via_cli",
+                                  "steps": "GIVEN: CLI session\nWHEN: scope set to single story\nTHEN: Only specified story in scope"
+                                },
+                                {
+                                  "name": "Scope single epic via CLI",
+                                  "sequential_order": 3.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_single_epic_via_cli",
+                                  "steps": "GIVEN: CLI session\nWHEN: scope set to single epic\nTHEN: Only specified epic in scope"
+                                },
+                                {
+                                  "name": "Scope by increment priority via CLI",
+                                  "sequential_order": 4.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_increment_priority_via_cli",
+                                  "steps": "GIVEN: CLI session\nWHEN: scope set to increment priority\nTHEN: Only specified increment in scope"
+                                },
+                                {
+                                  "name": "Scope by increment name via CLI",
+                                  "sequential_order": 5.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_increment_name_via_cli",
+                                  "steps": "GIVEN: CLI session\nWHEN: scope set to increment name\nTHEN: Only specified increment in scope"
+                                }
+                              ],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
                             }
                           ]
                         }
@@ -4729,6 +5018,114 @@
                                   "sequential_order": 42.0
                                 }
                               ]
+                            },
+                            {
+                              "name": "Navigate Story Graph Using CLI",
+                              "sequential_order": 7.0,
+                              "connector": null,
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestNavigateStoryGraphUsingCLI",
+                              "scenarios": [
+                                {
+                                  "name": "Navigate story graph with scope via CLI",
+                                  "sequential_order": 1.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_navigate_story_graph_with_scope_via_cli",
+                                  "steps": "GIVEN: CLI session with story graph and scope\nWHEN: navigation commands used\nTHEN: Navigation respects scope"
+                                }
+                              ],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Create Scope",
+                              "sequential_order": 8.0,
+                              "connector": "or",
+                              "story_type": "user",
+                              "users": [
+                                "Bot Behavior"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestCreateScope",
+                              "scenarios": [
+                                {
+                                  "name": "Scope created with different parameter combinations",
+                                  "sequential_order": 1.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_created_with_different_parameter_combinations",
+                                  "steps": "GIVEN: Parameters dict with scope configuration\nWHEN: ActionScope instantiated with parameters\nTHEN: ActionScope scope property returns expected configuration"
+                                },
+                                {
+                                  "name": "Scope defaults to 'all' when no parameters provided",
+                                  "sequential_order": 2.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_defaults_to_all_when_no_parameters",
+                                  "steps": "GIVEN: Empty parameters dict\nWHEN: ActionScope instantiated\nTHEN: Scope defaults to 'all'"
+                                }
+                              ],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Create Scope Using CLI",
+                              "sequential_order": 9.0,
+                              "connector": null,
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestCreateScopeUsingCLI",
+                              "scenarios": [
+                                {
+                                  "name": "Scope set with different parameter combinations via CLI",
+                                  "sequential_order": 1.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_set_with_different_types_via_cli",
+                                  "steps": "GIVEN: CLI session active\nWHEN: user enters 'scope set <type> <value>'\nTHEN: CLI sets scope to specified type"
+                                },
+                                {
+                                  "name": "Scope defaults to 'all' when no scope set via CLI",
+                                  "sequential_order": 2.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_defaults_to_all_via_cli",
+                                  "steps": "GIVEN: CLI session with no scope set\nWHEN: scope accessed\nTHEN: Default scope is 'all'"
+                                }
+                              ],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Display Scope Using CLI",
+                              "sequential_order": 10.0,
+                              "connector": null,
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestDisplayScopeUsingCLI",
+                              "scenarios": [
+                                {
+                                  "name": "Display scope shows current scope via CLI",
+                                  "sequential_order": 1.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_display_scope_shows_current_scope_via_cli",
+                                  "steps": "GIVEN: CLI session with scope set\nWHEN: scope displayed\nTHEN: Current scope shown in output"
+                                }
+                              ],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
                             }
                           ]
                         }
@@ -5595,6 +5992,37 @@
                               "test_file": null,
                               "test_class": null,
                               "scenarios": [],
+                              "scenario_outlines": [],
+                              "acceptance_criteria": []
+                            },
+                            {
+                              "name": "Filter Scope By Files Using CLI",
+                              "sequential_order": 6.0,
+                              "connector": null,
+                              "story_type": "user",
+                              "users": [
+                                "User"
+                              ],
+                              "test_file": null,
+                              "test_class": "TestFilterScopeByFilesUsingCLI",
+                              "scenarios": [
+                                {
+                                  "name": "Scope files with include pattern via CLI",
+                                  "sequential_order": 1.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_files_with_include_pattern_via_cli",
+                                  "steps": "GIVEN: CLI session\nWHEN: scope set to files with include pattern\nTHEN: Matching files in scope"
+                                },
+                                {
+                                  "name": "Scope files with exclude pattern via CLI",
+                                  "sequential_order": 2.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_scope_files_with_exclude_pattern_via_cli",
+                                  "steps": "GIVEN: CLI session\nWHEN: scope set with exclude pattern\nTHEN: Excluded files not in scope"
+                                }
+                              ],
                               "scenario_outlines": [],
                               "acceptance_criteria": []
                             }
@@ -7421,6 +7849,100 @@
                           "sequential_order": 7.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Update Story Node Name",
+                      "sequential_order": 14.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestUpdateStoryNodeName",
+                      "scenarios": [
+                        {
+                          "name": "Rename node with valid name across hierarchy levels",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_rename_node_with_valid_name_across_hierarchy_levels",
+                          "steps": "GIVEN: Node exists with old name\nWHEN: Node is renamed to new valid name\nTHEN: Node name is updated and accessible by new name"
+                        },
+                        {
+                          "name": "Rename node with empty or whitespace name returns error",
+                          "sequential_order": 2.0,
+                          "type": "error",
+                          "background": [],
+                          "test_method": "test_rename_node_with_empty_or_whitespace_name_returns_error",
+                          "steps": "GIVEN: Node exists with current name\nWHEN: Attempting to rename to empty or whitespace name\nTHEN: System identifies invalid name and returns error"
+                        },
+                        {
+                          "name": "Rename node with duplicate sibling name returns error",
+                          "sequential_order": 3.0,
+                          "type": "error",
+                          "background": [],
+                          "test_method": "test_rename_node_with_duplicate_sibling_name_returns_error",
+                          "steps": "GIVEN: Parent has multiple children including target node\nWHEN: Attempting to rename node to existing sibling name\nTHEN: System identifies duplicate and returns error"
+                        },
+                        {
+                          "name": "Rename node with valid special characters",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_rename_node_with_valid_special_characters",
+                          "steps": "GIVEN: Node exists with old name\nWHEN: Renaming to name with valid special characters\nTHEN: Name is updated and special characters are preserved"
+                        },
+                        {
+                          "name": "Rename node with invalid special characters returns error",
+                          "sequential_order": 5.0,
+                          "type": "error",
+                          "background": [],
+                          "test_method": "test_rename_node_with_invalid_special_characters_returns_error",
+                          "steps": "GIVEN: Node exists with current name\nWHEN: Attempting to rename with invalid special characters\nTHEN: System identifies invalid characters and returns error"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Execute Action Scoped To Story Node",
+                      "sequential_order": 15.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestExecuteActionScopedToStoryNode",
+                      "scenarios": [
+                        {
+                          "name": "Execute action on node with valid parameters",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_execute_action_on_node_with_valid_parameters",
+                          "steps": "GIVEN: Node exists and bot has registered actions\nWHEN: Node executes action with valid parameters\nTHEN: Action completes successfully"
+                        },
+                        {
+                          "name": "Execute action with invalid parameters returns error",
+                          "sequential_order": 2.0,
+                          "type": "error",
+                          "background": [],
+                          "test_method": "test_execute_action_with_invalid_parameters_returns_error",
+                          "steps": "GIVEN: Node exists and bot has registered actions\nWHEN: Node executes action with invalid parameters\nTHEN: Bot validates parameters and returns error"
+                        },
+                        {
+                          "name": "Execute non-existent action returns error",
+                          "sequential_order": 3.0,
+                          "type": "error",
+                          "background": [],
+                          "test_method": "test_execute_non_existent_action_returns_error",
+                          "steps": "GIVEN: Node exists and bot has registered actions\nWHEN: Node attempts to execute non-existent action\nTHEN: Bot validates action exists and returns error"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -9059,6 +9581,140 @@
                       "scenarios": [],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Enrich Scope With Links",
+                      "sequential_order": 9.0,
+                      "connector": "or",
+                      "story_type": "user",
+                      "users": [
+                        "Bot Behavior"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestEnrichScopeWithLinks",
+                      "scenarios": [
+                        {
+                          "name": "Story with test_file and test_class gets test tube icon link",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_story_with_test_file_and_class_gets_test_link",
+                          "steps": "GIVEN: Story graph with story having test_file and test_class\nAND: Test file exists on disk\nWHEN: Scope is enriched with links\nTHEN: Story has test_tube icon link pointing to test file"
+                        },
+                        {
+                          "name": "Scenario",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_scenario",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Story with test_class but no test_file gets no test icon",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_story_without_test_file_gets_no_test_link",
+                          "steps": "GIVEN: Story graph with story having test_class but no test_file\nWHEN: Scope is enriched with links\nTHEN: Story has no test_tube icon link"
+                        },
+                        {
+                          "name": "Sub-epic with test_file gets test tube icon link",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_sub_epic_with_test_file_gets_test_link",
+                          "steps": "GIVEN: Story graph with sub-epic having test_file\nAND: Test file exists on disk\nWHEN: Scope is enriched with links\nTHEN: Sub-epic has test_tube icon link pointing to test file"
+                        },
+                        {
+                          "name": "Story inherits test_file from parent sub-epic",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_story_inherits_test_file_from_sub_epic",
+                          "steps": "GIVEN: Sub-epic with test_file and story with test_class but no test_file\nAND: Test file exists on disk\nWHEN: Scope is enriched with links\nTHEN: Story gets test_tube icon link using parent's test_file"
+                        },
+                        {
+                          "name": "Epic with docs folder gets document icon link",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_epic_with_docs_folder_gets_document_link",
+                          "steps": "GIVEN: Epic and corresponding docs/map folder exists\nWHEN: Scope is enriched with links\nTHEN: Epic has document icon link pointing to docs folder"
+                        },
+                        {
+                          "name": "Story test link appears based on sub-epic test_file and story test_class",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_story_test_link_combinations",
+                          "steps": "GIVEN: Sub-epic with/without test_file and story with/without test_class\nWHEN: Scope is enriched with links\nTHEN: Test link appears only when sub-epic has test_file AND story has test_class"
+                        },
+                        {
+                          "name": "Scenario with test_method gets test link",
+                          "sequential_order": 8.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_scenario_with_test_method_gets_test_link",
+                          "steps": "GIVEN: Story with scenario having test_method\nAND: Test file exists with that method\nWHEN: Scope is enriched with links\nTHEN: Scenario has test link with line number"
+                        },
+                        {
+                          "name": "Happy path",
+                          "sequential_order": 9.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_happy_path",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Error case",
+                          "sequential_order": 10.0,
+                          "type": "error",
+                          "background": [],
+                          "test_method": "test_error_case",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Scenario test link appears based on test_method and sub-epic test_file",
+                          "sequential_order": 11.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_scenario_test_link_combinations",
+                          "steps": "GIVEN: Scenario with/without test_method and sub-epic with/without test_file\nWHEN: Scope is enriched with links\nTHEN: Test link appears only when scenario has test_method and sub-epic has test_file"
+                        },
+                        {
+                          "name": "Scenario",
+                          "sequential_order": 12.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_scenario",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Execute Actions With Scope Using CLI",
+                      "sequential_order": 10.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestExecuteActionsWithScopeUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Action execution uses active scope via CLI",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_action_execution_uses_scope_via_cli",
+                          "steps": "GIVEN: CLI session with scope set\nWHEN: action executed\nTHEN: Action operates within scope"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -9738,6 +10394,219 @@
                           "sequential_order": 16.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Manage Behaviors Using CLI",
+                      "sequential_order": 5.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestManageBehaviorsUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Cli current behavior accessible",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_current_behavior_accessible",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli navigate to behavior via command",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_navigate_to_behavior_via_command",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli execute current behavior action",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_execute_current_behavior_action",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli find behavior by name",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_find_behavior_by_name",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli list all behaviors",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_list_all_behaviors",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli find action by name via command",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_find_action_by_name_via_command",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Navigate To Behavior Action And Execute Using CLI",
+                      "sequential_order": 6.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestNavigateToBehaviorActionAndExecuteUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Cli execute behavior with action parameter",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_execute_behavior_with_action_parameter",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli execute behavior without action uses current",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_execute_behavior_without_action_uses_current",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli execute behavior with no state starts at first",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_execute_behavior_with_no_state_starts_at_first",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli workflow order determines next action",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_workflow_order_determines_next_action",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli starts at first action when no completed",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_starts_at_first_action_when_no_completed",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli falls back to completed actions list",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_falls_back_to_completed_actions_list",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli different behaviors have different workflows",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_different_behaviors_have_different_workflows",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Navigate Sequentially Using CLI",
+                      "sequential_order": 7.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestNavigateSequentiallyUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Cli next command navigates to next action",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_next_command_navigates_to_next_action",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli next progresses through entire workflow",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_next_progresses_through_entire_workflow",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli next at final action advances to next behavior",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_next_at_final_action_advances_to_next_behavior",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli status shows current position",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_status_shows_current_position",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli next respects behavior json workflow",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_next_respects_behavior_json_workflow",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli navigate to specific behavior via command",
+                          "sequential_order": 6.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_navigate_to_specific_behavior_via_command",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli back command navigates to previous action",
+                          "sequential_order": 7.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_back_command_navigates_to_previous_action",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli pos command shows current position",
+                          "sequential_order": 8.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_pos_command_shows_current_position",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -10650,6 +11519,37 @@
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Execute End To End Workflow Using CLI",
+                      "sequential_order": 10.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestExecuteEndToEndWorkflowUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Cli complete workflow through single behavior",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_complete_workflow_through_single_behavior",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli complete workflow across multiple behaviors",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_complete_workflow_across_multiple_behaviors",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -11549,6 +12449,84 @@
                           "sequential_order": 20.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Manage Behavior Action State Using CLI",
+                      "sequential_order": 5.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestManageBehaviorActionStateUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Cli state persists after navigation",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_state_persists_after_navigation",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli loads existing state on startup",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_loads_existing_state_on_startup",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli next command closes and advances",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_next_command_closes_and_advances",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Display Context Using CLI",
+                      "sequential_order": 6.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplayContextUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Cli displays clarification when present",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_displays_clarification_when_present",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli displays strategy when present",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_displays_strategy_when_present",
+                          "steps": ""
+                        },
+                        {
+                          "name": "Cli displays context files when present",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_cli_displays_context_files_when_present",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -12978,6 +13956,29 @@
                       ],
                       "scenario_outlines": [],
                       "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Clarify Requirements Using CLI",
+                      "sequential_order": 4.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestClarifyRequirementsUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Clarify action shows questions and evidence in CLI output",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_clarify_action_shows_questions_and_evidence",
+                          "steps": "GIVEN: CLI is at shape.clarify\nWHEN: user navigates to shape.clarify\nTHEN: CLI output contains questions and evidence from guardrails"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -13492,6 +14493,29 @@
                           "background": [],
                           "test_method": "test_get_strategy_instructions_with_criteria",
                           "steps": "GIVEN: CLI is at shape.strategy.instructions\nWHEN: user enters 'shape.strategy.instructions'\nTHEN: CLI displays planning criteria and assumptions"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Decide Strategy Using CLI",
+                      "sequential_order": 5.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDecideStrategyUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Strategy action shows criteria and assumptions in CLI output",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_strategy_action_shows_criteria_and_assumptions",
+                          "steps": "GIVEN: CLI is at shape.strategy\nWHEN: user navigates to shape.strategy\nTHEN: CLI output contains decision criteria and assumptions"
                         }
                       ],
                       "scenario_outlines": [],
@@ -14021,6 +15045,45 @@
                           "sequential_order": 5.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Build Story Graph Using CLI",
+                      "sequential_order": 5.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestBuildStoryGraphUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Build action shows story graph template in CLI output",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_build_action_shows_template_in_output",
+                          "steps": "GIVEN: CLI is at shape.build\nWHEN: user navigates to shape.build\nTHEN: CLI output contains template_path information"
+                        },
+                        {
+                          "name": "Build action shows complete build story graph instructions",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_build_action_shows_complete_instructions",
+                          "steps": "GIVEN: CLI is at shape.build\nWHEN: user navigates to shape.build\nTHEN: CLI output contains all BuildStoryGraphAction fields"
+                        },
+                        {
+                          "name": "Prioritization validate action shows increments validation",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_prioritization_validate_shows_increments_instructions",
+                          "steps": "GIVEN: CLI is at prioritization.validate\nAND: Story graph exists in workspace\nWHEN: user navigates to prioritization.validate\nTHEN: CLI output shows validation instructions for increments"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -14408,6 +15471,37 @@
                           "background": [],
                           "test_method": "test_get_validate_instructions_with_rules",
                           "steps": "GIVEN: CLI is at shape.validate.instructions\nWHEN: user enters 'shape.validate.instructions'\nTHEN: CLI displays validation rules and scanners"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
+                    },
+                    {
+                      "name": "Validate Rules Using CLI",
+                      "sequential_order": 5.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestValidateRulesUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Validate action shows rules in CLI output",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_validate_action_shows_rules_in_output",
+                          "steps": "GIVEN: CLI is at shape.validate\nAND: Story graph exists\nWHEN: user navigates to shape.validate\nTHEN: CLI output contains rule descriptions and DO/DON'T sections"
+                        },
+                        {
+                          "name": "Code validate action shows file rules in CLI output",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_validate_code_shows_file_rules",
+                          "steps": "GIVEN: CLI is at code.validate\nAND: Story graph exists\nWHEN: user navigates to code.validate\nTHEN: CLI output contains file validation rules"
                         }
                       ],
                       "scenario_outlines": [],
@@ -14809,6 +15903,37 @@
                           "sequential_order": 6.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Render Output Using CLI",
+                      "sequential_order": 6.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestRenderOutputUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Render action shows render configs in CLI output",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_render_action_shows_configs_in_output",
+                          "steps": "GIVEN: CLI is at shape.render\nWHEN: user navigates to shape.render\nTHEN: CLI output contains render configurations"
+                        },
+                        {
+                          "name": "Render output mentions synchronizers execution",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_render_output_mentions_synchronizers",
+                          "steps": "GIVEN: CLI is at shape.render\nWHEN: user navigates to shape.render\nTHEN: CLI output mentions synchronizers"
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -15222,6 +16347,61 @@
                           "sequential_order": 6.0
                         }
                       ]
+                    },
+                    {
+                      "name": "Display Rules Using CLI",
+                      "sequential_order": 3.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": null,
+                      "test_class": "TestDisplayRulesUsingCLI",
+                      "scenarios": [
+                        {
+                          "name": "Rules action shows rules digest in CLI output",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_rules_action_shows_rules_digest",
+                          "steps": "GIVEN: CLI is at shape.validate (which shows rules)\nWHEN: user navigates to shape.validate\nTHEN: CLI output contains formatted rules digest"
+                        },
+                        {
+                          "name": "Validation output includes rules content",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_rules_output_includes_validation_content",
+                          "steps": "GIVEN: CLI is at shape.validate\nWHEN: user navigates to shape.validate\nTHEN: CLI output contains validation rules"
+                        },
+                        {
+                          "name": "User gets rules instructions for behavior",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_gets_rules_instructions_for_behavior",
+                          "steps": ""
+                        },
+                        {
+                          "name": "User gets rules with message parameter",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_gets_rules_with_message_parameter",
+                          "steps": ""
+                        },
+                        {
+                          "name": "User gets rules without message parameter",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_gets_rules_without_message_parameter",
+                          "steps": ""
+                        }
+                      ],
+                      "scenario_outlines": [],
+                      "acceptance_criteria": []
                     }
                   ]
                 }
@@ -15898,6 +17078,76 @@
                   "test_file": null,
                   "test_class": null,
                   "scenarios": [],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Get Help Using CLI",
+                  "sequential_order": 4.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestGetHelpUsingCLI",
+                  "scenarios": [
+                    {
+                      "name": "Action instructions are shown in CLI output",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_action_shows_instructions_in_cli_output",
+                      "steps": "GIVEN: CLI is at shape.clarify\nWHEN: user navigates to action\nTHEN: CLI output shows action instructions"
+                    },
+                    {
+                      "name": "Action parameter help is shown in CLI output",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_action_shows_parameter_help_in_output",
+                      "steps": "GIVEN: CLI is at shape.clarify\nWHEN: user navigates to action with parameters\nTHEN: CLI output shows parameter information"
+                    },
+                    {
+                      "name": "Action shows usage information in CLI output",
+                      "sequential_order": 3.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_action_shows_usage_information_in_output",
+                      "steps": "GIVEN: CLI is at shape.clarify\nWHEN: user navigates to action\nTHEN: CLI output shows how to use the action"
+                    }
+                  ],
+                  "scenario_outlines": [],
+                  "acceptance_criteria": []
+                },
+                {
+                  "name": "Display Help Using CLI",
+                  "sequential_order": 5.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [
+                    "User"
+                  ],
+                  "test_file": null,
+                  "test_class": "TestDisplayHelpUsingCLI",
+                  "scenarios": [
+                    {
+                      "name": "Help command shows available commands (all channels)",
+                      "sequential_order": 1.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_help_command_shows_available_commands",
+                      "steps": "GIVEN: CLI session active\nWHEN: user enters 'help'\nTHEN: CLI displays list of available commands"
+                    },
+                    {
+                      "name": "Help with command name shows command details (all channels)",
+                      "sequential_order": 2.0,
+                      "type": "happy_path",
+                      "background": [],
+                      "test_method": "test_help_with_command_shows_details",
+                      "steps": "GIVEN: CLI session active\nWHEN: user enters 'help status'\nTHEN: CLI displays help for 'status' command"
+                    }
+                  ],
                   "scenario_outlines": [],
                   "acceptance_criteria": []
                 }

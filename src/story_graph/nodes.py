@@ -547,6 +547,7 @@ class Epic(StoryNode):
 @dataclass
 class SubEpic(StoryNode):
     sequential_order: float
+    test_file: Optional[str] = None
     _parent: Optional[StoryNode] = field(default=None, repr=False)
 
     def __post_init__(self):
@@ -595,7 +596,7 @@ class SubEpic(StoryNode):
         sequential_order = data.get('sequential_order')
         if sequential_order is None:
             raise ValueError('SubEpic requires sequential_order')
-        sub_epic = cls(name=data.get('name', ''), sequential_order=float(sequential_order), _parent=parent, _bot=bot)
+        sub_epic = cls(name=data.get('name', ''), sequential_order=float(sequential_order), test_file=data.get('test_file'), _parent=parent, _bot=bot)
         for nested_sub_epic_data in data.get('sub_epics', []):
             nested_sub_epic = SubEpic.from_dict(nested_sub_epic_data, parent=sub_epic, bot=bot)
             sub_epic._children.append(nested_sub_epic)
@@ -1229,13 +1230,22 @@ class StoryMap:
             if isinstance(child, StoryGroup):
                 stories.extend([self._story_to_dict(story) for story in child.children if isinstance(story, Story)])
         
-        return {
+        result = {
             'name': sub_epic.name,
             'sequential_order': sub_epic.sequential_order,
+        }
+        
+        # Include test_file if present (critical for test links in panel)
+        if sub_epic.test_file is not None:
+            result['test_file'] = sub_epic.test_file
+        
+        result.update({
             'sub_epics': [self._sub_epic_to_dict(child) for child in sub_epic._children if isinstance(child, SubEpic)],
             'story_groups': [self._story_group_to_dict(child) for child in sub_epic._children if isinstance(child, StoryGroup)],
             'stories': stories  # Flattened list of stories for easier test access
-        }
+        })
+        
+        return result
 
     def _story_group_to_dict(self, story_group: StoryGroup) -> Dict[str, Any]:
         return {
