@@ -4,7 +4,7 @@
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
-**Sequential Order:** 11.0
+**Sequential Order:** 10.0
 **Story Type:** user
 
 ## Story Description

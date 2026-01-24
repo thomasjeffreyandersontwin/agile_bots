@@ -96,24 +96,42 @@ class PanelView {
         console.log('[PanelView] Python process spawned');
         
         this._pythonProcess.stdout.on('data', (data) => {
-            this._responseBuffer += data.toString();
+            const dataStr = data.toString();
+            this._responseBuffer += dataStr;
+            
+            // Log first chunk received
+            if (this._responseBuffer.length === dataStr.length) {
+                console.log('[PanelView] First response chunk received, size:', dataStr.length);
+            }
             
             const markerIndex = this._responseBuffer.indexOf(END_MARKER);
             if (markerIndex !== -1) {
+                console.log('[PanelView] End marker found, response size:', markerIndex);
                 const jsonOutput = this._responseBuffer.substring(0, markerIndex).trim();
                 this._responseBuffer = this._responseBuffer.substring(markerIndex + END_MARKER.length);
                 
                 if (this._pendingResolve) {
                     try {
+                        console.log('[PanelView] Parsing JSON response...');
                         const jsonMatch = jsonOutput.match(/\{[\s\S]*\}/);
                         if (!jsonMatch) {
+                            console.error('[PanelView] No JSON found in CLI output');
                             this._pendingReject(new Error('No JSON found in CLI output'));
                         } else {
                             const jsonData = JSON.parse(jsonMatch[0]);
-                            console.log('[PanelView] Command executed successfully');
-                            this._pendingResolve(jsonData);
+                            
+                            // Check if response indicates an error from CLI
+                            if (jsonData.status === 'error' && jsonData.error) {
+                                console.error('[PanelView] CLI returned error:', jsonData.error);
+                                // Resolve with the error object so it can be handled gracefully
+                                this._pendingResolve(jsonData);
+                            } else {
+                                console.log('[PanelView] Command executed successfully, response keys:', Object.keys(jsonData));
+                                this._pendingResolve(jsonData);
+                            }
                         }
                     } catch (parseError) {
+                        console.error('[PanelView] JSON parse error:', parseError.message);
                         this._pendingReject(new Error(`Failed to parse CLI JSON: ${parseError.message}`));
                     }
                     this._pendingResolve = null;
@@ -173,17 +191,22 @@ class PanelView {
         
         console.log(`[PanelView] Executing command: "${command}"`);
         
+        // Increase timeout for scope/status commands (they enrich scenarios with test links)
+        const timeoutMs = (command.includes('scope') || command.includes('status')) ? 60000 : 30000;
+        console.log(`[PanelView] Using timeout: ${timeoutMs}ms for command: "${command}"`);
+        
         return new Promise((resolve, reject) => {
             this._pendingResolve = resolve;
             this._pendingReject = reject;
             
             const timeoutId = setTimeout(() => {
                 if (this._pendingReject) {
-                    this._pendingReject(new Error('Command timed out after 30 seconds'));
+                    console.error(`[PanelView] Command timed out after ${timeoutMs}ms: "${command}"`);
+                    this._pendingReject(new Error(`Command timed out after ${timeoutMs / 1000} seconds: ${command}`));
                     this._pendingResolve = null;
                     this._pendingReject = null;
                 }
-            }, 30000);
+            }, timeoutMs);
             
             const originalResolve = resolve;
             const originalReject = reject;

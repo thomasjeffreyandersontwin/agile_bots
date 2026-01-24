@@ -235,14 +235,18 @@ class BotPanel {
             this._botView?.execute('scope all')
               .then(() => this._update())
               .catch((error) => {
+                this._log(`[BotPanel] ERROR clearScopeFilter: ${error.message}`);
                 vscode.window.showErrorMessage(`Failed to clear scope: ${error.message}`);
+                this._displayError(`Failed to clear scope: ${error.message}`);
               });
             return;
           case "showAllScope":
             this._botView?.execute('scope showall')
               .then(() => this._update())
               .catch((error) => {
+                this._log(`[BotPanel] ERROR showAllScope: ${error.message}`);
                 vscode.window.showErrorMessage(`Failed to show all: ${error.message}`);
+                this._displayError(`Failed to show all: ${error.message}`);
               });
             return;
           case "updateFilter":
@@ -272,8 +276,9 @@ class BotPanel {
                   const errorMsg = 'Scope filter failed: ' + err.message;
                   this._log('[BotPanel] ERROR: ' + errorMsg);
                   this._log('[BotPanel] ERROR stack: ' + err.stack);
-                  this._displayError(errorMsg + '\n\nStack:\n' + err.stack);
-                  throw err; // Re-throw to crash the panel as requested
+                  this._displayError(errorMsg);
+                  vscode.window.showErrorMessage(errorMsg);
+                  // Don't re-throw - show error but don't crash panel
                 });
             } else {
               // Empty filter = clear filter
@@ -288,8 +293,9 @@ class BotPanel {
                   const errorMsg = 'Clear scope failed: ' + err.message;
                   this._log('[BotPanel] ERROR: ' + errorMsg);
                   this._log('[BotPanel] ERROR stack: ' + err.stack);
-                  this._displayError(errorMsg + '\n\nStack:\n' + err.stack);
-                  throw err; // Re-throw to crash the panel as requested
+                  this._displayError(errorMsg);
+                  vscode.window.showErrorMessage(errorMsg);
+                  // Don't re-throw - show error but don't crash panel
                 });
             }
             return;
@@ -866,13 +872,38 @@ class BotPanel {
       console.error(`[BotPanel] ERROR in _update: ${err.message}`);
       console.error(`[BotPanel] ERROR stack: ${err.stack}`);
       this._log(`[BotPanel] ERROR in _update: ${err.message} | Stack: ${err.stack}`);
-      vscode.window.showErrorMessage(`Bot Panel Update Error: ${err.message}`);
+      
+      // Show error in VSCode notification
+      const errorMsg = err.isCliError 
+        ? `CLI Error: ${err.message}` 
+        : `Bot Panel Update Error: ${err.message}`;
+      vscode.window.showErrorMessage(errorMsg);
+      
+      // Display error in panel with retry button
+      const errorType = err.errorType || err.constructor.name;
+      const command = err.command ? `Command: ${this._escapeHtml(err.command)}` : '';
+      
       this._panel.webview.html = this._getWebviewContent(`
         <div style="padding: 20px; color: var(--vscode-errorForeground);">
-          <h2>Error Loading Bot Panel</h2>
-          <p>${this._escapeHtml(err.message)}</p>
-          <p>Stack: ${this._escapeHtml(err.stack || 'No stack trace')}</p>
-          <p>Please ensure Python is installed and the bot CLI is available.</p>
+          <h2>⚠️ Error Loading Bot Panel</h2>
+          <div style="background: var(--vscode-inputValidation-errorBackground); border: 1px solid var(--vscode-inputValidation-errorBorder); padding: 15px; margin: 10px 0; border-radius: 4px;">
+            <p><strong>Error:</strong> ${this._escapeHtml(err.message)}</p>
+            ${command ? `<p style="margin-top: 10px;">${command}</p>` : ''}
+            ${err.isCliError ? `<p style="margin-top: 10px;"><strong>Type:</strong> ${this._escapeHtml(errorType)}</p>` : ''}
+          </div>
+          <details style="margin-top: 15px;">
+            <summary style="cursor: pointer; color: var(--vscode-textLink-foreground);">Show Stack Trace</summary>
+            <pre style="background: var(--vscode-editor-background); padding: 10px; margin-top: 10px; border-radius: 4px; overflow-x: auto;">${this._escapeHtml(err.stack || 'No stack trace available')}</pre>
+          </details>
+          <div style="margin-top: 20px;">
+            <button onclick="vscode.postMessage({ command: 'refresh' })" 
+                    style="background: var(--vscode-button-background); color: var(--vscode-button-foreground); border: none; padding: 8px 16px; cursor: pointer; border-radius: 2px; font-size: 13px;">
+              🔄 Retry
+            </button>
+          </div>
+          <p style="margin-top: 20px; color: var(--vscode-descriptionForeground); font-size: 12px;">
+            Please ensure Python is installed and the bot CLI is available.
+          </p>
         </div>
       `);
     }
@@ -2364,12 +2395,28 @@ class BotPanel {
                 errorDiv.style.cssText = 'position: fixed; top: 10px; left: 10px; right: 10px; z-index: 10000; background: #f44336; color: white; padding: 16px; border-radius: 4px; font-family: monospace; font-size: 12px; white-space: pre-wrap; max-height: 80vh; overflow-y: auto;';
                 errorDiv.textContent = '[ERROR] ' + message.error;
                 
+                // Add button container
+                const btnContainer = document.createElement('div');
+                btnContainer.style.cssText = 'margin-top: 12px; display: flex; gap: 8px;';
+                
+                // Add retry button
+                const retryBtn = document.createElement('button');
+                retryBtn.textContent = '🔄 Retry';
+                retryBtn.style.cssText = 'background: white; color: #f44336; border: none; padding: 8px 16px; cursor: pointer; border-radius: 3px; font-weight: bold;';
+                retryBtn.onclick = () => {
+                    errorDiv.remove();
+                    vscode.postMessage({ command: 'refresh' });
+                };
+                
                 // Add close button
                 const closeBtn = document.createElement('button');
                 closeBtn.textContent = 'Close';
-                closeBtn.style.cssText = 'background: white; color: #f44336; border: none; padding: 8px 16px; margin-top: 12px; cursor: pointer; border-radius: 3px; font-weight: bold;';
+                closeBtn.style.cssText = 'background: rgba(255,255,255,0.8); color: #f44336; border: none; padding: 8px 16px; cursor: pointer; border-radius: 3px;';
                 closeBtn.onclick = () => errorDiv.remove();
-                errorDiv.appendChild(closeBtn);
+                
+                btnContainer.appendChild(retryBtn);
+                btnContainer.appendChild(closeBtn);
+                errorDiv.appendChild(btnContainer);
                 
                 document.body.appendChild(errorDiv);
                 

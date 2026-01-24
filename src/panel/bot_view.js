@@ -80,6 +80,15 @@ class BotView extends PanelView {
     async execute(command) {
         const response = await super.execute(command);
         
+        // Check if response indicates an error from CLI
+        if (response.status === 'error' && response.error) {
+            const error = new Error(response.error);
+            error.errorType = response.error_type;
+            error.command = response.command;
+            error.isCliError = true;
+            throw error;
+        }
+        
         // In JSON mode, CLI returns unified structure: { execution?, instructions?, bot, scope? }
         // For "status" command, return bot data (response is already { bot: ... })
         if (command === 'status' && response.bot) {

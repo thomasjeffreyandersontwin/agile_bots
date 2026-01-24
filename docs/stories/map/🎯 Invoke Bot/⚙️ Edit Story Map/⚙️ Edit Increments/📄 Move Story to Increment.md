@@ -4,7 +4,7 @@
 
 **User:** System
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Increments](.)  
-**Sequential Order:** 13.0
+**Sequential Order:** 6.0
 **Story Type:** user
 
 ## Story Description

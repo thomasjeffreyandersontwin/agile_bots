@@ -4,7 +4,7 @@
 
 **User:** CLI
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Navigate Behavior Actions](..) / [⚙️ Display Behavior Action State](.)  
-**Sequential Order:** 1.0
+**Sequential Order:** 2.0
 **Story Type:** system
 
 ## Story Description

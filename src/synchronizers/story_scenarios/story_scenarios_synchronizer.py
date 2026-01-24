@@ -386,15 +386,19 @@ Then action completes successfully
     return content
 
 
-def extract_stories_from_graph(epic, epic_path="", sub_epic_path="", parent_is_epic=True):
+def extract_stories_from_graph(epic, epic_path="", sub_epic_path="", parent_is_epic=True, parent_test_file=""):
     """
     Extract all stories from story graph recursively.
     Dynamically builds folder structure from the graph itself.
     Handles nested sub-epics (sub-subs) by building up the full path.
+    Passes test_file from sub-epic level down to stories.
     """
     stories = []
     current_epic_path = epic['name'] if not epic_path else f"{epic_path}/{epic['name']}"
     current_is_epic = parent_is_epic and not sub_epic_path
+    
+    # Get test_file from this level (sub-epic) or inherit from parent
+    current_test_file = epic.get('test_file', '') or parent_test_file
     
     # Get stories from story_groups
     # Exclude Human/AI Chat/AI Agent stories per render instructions
@@ -411,6 +415,9 @@ def extract_stories_from_graph(epic, epic_path="", sub_epic_path="", parent_is_e
             story['sub_epic_name'] = sub_epic_path if sub_epic_path else epic['name']
             story['is_epic'] = current_is_epic
             story['is_sub_epic'] = not current_is_epic
+            # Inherit test_file from sub-epic if story doesn't have its own
+            if not story.get('test_file') and current_test_file:
+                story['test_file'] = current_test_file
             stories.append(story)
     
     # Get stories from sub_epics (recursively handle nested sub-epics)
@@ -421,11 +428,11 @@ def extract_stories_from_graph(epic, epic_path="", sub_epic_path="", parent_is_e
             # We're in a sub-epic already, so this is a nested sub-epic (sub-sub)
             # Keep the epic_path as is (just the epic name), and build sub_epic_path
             current_sub_epic_path = f"{sub_epic_path}/{sub_epic['name']}"
-            stories.extend(extract_stories_from_graph(sub_epic, epic_path, current_sub_epic_path, parent_is_epic=False))
+            stories.extend(extract_stories_from_graph(sub_epic, epic_path, current_sub_epic_path, parent_is_epic=False, parent_test_file=current_test_file))
         else:
             # This is the first level sub-epic under the epic
             current_sub_epic_path = sub_epic['name']
-            stories.extend(extract_stories_from_graph(sub_epic, current_epic_path, current_sub_epic_path, parent_is_epic=False))
+            stories.extend(extract_stories_from_graph(sub_epic, current_epic_path, current_sub_epic_path, parent_is_epic=False, parent_test_file=current_test_file))
     
     return stories
 

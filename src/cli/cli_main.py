@@ -139,9 +139,23 @@ def main():
             for line in sys.stdin:
                 command = line.strip()
                 if command:
-                    response = cli_session.execute_command(command)
-                    print(response.output, flush=True)
-                    print(END_MARKER, flush=True)  # Signal end of response
+                    try:
+                        response = cli_session.execute_command(command)
+                        print(response.output, flush=True)
+                    except Exception as e:
+                        # Catch any exception during command execution
+                        # Return error as JSON so panel can handle it gracefully
+                        error_response = {
+                            'status': 'error',
+                            'error': str(e),
+                            'error_type': type(e).__name__,
+                            'command': command
+                        }
+                        print(json.dumps(error_response, indent=2), flush=True)
+                        print(f"ERROR: {e}", file=sys.stderr)
+                    finally:
+                        # Always send end marker so panel doesn't hang
+                        print(END_MARKER, flush=True)
         except (KeyboardInterrupt, EOFError):
             # Clean exit on user interrupt or EOF in JSON mode
             sys.exit(0)

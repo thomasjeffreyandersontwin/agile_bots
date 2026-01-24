@@ -49,8 +49,8 @@ class JSONScope(JSONAdapter):
                 content = graph_adapter.to_dict().get('content', [])
                 
                 if content and 'epics' in content:
-                    # Skip expensive scenario enrichment for 'showAll' to avoid timeout
-                    enrich_scenarios = (self.scope.type.value != 'showAll')
+                    # Always enrich scenarios with test links
+                    enrich_scenarios = True
                     self._enrich_with_links(content['epics'], story_graph, enrich_scenarios)
                     result['content'] = content
                 else:
@@ -145,16 +145,20 @@ class JSONScope(JSONAdapter):
         test_file = story.get('test_file') or parent_test_file
         test_class = story.get('test_class')
         
-        # Only add test icon if we have both test_file and test_class with a valid file
+        # Only add test icon if we have both test_file and test_class with a valid file AND the class exists
         if test_file and test_class:
             test_file_path = test_dir / test_file
             if test_file_path.exists():
-                test_url = f"{test_file_path}#{test_class}"
-                story['links'].append({
-                    'text': 'test',
-                    'url': test_url,
-                    'icon': 'test_tube'
-                })
+                from utils import find_test_class_line
+                line_number = find_test_class_line(test_file_path, test_class)
+                
+                if line_number:
+                    test_url = f"{test_file_path}#L{line_number}"
+                    story['links'].append({
+                        'text': 'test',
+                        'url': test_url,
+                        'icon': 'test_tube'
+                    })
         
         # Only enrich scenarios if requested (skip for 'scope showall' to avoid expensive AST parsing)
         if enrich_scenarios and 'scenarios' in story:
