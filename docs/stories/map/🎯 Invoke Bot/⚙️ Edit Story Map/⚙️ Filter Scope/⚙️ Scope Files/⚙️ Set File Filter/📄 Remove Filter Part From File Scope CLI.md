@@ -1,6 +1,6 @@
 # 📄 Remove Filter Part From File Scope CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_scope_files.py)
 
 **User:** System
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Filter Scope](../..) / [⚙️ Scope Files](..) / [⚙️ Set File Filter](.)  

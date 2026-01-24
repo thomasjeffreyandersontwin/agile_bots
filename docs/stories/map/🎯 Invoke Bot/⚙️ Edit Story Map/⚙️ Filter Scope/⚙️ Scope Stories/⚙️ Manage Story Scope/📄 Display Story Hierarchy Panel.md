@@ -1,6 +1,6 @@
 # 📄 Display Story Hierarchy Panel
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L39)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Filter Scope](../..) / [⚙️ Scope Stories](..) / [⚙️ Manage Story Scope](.)  

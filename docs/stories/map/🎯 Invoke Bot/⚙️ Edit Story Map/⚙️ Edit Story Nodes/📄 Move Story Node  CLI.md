@@ -1,6 +1,6 @@
 # 📄 Move Story Node  CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1511)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
@@ -57,7 +57,7 @@ Given Story Graph is initialized
 ## Scenarios
 
 <a id="scenario-user-moves-node-to-different-parent-with-position-using-dot-notation"></a>
-### Scenario: [User moves node to different parent with position using dot notation](#scenario-user-moves-node-to-different-parent-with-position-using-dot-notation) (happy_path)
+### Scenario: [User moves node to different parent with position using dot notation](#scenario-user-moves-node-to-different-parent-with-position-using-dot-notation) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1524)
 
 **Steps:**
 ```gherkin
@@ -78,7 +78,7 @@ And CLI outputs success message: "Moved SubEpic 'Manage Bot' from 'Invoke Bot' t
 
 
 <a id="scenario-user-moves-node-to-same-parent-different-position"></a>
-### Scenario: [User moves node to same parent different position](#scenario-user-moves-node-to-same-parent-different-position) (happy_path)
+### Scenario: [User moves node to same parent different position](#scenario-user-moves-node-to-same-parent-different-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1552)
 
 **Steps:**
 ```gherkin
@@ -96,7 +96,7 @@ And CLI outputs success message: "Moved SubEpic 'Manage Bot' to position 3 withi
 
 
 <a id="scenario-user-enters-non-existent-source-path-and-cli-outputs-error"></a>
-### Scenario: [User enters non-existent source path and CLI outputs error](#scenario-user-enters-non-existent-source-path-and-cli-outputs-error) (error_case)
+### Scenario: [User enters non-existent source path and CLI outputs error](#scenario-user-enters-non-existent-source-path-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1582)
 
 **Steps:**
 ```gherkin
@@ -113,7 +113,7 @@ And CLI does not modify Story Graph
 
 
 <a id="scenario-user-enters-non-existent-target-path-and-cli-outputs-error"></a>
-### Scenario: [User enters non-existent target path and CLI outputs error](#scenario-user-enters-non-existent-target-path-and-cli-outputs-error) (error_case)
+### Scenario: [User enters non-existent target path and CLI outputs error](#scenario-user-enters-non-existent-target-path-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1607)
 
 **Steps:**
 ```gherkin
@@ -131,7 +131,7 @@ And CLI does not modify Story Graph
 
 
 <a id="scenario-user-moves-incompatible-type-and-cli-outputs-error"></a>
-### Scenario: [User moves incompatible type and CLI outputs error](#scenario-user-moves-incompatible-type-and-cli-outputs-error) (error_case)
+### Scenario: [User moves incompatible type and CLI outputs error](#scenario-user-moves-incompatible-type-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1631)
 
 **Steps:**
 ```gherkin
@@ -149,7 +149,7 @@ And CLI does not modify Story Graph
 
 
 <a id="scenario-user-moves-to-create-circular-reference-and-cli-outputs-error"></a>
-### Scenario: [User moves to create circular reference and CLI outputs error](#scenario-user-moves-to-create-circular-reference-and-cli-outputs-error) (error_case)
+### Scenario: [User moves to create circular reference and CLI outputs error](#scenario-user-moves-to-create-circular-reference-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1657)
 
 **Steps:**
 ```gherkin

@@ -132,6 +132,17 @@ class BotPanel {
         this._log('[BotPanel] Received message from webview: ' + message.command + ' ' + JSON.stringify(message));
         switch (message.command) {
           case "refresh":
+            // Delete the enriched cache to force regeneration of test links
+            const fs = require('fs');
+            const cachePath = path.join(this._workspaceRoot, 'docs', 'stories', '.story-graph-enriched-cache.json');
+            try {
+              if (fs.existsSync(cachePath)) {
+                fs.unlinkSync(cachePath);
+                this._log('[BotPanel] Deleted enriched cache file');
+              }
+            } catch (err) {
+              this._log(`[BotPanel] Warning: Could not delete cache: ${err.message}`);
+            }
             this._update().catch(err => console.error(`[BotPanel] Refresh error: ${err.message}`));
             return;
           case "logToFile":

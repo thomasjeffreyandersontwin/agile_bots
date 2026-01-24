@@ -1,6 +1,6 @@
 # 📄 Show All Scope Through Panel
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L98)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Filter Scope](../..) / [⚙️ Scope Stories](..) / [⚙️ Manage Story Scope](.)  
@@ -30,7 +30,7 @@ Show All Scope Through Panel functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-"></a>
-### Scenario: [](#scenario-) ()
+### Scenario: [](#scenario-) ()  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L100)
 
 **Steps:**
 ```gherkin

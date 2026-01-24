@@ -1,6 +1,6 @@
 # 📄 Validate Rules
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/perform_action/test_validate_with_rules.py#L29)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Perform Action](..) / [⚙️ Validate With Rules](.)  
@@ -20,7 +20,7 @@ Validate Rules functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-story-graph-validation-includes-rule-content-in-instructions"></a>
-### Scenario: [Story graph validation includes rule content in instructions](#scenario-story-graph-validation-includes-rule-content-in-instructions) (happy_path)
+### Scenario: [Story graph validation includes rule content in instructions](#scenario-story-graph-validation-includes-rule-content-in-instructions) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_validate_with_rules.py#L32)
 
 **Steps:**
 ```gherkin
@@ -32,7 +32,7 @@ Then And Story graph file exists
 
 
 <a id="scenario-file-validation-includes-rule-content-in-instructions"></a>
-### Scenario: [File validation includes rule content in instructions](#scenario-file-validation-includes-rule-content-in-instructions) (happy_path)
+### Scenario: [File validation includes rule content in instructions](#scenario-file-validation-includes-rule-content-in-instructions) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_validate_with_rules.py#L60)
 
 **Steps:**
 ```gherkin
@@ -44,7 +44,7 @@ Then And Story graph file exists
 
 
 <a id="scenario-story-graph-scanners-receive-scoped-story_graph-data"></a>
-### Scenario: [Story graph scanners receive scoped story_graph data](#scenario-story-graph-scanners-receive-scoped-story_graph-data) (happy_path)
+### Scenario: [Story graph scanners receive scoped story_graph data](#scenario-story-graph-scanners-receive-scoped-story_graph-data) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_validate_with_rules.py#L88)
 
 **Steps:**
 ```gherkin
@@ -59,7 +59,7 @@ Then And Instructions contain "Build Knowledge" in scope description
 
 
 <a id="scenario-file-scanners-receive-scoped-file-paths"></a>
-### Scenario: [File scanners receive scoped file paths](#scenario-file-scanners-receive-scoped-file-paths) (happy_path)
+### Scenario: [File scanners receive scoped file paths](#scenario-file-scanners-receive-scoped-file-paths) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_validate_with_rules.py#L137)
 
 **Steps:**
 ```gherkin

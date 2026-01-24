@@ -1,6 +1,6 @@
 # 📄 Track Activity For Workspace
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/navigate_behavior_actions/test_perform_behavior_action_in_bot_workflow.py#L149)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Navigate Behavior Actions](..) / [⚙️ Perform Behavior Action In Bot Workflow](.)  
@@ -20,7 +20,7 @@ Track Activity For Workspace functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-activity-logged-to-workspace_area-not-bot-area"></a>
-### Scenario: [Activity logged to workspace_area not bot area](#scenario-activity-logged-to-workspace_area-not-bot-area) (happy_path)
+### Scenario: [Activity logged to workspace_area not bot area](#scenario-activity-logged-to-workspace_area-not-bot-area) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_perform_behavior_action_in_bot_workflow.py#L151)
 
 **Steps:**
 ```gherkin
@@ -34,7 +34,7 @@ Then And Activity log location matches workspace_area from WORKING_AREA environm
 
 
 <a id="scenario-activity-log-contains-correct-entry"></a>
-### Scenario: [Activity log contains correct entry](#scenario-activity-log-contains-correct-entry) (happy_path)
+### Scenario: [Activity log contains correct entry](#scenario-activity-log-contains-correct-entry) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_perform_behavior_action_in_bot_workflow.py#L179)
 
 **Steps:**
 ```gherkin

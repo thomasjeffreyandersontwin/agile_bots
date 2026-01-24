@@ -1,10 +1,10 @@
 # 📄 Render Output
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/perform_action/test_render_content.py#L29)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Perform Action](..) / [⚙️ Render Content](.)  
-**Sequential Order:** 3.0
+**Sequential Order:** 0.0
 **Story Type:** user
 
 ## Story Description
@@ -20,7 +20,7 @@ Render Output functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-action-injects-render-configs-and-instructions"></a>
-### Scenario: [Action injects render configs and instructions](#scenario-action-injects-render-configs-and-instructions) (happy_path)
+### Scenario: [Action injects render configs and instructions](#scenario-action-injects-render-configs-and-instructions) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_render_content.py#L31)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Instructions contain all required render fields
 
 
 <a id="scenario-synchronizers-are-executed-automatically-during-render-action"></a>
-### Scenario: [Synchronizers are executed automatically during render action](#scenario-synchronizers-are-executed-automatically-during-render-action) (happy_path)
+### Scenario: [Synchronizers are executed automatically during render action](#scenario-synchronizers-are-executed-automatically-during-render-action) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_render_content.py#L47)
 
 **Steps:**
 ```gherkin
@@ -42,7 +42,7 @@ Then Synchronizers are executed automatically
 
 
 <a id="scenario-template-configs-remain-in-instructions-for-ai-handling"></a>
-### Scenario: [Template configs remain in instructions for AI handling](#scenario-template-configs-remain-in-instructions-for-ai-handling) (happy_path)
+### Scenario: [Template configs remain in instructions for AI handling](#scenario-template-configs-remain-in-instructions-for-ai-handling) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_render_content.py#L65)
 
 **Steps:**
 ```gherkin
@@ -53,7 +53,7 @@ Then Result includes instructions
 
 
 <a id="scenario-executed-synchronizers-information-is-included-in-ai-instructions"></a>
-### Scenario: [Executed synchronizers information is included in AI instructions](#scenario-executed-synchronizers-information-is-included-in-ai-instructions) (happy_path)
+### Scenario: [Executed synchronizers information is included in AI instructions](#scenario-executed-synchronizers-information-is-included-in-ai-instructions) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_render_content.py#L82)
 
 **Steps:**
 ```gherkin

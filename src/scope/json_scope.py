@@ -44,17 +44,46 @@ class JSONScope(JSONAdapter):
         if self.scope.type.value in ('story', 'showAll'):
             story_graph = self.scope._get_story_graph_results()
             if story_graph:
-                from story_graph.json_story_graph import JSONStoryGraph
-                graph_adapter = JSONStoryGraph(story_graph)
-                content = graph_adapter.to_dict().get('content', [])
+                # Check if we can use disk-cached enriched content
+                story_graph_path = self.scope.workspace_directory / 'docs' / 'stories' / 'story-graph.json'
+                cache_path = self.scope.workspace_directory / 'docs' / 'stories' / '.story-graph-enriched-cache.json'
                 
-                if content and 'epics' in content:
-                    # Always enrich scenarios with test links
-                    enrich_scenarios = True
-                    self._enrich_with_links(content['epics'], story_graph, enrich_scenarios)
-                    result['content'] = content
-                else:
-                    result['content'] = {'epics': []}
+                content = None
+                if story_graph_path.exists() and cache_path.exists():
+                    # Check if cache is still valid (cache mtime > source mtime)
+                    source_mtime = story_graph_path.stat().st_mtime
+                    cache_mtime = cache_path.stat().st_mtime
+                    
+                    if cache_mtime >= source_mtime:
+                        # Cache is valid - load it
+                        try:
+                            with open(cache_path, 'r', encoding='utf-8') as f:
+                                content = json.load(f)
+                        except Exception:
+                            # Cache corrupted, regenerate
+                            content = None
+                
+                if content is None:
+                    # Generate and enrich content (cache miss or invalid)
+                    from story_graph.json_story_graph import JSONStoryGraph
+                    graph_adapter = JSONStoryGraph(story_graph)
+                    content = graph_adapter.to_dict().get('content', [])
+                    
+                    if content and 'epics' in content:
+                        # Always enrich scenarios with test links
+                        enrich_scenarios = True
+                        self._enrich_with_links(content['epics'], story_graph, enrich_scenarios)
+                        
+                        # Write to disk cache
+                        try:
+                            with open(cache_path, 'w', encoding='utf-8') as f:
+                                json.dump(content, f, indent=2, ensure_ascii=False)
+                        except Exception:
+                            pass  # If cache write fails, just continue without it
+                    else:
+                        content = {'epics': []}
+                
+                result['content'] = content
                 
                 if self.scope.bot_paths:
                     from pathlib import Path

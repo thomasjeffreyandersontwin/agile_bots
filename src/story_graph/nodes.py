@@ -547,7 +547,6 @@ class Epic(StoryNode):
 @dataclass
 class SubEpic(StoryNode):
     sequential_order: float
-    test_file: Optional[str] = None
     _parent: Optional[StoryNode] = field(default=None, repr=False)
 
     def __post_init__(self):
@@ -555,6 +554,9 @@ class SubEpic(StoryNode):
         if self.sequential_order is None:
             raise ValueError('SubEpic requires sequential_order')
         self._children: List['StoryNode'] = []
+        # Initialize test_file attribute (not a dataclass field to avoid signature issues)
+        if not hasattr(self, 'test_file'):
+            self.test_file = None
 
     @property
     def children(self) -> List['StoryNode']:
@@ -596,7 +598,8 @@ class SubEpic(StoryNode):
         sequential_order = data.get('sequential_order')
         if sequential_order is None:
             raise ValueError('SubEpic requires sequential_order')
-        sub_epic = cls(name=data.get('name', ''), sequential_order=float(sequential_order), test_file=data.get('test_file'), _parent=parent, _bot=bot)
+        sub_epic = cls(name=data.get('name', ''), sequential_order=float(sequential_order), _parent=parent, _bot=bot)
+        sub_epic.test_file = data.get('test_file')
         for nested_sub_epic_data in data.get('sub_epics', []):
             nested_sub_epic = SubEpic.from_dict(nested_sub_epic_data, parent=sub_epic, bot=bot)
             sub_epic._children.append(nested_sub_epic)

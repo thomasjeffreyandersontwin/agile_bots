@@ -1,6 +1,6 @@
 # 📄 Load and Display Workspace Context in CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/initialize_bot/test_set_workspace.py#L143)
 
 **User:** CLI
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Initialize Bot](..) / [⚙️ Set Workspace](.)  

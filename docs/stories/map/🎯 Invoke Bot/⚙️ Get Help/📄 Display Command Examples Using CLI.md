@@ -1,6 +1,6 @@
 # 📄 Display Command Examples Using CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/get_help/test_get_help_using_cli.py)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Get Help](.)  

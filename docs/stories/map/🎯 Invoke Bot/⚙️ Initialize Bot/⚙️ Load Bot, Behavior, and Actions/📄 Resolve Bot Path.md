@@ -1,6 +1,6 @@
 # 📄 Resolve Bot Path
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L23)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Initialize Bot](..) / [⚙️ Load Bot, Behavior, and Actions](.)  
@@ -20,7 +20,7 @@ Resolve Bot Path functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-botpath-resolves-directories-from-environment-variables"></a>
-### Scenario: [BotPath resolves directories from environment variables](#scenario-botpath-resolves-directories-from-environment-variables) (happy_path)
+### Scenario: [BotPath resolves directories from environment variables](#scenario-botpath-resolves-directories-from-environment-variables) (happy_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L25)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Both directory properties return paths from environment
 
 
 <a id="scenario-botpathbase_actions_directory-returns-real-agile_bot-base_actions"></a>
-### Scenario: [BotPath.base_actions_directory returns real agile_bot base_actions](#scenario-botpathbase_actions_directory-returns-real-agile_bot-base_actions) (happy_path)
+### Scenario: [BotPath.base_actions_directory returns real agile_bot base_actions](#scenario-botpathbase_actions_directory-returns-real-agile_bot-base_actions) (happy_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L43)
 
 **Steps:**
 ```gherkin
@@ -44,7 +44,7 @@ Then not the test directory. This is by design - see get_base_actions_directory(
 
 
 <a id="scenario-botpathpython_workspace_root-property-returns-python-workspace-root"></a>
-### Scenario: [BotPath.python_workspace_root property returns Python workspace root.](#scenario-botpathpython_workspace_root-property-returns-python-workspace-root) (happy_path)
+### Scenario: [BotPath.python_workspace_root property returns Python workspace root.](#scenario-botpathpython_workspace_root-property-returns-python-workspace-root) (happy_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L60)
 
 **Steps:**
 ```gherkin
@@ -53,7 +53,7 @@ Then not the test directory. This is by design - see get_base_actions_directory(
 
 
 <a id="scenario-botpathfind_repo_root-method-returns-repository-root"></a>
-### Scenario: [BotPath.find_repo_root() method returns repository root.](#scenario-botpathfind_repo_root-method-returns-repository-root) (happy_path)
+### Scenario: [BotPath.find_repo_root() method returns repository root.](#scenario-botpathfind_repo_root-method-returns-repository-root) (happy_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L68)
 
 **Steps:**
 ```gherkin
@@ -62,7 +62,7 @@ Then not the test directory. This is by design - see get_base_actions_directory(
 
 
 <a id="scenario-botpath-raises-error-when-environment-variables-not-set"></a>
-### Scenario: [BotPath raises error when environment variables not set](#scenario-botpath-raises-error-when-environment-variables-not-set) (happy_path)
+### Scenario: [BotPath raises error when environment variables not set](#scenario-botpath-raises-error-when-environment-variables-not-set) (happy_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L79)
 
 **Steps:**
 ```gherkin

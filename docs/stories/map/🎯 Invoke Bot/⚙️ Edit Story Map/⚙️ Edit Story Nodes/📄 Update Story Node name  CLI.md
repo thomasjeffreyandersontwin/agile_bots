@@ -1,6 +1,6 @@
 # 📄 Update Story Node name  CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1376)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
@@ -48,7 +48,7 @@ Given Story Graph is initialized
 ## Scenarios
 
 <a id="scenario-user-renames-node-with-valid-name-using-dot-notation"></a>
-### Scenario: [User renames node with valid name using dot notation](#scenario-user-renames-node-with-valid-name-using-dot-notation) (happy_path)
+### Scenario: [User renames node with valid name using dot notation](#scenario-user-renames-node-with-valid-name-using-dot-notation) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1389)
 
 **Steps:**
 ```gherkin
@@ -66,7 +66,7 @@ And Story Graph shows SubEpic "New Name" under Epic "Invoke Bot"
 
 
 <a id="scenario-user-enters-non-existent-node-path-and-cli-outputs-error"></a>
-### Scenario: [User enters non-existent node path and CLI outputs error](#scenario-user-enters-non-existent-node-path-and-cli-outputs-error) (error_case)
+### Scenario: [User enters non-existent node path and CLI outputs error](#scenario-user-enters-non-existent-node-path-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1416)
 
 **Steps:**
 ```gherkin
@@ -82,7 +82,7 @@ And CLI does not modify Story Graph
 
 
 <a id="scenario-user-enters-empty-name-and-cli-outputs-error"></a>
-### Scenario: [User enters empty name and CLI outputs error](#scenario-user-enters-empty-name-and-cli-outputs-error) (error_case)
+### Scenario: [User enters empty name and CLI outputs error](#scenario-user-enters-empty-name-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1440)
 
 **Steps:**
 ```gherkin
@@ -98,7 +98,7 @@ And CLI does not update node name
 
 
 <a id="scenario-user-enters-duplicate-name-and-cli-outputs-error"></a>
-### Scenario: [User enters duplicate name and CLI outputs error](#scenario-user-enters-duplicate-name-and-cli-outputs-error) (error_case)
+### Scenario: [User enters duplicate name and CLI outputs error](#scenario-user-enters-duplicate-name-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1463)
 
 **Steps:**
 ```gherkin
@@ -114,7 +114,7 @@ And CLI does not update node name
 
 
 <a id="scenario-user-enters-invalid-characters-and-cli-outputs-error"></a>
-### Scenario: [User enters invalid characters and CLI outputs error](#scenario-user-enters-invalid-characters-and-cli-outputs-error) (error_case)
+### Scenario: [User enters invalid characters and CLI outputs error](#scenario-user-enters-invalid-characters-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1488)
 
 **Steps:**
 ```gherkin

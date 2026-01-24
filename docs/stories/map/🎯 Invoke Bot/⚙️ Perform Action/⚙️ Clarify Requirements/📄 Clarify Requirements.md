@@ -1,6 +1,6 @@
 # 📄 Clarify Requirements
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/perform_action/test_clarify_requirements.py#L29)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Perform Action](..) / [⚙️ Clarify Requirements](.)  
@@ -20,7 +20,7 @@ Clarify Requirements functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-action-injects-questions-and-evidence-from-production-guardrails"></a>
-### Scenario: [Action injects questions and evidence from production guardrails](#scenario-action-injects-questions-and-evidence-from-production-guardrails) (happy_path)
+### Scenario: [Action injects questions and evidence from production guardrails](#scenario-action-injects-questions-and-evidence-from-production-guardrails) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_clarify_requirements.py#L30)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Instructions contain questions and evidence from production files
 
 
 <a id="scenario-save-clarification-data-when-parameters-are-provided"></a>
-### Scenario: [Save clarification data when parameters are provided](#scenario-save-clarification-data-when-parameters-are-provided) (happy_path)
+### Scenario: [Save clarification data when parameters are provided](#scenario-save-clarification-data-when-parameters-are-provided) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_clarify_requirements.py#L45)
 
 **Steps:**
 ```gherkin
@@ -43,7 +43,7 @@ Then And file contains behavior section with key_questions and evidence
 
 
 <a id="scenario-preserve-existing-clarification-data-when-saving"></a>
-### Scenario: [Preserve existing clarification data when saving](#scenario-preserve-existing-clarification-data-when-saving) (happy_path)
+### Scenario: [Preserve existing clarification data when saving](#scenario-preserve-existing-clarification-data-when-saving) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_clarify_requirements.py#L73)
 
 **Steps:**
 ```gherkin
@@ -56,7 +56,7 @@ Then And existing 'discovery' data is preserved
 
 
 <a id="scenario-skip-saving-when-no-clarification-parameters-are-provided"></a>
-### Scenario: [Skip saving when no clarification parameters are provided](#scenario-skip-saving-when-no-clarification-parameters-are-provided) (happy_path)
+### Scenario: [Skip saving when no clarification parameters are provided](#scenario-skip-saving-when-no-clarification-parameters-are-provided) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_clarify_requirements.py#L121)
 
 **Steps:**
 ```gherkin
@@ -67,7 +67,7 @@ Then clarification.json file is not created
 
 
 <a id="scenario-guardrails-loads-required-context-from-workspace"></a>
-### Scenario: [Guardrails loads required context from workspace](#scenario-guardrails-loads-required-context-from-workspace) (happy_path)
+### Scenario: [Guardrails loads required context from workspace](#scenario-guardrails-loads-required-context-from-workspace) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_clarify_requirements.py#L140)
 
 **Steps:**
 ```gherkin
@@ -78,7 +78,7 @@ Then Questions and evidence are loaded correctly
 
 
 <a id="scenario-guardrails-loads-strategy-assumptions-from-workspace"></a>
-### Scenario: [Guardrails loads strategy assumptions from workspace](#scenario-guardrails-loads-strategy-assumptions-from-workspace) (happy_path)
+### Scenario: [Guardrails loads strategy assumptions from workspace](#scenario-guardrails-loads-strategy-assumptions-from-workspace) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_clarify_requirements.py#L162)
 
 **Steps:**
 ```gherkin

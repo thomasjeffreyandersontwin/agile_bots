@@ -1,6 +1,6 @@
 # 📄 Persist Scope
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L444)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Filter Scope](../..) / [⚙️ Scope Stories](..) / [⚙️ Manage Story Scope](.)  
@@ -20,7 +20,7 @@ Persist Scope functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-scope-persists-across-bot-invocations"></a>
-### Scenario: [Scope persists across bot invocations](#scenario-scope-persists-across-bot-invocations) (happy_path)
+### Scenario: [Scope persists across bot invocations](#scenario-scope-persists-across-bot-invocations) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L446)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Scope is restored from workflow state
 
 
 <a id="scenario-scope-persists-after-action-execution"></a>
-### Scenario: [Scope persists after action execution](#scenario-scope-persists-after-action-execution) (happy_path)
+### Scenario: [Scope persists after action execution](#scenario-scope-persists-after-action-execution) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L456)
 
 **Steps:**
 ```gherkin

@@ -1,6 +1,6 @@
 # 📄 Navigate Sequentially
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L355)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Navigate Behavior Actions](..) / [⚙️ Navigate Behavior And Actions](.)  
@@ -20,7 +20,7 @@ Navigate Sequentially functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-botnext-moves-to-next-action"></a>
-### Scenario: [bot.next() moves to next action](#scenario-botnext-moves-to-next-action) (happy_path)
+### Scenario: [bot.next() moves to next action](#scenario-botnext-moves-to-next-action) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L357)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Bot moves to strategy (next action in workflow)
 
 
 <a id="scenario-botnext-progresses-through-workflow-sequence"></a>
-### Scenario: [bot.next() progresses through workflow sequence](#scenario-botnext-progresses-through-workflow-sequence) (happy_path)
+### Scenario: [bot.next() progresses through workflow sequence](#scenario-botnext-progresses-through-workflow-sequence) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L379)
 
 **Steps:**
 ```gherkin
@@ -42,7 +42,7 @@ Then Bot progresses through clarify -> strategy -> build -> validate -> render
 
 
 <a id="scenario-botnext-at-final-action-advances-to-next-behavior"></a>
-### Scenario: [bot.next() at final action advances to next behavior](#scenario-botnext-at-final-action-advances-to-next-behavior) (happy_path)
+### Scenario: [bot.next() at final action advances to next behavior](#scenario-botnext-at-final-action-advances-to-next-behavior) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L404)
 
 **Steps:**
 ```gherkin
@@ -53,7 +53,7 @@ Then Bot advances to next behavior (discovery) first action (clarify)
 
 
 <a id="scenario-botcurrent-returns-current-action-instructions"></a>
-### Scenario: [bot.current() returns current action instructions](#scenario-botcurrent-returns-current-action-instructions) (happy_path)
+### Scenario: [bot.current() returns current action instructions](#scenario-botcurrent-returns-current-action-instructions) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L431)
 
 **Steps:**
 ```gherkin
@@ -64,7 +64,7 @@ Then Current action instructions object is returned
 
 
 <a id="scenario-botnext-respects-behaviorjson-workflow-sequence"></a>
-### Scenario: [bot.next() respects behavior.json workflow sequence](#scenario-botnext-respects-behaviorjson-workflow-sequence) (happy_path)
+### Scenario: [bot.next() respects behavior.json workflow sequence](#scenario-botnext-respects-behaviorjson-workflow-sequence) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L458)
 
 **Steps:**
 ```gherkin
@@ -75,7 +75,7 @@ Then Bot moves to build (third action), following behavior.json order
 
 
 <a id="scenario-botnext-with-no-behavior-selected-starts-workflow"></a>
-### Scenario: [bot.next() with no behavior selected starts workflow](#scenario-botnext-with-no-behavior-selected-starts-workflow) (happy_path)
+### Scenario: [bot.next() with no behavior selected starts workflow](#scenario-botnext-with-no-behavior-selected-starts-workflow) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L480)
 
 **Steps:**
 ```gherkin
@@ -89,7 +89,7 @@ Then to start at the beginning of the workflow automatically.
 
 
 <a id="scenario-can-navigate-to-a-specific-behavior"></a>
-### Scenario: [Can navigate to a specific behavior](#scenario-can-navigate-to-a-specific-behavior) (happy_path)
+### Scenario: [Can navigate to a specific behavior](#scenario-can-navigate-to-a-specific-behavior) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L505)
 
 **Steps:**
 ```gherkin
@@ -100,7 +100,7 @@ Then Current behavior is set to discovery
 
 
 <a id="scenario-next-behavior-in-sequence-can-be-retrieved"></a>
-### Scenario: [Next behavior in sequence can be retrieved](#scenario-next-behavior-in-sequence-can-be-retrieved) (happy_path)
+### Scenario: [Next behavior in sequence can be retrieved](#scenario-next-behavior-in-sequence-can-be-retrieved) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L516)
 
 **Steps:**
 ```gherkin
@@ -111,7 +111,7 @@ Then Returns next behavior (tests) with complete structure
 
 
 <a id="scenario-getting-next-behavior-returns-none-when-at-last-behavior"></a>
-### Scenario: [Getting next behavior returns None when at last behavior](#scenario-getting-next-behavior-returns-none-when-at-last-behavior) (happy_path)
+### Scenario: [Getting next behavior returns None when at last behavior](#scenario-getting-next-behavior-returns-none-when-at-last-behavior) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L538)
 
 **Steps:**
 ```gherkin
@@ -122,7 +122,7 @@ Then Returns None
 
 
 <a id="scenario-can-navigate-to-a-specific-action"></a>
-### Scenario: [Can navigate to a specific action](#scenario-can-navigate-to-a-specific-action) (happy_path)
+### Scenario: [Can navigate to a specific action](#scenario-can-navigate-to-a-specific-action) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L552)
 
 **Steps:**
 ```gherkin
@@ -133,7 +133,7 @@ Then Current action is set to build
 
 
 <a id="scenario-next-action-in-sequence-can-be-retrieved"></a>
-### Scenario: [Next action in sequence can be retrieved](#scenario-next-action-in-sequence-can-be-retrieved) (happy_path)
+### Scenario: [Next action in sequence can be retrieved](#scenario-next-action-in-sequence-can-be-retrieved) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L564)
 
 **Steps:**
 ```gherkin
@@ -144,7 +144,7 @@ Then Returns strategy action (second action)
 
 
 <a id="scenario-getting-next-action-returns-none-when-at-last-action"></a>
-### Scenario: [Getting next action returns None when at last action](#scenario-getting-next-action-returns-none-when-at-last-action) (happy_path)
+### Scenario: [Getting next action returns None when at last action](#scenario-getting-next-action-returns-none-when-at-last-action) (happy_path)  | [Test](/test/invoke_bot/navigate_behavior_actions/test_navigate_behavior_and_actions.py#L579)
 
 **Steps:**
 ```gherkin

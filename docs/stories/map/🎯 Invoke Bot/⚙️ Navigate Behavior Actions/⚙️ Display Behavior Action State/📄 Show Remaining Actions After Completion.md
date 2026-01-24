@@ -1,6 +1,6 @@
 # 📄 Show Remaining Actions After Completion
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/navigate_behavior_actions/test_display_behavior_action_state.py)
 
 **User:** System
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Navigate Behavior Actions](..) / [⚙️ Display Behavior Action State](.)  

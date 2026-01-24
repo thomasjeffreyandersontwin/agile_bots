@@ -90,6 +90,7 @@ behavior_action_state.json
 
 # Cache
 .cache/
+.story-graph-enriched-cache.json
 
 # Large files
 *.db

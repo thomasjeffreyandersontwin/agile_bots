@@ -1,6 +1,6 @@
 # 📄 Decide Strategy
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/perform_action/test_decide_strategy.py#L29)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Perform Action](..) / [⚙️ Decide Strategy](.)  
@@ -20,7 +20,7 @@ Decide Strategy functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-action-injects-decision-criteria-and-assumptions"></a>
-### Scenario: [Action Injects Decision Criteria And Assumptions](#scenario-action-injects-decision-criteria-and-assumptions) (happy_path)
+### Scenario: [Action Injects Decision Criteria And Assumptions](#scenario-action-injects-decision-criteria-and-assumptions) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_decide_strategy.py#L31)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Instructions contain all required strategy fields
 
 
 <a id="scenario-save-strategy-data-when-parameters-are-provided"></a>
-### Scenario: [Save strategy data when parameters are provided](#scenario-save-strategy-data-when-parameters-are-provided) (happy_path)
+### Scenario: [Save strategy data when parameters are provided](#scenario-save-strategy-data-when-parameters-are-provided) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_decide_strategy.py#L46)
 
 **Steps:**
 ```gherkin
@@ -43,7 +43,7 @@ Then And file contains behavior section with decisions_made and assumptions_made
 
 
 <a id="scenario-preserve-existing-strategy-data-when-saving"></a>
-### Scenario: [Preserve existing strategy data when saving](#scenario-preserve-existing-strategy-data-when-saving) (happy_path)
+### Scenario: [Preserve existing strategy data when saving](#scenario-preserve-existing-strategy-data-when-saving) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_decide_strategy.py#L82)
 
 **Steps:**
 ```gherkin
@@ -56,7 +56,7 @@ Then And existing 'discovery' data is preserved
 
 
 <a id="scenario-skip-saving-when-no-strategy-parameters-are-provided"></a>
-### Scenario: [Skip saving when no strategy parameters are provided](#scenario-skip-saving-when-no-strategy-parameters-are-provided) (happy_path)
+### Scenario: [Skip saving when no strategy parameters are provided](#scenario-skip-saving-when-no-strategy-parameters-are-provided) (happy_path)  | [Test](/test/invoke_bot/perform_action/test_decide_strategy.py#L130)
 
 **Steps:**
 ```gherkin

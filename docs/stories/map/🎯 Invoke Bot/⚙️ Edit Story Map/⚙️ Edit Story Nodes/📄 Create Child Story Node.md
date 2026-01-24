@@ -1,6 +1,6 @@
 # 📄 Create Child Story Node
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L202)
 
 **User:** System
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
@@ -20,7 +20,7 @@ Create Child Story Node functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-create-child-node-at-any-hierarchy-level-with-default-position"></a>
-### Scenario: [Create child node at any hierarchy level with default position](#scenario-create-child-node-at-any-hierarchy-level-with-default-position) (happy_path)
+### Scenario: [Create child node at any hierarchy level with default position](#scenario-create-child-node-at-any-hierarchy-level-with-default-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L214)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Child is added at last position with correct total count
 
 
 <a id="scenario-create-child-node-with-specified-position"></a>
-### Scenario: [Create child node with specified position](#scenario-create-child-node-with-specified-position) (happy_path)
+### Scenario: [Create child node with specified position](#scenario-create-child-node-with-specified-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L244)
 
 **Steps:**
 ```gherkin
@@ -42,7 +42,7 @@ Then Child is inserted at position and existing children shift
 
 
 <a id="scenario-create-child-node-with-invalid-position-adjusts-to-last-position"></a>
-### Scenario: [Create child node with invalid position adjusts to last position](#scenario-create-child-node-with-invalid-position-adjusts-to-last-position) (happy_path)
+### Scenario: [Create child node with invalid position adjusts to last position](#scenario-create-child-node-with-invalid-position-adjusts-to-last-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L274)
 
 **Steps:**
 ```gherkin
@@ -53,7 +53,7 @@ Then System adjusts position to last valid position
 
 
 <a id="scenario-create-child-node-with-duplicate-name-returns-error"></a>
-### Scenario: [Create child node with duplicate name returns error](#scenario-create-child-node-with-duplicate-name-returns-error) (happy_path)
+### Scenario: [Create child node with duplicate name returns error](#scenario-create-child-node-with-duplicate-name-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L304)
 
 **Steps:**
 ```gherkin
@@ -64,7 +64,7 @@ Then System identifies duplicate and returns error
 
 
 <a id="scenario-create-child-node-without-name-generates-unique-name"></a>
-### Scenario: [Create child node without name generates unique name](#scenario-create-child-node-without-name-generates-unique-name) (happy_path)
+### Scenario: [Create child node without name generates unique name](#scenario-create-child-node-without-name-generates-unique-name) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L333)
 
 **Steps:**
 ```gherkin
@@ -75,7 +75,7 @@ Then System generates unique name (Child1, Child2, etc.)
 
 
 <a id="scenario-subepic-creates-story-and-auto-creates-storygroup-on-first-story"></a>
-### Scenario: [SubEpic creates Story and auto-creates StoryGroup on first Story](#scenario-subepic-creates-story-and-auto-creates-storygroup-on-first-story) (happy_path)
+### Scenario: [SubEpic creates Story and auto-creates StoryGroup on first Story](#scenario-subepic-creates-story-and-auto-creates-storygroup-on-first-story) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L362)
 
 **Steps:**
 ```gherkin
@@ -86,7 +86,7 @@ Then StoryGroup is created (if first) or existing StoryGroup is used
 
 
 <a id="scenario-subepic-with-stories-cannot-create-subepic-child"></a>
-### Scenario: [SubEpic with Stories cannot create SubEpic child](#scenario-subepic-with-stories-cannot-create-subepic-child) (happy_path)
+### Scenario: [SubEpic with Stories cannot create SubEpic child](#scenario-subepic-with-stories-cannot-create-subepic-child) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L386)
 
 **Steps:**
 ```gherkin
@@ -97,7 +97,7 @@ Then System identifies hierarchy violation and returns error
 
 
 <a id="scenario-subepic-with-subepics-cannot-create-story-child"></a>
-### Scenario: [SubEpic with SubEpics cannot create Story child](#scenario-subepic-with-subepics-cannot-create-story-child) (happy_path)
+### Scenario: [SubEpic with SubEpics cannot create Story child](#scenario-subepic-with-subepics-cannot-create-story-child) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L408)
 
 **Steps:**
 ```gherkin
@@ -108,7 +108,7 @@ Then System identifies hierarchy violation and returns error
 
 
 <a id="scenario-story-creates-child-and-adds-to-correct-collection"></a>
-### Scenario: [Story creates child and adds to correct collection](#scenario-story-creates-child-and-adds-to-correct-collection) (happy_path)
+### Scenario: [Story creates child and adds to correct collection](#scenario-story-creates-child-and-adds-to-correct-collection) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L431)
 
 **Steps:**
 ```gherkin

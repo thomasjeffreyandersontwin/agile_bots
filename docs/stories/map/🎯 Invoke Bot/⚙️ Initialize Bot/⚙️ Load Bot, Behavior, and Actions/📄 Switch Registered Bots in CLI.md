@@ -1,10 +1,10 @@
 # 📄 Switch Registered Bots in CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L674)
 
 **User:** CLI
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Initialize Bot](..) / [⚙️ Load Bot, Behavior, and Actions](.)  
-**Sequential Order:** 3.0
+**Sequential Order:** 2.0
 **Story Type:** system
 
 ## Story Description
@@ -39,7 +39,7 @@ Switch Registered Bots in CLI functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-display-registered-bots-in-cli-status"></a>
-### Scenario: [Display Registered Bots in CLI STATUS](#scenario-display-registered-bots-in-cli-status) (happy_path)
+### Scenario: [Display Registered Bots in CLI STATUS](#scenario-display-registered-bots-in-cli-status) (happy_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L686)
 
 **Steps:**
 ```gherkin
@@ -48,7 +48,7 @@ Switch Registered Bots in CLI functionality for the mob minion system.
 
 
 <a id="scenario-switch-to-valid-registered-bot"></a>
-### Scenario: [Switch to Valid Registered Bot](#scenario-switch-to-valid-registered-bot) (happy_path)
+### Scenario: [Switch to Valid Registered Bot](#scenario-switch-to-valid-registered-bot) (happy_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L712)
 
 **Steps:**
 ```gherkin
@@ -57,7 +57,7 @@ Switch Registered Bots in CLI functionality for the mob minion system.
 
 
 <a id="scenario-attempt-to-switch-to-unregistered-bot"></a>
-### Scenario: [Attempt to Switch to Unregistered Bot](#scenario-attempt-to-switch-to-unregistered-bot) (error_path)
+### Scenario: [Attempt to Switch to Unregistered Bot](#scenario-attempt-to-switch-to-unregistered-bot) (error_path)  | [Test](/test/invoke_bot/initialize_bot/test_load_bot_behavior_and_actions.py#L748)
 
 **Steps:**
 ```gherkin

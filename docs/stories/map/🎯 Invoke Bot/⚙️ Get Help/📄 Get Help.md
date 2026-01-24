@@ -1,6 +1,6 @@
 # 📄 Get Help
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/get_help/test_get_help_using_cli.py#L31)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Get Help](.)  
@@ -32,7 +32,7 @@ Then Domain focus: Action instructions method availability
 
 
 <a id="scenario-action-provides-parameter-help-via-help-property"></a>
-### Scenario: [Action provides parameter help via .help property](#scenario-action-provides-parameter-help-via-help-property) (happy_path)
+### Scenario: [Action provides parameter help via .help property](#scenario-action-provides-parameter-help-via-help-property) (happy_path)  | [Test](/test/invoke_bot/get_help/test_get_help_using_cli.py#L70)
 
 **Steps:**
 ```gherkin
@@ -44,7 +44,7 @@ Then Domain focus: Parameter help retrieval from Action.help
 
 
 <a id="scenario-action-provides-command-examples"></a>
-### Scenario: [Action provides command examples](#scenario-action-provides-command-examples) (happy_path)
+### Scenario: [Action provides command examples](#scenario-action-provides-command-examples) (happy_path)  | [Test](/test/invoke_bot/get_help/test_get_help_using_cli.py#L125)
 
 **Steps:**
 ```gherkin
