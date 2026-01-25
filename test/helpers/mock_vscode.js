@@ -3,6 +3,9 @@
  */
 
 module.exports = {
+    env: {
+        uriScheme: 'vscode'
+    },
     Uri: {
         file: (path) => ({ fsPath: path, toString: () => path }),
         joinPath: (base, ...paths) => {

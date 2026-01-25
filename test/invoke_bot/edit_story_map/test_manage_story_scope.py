@@ -18,338 +18,6 @@ from scanners.story_map import Epic, SubEpic, StoryGroup, Story, Scenario, Scena
  
 
 # ============================================================================
-# DOMAIN TESTS - Core Scope Logic
-# ============================================================================
-
-class TestNavigateStoryGraph:
-    
-    @staticmethod
-    def _create_mock_bot(bot_directory: Path):
-        """Helper: Create MockBot instance for testing StoryMap.from_bot().
-        
-        Used by: test_from_bot_loads_story_graph, test_from_bot_raises_when_file_not_found
-        """
-        class MockBot:
-            def __init__(self, bot_directory):
-                self.bot_directory = bot_directory
-        
-        return MockBot(bot_directory)
-    
-    def test_story_map_loads_epics(self, tmp_path):
-        """
-        SCENARIO: Story Map Loads Epics
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        # When: Epics are retrieved from story map
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # Then: Epics contain single build knowledge epic
-        helper.story.assert_story_map_matches(epics)
-    
-    def test_epic_has_sub_epics(self, tmp_path):
-        """
-        SCENARIO: Epic Has Sub Epics
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        epic = helper.story.assert_story_map_matches(epics)
-        # When: Epic children are retrieved
-        children = epic.children
-        # Then: Children contain single sub epic
-        assert len(children) == 1
-        assert isinstance(children[0], SubEpic)
-        assert children[0].name == "Load Story Graph"
-    
-    def test_sub_epic_has_story_groups(self, tmp_path):
-        """
-        SCENARIO: Sub Epic Has Story Groups
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        epic = helper.story.assert_story_map_matches(epics)
-        sub_epic = epic.children[0]
-        # When: Sub epic children are retrieved
-        children = sub_epic.children
-        # Then: Children contain single story group
-        assert len(children) == 1
-        assert isinstance(children[0], StoryGroup)
-    
-    def test_story_group_has_stories(self, tmp_path):
-        """
-        SCENARIO: Story Group Has Stories
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        epic = helper.story.assert_story_map_matches(epics)
-        sub_epic = epic.children[0]
-        story_group = sub_epic.children[0]
-        # When: Story group stories are retrieved
-        stories = story_group.children
-        # Then: Stories contain single story
-        assert len(stories) == 1
-        assert isinstance(stories[0], Story)
-        assert stories[0].name == "Load Story Graph Into Memory"
-    
-    def test_story_has_properties(self, tmp_path):
-        """
-        SCENARIO: Story Has Properties
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        # When: Story is retrieved from path
-        story = helper.story.when_item_accessed('story', story_map)
-        # Then: Story has expected properties
-        assert story.name == "Load Story Graph Into Memory"
-        assert story.users == ["Story Bot"]
-        assert story.story_type == "user"
-        assert story.sizing == "5 days"
-        assert story.sequential_order == 1
-        assert story.connector is None
-    
-    def test_story_has_scenarios(self, tmp_path):
-        """
-        SCENARIO: Story Has Scenarios
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        story = helper.story.when_item_accessed('story', story_map)
-        # When: Story scenarios are retrieved
-        scenarios = story.scenarios
-        # Then: Scenarios contain expected scenarios
-        assert len(scenarios) == 2
-        assert isinstance(scenarios[0], Scenario)
-        assert scenarios[0].name == "Story graph file exists"
-        assert scenarios[0].type == "happy_path"
-        assert scenarios[1].name == "Story graph file missing"
-        assert scenarios[1].type == "error_case"
-    
-    def test_scenario_has_properties(self, tmp_path):
-        """
-        SCENARIO: Scenario Has Properties
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        story = helper.story.when_item_accessed('story', story_map)
-        # When: Scenario is retrieved from story
-        scenario = helper.story.when_item_accessed('scenario', story)
-        # Then: Scenario has expected properties
-        assert scenario.name == "Story graph file exists"
-        assert scenario.type == "happy_path"
-        assert len(scenario.background) == 1
-        assert scenario.background[0] == "Given story graph file exists"
-        assert len(scenario.steps) == 2
-        assert scenario.steps[0] == "When story graph is loaded"
-        assert scenario.steps[1] == "Then story map is created with epics"
-    
-    def test_scenario_default_test_method(self, tmp_path):
-        """
-        SCENARIO: Scenario Default Test Method
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        story = helper.story.when_item_accessed('story', story_map)
-        # When: Scenario is retrieved from story
-        scenario = helper.story.when_item_accessed('scenario', story)
-        # Then: Scenario has default test method
-        assert scenario.default_test_method == "test_story_graph_file_exists"
-    
-    def test_story_has_scenario_outlines(self, tmp_path):
-        """
-        SCENARIO: Story Has Scenario Outlines
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        story = helper.story.when_item_accessed('story', story_map)
-        # When: Story scenario outlines are retrieved
-        scenario_outlines = story.scenario_outlines
-        # Then: Scenario outlines contain expected outline
-        assert len(scenario_outlines) == 1
-        assert isinstance(scenario_outlines[0], ScenarioOutline)
-        assert scenario_outlines[0].name == "Load story graph with different formats"
-    
-    def test_scenario_outline_has_examples(self, tmp_path):
-        """
-        SCENARIO: Scenario Outline Has Examples
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        story = helper.story.when_item_accessed('story', story_map)
-        # When: Scenario outline is retrieved from story
-        scenario_outline = helper.story.when_item_accessed('scenario_outline', story)
-        # Then: Scenario outline has expected examples
-        assert len(scenario_outline.examples_columns) == 2
-        assert scenario_outline.examples_columns == ["file_path", "expected_epics"]
-        assert len(scenario_outline.examples_rows) == 2
-        assert scenario_outline.examples_rows[0] == ["story-graph.json", "2"]
-        assert scenario_outline.examples_rows[1] == ["story-graph-v2.json", "3"]
-    
-    def test_story_default_test_class(self, tmp_path):
-        """
-        SCENARIO: Story Default Test Class
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        # When: Story is retrieved from path
-        story = helper.story.when_item_accessed('story', story_map)
-        # Then: Story has default test class
-        assert story.default_test_class == "TestLoadStoryGraphIntoMemory"
-    
-    def test_story_map_walk_traverses_all_nodes(self, tmp_path):
-        """
-        SCENARIO: Story Map Walk Traverses All Nodes
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        epic = helper.story.when_item_accessed('epic', epics)
-        # When: Story map is walked
-        nodes = list(story_map.walk(epic))
-        # Then: Nodes match expected structure
-        assert len(nodes) == 4
-        assert isinstance(nodes[0], Epic)
-        assert nodes[0].name == "Build Knowledge"
-        assert isinstance(nodes[1], SubEpic)
-        assert nodes[1].name == "Load Story Graph"
-        assert isinstance(nodes[2], StoryGroup)
-        assert isinstance(nodes[3], Story)
-        assert nodes[3].name == "Load Story Graph Into Memory"
-    
-    def test_map_location_for_epic(self, tmp_path):
-        """
-        SCENARIO: Map Location For Epic
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # When: First epic is retrieved
-        epic = helper.story.when_item_accessed('epic', epics)
-        # Then: Epic map location is correct
-        helper.story.assert_map_location_matches(epic)
-    
-    def test_map_location_for_sub_epic(self, tmp_path):
-        """
-        SCENARIO: Map Location For Sub Epic
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # When: Sub epic is retrieved from epics
-        sub_epic = helper.story.when_item_accessed('sub_epic', epics)
-        # Then: Sub epic map location is correct
-        helper.story.assert_map_location_matches(sub_epic)
-    
-    def test_map_location_for_story(self, tmp_path):
-        """
-        SCENARIO: Map Location For Story
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # When: Story is retrieved from epics
-        story = helper.story.when_item_accessed('story', epics)
-        # Then: Story map location is correct
-        helper.story.assert_map_location_matches(story)
-    
-    def test_scenario_map_location(self, tmp_path):
-        """
-        SCENARIO: Scenario Map Location
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # When: Scenario is retrieved from epics
-        scenario = helper.story.when_item_accessed('scenario', epics)
-        # Then: Scenario map location is correct
-        helper.story.assert_map_location_matches(scenario)
-    
-    def test_scenario_outline_map_location(self, tmp_path):
-        """
-        SCENARIO: Scenario Outline Map Location
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # When: Scenario outline is retrieved from epics
-        scenario_outline = helper.story.when_item_accessed('scenario_outline', epics)
-        # Then: Scenario outline map location is correct
-        helper.story.assert_map_location_matches(scenario_outline)
-    
-    def test_from_bot_loads_story_graph(self, tmp_path):
-        """
-        SCENARIO: From Bot Loads Story Graph
-        """
-        # Use custom bot directory to avoid modifying production bot
-        helper = BotTestHelper(tmp_path, bot_directory=tmp_path / 'bot')
-        stories_dir = helper.bot_directory / 'docs' / 'stories'
-        stories_dir.mkdir(parents=True, exist_ok=True)
-        story_graph = helper.story.given_story_graph_dict()
-        story_graph_path = helper.files.given_file_created(stories_dir, 'story-graph.json', story_graph)
-        story_map = StoryMap.from_bot(helper.bot_directory)
-        helper.story.assert_story_map_matches(story_map)
-    
-    def test_from_bot_with_path(self, tmp_path):
-        """
-        SCENARIO: From Bot With Path
-        """
-        # Given: Bot directory, docs directory, and story graph file are created
-        # Use custom bot directory to avoid modifying production bot
-        helper = BotTestHelper(tmp_path, bot_directory=tmp_path / 'bot')
-        stories_dir = helper.bot_directory / 'docs' / 'stories'
-        stories_dir.mkdir(parents=True, exist_ok=True)
-        story_graph = helper.story.given_story_graph_dict()
-        story_graph_path = helper.files.given_file_created(stories_dir, 'story-graph.json', story_graph)
-        # When: Story map is created from bot
-        story_map = StoryMap.from_bot(helper.bot_directory)
-        # Then: Story map contains test epic
-        helper.story.assert_story_map_matches(story_map)
-    
-    def test_scenario_map_location_duplicate(self, tmp_path):
-        """
-        SCENARIO: Scenario Map Location
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # When: Scenario is retrieved from epics
-        scenario = helper.story.when_item_accessed('scenario', epics)
-        # Then: Scenario map location is correct
-        helper.story.assert_map_location_matches(scenario)
-    
-    def test_scenario_outline_map_location_duplicate(self, tmp_path):
-        """
-        SCENARIO: Scenario Outline Map Location
-        """
-        # Given: Story map is loaded
-        helper = BotTestHelper(tmp_path)
-        story_map = helper.story.create_story_map()
-        epics = helper.story.when_item_accessed('epics', story_map)
-        # When: Scenario outline is retrieved from epics
-        scenario_outline = helper.story.when_item_accessed('scenario_outline', epics)
-        # Then: Scenario outline map location is correct
-        helper.story.assert_map_location_matches(scenario_outline)
-
-# ============================================================================
 # CLI TESTS - Scope Operations via CLI Commands
 # ============================================================================
 
@@ -385,61 +53,9 @@ class TestNavigateStoryGraphUsingCLI:
         # Then - Validate complete scope response
         helper.scope.assert_scope_shows_target(cli_response.output, 'story', 'TestStory')
 
-
 # ============================================================================
 # DOMAIN TESTS - Scope Creation (merged from test_display_scope.py)
 # ============================================================================
-
-class TestCreateScope:
-    
-    @pytest.mark.parametrize("parameters,expected_scope_contains", [
-        # Scope 'all'
-        ({'scope': {'type': 'all'}}, {'all': True}),
-        # Single story
-        ({'scope': {'type': 'story', 'value': ['Story1']}}, {'story_names': ['Story1']}),
-        # Multiple stories
-        ({'scope': {'type': 'story', 'value': ['Story1', 'Story2']}}, {'story_names': ['Story1', 'Story2']}),
-        # Single increment priority
-        ({'scope': {'type': 'increment', 'value': [1]}}, {'increment_priorities': [1]}),
-        # Multiple increment priorities
-        ({'scope': {'type': 'increment', 'value': [1, 2]}}, {'increment_priorities': [1, 2]}),
-        # Single epic
-        ({'scope': {'type': 'epic', 'value': ['Epic A']}}, {'epic_names': ['Epic A']}),
-        # Multiple epics
-        ({'scope': {'type': 'epic', 'value': ['Epic A', 'Epic B']}}, {'epic_names': ['Epic A', 'Epic B']}),
-        # Increment by name
-        ({'scope': {'type': 'increment', 'value': ['Increment 1']}}, {'increment_names': ['Increment 1']}),
-        # No parameters defaults to 'all'
-        ({}, {'all': True}),
-    ])
-    def test_scope_created_with_different_parameter_combinations(self, tmp_path, parameters, expected_scope_contains):
-        """
-        SCENARIO: Scope created with different parameter combinations
-        GIVEN: Parameters dict with scope configuration
-        WHEN: ActionScope instantiated with parameters
-        THEN: ActionScope scope property returns expected configuration
-        """
-        from scope.action_scope import ActionScope
-        helper = BotTestHelper(tmp_path)
-        action_scope = ActionScope(parameters, None)
-        
-        helper.build.assert_build_scope_matches(action_scope, expected_scope_contains)
-    
-    def test_scope_defaults_to_all_when_no_parameters(self, tmp_path):
-        """
-        SCENARIO: Scope defaults to 'all' when no parameters provided
-        GIVEN: Empty parameters dict
-        WHEN: ActionScope instantiated
-        THEN: Scope defaults to 'all'
-        """
-        from scope.action_scope import ActionScope
-        helper = BotTestHelper(tmp_path)
-        parameters = {}
-        
-        action_scope = ActionScope(parameters, None)
-        
-        helper.build.assert_build_scope_contains(action_scope, 'all', True)
-
 
 class TestPersistScope:
     
@@ -462,7 +78,6 @@ class TestPersistScope:
         """
         # TODO: Implement
         pass
-
 
 class TestClearScope:
     
@@ -495,7 +110,6 @@ class TestClearScope:
         """
         # TODO: Implement
         pass
-
 
 # ============================================================================
 # CLI TESTS - Scope Operations via CLI Commands (merged from test_display_scope.py)
@@ -564,7 +178,6 @@ class TestCreateScopeUsingCLI:
         # Then - Default scope behavior applies
         assert helper.cli_session.bot is not None
 
-
 class TestDisplayScopeUsingCLI:
     """
     Story: Display Scope Using CLI
@@ -593,3 +206,610 @@ class TestDisplayScopeUsingCLI:
         
         # Then - Validate complete scope display response
         helper.scope.assert_scope_shows_target(cli_response.output, 'story', 'TestStory')
+
+class TestCreateScope:
+    
+    @pytest.mark.parametrize("parameters,expected_scope_contains", [
+        # Scope 'all'
+        ({'scope': {'type': 'all'}}, {'all': True}),
+        # Single story
+        ({'scope': {'type': 'story', 'value': ['Story1']}}, {'story_names': ['Story1']}),
+        # Multiple stories
+        ({'scope': {'type': 'story', 'value': ['Story1', 'Story2']}}, {'story_names': ['Story1', 'Story2']}),
+        # Single increment priority
+        ({'scope': {'type': 'increment', 'value': [1]}}, {'increment_priorities': [1]}),
+        # Multiple increment priorities
+        ({'scope': {'type': 'increment', 'value': [1, 2]}}, {'increment_priorities': [1, 2]}),
+        # Single epic
+        ({'scope': {'type': 'epic', 'value': ['Epic A']}}, {'epic_names': ['Epic A']}),
+        # Multiple epics
+        ({'scope': {'type': 'epic', 'value': ['Epic A', 'Epic B']}}, {'epic_names': ['Epic A', 'Epic B']}),
+        # Increment by name
+        ({'scope': {'type': 'increment', 'value': ['Increment 1']}}, {'increment_names': ['Increment 1']}),
+        # No parameters defaults to 'all'
+        ({}, {'all': True}),
+    ])
+    def test_scope_created_with_different_parameter_combinations(self, tmp_path, parameters, expected_scope_contains):
+        """
+        SCENARIO: Scope created with different parameter combinations
+        GIVEN: Parameters dict with scope configuration
+        WHEN: ActionScope instantiated with parameters
+        THEN: ActionScope scope property returns expected configuration
+        """
+        from scope.action_scope import ActionScope
+        helper = BotTestHelper(tmp_path)
+        action_scope = ActionScope(parameters, None)
+        
+        helper.build.assert_build_scope_matches(action_scope, expected_scope_contains)
+    
+    def test_scope_defaults_to_all_when_no_parameters(self, tmp_path):
+        """
+        SCENARIO: Scope defaults to 'all' when no parameters provided
+        GIVEN: Empty parameters dict
+        WHEN: ActionScope instantiated
+        THEN: Scope defaults to 'all'
+        """
+        from scope.action_scope import ActionScope
+        helper = BotTestHelper(tmp_path)
+        parameters = {}
+        
+        action_scope = ActionScope(parameters, None)
+        
+        helper.build.assert_build_scope_contains(action_scope, 'all', True)
+
+# ============================================================================
+# DOMAIN TESTS - Set Scope To Selected Story Node And Submit
+# Story: Set scope to selected story node and submit
+# Sub-Epic: Manage Story Scope
+# ============================================================================
+
+class TestSetScopeAndSubmit:
+    """
+    Story: Set scope to selected story node and submit
+    
+    Tests the scope submission feature that allows users to submit a scoped selection
+    to start work on a specific epic, sub-epic, or story. The bot analyzes the node
+    state and determines the appropriate behavior (shape, explore, scenarios, tests, or code).
+    """
+    
+    def test_user_submits_scope_via_cli(self, tmp_path):
+        """
+        SCENARIO: User submits scope via CLI command
+        GIVEN: User has workspace with story graph
+        WHEN: User executes scope submit command with epic name Edit Story Map
+        THEN: System analyzes the epic and determines behavior
+        AND: System sets bot to build mode with determined behavior
+        """
+        # Given - workspace with story graph
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_story_graph_with_edit_story_map_epic()
+        helper.story.create_story_graph(story_graph)
+        
+        # When - User executes scope submit command
+        result = helper.bot.submit_scope('Edit Story Map')
+        
+        # Then - Verify submission was processed successfully
+        assert result is not None, 'Scope submission should return result'
+        assert result.get('status') == 'success', f"Expected success, got: {result}"
+        assert result.get('behavior') in ['shape', 'explore', 'scenarios', 'tests', 'code']
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name is not None
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_processes_scope_submission_at_domain_level(self, tmp_path):
+        """
+        SCENARIO: Bot processes scope submission at domain level
+        GIVEN: Bot has story graph loaded with Filter Scope epic
+        WHEN: Bot receives scope submission request for Filter Scope
+        THEN: Bot analyzes epic, determines behavior, sets to build mode
+        """
+        # Given - Bot with story graph loaded
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_story_graph_with_filter_scope_epic()
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot receives scope submission request
+        result = helper.bot.process_scope_submission('Filter Scope')
+        
+        # Then - Bot processes submission successfully
+        assert result.status == 'success'
+        assert result.behavior is not None
+        assert result.action == 'build'
+        assert helper.bot.current_behavior_name is not None
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_determines_shape_for_empty_epic(self, tmp_path):
+        """
+        SCENARIO: Bot determines shape behavior for empty epic
+        GIVEN: Epic named Product Management has no sub-epics and no stories
+        WHEN: Bot analyzes the epic after scope submission
+        THEN: Bot determines behavior should be shape
+        """
+        # Given - Empty epic
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_empty_epic('Product Management')
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot analyzes epic after submission
+        result = helper.bot.submit_scope('Product Management')
+        
+        # Then - Bot determines shape behavior
+        assert result.get('status') == 'success', f"Expected success, got error: {result.get('message', result)}"
+        assert result.get('behavior') == 'shape'
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name == 'shape'
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_determines_shape_for_empty_sub_epic(self, tmp_path):
+        """
+        SCENARIO: Bot determines shape behavior for empty sub-epic
+        GIVEN: Sub-epic named User Management has no stories and no nested sub-epics
+        WHEN: Bot analyzes the sub-epic after scope submission
+        THEN: Bot determines behavior should be shape
+        """
+        # Given - Empty sub-epic
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_empty_sub_epic('User Management')
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot analyzes sub-epic after submission
+        result = helper.bot.submit_scope('User Management')
+        
+        # Then - Bot determines shape behavior
+        assert result.get('status') == 'success'
+        assert result.get('behavior') == 'shape'
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name == 'shape'
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_determines_explore_for_stories_without_ac(self, tmp_path):
+        """
+        SCENARIO: Bot determines explore behavior when stories lack acceptance criteria
+        GIVEN: Epic named Reporting contains three stories with empty acceptance criteria
+        WHEN: Bot analyzes the epic after scope submission
+        THEN: Bot determines behavior should be explore
+        """
+        # Given - Epic with stories lacking acceptance criteria
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_epic_with_stories_without_acceptance_criteria('Reporting', 3)
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot analyzes epic after submission
+        result = helper.bot.submit_scope('Reporting')
+        
+        # Then - Bot determines exploration behavior
+        assert result.get('status') == 'success'
+        assert result.get('behavior') == 'exploration'
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name == 'exploration'
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_determines_scenarios_for_stories_without_scenarios(self, tmp_path):
+        """
+        SCENARIO: Bot determines scenarios behavior when stories lack scenarios
+        GIVEN: Epic named Authentication contains two stories with acceptance criteria but empty scenarios
+        WHEN: Bot analyzes the epic after scope submission
+        THEN: Bot determines behavior should be scenarios
+        """
+        # Given - Epic with stories lacking scenarios
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_epic_with_stories_without_scenarios('Authentication', 2)
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot analyzes epic after submission
+        result = helper.bot.submit_scope('Authentication')
+        
+        # Then - Bot determines scenarios behavior
+        assert result.get('status') == 'success'
+        assert result.get('behavior') == 'scenarios'
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name == 'scenarios'
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_determines_tests_for_stories_without_tests(self, tmp_path):
+        """
+        SCENARIO: Bot determines tests behavior when stories lack tests
+        GIVEN: Epic named Data Export contains two stories with scenarios but empty test methods
+        WHEN: Bot analyzes the epic after scope submission
+        THEN: Bot determines behavior should be tests
+        """
+        # Given - Epic with stories lacking tests
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_epic_with_stories_without_tests('Data Export', 2)
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot analyzes epic after submission
+        result = helper.bot.submit_scope('Data Export')
+        
+        # Then - Bot determines tests behavior
+        assert result.get('status') == 'success'
+        assert result.get('behavior') == 'tests'
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name == 'tests'
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_determines_code_for_failing_tests(self, tmp_path):
+        """
+        SCENARIO: Bot determines code behavior when tests exist but fail
+        GIVEN: Epic named File Upload contains one story with failing tests
+        WHEN: Bot analyzes the epic after scope submission
+        THEN: Bot determines behavior should be code
+        """
+        # Given - Epic with failing tests
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_epic_with_failing_tests('File Upload', 1)
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot analyzes epic after submission
+        result = helper.bot.submit_scope('File Upload')
+        
+        # Then - Bot determines code behavior
+        assert result.get('status') == 'success'
+        assert result.get('behavior') == 'code'
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name == 'code'
+        assert helper.bot.current_action_name == 'build'
+    
+    def test_bot_determines_code_for_unimplemented_code(self, tmp_path):
+        """
+        SCENARIO: Bot determines code behavior when tests pass but code not implemented
+        GIVEN: Epic named Search Feature contains one story with passing tests but no production code
+        WHEN: Bot analyzes the epic after scope submission
+        THEN: Bot determines behavior should be code
+        """
+        # Given - Epic with passing tests but no production code
+        helper = BotTestHelper(tmp_path)
+        story_graph = given_epic_with_passing_tests_but_no_code('Search Feature', 1)
+        helper.story.create_story_graph(story_graph)
+        
+        # When - Bot analyzes epic after submission
+        result = helper.bot.submit_scope('Search Feature')
+        
+        # Then - Bot determines code behavior
+        assert result.get('status') == 'success'
+        assert result.get('behavior') == 'code'
+        assert result.get('action') == 'build'
+        assert helper.bot.current_behavior_name == 'code'
+        assert helper.bot.current_action_name == 'build'
+
+
+# ============================================================================
+# GIVEN Helper Functions - Story Graph Creation
+# ============================================================================
+
+def given_story_graph_with_edit_story_map_epic():
+    """Create story graph with Edit Story Map epic."""
+    return {
+        'epics': [
+            {
+                'name': 'Invoke Bot',
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': 'Edit Story Map',
+                        'sequential_order': 1,
+                        'sub_epics': [],
+                        'story_groups': [
+                            {
+                                'type': 'and',
+                                'connector': None,
+                                'stories': [
+                                    {
+                                        'name': 'Create Epic',
+                                        'sequential_order': 1,
+                                        'acceptance_criteria': ['User can create epic'],
+                                        'scenarios': []
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_story_graph_with_filter_scope_epic():
+    """Create story graph with Filter Scope epic."""
+    return {
+        'epics': [
+            {
+                'name': 'Invoke Bot',
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': 'Edit Story Map',
+                        'sequential_order': 1,
+                        'sub_epics': [
+                            {
+                                'name': 'Filter Scope',
+                                'sequential_order': 1,
+                                'sub_epics': [],
+                                'story_groups': [
+                                    {
+                                        'type': 'and',
+                                        'connector': None,
+                                        'stories': [
+                                            {
+                                                'name': 'Set Scope',
+                                                'sequential_order': 1,
+                                                'acceptance_criteria': ['User can set scope'],
+                                                'scenarios': [{'name': 'User sets scope', 'steps': 'Given...'}]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ],
+                        'story_groups': []
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_empty_epic(epic_name):
+    """Create story graph with empty epic."""
+    return {
+        'epics': [
+            {
+                'name': epic_name,
+                'sequential_order': 1,
+                'sub_epics': [],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_empty_sub_epic(sub_epic_name):
+    """Create story graph with empty sub-epic."""
+    return {
+        'epics': [
+            {
+                'name': 'Parent Epic',
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': sub_epic_name,
+                        'sequential_order': 1,
+                        'sub_epics': [],
+                        'story_groups': []
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_epic_with_stories_without_acceptance_criteria(epic_name, story_count):
+    """Create epic with stories lacking acceptance criteria."""
+    stories = [
+        {
+            'name': f'Story {i+1}',
+            'sequential_order': i+1,
+            'connector': None,
+            'story_type': 'user',
+            'acceptance_criteria': [],
+            'scenarios': [],
+            'scenario_outlines': [],
+            'test_class': None
+        }
+        for i in range(story_count)
+    ]
+    
+    return {
+        'epics': [
+            {
+                'name': epic_name,
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': f'{epic_name} Sub-Epic',
+                        'sequential_order': 1,
+                        'sub_epics': [],
+                        'story_groups': [
+                            {
+                                'type': 'and',
+                                'connector': None,
+                                'stories': stories
+                            }
+                        ]
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_epic_with_stories_without_scenarios(epic_name, story_count):
+    """Create epic with stories lacking scenarios."""
+    stories = [
+        {
+            'name': f'Story {i+1}',
+            'sequential_order': i+1,
+            'connector': None,
+            'story_type': 'user',
+            'acceptance_criteria': ['User can perform action'],
+            'scenarios': [],
+            'scenario_outlines': [],
+            'test_class': None
+        }
+        for i in range(story_count)
+    ]
+    
+    return {
+        'epics': [
+            {
+                'name': epic_name,
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': f'{epic_name} Sub-Epic',
+                        'sequential_order': 1,
+                        'sub_epics': [],
+                        'story_groups': [
+                            {
+                                'type': 'and',
+                                'connector': None,
+                                'stories': stories
+                            }
+                        ]
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_epic_with_stories_without_tests(epic_name, story_count):
+    """Create epic with stories lacking tests."""
+    stories = [
+        {
+            'name': f'Story {i+1}',
+            'sequential_order': i+1,
+            'connector': None,
+            'story_type': 'user',
+            'acceptance_criteria': ['User can perform action'],
+            'scenarios': [
+                {
+                    'name': 'Scenario 1',
+                    'sequential_order': 1,
+                    'type': 'happy_path',
+                    'background': [],
+                    'steps': 'Given...\nWhen...\nThen...',
+                    'test_method': None
+                }
+            ],
+            'scenario_outlines': [],
+            'test_class': None
+        }
+        for i in range(story_count)
+    ]
+    
+    return {
+        'epics': [
+            {
+                'name': epic_name,
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': f'{epic_name} Sub-Epic',
+                        'sequential_order': 1,
+                        'sub_epics': [],
+                        'story_groups': [
+                            {
+                                'type': 'and',
+                                'connector': None,
+                                'stories': stories
+                            }
+                        ]
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_epic_with_failing_tests(epic_name, story_count):
+    """Create epic with stories that have failing tests."""
+    stories = [
+        {
+            'name': f'Story {i+1}',
+            'sequential_order': i+1,
+            'connector': None,
+            'story_type': 'user',
+            'acceptance_criteria': ['User can perform action'],
+            'scenarios': [
+                {
+                    'name': 'Scenario 1',
+                    'sequential_order': 1,
+                    'type': 'happy_path',
+                    'background': [],
+                    'steps': 'Given...\nWhen...\nThen...',
+                    'test_method': f'test_story_{i+1}_scenario_1'
+                }
+            ],
+            'scenario_outlines': [],
+            'test_class': f'TestStory{i+1}',
+            'test_status': 'failing'
+        }
+        for i in range(story_count)
+    ]
+    
+    return {
+        'epics': [
+            {
+                'name': epic_name,
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': f'{epic_name} Sub-Epic',
+                        'sequential_order': 1,
+                        'sub_epics': [],
+                        'story_groups': [
+                            {
+                                'type': 'and',
+                                'connector': None,
+                                'stories': stories
+                            }
+                        ]
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+
+def given_epic_with_passing_tests_but_no_code(epic_name, story_count):
+    """Create epic with stories that have passing tests but no production code."""
+    stories = [
+        {
+            'name': f'Story {i+1}',
+            'sequential_order': i+1,
+            'connector': None,
+            'story_type': 'user',
+            'acceptance_criteria': ['User can perform action'],
+            'scenarios': [
+                {
+                    'name': 'Scenario 1',
+                    'sequential_order': 1,
+                    'type': 'happy_path',
+                    'background': [],
+                    'steps': 'Given...\nWhen...\nThen...',
+                    'test_method': f'test_story_{i+1}_scenario_1'
+                }
+            ],
+            'scenario_outlines': [],
+            'test_class': f'TestStory{i+1}',
+            'test_status': 'passing',
+            'code_implemented': False
+        }
+        for i in range(story_count)
+    ]
+    
+    return {
+        'epics': [
+            {
+                'name': epic_name,
+                'sequential_order': 1,
+                'sub_epics': [
+                    {
+                        'name': f'{epic_name} Sub-Epic',
+                        'sequential_order': 1,
+                        'sub_epics': [],
+                        'story_groups': [
+                            {
+                                'type': 'and',
+                                'connector': None,
+                                'stories': stories
+                            }
+                        ]
+                    }
+                ],
+                'story_groups': []
+            }
+        ]
+    }
+

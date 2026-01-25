@@ -1,10 +1,10 @@
 # 📄 Create Scope
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L393)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L210)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Filter Scope](../..) / [⚙️ Scope Stories](..) / [⚙️ Manage Story Scope](.)  
-**Sequential Order:** 8.0
+**Sequential Order:** 0.0
 **Story Type:** user
 
 ## Story Description
@@ -20,7 +20,7 @@ Create Scope functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-scope-created-with-different-parameter-combinations"></a>
-### Scenario: [Scope created with different parameter combinations](#scenario-scope-created-with-different-parameter-combinations) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L415)
+### Scenario: [Scope created with different parameter combinations](#scenario-scope-created-with-different-parameter-combinations) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L232)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ THEN: ActionScope scope property returns expected configuration
 
 
 <a id="scenario-scope-defaults-to-all-when-no-parameters-provided"></a>
-### Scenario: [Scope defaults to 'all' when no parameters provided](#scenario-scope-defaults-to-all-when-no-parameters-provided) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L428)
+### Scenario: [Scope defaults to 'all' when no parameters provided](#scenario-scope-defaults-to-all-when-no-parameters-provided) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L245)
 
 **Steps:**
 ```gherkin

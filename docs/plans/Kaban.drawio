@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="story-map" name="Story Map">
-        <mxGraphModel dx="5449" dy="619" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4000" pageHeight="3000" background="#ffffff" math="0" shadow="0">
+        <mxGraphModel dx="5026" dy="685" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4000" pageHeight="3000" background="#ffffff" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -255,10 +255,10 @@
                     <mxGeometry x="-1552" y="1104.1599999999999" width="20" height="20" as="geometry"/>
                 </mxCell>
                 <mxCell id="217" value="Slash Commands for VSCode" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-1999.9999999999993" y="770.7199999999997" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2014.9999999999993" y="1192.2799999999997" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="221" value="Addy" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
-                    <mxGeometry x="-1964.9999999999998" y="759.4699999999999" width="20" height="20" as="geometry"/>
+                    <mxGeometry x="-1979.9999999999998" y="1185.28" width="20" height="20" as="geometry"/>
                 </mxCell>
                 <mxCell id="223" value="Fine&amp;nbsp; Tuning" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-3204.14" y="1289.35" width="50" height="50" as="geometry"/>
@@ -357,34 +357,34 @@
                     <mxGeometry x="-1900" y="690" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="309" value="LangGraph Based Bot Flow" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
-                    <mxGeometry x="-2252.49" y="1168.28" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2249.4199999999996" y="1560" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="311" value="STDIO Interactive CLI&lt;br&gt;&lt;br&gt;32 stories" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
                     <mxGeometry x="-1590.5" y="763.2500000000001" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="313" value="CLI Multi Bot&lt;br&gt;&lt;i&gt;5 stories&lt;/i&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
-                    <mxGeometry x="-2254.9899999999993" y="1041.4999999999995" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2251.919999999999" y="1433.2199999999996" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="318" value="&lt;div&gt;Increment 1: All with Instructions&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2258.63" y="951.4799999999998" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2255.56" y="1343.1999999999998" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="319" value="Select Scope Type&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2460" y="139.99999999999966" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2581.25" y="139.99999999999966" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="320" value="&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;span style=&quot;border-color: rgb(218, 220, 224); background-color: initial;&quot;&gt;Increment 3: Multi-Phase with Submit/Confirm&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2258.63" y="951.4799999999998" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2255.56" y="1343.1999999999998" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="321" value="Increment 4: Order Enforcement with Signatures&amp;nbsp;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2255" y="951.8499999999999" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2251.93" y="1343.57" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="322" value="Real TIme and Accurate Story Sync" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
-                    <mxGeometry x="-2254.9999999999995" y="882.5000000000001" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2251.9299999999994" y="1274.2200000000003" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="323" value="&lt;div&gt;CRC Walkthrough&amp;nbsp;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-1585" y="1161.91" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="324" value="&lt;div&gt;Headless Mode&lt;br&gt;&lt;i&gt;10 Stories&lt;/i&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
-                    <mxGeometry x="-2254.99" y="1103.25" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2251.9199999999996" y="1494.97" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="326" value="&lt;div&gt;Scenarios synchronizer not working&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
                     <mxGeometry x="-1587.88" y="901.4800000000001" width="50" height="50" as="geometry"/>
@@ -426,13 +426,13 @@
                     <mxGeometry x="-1591.9999999999995" y="1041.5" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="342" value="Increment 4: Order Enforcement with Signatures&amp;nbsp;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2255" y="951.8499999999999" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2251.93" y="1343.57" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="345" value="Open md in preview mode by default&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2130" y="777.4999999999997" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2243.06" y="919.2199999999997" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="349" value="CLI Bot Chaining&lt;br&gt;16 Stories" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
-                    <mxGeometry x="-2258.6299999999997" y="951.9999999999998" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2255.5599999999995" y="1343.7199999999998" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="354" value="ViewPanel Refactor" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
                     <mxGeometry x="-1587.8799999999997" y="1289.3499999999995" width="50" height="50" as="geometry"/>
@@ -447,7 +447,7 @@
                     <mxGeometry x="-2527.5" y="219.99999999999977" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="364" value="View Associated Code&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2400" y="140" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2243.06" y="1035.94" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="365" value="ViewPanel Fixes" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=8;fontColor=#080808;" parent="1" vertex="1">
                     <mxGeometry x="-2243.0599999999995" y="783.53" width="50" height="50" as="geometry"/>
@@ -492,13 +492,13 @@
                     <mxGeometry x="-2631.25" y="389.9999999999999" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="388" value="Story Node Submit&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2581.25" y="139.9999999999999" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-2000" y="762.5" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="389" value="wkspace&amp;nbsp;&lt;br&gt;&amp;nbsp;src and test defauls&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-2520" y="299.9999999999999" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="391" value="Changing story map changes test structure automatically&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
-                    <mxGeometry x="-2521.25" y="139.99999999999977" width="50" height="50" as="geometry"/>
+                    <mxGeometry x="-1750" y="763.2499999999998" width="50" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="392" value="Multiple Actions And submit&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-2460" y="299.9999999999999" width="50" height="50" as="geometry"/>
@@ -506,8 +506,26 @@
                 <mxCell id="394" value="tests are always created in the wrong folders. Last file&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-2955" y="429.9999999999999" width="50" height="50" as="geometry"/>
                 </mxCell>
-                <mxCell id="395" value="Show&amp;nbsp; stories sub epics etc base on tests&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" vertex="1" parent="1">
+                <mxCell id="395" value="Show&amp;nbsp; stories sub epics etc base on tests&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
                     <mxGeometry x="-2640" y="139.9999999999999" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="396" value="line up nodes w/no children&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="-2243.06" y="978.3099999999998" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="398" value="Merge&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="-2700" y="139.9999999999999" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="399" value="Set Scope to current node&lt;span style=&quot;color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px; text-align: start;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20value%3D%22Merge%26lt%3Bdiv%20style%3D%26quot%3Bborder-color%3A%20rgb(218%2C%20220%2C%20224)%3B%26quot%3B%26gt%3B%26lt%3B%2Fdiv%26gt%3B%26lt%3Bdiv%26gt%3B%26lt%3B%2Fdiv%26gt%3B%26lt%3Bdiv%26gt%3B%26lt%3B%2Fdiv%26gt%3B%22%20style%3D%22whiteSpace%3Dwrap%3Bhtml%3D1%3Baspect%3Dfixed%3BfillColor%3D%23fff2cc%3BstrokeColor%3D%23d6b656%3BfontColor%3D%23080808%3BfontSize%3D8%3B%22%20vertex%3D%221%22%20parent%3D%221%22%3E%3CmxGeometry%20x%3D%22-2700%22%20y%3D%22139.9999999999999%22%20width%3D%2250%22%20height%3D%2250%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="-1865" y="757.4999999999998" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="400" value="Run tests&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="-2193.06" y="1111.91" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="401" value="Group Stories&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="-2750" y="139.9999999999999" width="50" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="402" value="Validate&lt;div style=&quot;border-color: rgb(218, 220, 224);&quot;&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;fillColor=#fff2cc;strokeColor=#d6b656;fontColor=#080808;fontSize=8;" parent="1" vertex="1">
+                    <mxGeometry x="-2243.06" y="1111.9099999999999" width="50" height="50" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

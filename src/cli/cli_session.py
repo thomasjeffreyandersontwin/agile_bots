@@ -43,6 +43,7 @@ class CLISession:
         handlers = {
             'save': self._handle_save,
             'submit': self._handle_submit,
+            'analyze_node': self._handle_analyze_node,
         }
         if verb.startswith('submitrules:') or verb.startswith('submitrules '):
             return self._handle_submitrules
@@ -69,6 +70,35 @@ class CLISession:
         behavior_name = behavior_name.strip()
         result = self.bot.submit_behavior_rules(behavior_name)
         return self._format_submit_response(result, f"{behavior_name} rules submitted to chat!")
+    
+    def _handle_analyze_node(self, verb: str, args: str) -> CLICommandResponse:
+        # Parse node name and type from args
+        # Expected format: analyze_node "Node Name" type:epic|subepic|story
+        import re
+        node_name_match = re.search(r'"([^"]+)"', args)
+        type_match = re.search(r'type:(\w+)', args)
+        
+        if not node_name_match:
+            return CLICommandResponse(
+                output='{"status": "error", "message": "Node name required"}',
+                status='error',
+                cli_terminated=False
+            )
+        
+        node_name = node_name_match.group(1)
+        node_type = type_match.group(1) if type_match else 'epic'
+        
+        result = self.bot.analyze_node_and_determine_behavior(node_name, node_type)
+        
+        # Convert ScopeSubmission to dict
+        result_dict = result.to_dict() if hasattr(result, 'to_dict') else result
+        
+        import json
+        return CLICommandResponse(
+            output=json.dumps(result_dict, indent=2),
+            status=result_dict.get('status', 'success'),
+            cli_terminated=False
+        )
     
     def _format_submit_response(self, result: dict, success_message: str) -> CLICommandResponse:
         if self.mode == 'json':

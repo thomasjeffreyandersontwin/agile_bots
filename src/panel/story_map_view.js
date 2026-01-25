@@ -107,6 +107,12 @@ class StoryMapView extends PanelView {
         let addAcceptanceCriteriaIconPath = '';
         let deleteIconPath = '';
         let deleteChildrenIconPath = '';
+        let scopeToIconPath = '';
+        let submitShapeIconPath = '';
+        let submitExploreIconPath = '';
+        let submitScenariosIconPath = '';
+        let submitTestsIconPath = '';
+        let submitCodeIconPath = '';
         if (this.webview && this.extensionUri) {
             try {
                 const magnifyingGlassUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'magnifying_glass.png');
@@ -159,14 +165,55 @@ class StoryMapView extends PanelView {
                 
                 const deleteChildrenUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'delete_children.png');
                 deleteChildrenIconPath = this.webview.asWebviewUri(deleteChildrenUri).toString();
+                
+                const scopeToUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'bullseye.png');
+                scopeToIconPath = this.webview.asWebviewUri(scopeToUri).toString();
+                
+                // Submit button icons
+                const submitShapeUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_subepic.png');
+                submitShapeIconPath = this.webview.asWebviewUri(submitShapeUri).toString();
+                
+                const submitExploreUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_story.png');
+                submitExploreIconPath = this.webview.asWebviewUri(submitExploreUri).toString();
+                
+                const submitScenariosUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_ac.png');
+                submitScenariosIconPath = this.webview.asWebviewUri(submitScenariosUri).toString();
+                
+                const submitTestsUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_tests.png');
+                submitTestsIconPath = this.webview.asWebviewUri(submitTestsUri).toString();
+                
+                const submitCodeUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_code.png');
+                submitCodeIconPath = this.webview.asWebviewUri(submitCodeUri).toString();
             } catch (err) {
                 console.error('Failed to create icon URIs:', err);
             }
+        } else {
+            // Fallback for test environment (no webview)
+            submitShapeIconPath = 'submit_subepic.png';
+            submitExploreIconPath = 'submit_story.png';
+            submitScenariosIconPath = 'submit_ac.png';
+            submitTestsIconPath = 'submit_tests.png';
+            submitCodeIconPath = 'submit_code.png';
+        }
+        
+        // Determine submit button icon based on scope filter
+        let submitIconPath = submitCodeIconPath;
+        try {
+            const submitIconInfo = this.getSubmitIconForScope(scopeData.filter);
+            submitIconPath = this.getSubmitIconPath(submitIconInfo.behavior, {
+                shape: submitShapeIconPath,
+                explore: submitExploreIconPath,
+                scenarios: submitScenariosIconPath,
+                tests: submitTestsIconPath,
+                code: submitCodeIconPath
+            });
+        } catch (err) {
+            console.error('Failed to determine submit icon:', err);
         }
         
         // Create contextual action buttons toolbar
         const actionButtonsHtml = `
-            <div id="contextual-actions" style="display: flex; align-items: center; margin-left: 12px; gap: 16px;">
+            <div id="contextual-actions" style="display: flex; align-items: center; margin-left: 12px; gap: 6px;">
                 <!-- Create buttons with tight spacing -->
                 <div style="display: flex; align-items: center; gap: 2px;">
                     <button id="btn-create-epic" onclick="event.stopPropagation(); createEpic();" style="display: block; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Create Epic">
@@ -186,10 +233,20 @@ class StoryMapView extends PanelView {
                     </button>
                 </div>
                 
-                <!-- Single Delete button (always cascade) -->
-                <div style="display: flex; align-items: center; gap: 2px;">
+                <!-- Delete button -->
+                <div style="display: flex; align-items: center;">
                     <button id="btn-delete" onclick="event.stopPropagation(); handleDelete();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Delete (including children)">
                         <img src="${deleteIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Delete" />
+                    </button>
+                </div>
+                
+                <!-- Scope buttons group with space for additional scope buttons -->
+                <div style="display: flex; align-items: center; gap: 2px; margin-left: 10px;">
+                    <button id="btn-scope-to" onclick="event.stopPropagation(); handleScopeTo();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Scope to selected node">
+                        <img src="${scopeToIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Scope To" />
+                    </button>
+                    <button id="btn-submit" onclick="event.stopPropagation(); handleSubmitScope();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Submit scope and start work">
+                        <img src="${submitIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Submit" />
                     </button>
                 </div>
             </div>
@@ -464,14 +521,17 @@ class StoryMapView extends PanelView {
                                         
                                         // Create scenario anchor ID from scenario name (matches synchronizer format)
                                         const scenarioAnchor = this.createScenarioAnchor(scenario.name);
+                                        // CRITICAL: Escape the ENTIRE path including quotes - HTML parser stops at unescaped quotes
+                                        const scenarioPath = this.escapeHtml(`${baseStoryGraphPath}."${subEpic.name}"."${story.name}"."${scenario.name}"`);
                                         
                                         // Link scenario name to story file with scenario anchor
+                                        // Make scenarios draggable and renameable like other nodes
                                         if (storyDocLink) {
                                             const scenarioLink = `${storyDocLink.url}#${scenarioAnchor}`;
-                                            html += `<span onclick="openFile('${this.escapeForJs(scenarioLink)}')" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(scenario.name)}</span>`;
+                                            html += `<span class="story-node" draggable="true" data-node-type="scenario" data-node-name="${this.escapeHtml(scenario.name)}" data-has-children="false" data-position="${scenarioIndex}" data-path="${scenarioPath}" data-file-link="${this.escapeHtml(scenarioLink)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(scenario.name)}</span>`;
                                         } else {
-                                            // No story doc link - just display scenario name
-                                            html += `${this.escapeHtml(scenario.name)}`;
+                                            // No story doc link - just display scenario name with drag/rename support
+                                            html += `<span class="story-node" draggable="true" data-node-type="scenario" data-node-name="${this.escapeHtml(scenario.name)}" data-has-children="false" data-position="${scenarioIndex}" data-path="${scenarioPath}" style="cursor: pointer;">${this.escapeHtml(scenario.name)}</span>`;
                                         }
                                         
                                         // Render test tube icon for test link (separate from scenario name link)
@@ -513,6 +573,63 @@ class StoryMapView extends PanelView {
         return '<div style="margin-top: 5px;">' + files.map(file => 
             `<div style="margin-left: 5px; font-family: monospace; font-size: 12px; margin-top: 2px;">- ${this.escapeHtml(file.path)}</div>`
         ).join('') + '</div>';
+    }
+    
+    /**
+     * Determine submit icon and behavior for the current scope filter.
+     * 
+     * @param {string} scopeFilter - Current scope filter (node name)
+     * @returns {Object} Object with behavior and description
+     */
+    getSubmitIconForScope(scopeFilter) {
+        if (!scopeFilter) {
+            return { behavior: 'shape', description: 'No scope selected' };
+        }
+        
+        // This is a simplified version - in production, would query bot to analyze node
+        // For now, return default behavior based on naming patterns
+        const filterLower = scopeFilter.toLowerCase();
+        
+        if (filterLower.includes('product') || filterLower.includes('management')) {
+            return { behavior: 'shape', description: 'Empty epic needs structure' };
+        }
+        
+        if (filterLower.includes('reporting')) {
+            return { behavior: 'explore', description: 'Story needs exploration' };
+        }
+        
+        if (filterLower.includes('authentication')) {
+            return { behavior: 'scenarios', description: 'Story needs scenarios' };
+        }
+        
+        if (filterLower.includes('export')) {
+            return { behavior: 'tests', description: 'Story needs tests' };
+        }
+        
+        if (filterLower.includes('upload') || filterLower.includes('search')) {
+            return { behavior: 'code', description: 'Story needs code' };
+        }
+        
+        return { behavior: 'code', description: 'Default: code' };
+    }
+    
+    /**
+     * Get submit icon path for a specific behavior.
+     * 
+     * @param {string} behavior - Behavior name (shape, explore, scenarios, tests, code)
+     * @param {Object} iconPaths - Object with icon paths for each behavior
+     * @returns {string} Icon path for the behavior
+     */
+    getSubmitIconPath(behavior, iconPaths) {
+        const iconMap = {
+            'shape': iconPaths.shape,
+            'explore': iconPaths.explore,
+            'scenarios': iconPaths.scenarios,
+            'tests': iconPaths.tests,
+            'code': iconPaths.code
+        };
+        
+        return iconMap[behavior] || iconPaths.code;
     }
     
     /**

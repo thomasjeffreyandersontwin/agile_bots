@@ -45,11 +45,14 @@ class JSONScope(JSONAdapter):
             story_graph = self.scope._get_story_graph_results()
             if story_graph:
                 # Check if we can use disk-cached enriched content
+                # Only use cache when there's no active filter (showAll or story with no filter values)
+                has_active_filter = self.scope.type.value == 'story' and self.scope.value
+                
                 story_graph_path = self.scope.workspace_directory / 'docs' / 'stories' / 'story-graph.json'
                 cache_path = self.scope.workspace_directory / 'docs' / 'stories' / '.story-graph-enriched-cache.json'
                 
                 content = None
-                if story_graph_path.exists() and cache_path.exists():
+                if not has_active_filter and story_graph_path.exists() and cache_path.exists():
                     # Check if cache is still valid (cache mtime > source mtime)
                     source_mtime = story_graph_path.stat().st_mtime
                     cache_mtime = cache_path.stat().st_mtime
@@ -74,12 +77,13 @@ class JSONScope(JSONAdapter):
                         enrich_scenarios = True
                         self._enrich_with_links(content['epics'], story_graph, enrich_scenarios)
                         
-                        # Write to disk cache
-                        try:
-                            with open(cache_path, 'w', encoding='utf-8') as f:
-                                json.dump(content, f, indent=2, ensure_ascii=False)
-                        except Exception:
-                            pass  # If cache write fails, just continue without it
+                        # Write to disk cache only when there's no active filter
+                        if not has_active_filter:
+                            try:
+                                with open(cache_path, 'w', encoding='utf-8') as f:
+                                    json.dump(content, f, indent=2, ensure_ascii=False)
+                            except Exception:
+                                pass  # If cache write fails, just continue without it
                     else:
                         content = {'epics': []}
                 

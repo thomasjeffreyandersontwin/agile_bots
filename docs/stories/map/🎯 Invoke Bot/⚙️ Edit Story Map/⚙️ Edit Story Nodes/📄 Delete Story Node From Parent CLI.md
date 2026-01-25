@@ -1,10 +1,10 @@
 # 📄 Delete Story Node From Parent CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1309)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1722)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
-**Sequential Order:** 6.0
+**Sequential Order:** 9.0
 **Story Type:** user
 
 ## Story Description
@@ -41,7 +41,7 @@ Given Story Graph is initialized
 ## Scenarios
 
 <a id="scenario-user-deletes-node-without-children-using-dot-notation"></a>
-### Scenario: [User deletes node without children using dot notation](#scenario-user-deletes-node-without-children-using-dot-notation) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L456)
+### Scenario: [User deletes node without children using dot notation](#scenario-user-deletes-node-without-children-using-dot-notation) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L788)
 
 **Steps:**
 ```gherkin
@@ -77,7 +77,7 @@ And Epic "Invoke Bot" shows children including "Story A" and "Story B"
 
 
 <a id="scenario-user-enters-non-existent-node-path-and-cli-outputs-error"></a>
-### Scenario: [User enters non-existent node path and CLI outputs error](#scenario-user-enters-non-existent-node-path-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1352)
+### Scenario: [User enters non-existent node path and CLI outputs error](#scenario-user-enters-non-existent-node-path-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1765)
 
 **Steps:**
 ```gherkin

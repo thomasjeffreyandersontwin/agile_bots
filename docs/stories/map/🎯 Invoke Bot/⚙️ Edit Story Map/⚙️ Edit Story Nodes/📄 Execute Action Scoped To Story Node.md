@@ -1,10 +1,10 @@
 # 📄 Execute Action Scoped To Story Node
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L922)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1339)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
-**Sequential Order:** 15.0
+**Sequential Order:** 17.0
 **Story Type:** user
 
 ## Story Description
@@ -20,7 +20,7 @@ Execute Action Scoped To Story Node functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-execute-action-on-node-with-valid-parameters"></a>
-### Scenario: [Execute action on node with valid parameters](#scenario-execute-action-on-node-with-valid-parameters) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L931)
+### Scenario: [Execute action on node with valid parameters](#scenario-execute-action-on-node-with-valid-parameters) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1348)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ THEN: Action completes successfully
 
 
 <a id="scenario-execute-action-with-invalid-parameters-returns-error"></a>
-### Scenario: [Execute action with invalid parameters returns error](#scenario-execute-action-with-invalid-parameters-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L961)
+### Scenario: [Execute action with invalid parameters returns error](#scenario-execute-action-with-invalid-parameters-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1378)
 
 **Steps:**
 ```gherkin
@@ -42,7 +42,7 @@ THEN: Bot validates parameters and returns error
 
 
 <a id="scenario-execute-non-existent-action-returns-error"></a>
-### Scenario: [Execute non-existent action returns error](#scenario-execute-non-existent-action-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L989)
+### Scenario: [Execute non-existent action returns error](#scenario-execute-non-existent-action-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1406)
 
 **Steps:**
 ```gherkin

@@ -11,8 +11,6 @@ from navigation import NavigationResult
 from exit_result import ExitResult
 from utils import read_json_file
 from story_graph import StoryMap
-import logging
-logger = logging.getLogger(__name__)
 __all__ = ['Bot', 'BotResult', 'Behavior']
 
 class BotResult:
@@ -750,6 +748,94 @@ class Bot:
                 'status': 'error',
                 'message': f'Error submitting instructions: {str(e)}'
             }
+    
+    def submit_scope(self, node_name: str) -> Dict[str, Any]:
+        from scope.scope_submission import ScopeSubmission
+        try:
+            result = self.process_scope_submission(node_name)
+            return result.to_dict()
+        except Exception as e:
+            return ScopeSubmission.error(f'Error submitting scope: {str(e)}').to_dict()
+    
+    def process_scope_submission(self, node_name: str):
+        from scope.scope_submission import ScopeSubmission
+        
+        node = self.story_map.find_node(node_name)
+        if not node:
+            return ScopeSubmission.error(f'Node not found: {node_name}')
+        
+        result = self.analyze_node_and_determine_behavior(node_name, node.node_type)
+        
+        if result.status == 'success':
+            behavior_name = result.behavior
+            if behavior_name:
+                behavior = self.behaviors.find_by_name(behavior_name)
+                if behavior:
+                    self.behaviors.navigate_to(behavior_name)
+                    build_action = behavior.actions.find_by_name('build')
+                    if build_action:
+                        behavior.actions.navigate_to('build')
+        
+        return result
+    
+    def analyze_node_and_determine_behavior(self, node_name: str, node_type: str):
+        from scope.scope_submission import ScopeSubmission
+        
+        node = self.story_map.find_node(node_name)
+        if not node:
+            return ScopeSubmission.error(f'Node not found: {node_name}')
+        
+        behavior = self._determine_behavior_from_node_state(node, node_type)
+        
+        return ScopeSubmission.success(
+            behavior=behavior,
+            action='build',
+            node=node_name,
+            node_type=node_type,
+            message=f'Ready to start {behavior} work'
+        )
+    
+    def _determine_behavior_from_node_state(self, node: Any, node_type: str) -> str:
+        if node_type in ['epic', 'subepic']:
+            if hasattr(node, 'children') and len(node.children) == 0:
+                return 'shape'
+            
+            stories = node.all_stories if hasattr(node, 'all_stories') else []
+            
+            if not stories:
+                return 'shape'
+            
+            return self._determine_behavior_from_stories(stories)
+        
+        elif node_type == 'story':
+            return self._determine_behavior_from_stories([node])
+        
+        return 'shape'
+    
+    def _determine_behavior_from_stories(self, stories: List[Any]) -> str:
+        if not stories:
+            return 'shape'
+        
+        # Check for EARLIEST missing stage across ANY story (waterfall approach)
+        # Return the highest priority work needed
+        
+        # 1. Check if ANY story is missing acceptance criteria
+        any_missing_ac = any(not story.has_acceptance_criteria() for story in stories)
+        if any_missing_ac:
+            return 'exploration'
+        
+        # 2. Check if ANY story is missing scenarios
+        any_missing_scenarios = any(not story.has_scenarios() for story in stories)
+        if any_missing_scenarios:
+            return 'scenarios'
+        
+        # 3. Check if ANY story is missing tests
+        any_missing_tests = any(not story.has_tests() for story in stories)
+        if any_missing_tests:
+            return 'tests'
+        
+        # 4. All stories have AC, scenarios, and tests → ready for code
+        return 'code'
 
     def tree(self) -> str:
         lines = []

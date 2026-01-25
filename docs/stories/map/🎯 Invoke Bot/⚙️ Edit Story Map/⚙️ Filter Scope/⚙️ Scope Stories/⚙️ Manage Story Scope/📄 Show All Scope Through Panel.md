@@ -29,8 +29,8 @@ Show All Scope Through Panel functionality for the mob minion system.
 
 ## Scenarios
 
-<a id="scenario-"></a>
-### Scenario: [](#scenario-) ()  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L100)
+<a id="scenario-user-clicks-show-all-to-clear-filter"></a>
+### Scenario: [User clicks Show All to clear filter](#scenario-user-clicks-show-all-to-clear-filter) ()  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L100)
 
 **Steps:**
 ```gherkin
@@ -44,8 +44,8 @@ And Filter input is empty
 ```
 
 
-<a id="scenario-"></a>
-### Scenario: [](#scenario-) ()
+<a id="scenario-show-all-button-visibility-toggles-with-filter-state"></a>
+### Scenario: [Show All button visibility toggles with filter state](#scenario-show-all-button-visibility-toggles-with-filter-state) ()
 
 **Steps:**
 ```gherkin

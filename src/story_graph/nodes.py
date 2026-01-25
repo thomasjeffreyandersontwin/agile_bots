@@ -3,7 +3,15 @@ from typing import List, Iterator, Optional, Dict, Any, Union, TYPE_CHECKING
 from dataclasses import dataclass, field
 from pathlib import Path
 import json
+from datetime import datetime
 from story_graph.domain import DomainConcept, StoryUser
+
+def _log(message: str):
+    """Write log message to file."""
+    log_file = Path(__file__).parent.parent.parent / 'logs' / 'test_class_mover.log'
+    log_file.parent.mkdir(exist_ok=True)
+    with open(log_file, 'a', encoding='utf-8') as f:
+        f.write(f"{datetime.now().isoformat()} {message}\n")
 
 @dataclass
 class ActionResult:
@@ -39,6 +47,10 @@ class StoryNode(ABC):
     def __repr__(self) -> str:
         order = f', order={self.sequential_order}' if self.sequential_order is not None else ''
         return f"{self.__class__.__name__}(name='{self.name}'{order})"
+    
+    @property
+    def node_type(self) -> str:
+        return self.__class__.__name__.lower()
 
     def save(self) -> None:
         """Save this node's changes to the story graph and persist to disk."""
@@ -229,8 +241,44 @@ class StoryNode(ABC):
                 target._children.append(story_group)
                 actual_target = story_group
         
+        # Check if we need to move test class (Story moving between SubEpics)
+        source_subepic = None
+        target_subepic = None
+        if isinstance(self, Story):
+            _log(f"[move_to] Story '{self.name}' is being moved")
+            
+            # Find source SubEpic
+            current = self._parent
+            while current and not isinstance(current, SubEpic):
+                if hasattr(current, '_parent'):
+                    current = current._parent
+                else:
+                    break
+            source_subepic = current if isinstance(current, SubEpic) else None
+            
+            if source_subepic:
+                _log(f"[move_to] Source SubEpic: '{source_subepic.name}'")
+            else:
+                _log(f"[move_to] Source SubEpic: None")
+            
+            # Find target SubEpic
+            current = actual_target
+            while current and not isinstance(current, SubEpic):
+                if hasattr(current, '_parent'):
+                    current = current._parent
+                else:
+                    break
+            target_subepic = current if isinstance(current, SubEpic) else None
+            
+            if target_subepic:
+                _log(f"[move_to] Target SubEpic: '{target_subepic.name}'")
+            else:
+                _log(f"[move_to] Target SubEpic: None")
+        
+        # Perform the move
         self._parent._children.remove(self)
         self._parent._resequence_siblings()
+        old_parent = self._parent
         self._parent = actual_target
         if position is not None:
             adjusted_position = min(position, len(actual_target.children))
@@ -238,6 +286,50 @@ class StoryNode(ABC):
         else:
             actual_target._children.append(self)
         actual_target._resequence_children()
+        
+        # Move test class if needed
+        if isinstance(self, Story) and source_subepic and target_subepic and source_subepic != target_subepic:
+            _log(f"[move_to] Story moving between different SubEpics")
+            _log(f"[move_to] Story test_class: {self.test_class}")
+            
+            if self.test_class and hasattr(source_subepic, 'test_file') and hasattr(target_subepic, 'test_file'):
+                _log(f"[move_to] Source test_file: {source_subepic.test_file}")
+                _log(f"[move_to] Target test_file: {target_subepic.test_file}")
+                
+                if source_subepic.test_file and target_subepic.test_file:
+                    from story_graph.test_class_mover import TestClassMover
+                    
+                    # Get absolute paths
+                    if self._bot and hasattr(self._bot, 'bot_paths'):
+                        workspace_dir = Path(self._bot.bot_paths.workspace_directory)
+                        source_file = workspace_dir / 'test' / source_subepic.test_file
+                        target_file = workspace_dir / 'test' / target_subepic.test_file
+                        
+                        _log(f"[move_to] Workspace dir: {workspace_dir}")
+                        _log(f"[move_to] Source file: {source_file}")
+                        _log(f"[move_to] Target file: {target_file}")
+                        _log(f"[move_to] Source exists: {source_file.exists()}")
+                        _log(f"[move_to] Target exists: {target_file.exists()}")
+                        
+                        # Move the test class
+                        if source_file.exists() and target_file.exists():
+                            _log(f"[move_to] Initiating test class move")
+                            result = TestClassMover.move_class(source_file, target_file, self.test_class)
+                            _log(f"[move_to] Test class move result: {result}")
+                        else:
+                            _log(f"[move_to] Skipping test class move - file(s) do not exist")
+                    else:
+                        _log(f"[move_to] Skipping test class move - bot or bot_paths not available")
+                else:
+                    _log(f"[move_to] Skipping test class move - test_file not set on source or target")
+            else:
+                _log(f"[move_to] No test class to move")
+        else:
+            if isinstance(self, Story):
+                if not source_subepic or not target_subepic:
+                    _log(f"[move_to] Not a SubEpic-to-SubEpic move")
+                elif source_subepic == target_subepic:
+                    _log(f"[move_to] Moving within same SubEpic")
         
         # Save changes to disk
         self.save()
@@ -792,6 +884,20 @@ class Story(StoryNode):
         words = self.name.split()
         class_name = ''.join((word.capitalize() for word in words))
         return f'Test{class_name}'
+    
+    def has_acceptance_criteria(self) -> bool:
+        return len(self.acceptance_criteria) > 0
+    
+    def has_scenarios(self) -> bool:
+        return len(self.scenarios) > 0 or len(self.scenario_outlines) > 0
+    
+    def has_tests(self) -> bool:
+        if self.test_class:
+            return True
+        for scenario in self.scenarios:
+            if hasattr(scenario, 'test_method') and scenario.test_method:
+                return True
+        return False
 
     def create(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
         """Alias for create_child"""
@@ -1095,6 +1201,29 @@ class StoryMap:
                     stories.append(node)
         return stories
 
+    def find_node(self, node_name: str) -> Optional[StoryNode]:
+        for epic in self._epics_list:
+            if epic.name == node_name:
+                return epic
+            for child in epic.children:
+                if child.name == node_name:
+                    return child
+                if hasattr(child, 'children'):
+                    result = self._find_in_children(child, node_name)
+                    if result:
+                        return result
+        return None
+    
+    def _find_in_children(self, node: StoryNode, name: str) -> Optional[StoryNode]:
+        for child in node.children:
+            if child.name == name:
+                return child
+            if hasattr(child, 'children'):
+                result = self._find_in_children(child, name)
+                if result:
+                    return result
+        return None
+    
     def find_epic_by_name(self, epic_name: str) -> Optional[Epic]:
         for epic in self._epics_list:
             if epic.name == epic_name:

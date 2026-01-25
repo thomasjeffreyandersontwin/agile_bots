@@ -1263,4 +1263,55 @@ class StoryTestHelper(BaseHelper):
                 }]
             }
             self.create_story_graph(story_graph_data)
+    
+    def create_story_graph_with_sub_epics(self, epic_subepic_list):
+        """Create story graph with epics and sub-epics.
+        
+        Args:
+            epic_subepic_list: List of tuples [(epic_name, [subepic_names])]
+        """
+        epics = []
+        for epic_name, subepic_names in epic_subepic_list:
+            epic = {
+                'name': epic_name,
+                'sequential_order': len(epics),
+                'domain_concepts': [],
+                'sub_epics': [],
+                'story_groups': []
+            }
+            for i, subepic_name in enumerate(subepic_names):
+                epic['sub_epics'].append({
+                    'name': subepic_name,
+                    'sequential_order': i,
+                    'sub_epics': [],
+                    'story_groups': []
+                })
+            epics.append(epic)
+        
+        story_graph_data = {'epics': epics}
+        self.create_story_graph(story_graph_data)
+        return story_graph_data
+    
+    def create_story_under_subepic(self, subepic, story_name, test_class=None):
+        """Create a story under a SubEpic.
+        
+        Args:
+            subepic: SubEpic node
+            story_name: Name of the story to create
+            test_class: Optional test class name
+            
+        Returns:
+            Created Story node
+        """
+        from story_graph.nodes import Story
+        
+        # Create story using SubEpic's create_story method
+        story = subepic.create_story(name=story_name)
+        
+        # Set test_class if provided
+        if test_class:
+            story.test_class = test_class
+            story.save()
+        
+        return story
 

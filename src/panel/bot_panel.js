@@ -153,6 +153,27 @@ class BotPanel {
               fs.appendFileSync(logPath, `[${timestamp}] ${message.message}\n`);
             }
             return;
+          case "analyzeNode":
+            this._log(`[BotPanel] analyzeNode: ${message.nodeName} (${message.nodeType})`);
+            
+            // Call backend to analyze node and determine behavior
+            this._botView?.execute(`analyze_node "${message.nodeName}" type:${message.nodeType}`)
+              .then((result) => {
+                this._log(`[BotPanel] analyzeNode result: ${JSON.stringify(result)}`);
+                
+                if (result && result.behavior) {
+                  // Send behavior back to webview to update button tooltip
+                  this._panel.webview.postMessage({
+                    command: 'updateSubmitTooltip',
+                    nodeName: message.nodeName,
+                    behavior: result.behavior
+                  });
+                }
+              })
+              .catch((error) => {
+                this._log(`[BotPanel] analyzeNode ERROR: ${error.message}`);
+              });
+            return;
           case "openFile":
             this._log('[BotPanel] openFile message received with filePath: ' + message.filePath);
             if (message.filePath) {
@@ -410,6 +431,14 @@ class BotPanel {
                 placeHolder: 'Enter new name'
               }).then((newName) => {
                 if (newName && newName !== message.currentName) {
+                  // Optimistic update: tell webview to update DOM immediately
+                  this._panel.webview.postMessage({
+                    command: 'optimisticRename',
+                    nodePath: message.nodePath,
+                    oldName: message.currentName,
+                    newName: newName
+                  });
+                  
                   // Escape quotes and backslashes in the new name
                   const escapedName = newName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
                   const command = `${message.nodePath}.rename name:"${escapedName}"`;
@@ -427,6 +456,7 @@ class BotPanel {
                     this._log(`[BotPanel] Failed to write to log file: ${err.message}`);
                   }
                   
+                  // Execute backend command asynchronously (no await, no _update on success)
                   this._botView?.execute(command)
                     .then((result) => {
                       this._log(`[BotPanel] Rename success: ${JSON.stringify(result).substring(0, 500)}`);
@@ -439,7 +469,7 @@ class BotPanel {
                         this._log(`[BotPanel] Failed to write result to log file: ${err.message}`);
                       }
                       
-                      return this._update();
+                      // NO _update() call - optimistic update already happened
                     })
                     .catch((error) => {
                       this._log(`[BotPanel] Rename ERROR: ${error.message}`);
@@ -453,6 +483,13 @@ class BotPanel {
                       }
                       
                       vscode.window.showErrorMessage(`Failed to rename: ${error.message}`);
+                      
+                      // Revert optimistic update on error
+                      this._panel.webview.postMessage({
+                        command: 'revertRename',
+                        nodePath: message.nodePath,
+                        oldName: message.currentName
+                      });
                     });
                 }
               });
@@ -464,6 +501,12 @@ class BotPanel {
               this._log(`[BotPanel] *** RECEIVED executeCommand MESSAGE ***`);
               this._log(`[BotPanel] commandText: ${message.commandText}`);
               this._log(`[BotPanel] Full message: ${JSON.stringify(message)}`);
+              
+              // Check if this is a create/delete/move operation (optimistic update candidates)
+              const isCreateOp = message.commandText.includes('.create_') || message.commandText.includes('create child') || message.commandText.includes('create epic');
+              const isDeleteOp = message.commandText.includes('.delete');
+              const isMoveOp = message.commandText.includes('.move_to');
+              const needsOptimisticUpdate = isCreateOp || isDeleteOp || isMoveOp;
               
               // Log to file for create/delete/rename operations
               const fs = require('fs');
@@ -477,7 +520,7 @@ class BotPanel {
                 this._log(`[BotPanel] Failed to write to log file: ${err.message}`);
               }
               
-              this._log(`[BotPanel] Calling botView.execute...`);
+              this._log(`[BotPanel] Calling botView.execute... (optimistic: ${needsOptimisticUpdate})`);
               this._botView?.execute(message.commandText)
                 .then((result) => {
                   this._log(`[BotPanel] *** executeCommand SUCCESS ***`);
@@ -492,11 +535,18 @@ class BotPanel {
                     this._log(`[BotPanel] Failed to write result to log file: ${err.message}`);
                   }
                   
-                  this._log(`[BotPanel] Calling _update() to refresh panel...`);
-                  return this._update();
+                  // Only refresh for non-optimistic operations
+                  if (!needsOptimisticUpdate) {
+                    this._log(`[BotPanel] Non-optimistic command - calling _update() to refresh panel...`);
+                    return this._update();
+                  } else {
+                    this._log(`[BotPanel] Optimistic command - skipping _update(), frontend already updated`);
+                  }
                 })
                 .then(() => {
-                  this._log(`[BotPanel] Panel update completed`);
+                  if (!needsOptimisticUpdate) {
+                    this._log(`[BotPanel] Panel update completed`);
+                  }
                   this._log(`${'='.repeat(80)}\n`);
                 })
                 .catch((error) => {
@@ -514,6 +564,15 @@ class BotPanel {
                   }
                   
                   vscode.window.showErrorMessage(`Failed to execute ${message.commandText}: ${error.message}`);
+                  
+                  // On error, refresh to revert optimistic updates
+                  if (needsOptimisticUpdate) {
+                    this._log(`[BotPanel] Optimistic command failed - calling _update() to revert`);
+                    this._update().catch(err => {
+                      this._log(`[BotPanel] ERROR in revert _update: ${err.message}`);
+                    });
+                  }
+                  
                   this._log(`${'='.repeat(80)}\n`);
                 });
             } else {
@@ -1582,7 +1641,8 @@ class BotPanel {
                 
                 // Check if target can contain dragged node
                 const canContain = (targetType === 'epic' && draggedNode.type === 'sub-epic') ||
-                                  (targetType === 'sub-epic' && (draggedNode.type === 'sub-epic' || draggedNode.type === 'story'));
+                                  (targetType === 'sub-epic' && (draggedNode.type === 'sub-epic' || draggedNode.type === 'story')) ||
+                                  (targetType === 'story' && draggedNode.type === 'scenario');
                 
                 // Check if nodes are same type for reordering
                 const sameType = draggedNode.type === targetType;
@@ -1705,6 +1765,45 @@ class BotPanel {
                         dropZone: dropZone
                     });
                     
+                    // OPTIMISTIC UPDATE: Move DOM element immediately
+                    // Find the dragged element's parent container (the div that contains the node)
+                    const draggedElements = document.querySelectorAll('.story-node');
+                    let draggedElement = null;
+                    for (const el of draggedElements) {
+                        if (el.getAttribute('data-path') === draggedNode.path) {
+                            draggedElement = el;
+                            break;
+                        }
+                    }
+                    
+                    if (draggedElement) {
+                        // Find the parent div container for the dragged node
+                        let draggedContainer = draggedElement.parentElement;
+                        while (draggedContainer && !draggedContainer.style.marginLeft && draggedContainer.parentElement) {
+                            draggedContainer = draggedContainer.parentElement;
+                        }
+                        
+                        // Perform optimistic DOM move
+                        if (dropZone === 'inside') {
+                            // Move inside: append to target's collapsible content
+                            const targetCollapsible = target.parentElement.nextElementSibling;
+                            if (targetCollapsible && targetCollapsible.classList.contains('collapsible-content')) {
+                                console.log('[WebView] Optimistically moving inside target container');
+                                targetCollapsible.appendChild(draggedContainer);
+                            }
+                        } else if (dropZone === 'after') {
+                            // Move after: insert after target's container
+                            let targetContainer = target.parentElement;
+                            while (targetContainer && !targetContainer.style.marginLeft && targetContainer.parentElement) {
+                                targetContainer = targetContainer.parentElement;
+                            }
+                            if (targetContainer && targetContainer.parentElement) {
+                                console.log('[WebView] Optimistically moving after target');
+                                targetContainer.parentElement.insertBefore(draggedContainer, targetContainer.nextSibling);
+                            }
+                        }
+                    }
+                    
                     let command;
                     
                     if (dropZone === 'inside') {
@@ -1715,7 +1814,7 @@ class BotPanel {
                             message: '[WebView] ON - NEST inside container: ' + targetName
                         });
                     } else if (dropZone === 'after') {
-                        var targetPos = parseInt(target.getAttribute('data-position') || '0') + 1;
+                        var targetPos = parseInt(target.getAttribute('data-position') || '0');
                         var parentMatch = targetPath.match(/(.*)\."[^"]+"/);
                         var parentName = parentMatch ? parentMatch[1].match(/\."([^"]+)"$/)[1] : 'story_graph';
                         command = draggedNode.path + '.move_to target:"' + parentName + '" at_position:' + targetPos;
@@ -1728,7 +1827,7 @@ class BotPanel {
                     console.log('[WebView] Move command:', command);
                     vscode.postMessage({
                         command: 'logToFile',
-                        message: '[WebView] SENDING MOVE COMMAND: ' + command
+                        message: '[WebView] SENDING MOVE COMMAND (optimistic update already applied): ' + command
                     });
                     
                     vscode.postMessage({
@@ -2055,6 +2154,30 @@ class BotPanel {
         
         window.deleteNode = function(nodePath) {
             console.log('[WebView] deleteNode called for:', nodePath);
+            
+            // OPTIMISTIC UPDATE: Remove from DOM immediately
+            const nodes = document.querySelectorAll('.story-node');
+            for (const node of nodes) {
+                if (node.getAttribute('data-path') === nodePath) {
+                    // Find the container div (parent that has the full node structure)
+                    let container = node.parentElement;
+                    while (container && !container.style.marginLeft && !container.style.marginTop && container.parentElement) {
+                        container = container.parentElement;
+                    }
+                    if (container) {
+                        console.log('[WebView] Optimistically removing node container');
+                        container.style.opacity = '0.5';
+                        container.style.transition = 'opacity 0.2s';
+                        setTimeout(() => {
+                            if (container.parentElement) {
+                                container.parentElement.removeChild(container);
+                            }
+                        }, 200);
+                    }
+                    break;
+                }
+            }
+            
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`\${nodePath}.delete\`
@@ -2063,6 +2186,30 @@ class BotPanel {
         
         window.deleteNodeIncludingChildren = function(nodePath) {
             console.log('[WebView] deleteNodeIncludingChildren called for:', nodePath);
+            
+            // OPTIMISTIC UPDATE: Remove from DOM immediately
+            const nodes = document.querySelectorAll('.story-node');
+            for (const node of nodes) {
+                if (node.getAttribute('data-path') === nodePath) {
+                    // Find the container div (parent that has the full node structure)
+                    let container = node.parentElement;
+                    while (container && !container.style.marginLeft && !container.style.marginTop && container.parentElement) {
+                        container = container.parentElement;
+                    }
+                    if (container) {
+                        console.log('[WebView] Optimistically removing node container with children');
+                        container.style.opacity = '0.5';
+                        container.style.transition = 'opacity 0.2s';
+                        setTimeout(() => {
+                            if (container.parentElement) {
+                                container.parentElement.removeChild(container);
+                            }
+                        }, 200);
+                    }
+                    break;
+                }
+            }
+            
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: \`\${nodePath}.delete_including_children\`
@@ -2097,18 +2244,33 @@ class BotPanel {
             hasNestedSubEpics: false
         };
         
+        // Map behavior names from backend to tooltip text (global function)
+        window.behaviorToTooltipText = function(behavior) {
+            var behaviorMap = {
+                'shape': 'Shape',
+                'exploration': 'Explore',
+                'scenarios': 'Write Scenarios for',
+                'tests': 'Write Tests for',
+                'code': 'Write Code for'
+            };
+            return behaviorMap[behavior] || 'Submit';
+        };
+        
         // Update contextual action buttons based on selection
         window.updateContextualButtons = function() {
             vscode.postMessage({
                 command: 'logToFile',
                 message: '[WebView] updateContextualButtons called, selectedNode=' + JSON.stringify(window.selectedNode)
             });
+            
             const btnCreateEpic = document.getElementById('btn-create-epic');
             const btnCreateSubEpic = document.getElementById('btn-create-sub-epic');
             const btnCreateStory = document.getElementById('btn-create-story');
             const btnCreateScenario = document.getElementById('btn-create-scenario');
             const btnCreateAcceptanceCriteria = document.getElementById('btn-create-acceptance-criteria');
             const btnDelete = document.getElementById('btn-delete');
+            const btnScopeTo = document.getElementById('btn-scope-to');
+            const btnSubmit = document.getElementById('btn-submit');
             
             // Hide all buttons first
             if (btnCreateEpic) btnCreateEpic.style.display = 'none';
@@ -2117,6 +2279,8 @@ class BotPanel {
             if (btnCreateScenario) btnCreateScenario.style.display = 'none';
             if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'none';
             if (btnDelete) btnDelete.style.display = 'none';
+            if (btnScopeTo) btnScopeTo.style.display = 'none';
+            if (btnSubmit) btnSubmit.style.display = 'none';
             
             // Show buttons based on selection
             if (window.selectedNode.type === 'root') {
@@ -2124,6 +2288,18 @@ class BotPanel {
             } else if (window.selectedNode.type === 'epic') {
                 if (btnCreateSubEpic) btnCreateSubEpic.style.display = 'block';
                 if (btnDelete) btnDelete.style.display = 'block';
+                if (btnScopeTo) btnScopeTo.style.display = 'block';
+                if (btnSubmit) {
+                    btnSubmit.style.display = 'block';
+                    btnSubmit.setAttribute('title', 'Loading...');
+                    
+                    // Ask backend for behavior determination
+                    vscode.postMessage({
+                        command: 'analyzeNode',
+                        nodeName: window.selectedNode.name,
+                        nodeType: window.selectedNode.type
+                    });
+                }
             } else if (window.selectedNode.type === 'sub-epic') {
                 // Sub-epics can have EITHER sub-epics OR stories, not both
                 // If it has stories, only show create story button
@@ -2141,11 +2317,39 @@ class BotPanel {
                     if (btnCreateStory) btnCreateStory.style.display = 'block';
                 }
                 if (btnDelete) btnDelete.style.display = 'block';
+                if (btnScopeTo) btnScopeTo.style.display = 'block';
+                if (btnSubmit) {
+                    btnSubmit.style.display = 'block';
+                    btnSubmit.setAttribute('title', 'Loading...');
+                    
+                    // Ask backend for behavior determination
+                    vscode.postMessage({
+                        command: 'analyzeNode',
+                        nodeName: window.selectedNode.name,
+                        nodeType: window.selectedNode.type
+                    });
+                }
             } else if (window.selectedNode.type === 'story') {
                 // Stories can have both scenarios and acceptance criteria
                 if (btnCreateScenario) btnCreateScenario.style.display = 'block';
                 if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'block';
                 if (btnDelete) btnDelete.style.display = 'block';
+                if (btnScopeTo) btnScopeTo.style.display = 'block';
+                if (btnSubmit) {
+                    btnSubmit.style.display = 'block';
+                    btnSubmit.setAttribute('title', 'Loading...');
+                    
+                    // Ask backend for behavior determination
+                    vscode.postMessage({
+                        command: 'analyzeNode',
+                        nodeName: window.selectedNode.name,
+                        nodeType: window.selectedNode.type
+                    });
+                }
+            } else if (window.selectedNode.type === 'scenario') {
+                // Scenarios can also be scoped to
+                if (btnDelete) btnDelete.style.display = 'block';
+                if (btnScopeTo) btnScopeTo.style.display = 'block';
             }
         };
         
@@ -2312,6 +2516,56 @@ class BotPanel {
             });
         };
         
+        // Handle scope to action - set filter to selected node
+        window.handleScopeTo = function() {
+            console.log('[WebView] handleScopeTo called for node:', window.selectedNode);
+            
+            if (!window.selectedNode.name) {
+                console.error('[WebView] ERROR: No node selected for scope');
+                return;
+            }
+            
+            // Use the node name as the filter value
+            const filterValue = window.selectedNode.name;
+            
+            console.log('[WebView] Scope To filter:', filterValue);
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] SENDING SCOPE TO COMMAND: scope "' + filterValue + '"'
+            });
+            
+            // Execute scope command with the node name as filter
+            vscode.postMessage({
+                command: 'executeCommand',
+                commandText: 'scope "' + filterValue + '"'
+            });
+        };
+        
+        // Handle submit scope action - submit selected node and start work
+        window.handleSubmitScope = function() {
+            console.log('[WebView] handleSubmitScope called for node:', window.selectedNode);
+            
+            if (!window.selectedNode.name) {
+                console.error('[WebView] ERROR: No node selected for submit');
+                return;
+            }
+            
+            // Use the node name for submit_scope command
+            const nodeName = window.selectedNode.name;
+            
+            console.log('[WebView] Submit scope for node:', nodeName);
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] SENDING SUBMIT SCOPE COMMAND: submit_scope "' + nodeName + '"'
+            });
+            
+            // Execute submit_scope command with the node name
+            vscode.postMessage({
+                command: 'executeCommand',
+                commandText: 'submit_scope "' + nodeName + '"'
+            });
+        };
+        
         // Initialize: show Create Epic button by default
         setTimeout(() => {
             window.selectNode('root', null);
@@ -2433,6 +2687,66 @@ class BotPanel {
                 
                 // Auto-remove after 30 seconds
                 setTimeout(() => errorDiv.remove(), 30000);
+            }
+            
+            // Optimistic update: rename node in DOM immediately
+            if (message.command === 'optimisticRename') {
+                console.log('[WebView] Optimistic rename:', message.oldName, '->', message.newName);
+                // Find node by path and update text
+                const nodes = document.querySelectorAll('.story-node');
+                for (const node of nodes) {
+                    if (node.getAttribute('data-path') === message.nodePath) {
+                        // Update node name in DOM
+                        const oldText = node.textContent;
+                        const newText = oldText.replace(message.oldName, message.newName);
+                        node.textContent = newText;
+                        // Update data attribute
+                        node.setAttribute('data-node-name', message.newName);
+                        console.log('[WebView] Updated node text:', oldText, '->', newText);
+                        
+                        // Update selected node if this is the selected node
+                        if (window.selectedNode && window.selectedNode.path === message.nodePath) {
+                            window.selectedNode.name = message.newName;
+                            sessionStorage.setItem('selectedNode', JSON.stringify(window.selectedNode));
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Revert rename on error
+            if (message.command === 'revertRename') {
+                console.log('[WebView] Reverting rename to:', message.oldName);
+                const nodes = document.querySelectorAll('.story-node');
+                for (const node of nodes) {
+                    if (node.getAttribute('data-path') === message.nodePath) {
+                        // Revert node name in DOM
+                        const currentText = node.textContent;
+                        const revertedText = currentText.replace(/[^"]+$/, message.oldName);
+                        node.textContent = revertedText;
+                        // Revert data attribute
+                        node.setAttribute('data-node-name', message.oldName);
+                        console.log('[WebView] Reverted node text to:', message.oldName);
+                        
+                        // Update selected node if this is the selected node
+                        if (window.selectedNode && window.selectedNode.path === message.nodePath) {
+                            window.selectedNode.name = message.oldName;
+                            sessionStorage.setItem('selectedNode', JSON.stringify(window.selectedNode));
+                        }
+                        break;
+                    }
+                }
+            }
+            
+            // Update submit button tooltip based on backend behavior analysis
+            if (message.command === 'updateSubmitTooltip') {
+                console.log('[WebView] updateSubmitTooltip:', message.behavior, 'for', message.nodeName);
+                var btnSubmit = document.getElementById('btn-submit');
+                if (btnSubmit && window.selectedNode && window.selectedNode.name === message.nodeName) {
+                    var tooltipText = window.behaviorToTooltipText(message.behavior);
+                    btnSubmit.setAttribute('title', tooltipText + ': ' + message.nodeName);
+                    console.log('[WebView] Updated tooltip to:', tooltipText + ': ' + message.nodeName);
+                }
             }
         });
     </script>
