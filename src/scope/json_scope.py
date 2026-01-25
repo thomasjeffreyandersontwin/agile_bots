@@ -52,38 +52,43 @@ class JSONScope(JSONAdapter):
                 cache_path = self.scope.workspace_directory / 'docs' / 'stories' / '.story-graph-enriched-cache.json'
                 
                 content = None
-                if not has_active_filter and story_graph_path.exists() and cache_path.exists():
-                    # Check if cache is still valid (cache mtime > source mtime)
-                    source_mtime = story_graph_path.stat().st_mtime
-                    cache_mtime = cache_path.stat().st_mtime
-                    
-                    if cache_mtime >= source_mtime:
-                        # Cache is valid - load it
-                        try:
-                            with open(cache_path, 'r', encoding='utf-8') as f:
-                                content = json.load(f)
-                        except Exception:
-                            # Cache corrupted, regenerate
-                            content = None
+                # CACHE DISABLED - Always regenerate to ensure behaviors are current
+                # if not has_active_filter and story_graph_path.exists() and cache_path.exists():
+                #     # Check if cache is still valid (cache mtime > source mtime)
+                #     source_mtime = story_graph_path.stat().st_mtime
+                #     cache_mtime = cache_path.stat().st_mtime
+                #     
+                #     if cache_mtime >= source_mtime:
+                #         # Cache is valid - load it
+                #         try:
+                #             with open(cache_path, 'r', encoding='utf-8') as f:
+                #                 content = json.load(f)
+                #         except Exception:
+                #             # Cache corrupted, regenerate
+                #             content = None
                 
                 if content is None:
                     # Generate and enrich content (cache miss or invalid)
+                    import sys
+                    print(f"[DEBUG] json_scope: Generating fresh content (cache disabled)", file=sys.stderr)
                     from story_graph.json_story_graph import JSONStoryGraph
                     graph_adapter = JSONStoryGraph(story_graph)
                     content = graph_adapter.to_dict().get('content', [])
+                    print(f"[DEBUG] json_scope: Generated content with {len(content.get('epics', []))} epics", file=sys.stderr)
                     
                     if content and 'epics' in content:
                         # Always enrich scenarios with test links
                         enrich_scenarios = True
                         self._enrich_with_links(content['epics'], story_graph, enrich_scenarios)
                         
-                        # Write to disk cache only when there's no active filter
-                        if not has_active_filter:
-                            try:
-                                with open(cache_path, 'w', encoding='utf-8') as f:
-                                    json.dump(content, f, indent=2, ensure_ascii=False)
-                            except Exception:
-                                pass  # If cache write fails, just continue without it
+                        # CACHE DISABLED - Don't write cache file
+                        # # Write to disk cache only when there's no active filter
+                        # if not has_active_filter:
+                        #     try:
+                        #         with open(cache_path, 'w', encoding='utf-8') as f:
+                        #             json.dump(content, f, indent=2, ensure_ascii=False)
+                        #     except Exception:
+                        #         pass  # If cache write fails, just continue without it
                     else:
                         content = {'epics': []}
                 

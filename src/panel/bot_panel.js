@@ -506,6 +506,15 @@ class BotPanel {
                     this._log(`[BotPanel] Failed to write result to log file: ${err.message}`);
                   }
                   
+                  // Log timestamp for when panel made a change (for behavior cache invalidation)
+                  const timestampFile = path.join(this._workspaceRoot, 'docs', 'stories', '.story-graph-panel-edit-time');
+                  try {
+                    fs.writeFileSync(timestampFile, Date.now().toString());
+                    this._log(`[BotPanel] Logged panel edit timestamp: ${Date.now()}`);
+                  } catch (err) {
+                    this._log(`[BotPanel] Failed to write timestamp file: ${err.message}`);
+                  }
+                  
                   // Always refresh to show latest backend state
                   this._log(`[BotPanel] Command completed - calling _update() to refresh panel...`);
                   return this._update();
@@ -1433,6 +1442,7 @@ class BotPanel {
                 const hasNestedSubEpics = target.getAttribute('data-has-nested-sub-epics') === 'true';
                 const nodePath = target.getAttribute('data-path');
                 const fileLink = target.getAttribute('data-file-link');
+                const behavior = target.getAttribute('data-behavior') || null;
                 
                 console.log('[WebView]   nodeType:', nodeType);
                 console.log('[WebView]   nodeName:', nodeName);
@@ -1441,6 +1451,12 @@ class BotPanel {
                 console.log('[WebView]   hasNestedSubEpics:', hasNestedSubEpics);
                 console.log('[WebView]   nodePath:', nodePath);
                 console.log('[WebView]   fileLink:', fileLink);
+                console.log('[WebView]   behavior (from DOM):', behavior);
+                
+                vscode.postMessage({
+                    command: 'logToFile',
+                    message: '[WebView] Extracted behavior from DOM: "' + behavior + '" for node: ' + nodeName
+                });
                 
                 vscode.postMessage({
                     command: 'logToFile',
@@ -1453,7 +1469,8 @@ class BotPanel {
                         hasChildren: hasChildren,
                         hasStories: hasStories,
                         hasNestedSubEpics: hasNestedSubEpics,
-                        path: nodePath
+                        path: nodePath,
+                        behavior: behavior
                     };
                     console.log('[WebView]   Calling selectNode with options:', JSON.stringify(options, null, 2));
                     window.selectNode(nodeType, nodeName, options);
@@ -2231,6 +2248,38 @@ class BotPanel {
             return behaviorMap[behavior] || 'Submit';
         };
         
+        // Map behavior to submit icon filename (global function)
+        window.behaviorToIconFile = function(behavior) {
+            var iconMap = {
+                'shape': 'submit_epic.png',
+                'exploration': 'submit_story.png',
+                'scenarios': 'submit_ac.png',
+                'tests': 'submit_tests.png',
+                'code': 'submit_code.png'
+            };
+            return iconMap[behavior] || 'submit_code.png';
+        };
+        
+        // Update submit button icon based on behavior (global function)
+        window.updateSubmitButtonIcon = function(behavior) {
+            var btnSubmit = document.getElementById('btn-submit');
+            if (btnSubmit) {
+                var img = btnSubmit.querySelector('img');
+                if (img && behavior) {
+                    var iconFile = window.behaviorToIconFile(behavior);
+                    // Update the src to use the new icon
+                    var currentSrc = img.src;
+                    var newSrc = currentSrc.replace(/submit_[^.]+\.png/, iconFile);
+                    img.src = newSrc;
+                    
+                    vscode.postMessage({
+                        command: 'logToFile',
+                        message: '[WebView] Submit icon updated: behavior="' + behavior + '", icon="' + iconFile + '"'
+                    });
+                }
+            }
+        };
+        
         // Update contextual action buttons based on selection
         window.updateContextualButtons = function() {
             vscode.postMessage({
@@ -2268,11 +2317,30 @@ class BotPanel {
                     btnSubmit.style.display = 'block';
                     
                     // Read behavior directly from node data (pre-calculated in Python)
+                    vscode.postMessage({
+                        command: 'logToFile',
+                        message: '[WebView] EPIC TOOLTIP - behavior="' + window.selectedNode.behavior + '", name="' + window.selectedNode.name + '"'
+                    });
+                    
                     if (window.selectedNode.behavior) {
                         var tooltipText = window.behaviorToTooltipText(window.selectedNode.behavior);
-                        btnSubmit.setAttribute('title', tooltipText + ': ' + window.selectedNode.name);
+                        var finalTooltip = tooltipText + ': ' + window.selectedNode.name;
+                        btnSubmit.setAttribute('title', finalTooltip);
+                        
+                        // Update submit button icon based on behavior
+                        window.updateSubmitButtonIcon(window.selectedNode.behavior);
+                        
+                        vscode.postMessage({
+                            command: 'logToFile',
+                            message: '[WebView] EPIC TOOLTIP SET: "' + finalTooltip + '"'
+                        });
                     } else {
                         btnSubmit.setAttribute('title', 'Submit scope and start work');
+                        
+                        vscode.postMessage({
+                            command: 'logToFile',
+                            message: '[WebView] EPIC TOOLTIP - No behavior, using default'
+                        });
                     }
                 }
             } else if (window.selectedNode.type === 'sub-epic') {
@@ -2297,11 +2365,30 @@ class BotPanel {
                     btnSubmit.style.display = 'block';
                     
                     // Read behavior directly from node data (pre-calculated in Python)
+                    vscode.postMessage({
+                        command: 'logToFile',
+                        message: '[WebView] SUB-EPIC TOOLTIP - behavior="' + window.selectedNode.behavior + '", name="' + window.selectedNode.name + '"'
+                    });
+                    
                     if (window.selectedNode.behavior) {
                         var tooltipText = window.behaviorToTooltipText(window.selectedNode.behavior);
-                        btnSubmit.setAttribute('title', tooltipText + ': ' + window.selectedNode.name);
+                        var finalTooltip = tooltipText + ': ' + window.selectedNode.name;
+                        btnSubmit.setAttribute('title', finalTooltip);
+                        
+                        // Update submit button icon based on behavior
+                        window.updateSubmitButtonIcon(window.selectedNode.behavior);
+                        
+                        vscode.postMessage({
+                            command: 'logToFile',
+                            message: '[WebView] SUB-EPIC TOOLTIP SET: "' + finalTooltip + '"'
+                        });
                     } else {
                         btnSubmit.setAttribute('title', 'Submit scope and start work');
+                        
+                        vscode.postMessage({
+                            command: 'logToFile',
+                            message: '[WebView] SUB-EPIC TOOLTIP - No behavior, using default'
+                        });
                     }
                 }
             } else if (window.selectedNode.type === 'story') {
@@ -2314,11 +2401,30 @@ class BotPanel {
                     btnSubmit.style.display = 'block';
                     
                     // Read behavior directly from node data (pre-calculated in Python)
+                    vscode.postMessage({
+                        command: 'logToFile',
+                        message: '[WebView] STORY TOOLTIP - behavior="' + window.selectedNode.behavior + '", name="' + window.selectedNode.name + '"'
+                    });
+                    
                     if (window.selectedNode.behavior) {
                         var tooltipText = window.behaviorToTooltipText(window.selectedNode.behavior);
-                        btnSubmit.setAttribute('title', tooltipText + ': ' + window.selectedNode.name);
+                        var finalTooltip = tooltipText + ': ' + window.selectedNode.name;
+                        btnSubmit.setAttribute('title', finalTooltip);
+                        
+                        // Update submit button icon based on behavior
+                        window.updateSubmitButtonIcon(window.selectedNode.behavior);
+                        
+                        vscode.postMessage({
+                            command: 'logToFile',
+                            message: '[WebView] STORY TOOLTIP SET: "' + finalTooltip + '"'
+                        });
                     } else {
                         btnSubmit.setAttribute('title', 'Submit scope and start work');
+                        
+                        vscode.postMessage({
+                            command: 'logToFile',
+                            message: '[WebView] STORY TOOLTIP - No behavior, using default'
+                        });
                     }
                 }
             } else if (window.selectedNode.type === 'scenario') {
@@ -2378,6 +2484,7 @@ class BotPanel {
                 type: type,
                 name: name,
                 path: options.path || null,
+                behavior: options.behavior || null,
                 canHaveSubEpic: options.canHaveSubEpic || false,
                 canHaveStory: options.canHaveStory || false,
                 canHaveTests: options.canHaveTests || false,
@@ -2386,6 +2493,11 @@ class BotPanel {
                 hasNestedSubEpics: options.hasNestedSubEpics || false
             };
             console.log('[WebView]   window.selectedNode updated:', JSON.stringify(window.selectedNode, null, 2));
+            
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] window.selectedNode.behavior set to: "' + window.selectedNode.behavior + '" for node: ' + name
+            });
             
             // Save selection to sessionStorage
             try {

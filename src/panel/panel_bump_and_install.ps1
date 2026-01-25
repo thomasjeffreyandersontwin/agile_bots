@@ -70,7 +70,18 @@ Write-Host "      Done: package.json updated" -ForegroundColor Green
 Write-Host "[2/6] Packaging extension..." -ForegroundColor Cyan
 # Remove old vsix files first
 Remove-Item "$panelDir\bot-panel-*.vsix" -Force -ErrorAction SilentlyContinue
-npx @vscode/vsce package --allow-missing-repository --allow-star-activation > $null
+# Kill Cursor's sandbox offline mode entirely
+Remove-Item Env:\npm_config_offline -ErrorAction SilentlyContinue
+Remove-Item Env:\npm_config_prefer_offline -ErrorAction SilentlyContinue
+$env:npm_config_offline = $null
+$env:npm_config_prefer_offline = $null
+# Prefer local vsce (avoids npx fetch / cache/network issues)
+$vsceExe = Join-Path $panelDir "node_modules\.bin\vsce.cmd"
+if (Test-Path $vsceExe) {
+    & $vsceExe package --allow-missing-repository --allow-star-activation 2>&1 | Out-Null
+} else {
+    npx @vscode/vsce package --allow-missing-repository --allow-star-activation 2>&1 | Out-Null
+}
 if ($LASTEXITCODE -ne 0) {
     Write-Host "      ERROR: Packaging failed!" -ForegroundColor Red
     exit 1
