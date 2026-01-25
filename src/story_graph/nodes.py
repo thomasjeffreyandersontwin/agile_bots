@@ -975,11 +975,28 @@ class Story(StoryNode):
         return len(self.scenarios) > 0 or len(self.scenario_outlines) > 0
     
     def has_tests(self) -> bool:
+        # Stories use test_class (not test_file) to indicate tests exist
+        # test_class is set when a test class should exist for this story
         if self.test_class:
+            import sys
+            print(f"[DEBUG] has_tests() for '{self.name}': test_class={self.test_class} -> True", file=sys.stderr)
             return True
+        
+        # Also check if any scenarios have test_method set
         for scenario in self.scenarios:
-            if hasattr(scenario, 'test_method') and scenario.test_method:
+            if scenario.test_method:
+                import sys
+                print(f"[DEBUG] has_tests() for '{self.name}': scenario '{scenario.name}' has test_method={scenario.test_method} -> True", file=sys.stderr)
                 return True
+        
+        for scenario_outline in self.scenario_outlines:
+            if scenario_outline.test_method:
+                import sys
+                print(f"[DEBUG] has_tests() for '{self.name}': scenario_outline '{scenario_outline.name}' has test_method={scenario_outline.test_method} -> True", file=sys.stderr)
+                return True
+        
+        import sys
+        print(f"[DEBUG] has_tests() for '{self.name}': no test_class, no test_methods -> False", file=sys.stderr)
         return False
 
     def create(self, name: Optional[str] = None, child_type: Optional[str] = None, position: Optional[int] = None) -> StoryNode:
@@ -1200,13 +1217,27 @@ class EpicsCollection:
 
 class StoryMap:
 
-    def __init__(self, story_graph: Dict[str, Any], bot=None):
+    def __init__(self, story_graph: Dict[str, Any], bot=None, recalculate_behaviors: bool = False):
         self.story_graph = story_graph
         self._bot = bot
         self._epics_list: List[Epic] = []
         for epic_data in story_graph.get('epics', []):
             self._epics_list.append(Epic.from_dict(epic_data, bot=bot))
         self._epics = EpicsCollection(self._epics_list)
+        
+        # Only recalculate if explicitly requested (file has changed)
+        if recalculate_behaviors:
+            import sys
+            story_count = 0
+            for epic in self._epics_list:
+                for node in self.walk(epic):
+                    if isinstance(node, Story):
+                        story_count += 1
+                        self.recalculate_behavior_for_node(node)
+            print(f"[DEBUG] StoryMap.__init__: Recalculated behaviors for {story_count} stories", file=sys.stderr)
+        else:
+            import sys
+            print(f"[DEBUG] StoryMap.__init__: Using existing behaviors (no recalculation)", file=sys.stderr)
 
     @classmethod
     def from_bot(cls, bot: Any) -> 'StoryMap':
@@ -1441,12 +1472,11 @@ class StoryMap:
         result = {
             'name': epic.name,
             'sequential_order': epic.sequential_order,
+            'behavior': epic.behavior,  # Always include behavior (even if None)
             'domain_concepts': [dc.__dict__ for dc in epic.domain_concepts] if epic.domain_concepts else [],
             'sub_epics': [self._sub_epic_to_dict(child) for child in epic.children if isinstance(child, SubEpic)],
             'story_groups': [self._story_group_to_dict(child) for child in epic.children if isinstance(child, StoryGroup)]
         }
-        if epic.behavior is not None:
-            result['behavior'] = epic.behavior
         return result
 
     def _sub_epic_to_dict(self, sub_epic: SubEpic) -> Dict[str, Any]:
@@ -1454,15 +1484,12 @@ class StoryMap:
         result = {
             'name': sub_epic.name,
             'sequential_order': sub_epic.sequential_order,
+            'behavior': sub_epic.behavior,  # Always include behavior (even if None)
         }
         
         # Include test_file if present (critical for test links in panel)
         if sub_epic.test_file is not None:
             result['test_file'] = sub_epic.test_file
-        
-        # Include behavior if present
-        if sub_epic.behavior is not None:
-            result['behavior'] = sub_epic.behavior
         
         result.update({
             'sub_epics': [self._sub_epic_to_dict(child) for child in sub_epic._children if isinstance(child, SubEpic)],
@@ -1477,10 +1504,9 @@ class StoryMap:
             'sequential_order': story_group.sequential_order,
             'type': story_group.group_type,
             'connector': story_group.connector,
+            'behavior': story_group.behavior,  # Always include behavior (even if None)
             'stories': [self._story_to_dict(child) for child in story_group.children if isinstance(child, Story)]
         }
-        if story_group.behavior is not None:
-            result['behavior'] = story_group.behavior
         return result
 
     def _story_to_dict(self, story: Story) -> Dict[str, Any]:
@@ -1507,12 +1533,11 @@ class StoryMap:
             'test_class': story.test_class,
             'scenarios': scenarios,
             'scenario_outlines': scenario_outlines,
-            'acceptance_criteria': acceptance_criteria
+            'acceptance_criteria': acceptance_criteria,
+            'behavior': story.behavior  # Always include behavior (even if None)
         }
         if story.file_link is not None:
             result['file_link'] = story.file_link
-        if story.behavior is not None:
-            result['behavior'] = story.behavior
         return result
     
     def _scenario_to_dict(self, scenario: Scenario) -> Dict[str, Any]:
@@ -1554,14 +1579,23 @@ class StoryMap:
         """
         if isinstance(node, Story):
             # Calculate behavior for story based on its state
-            if not node.has_acceptance_criteria():
+            has_ac = node.has_acceptance_criteria()
+            has_sc = node.has_scenarios()
+            has_tests = node.has_tests()
+            old_behavior = node.behavior
+            
+            if not has_ac:
                 node.behavior = 'exploration'
-            elif not node.has_scenarios():
+            elif not has_sc:
                 node.behavior = 'scenarios'
-            elif not node.has_tests():
+            elif not has_tests:
                 node.behavior = 'tests'
             else:
                 node.behavior = 'code'
+            
+            # DEBUG logging
+            import sys
+            print(f"[DEBUG] Recalc behavior for Story '{node.name}': AC={has_ac}, Scenarios={has_sc}, Tests={has_tests}, old='{old_behavior}', new='{node.behavior}'", file=sys.stderr)
         elif isinstance(node, (Epic, SubEpic, StoryGroup)):
             # Get all descendant stories (only walk this subtree, not entire tree)
             stories = []
