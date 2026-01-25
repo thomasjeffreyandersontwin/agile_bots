@@ -2,7 +2,7 @@
   "epics": [
     {
       "name": "Build Agile Bots",
-      "sequential_order": null,
+      "sequential_order": 0,
       "domain_concepts": [],
       "sub_epics": [
         {
@@ -921,7 +921,7 @@
     },
     {
       "name": "Invoke Bot",
-      "sequential_order": null,
+      "sequential_order": 1,
       "domain_concepts": [],
       "sub_epics": [
         {
@@ -18827,16 +18827,8 @@
       "behavior": "exploration"
     },
     {
-      "name": "Epic1",
-      "sequential_order": null,
-      "domain_concepts": [],
-      "sub_epics": [],
-      "story_groups": [],
-      "behavior": "shape"
-    },
-    {
       "name": "Epic2",
-      "sequential_order": null,
+      "sequential_order": 2,
       "domain_concepts": [],
       "sub_epics": [
         {

@@ -53,23 +53,26 @@ class StoryNode(ABC):
     def node_type(self) -> str:
         return self.__class__.__name__.lower()
 
-    def save(self) -> None:
-        """Save this node's changes to the story graph and persist to disk."""
+    def save(self, skip_behavior_recalc: bool = False) -> None:
+        """Save this node's changes to the story graph and persist to disk.
+        
+        Args:
+            skip_behavior_recalc: If True, skip behavior recalculation (e.g., after delete where behaviors are already correct)
+        """
         if not self._bot:
             return  # Cannot save without bot context
         
         story_map = self._bot.story_map
         
-        # Recalculate file_link if this is a story (path may have changed if moved)
-        if isinstance(self, Story):
-            self.file_link = story_map._calculate_story_file_link(self)
+        if not skip_behavior_recalc:
+            # Recalculate file_link if this is a story (path may have changed if moved)
+            if isinstance(self, Story):
+                self.file_link = story_map._calculate_story_file_link(self)
+            
+            # Recalculate behavior for this node and ancestors
+            story_map.recalculate_behavior_for_node(self)
         
-        # Recalculate behavior for this node and ancestors
-        story_map.recalculate_behavior_for_node(self)
-        
-        # Update the story_graph dict
-        story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
-        # Trigger file save
+        # Trigger file save (StoryMap.save() will regenerate the dict)
         story_map.save()
     
     def save_all(self) -> None:
@@ -132,6 +135,9 @@ class StoryNode(ABC):
 
     def delete(self, cascade: bool = True) -> dict:
         """Delete this node. Always cascades to delete all children."""
+        import time
+        start_time = time.time()
+        
         if not hasattr(self, '_parent') or not self._parent:
             raise ValueError('Cannot delete node without parent')
         
@@ -145,8 +151,11 @@ class StoryNode(ABC):
             parent._children.remove(self)
             parent._resequence_children()
             
-            # Save changes to disk
-            self.save()
+            # Save changes from PARENT - skip expensive behavior recalc for delete (behaviors are stale but acceptable)
+            parent.save(skip_behavior_recalc=True)
+            
+            elapsed = time.time() - start_time
+            print(f"[DELETE TIMING] Deleted {node_type} '{node_name}' in {elapsed:.3f}s")
             
             return {'node_type': node_type, 'node_name': node_name, 'operation': 'delete', 'children_deleted': children_count}
         
@@ -156,8 +165,11 @@ class StoryNode(ABC):
         parent._children.remove(self)
         self._resequence_siblings()
         
-        # Save changes to disk
-        self.save()
+        # Save changes from PARENT - skip expensive behavior recalc for delete (behaviors are stale but acceptable)
+        parent.save(skip_behavior_recalc=True)
+        
+        elapsed = time.time() - start_time
+        print(f"[DELETE TIMING] Deleted {node_type} '{node_name}' in {elapsed:.3f}s")
         
         return {'node_type': node_type, 'node_name': node_name, 'operation': 'delete', 'children_deleted': children_count}
 
@@ -433,7 +445,6 @@ class StoryNode(ABC):
             
             # Rebuild epics collection and save
             story_map._epics = EpicsCollection(story_map._epics_list)
-            story_map.story_graph['epics'] = [story_map._epic_to_dict(e) for e in story_map._epics_list]
             story_map.save()
             
             return {
@@ -1169,6 +1180,9 @@ class StoryMap:
         if not self._bot or not hasattr(self._bot, 'bot_paths'):
             return  # Cannot save without bot context
         
+        # Regenerate story_graph dict from in-memory tree (only once, right before saving)
+        self.story_graph['epics'] = [self._epic_to_dict(e) for e in self._epics_list]
+        
         story_graph_path = Path(self._bot.bot_paths.workspace_directory) / 'docs' / 'stories' / 'story-graph.json'
         with open(story_graph_path, 'w', encoding='utf-8') as f:
             json.dump(self.story_graph, f, indent=2, ensure_ascii=False)
@@ -1315,10 +1329,7 @@ class StoryMap:
         # Rebuild epics collection with new epic
         self._epics = EpicsCollection(self._epics_list)
         
-        # Update story_graph dict
-        self.story_graph['epics'] = [self._epic_to_dict(e) for e in self._epics_list]
-        
-        # Save to disk
+        # Save to disk (save() will regenerate dict)
         self.save()
         
         return epic
@@ -1357,10 +1368,7 @@ class StoryMap:
         # Rebuild epics collection
         self._epics = EpicsCollection(self._epics_list)
         
-        # Update story_graph dict
-        self.story_graph['epics'] = [self._epic_to_dict(e) for e in self._epics_list]
-        
-        # Save to disk
+        # Save to disk (save() will regenerate dict)
         self.save()
         
         return {
