@@ -2,7 +2,7 @@
   "epics": [
     {
       "name": "Build Agile Bots",
-      "sequential_order": null,
+      "sequential_order": 0,
       "behavior": "scenarios",
       "domain_concepts": [],
       "sub_epics": [
@@ -28,14 +28,14 @@
                     "MCP Server Generator"
                   ],
                   "test_file": null,
-                  "test_class": "TestGenerateBotTools",
+                  "test_class": null,
                   "scenarios": [
                     {
                       "name": "Generator creates bot tool for test_bot",
                       "sequential_order": 1.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_generator_creates_bot_tool_for_test_bot",
+                      "test_method": null,
                       "steps": "Given A bot configuration file with a working directory and behaviors\nAnd A bot that has been initialized with that config file\nWhen Generator processes Bot Config\nThen Generator creates 1 bot tool instance"
                     }
                   ],
@@ -62,14 +62,14 @@
                     "MCP Server Generator"
                   ],
                   "test_file": null,
-                  "test_class": "TestGenerateBehaviorTools",
+                  "test_class": null,
                   "scenarios": [
                     {
                       "name": "Generator creates behavior tools for test_bot with 4 behaviors",
                       "sequential_order": 1.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_generator_creates_behavior_tools_for_test_bot_with_4_behaviors",
+                      "test_method": null,
                       "steps": "Given A bot configuration file with a working directory and behaviors\nAnd A bot that has been initialized with that config file\nWhen Generator processes Bot Config\nThen Generator creates 4 behavior tool instances"
                     }
                   ],
@@ -96,14 +96,14 @@
                     "MCP Server Generator"
                   ],
                   "test_file": null,
-                  "test_class": "TestGenerateMCPBotServer",
+                  "test_class": null,
                   "scenarios": [
                     {
                       "name": "Generator creates MCP server for test_bot",
                       "sequential_order": 1.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_generator_creates_mcp_server_for_test_bot",
+                      "test_method": null,
                       "steps": "Given A bot configuration file with a working directory and behaviors\nAnd A bot that has been initialized with that config file\nWhen MCP Server Generator receives Bot Config\nThen Generator creates MCP Server instance with unique server name"
                     },
                     {
@@ -111,7 +111,7 @@
                       "sequential_order": 2.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_generator_fails_when_bot_config_missing",
+                      "test_method": null,
                       "steps": "Given A bot directory exists\nAnd Bot Config does NOT exist\nWhen MCP Server Generator attempts to receive Bot Config\nThen Generator raises FileNotFoundError and does not create MCP Server instance"
                     },
                     {
@@ -119,7 +119,7 @@
                       "sequential_order": 3.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_generator_fails_when_bot_config_malformed",
+                      "test_method": null,
                       "steps": "Given A bot directory exists\nAnd Bot Config file exists with invalid JSON syntax\nWhen MCP Server Generator attempts to receive Bot Config\nThen Generator raises JSONDecodeError and does not create MCP Server instance"
                     }
                   ],
@@ -156,14 +156,14 @@
                     "MCP Server Generator"
                   ],
                   "test_file": null,
-                  "test_class": "TestGenerateBehaviorActionTools",
+                  "test_class": null,
                   "scenarios": [
                     {
                       "name": "Tools generated for each behavior action",
                       "sequential_order": 1.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_tools_generated_for_each_behavior_action",
+                      "test_method": null,
                       "steps": "GIVEN: Bot with behaviors and actions\nWHEN: Tool generation is triggered\nTHEN: MCP tools are created for each action"
                     }
                   ],
@@ -203,14 +203,14 @@
                   "story_type": "user",
                   "users": [],
                   "test_file": null,
-                  "test_class": "TestDeployMCPBotServer",
+                  "test_class": null,
                   "scenarios": [
                     {
                       "name": "MCP server deployed with tools",
                       "sequential_order": 1.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_mcp_server_deployed_with_tools",
+                      "test_method": null,
                       "steps": "GIVEN: Bot tools are generated\nWHEN: Server deployment is triggered\nTHEN: MCP server is running with tools"
                     }
                   ],
@@ -257,14 +257,14 @@
                     "MCP Server Generator"
                   ],
                   "test_file": null,
-                  "test_class": "TestRestartMCPServerToLoadCodeChanges",
+                  "test_class": null,
                   "scenarios": [
                     {
                       "name": "Clear Python bytecode cache",
                       "sequential_order": 1.0,
                       "type": "",
                       "background": [],
-                      "test_method": "test_clear_python_bytecode_cache",
+                      "test_method": null,
                       "steps": "Given __pycache__ directories exist with .pyc files\nWhen clear_python_cache is called\nThen All __pycache__ directories are removed\nAnd All .pyc files are deleted\nAnd Cache is cleared before server restart"
                     }
                   ],
@@ -473,7 +473,7 @@
     },
     {
       "name": "Invoke Bot",
-      "sequential_order": null,
+      "sequential_order": 1,
       "behavior": "exploration",
       "domain_concepts": [],
       "sub_epics": [
@@ -481,7 +481,6 @@
           "name": "Initialize Bot",
           "sequential_order": 0.0,
           "behavior": "exploration",
-          "test_file": "invoke_bot/initialize_bot/",
           "sub_epics": [
             {
               "name": "Load Bot, Behavior, and Actions",
@@ -1659,7 +1658,6 @@
           "name": "Edit Story Map",
           "sequential_order": 1.0,
           "behavior": "exploration",
-          "test_file": "test/invoke_bot/edit_story_map/",
           "sub_epics": [
             {
               "name": "Filter Scope",
@@ -2811,6 +2809,82 @@
                                         "Data Management",
                                         "explore",
                                         "Parent sub-epic with nested sub-epics where Data Archive is at explore"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "name": "Display behavior needed via CLI with JSON format",
+                                  "sequential_order": 4.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_display_behavior_needed_via_cli_with_json_format",
+                                  "steps": "Given CLI has story map loaded with <node_type> <epic_name>\nWhen User requests behavior for <epic_name> using JSON format\nThen CLI returns JSON with behavior <expected_behavior>",
+                                  "examples": {
+                                    "columns": [
+                                      "node_type",
+                                      "epic_name",
+                                      "expected_behavior"
+                                    ],
+                                    "rows": [
+                                      [
+                                        "epic",
+                                        "Product Catalog",
+                                        "shape"
+                                      ]
+                                    ]
+                                  }
+                                },
+                                {
+                                  "name": "Panel submit button displays behavior-specific icon with hover tooltip",
+                                  "sequential_order": 5.0,
+                                  "type": "happy_path",
+                                  "background": [],
+                                  "test_method": "test_submit_button_icon_changes_based_on_behavior_needed",
+                                  "steps": "Given User has selected a <node_type> <node_name> in the panel\nAnd Node has behavior <behavior> needed\nWhen Panel renders the submit button\nThen Submit button displays <icon_file> icon indicating <behavior> behavior\nWhen User hovers over the submit button\nThen Submit button shows tooltip <tooltip_text>",
+                                  "examples": {
+                                    "columns": [
+                                      "node_type",
+                                      "node_name",
+                                      "behavior",
+                                      "icon_file",
+                                      "tooltip_text"
+                                    ],
+                                    "rows": [
+                                      [
+                                        "epic",
+                                        "Product Catalog",
+                                        "shape",
+                                        "submit_subepic.png",
+                                        "Submit shape instructions for epic"
+                                      ],
+                                      [
+                                        "sub-epic",
+                                        "Report Export",
+                                        "explore",
+                                        "submit_story.png",
+                                        "Submit explore instructions for sub-epic"
+                                      ],
+                                      [
+                                        "story",
+                                        "Create User",
+                                        "scenario",
+                                        "submit_ac.png",
+                                        "Submit scenario instructions for story"
+                                      ],
+                                      [
+                                        "story",
+                                        "Delete File",
+                                        "test",
+                                        "submit_tests.png",
+                                        "Submit test instructions for story"
+                                      ],
+                                      [
+                                        "story",
+                                        "Upload File",
+                                        "code",
+                                        "submit_code.png",
+                                        "Submit code instructions for story"
                                       ]
                                     ]
                                   }
@@ -5524,7 +5598,6 @@
           "name": "Navigate Behavior Actions",
           "sequential_order": 2.0,
           "behavior": "exploration",
-          "test_file": "invoke_bot/navigate_behavior_actions/",
           "sub_epics": [
             {
               "name": "Navigate Behavior And Actions",
@@ -7140,7 +7213,6 @@
           "name": "Perform Action",
           "sequential_order": 3.0,
           "behavior": "exploration",
-          "test_file": "invoke_bot/perform_action/",
           "sub_epics": [
             {
               "name": "Prepare Common Instructions For Behavior, Action, and Scope",

@@ -637,7 +637,6 @@ class TestDetermineBehaviorForScenario:
         - If scenario has no test_method -> test behavior
         """
         # Given - Create a scenario with the specified state
-        # Normalize test_method: empty string should be None
         if test_method == "":
             test_method = None
         
@@ -1020,4 +1019,101 @@ class TestDetermineBehaviorForEpic:
             f"Expected behavior '{expected_behavior}' but got '{actual_behavior}' "
             f"for epic '{epic_name}' with {len(sub_epics_data)} sub-epics"
         )
+
+    def test_display_behavior_needed_via_cli_with_json_format(self, tmp_path):
+        """
+        SCENARIO: Display behavior needed via CLI with JSON format
+        GIVEN: CLI has story graph with stories at different behavior states
+        WHEN: User executes 'scope' command
+        THEN: CLI returns JSON with behavior field for each epic, sub-epic, and story
+        AND: Behavior values match domain logic (explore/scenario/test/code)
+        
+        This test validates that behavior_needed is included in CLI JSON output.
+        """
+        import json
+        
+        # Given - Create story graph with stories at different behavior states
+        helper = JsonBotTestHelper(tmp_path)
+        helper.domain.state.set_state('shape', 'clarify')
+        
+        # Create epic with sub-epic containing stories with different behaviors
+        epic_data = {
+            "name": "Test Epic",
+            "nested_sub_epics": [],
+            "stories": [
+                # Story with all scenarios tested -> code
+                {
+                    "story_name": "Story With Tests",
+                    "test_class": "test_story.py",
+                    "acceptance_criteria": "AC exists",
+                    "scenarios": ["Scenario 1"],
+                    "test_methods": ["test_scenario_1"]
+                },
+                # Story with scenarios but no tests -> test
+                {
+                    "story_name": "Story Needs Tests",
+                    "test_class": "test_story.py",
+                    "acceptance_criteria": "AC exists",
+                    "scenarios": ["Scenario 1"],
+                    "test_methods": []
+                },
+                # Story with AC but no scenarios -> scenario
+                {
+                    "story_name": "Story Needs Scenarios",
+                    "test_class": "",
+                    "acceptance_criteria": "AC exists",
+                    "scenarios": [],
+                    "test_methods": []
+                },
+                # Story with no AC -> explore
+                {
+                    "story_name": "Story Needs Exploration",
+                    "test_class": "",
+                    "acceptance_criteria": "",
+                    "scenarios": [],
+                    "test_methods": []
+                }
+            ]
+        }
+        
+        epic = helper.domain.story.create_epic_with_sub_epics_for_behavior_test("Test Epic", [epic_data])
+        
+        # When - Execute scope command via CLI
+        cli_response = helper.cli_session.execute_command('scope showall')
+        response_data = json.loads(cli_response.output)
+        
+        # Then - JSON includes behavior field for all nodes
+        assert 'scope' in response_data
+        scope_data = response_data['scope']
+        assert 'content' in scope_data
+        assert 'epics' in scope_data['content']
+        
+        test_epic = next((e for e in scope_data['content']['epics'] if e['name'] == 'Test Epic'), None)
+        assert test_epic is not None, "Test Epic not found in scope output"
+        assert 'behavior_needed' in test_epic, "Epic missing 'behavior_needed' field"
+        
+        # Check sub-epic has behavior_needed
+        assert 'sub_epics' in test_epic
+        assert len(test_epic['sub_epics']) > 0
+        sub_epic = test_epic['sub_epics'][0]
+        assert 'behavior_needed' in sub_epic, "Sub-epic missing 'behavior_needed' field"
+        
+        # Check each story has correct behavior_needed
+        stories = sub_epic['story_groups'][0]['stories']
+        
+        story_with_tests = next(s for s in stories if s['name'] == 'Story With Tests')
+        assert 'behavior_needed' in story_with_tests, "Story missing 'behavior_needed' field"
+        assert story_with_tests['behavior_needed'] == 'code', f"Expected 'code' but got '{story_with_tests['behavior_needed']}'"
+        
+        story_needs_tests = next(s for s in stories if s['name'] == 'Story Needs Tests')
+        assert 'behavior_needed' in story_needs_tests, "Story missing 'behavior_needed' field"
+        assert story_needs_tests['behavior_needed'] == 'test', f"Expected 'test' but got '{story_needs_tests['behavior_needed']}'"
+        
+        story_needs_scenarios = next(s for s in stories if s['name'] == 'Story Needs Scenarios')
+        assert 'behavior_needed' in story_needs_scenarios, "Story missing 'behavior_needed' field"
+        assert story_needs_scenarios['behavior_needed'] == 'scenario', f"Expected 'scenario' but got '{story_needs_scenarios['behavior_needed']}'"
+        
+        story_needs_exploration = next(s for s in stories if s['name'] == 'Story Needs Exploration')
+        assert 'behavior_needed' in story_needs_exploration, "Story missing 'behavior_needed' field"
+        assert story_needs_exploration['behavior_needed'] == 'explore', f"Expected 'explore' but got '{story_needs_exploration['behavior_needed']}'"
 

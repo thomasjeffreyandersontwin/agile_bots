@@ -1024,7 +1024,53 @@ class Story(StoryNode):
     def all_scenarios_have_tests(self) -> bool:
         if not self.scenarios:
             return False
-        return all(scenario.test_method for scenario in self.scenarios)
+        
+        # Check if all scenarios have test_method fields populated
+        if not all(scenario.test_method for scenario in self.scenarios):
+            return False
+        
+        # If no bot context, fall back to simple check
+        if not self._bot or not hasattr(self._bot, 'bot_paths'):
+            return True
+        
+        # Check if the test file actually exists
+        # Need to get test file from story or parent sub-epic
+        test_file = self.test_file
+        test_class = self.test_class
+        
+        # If story doesn't have test_file/test_class, get from parent sub-epic
+        if not test_file or not test_class:
+            parent = self._parent
+            while parent:
+                if hasattr(parent, 'test_file') and parent.test_file:
+                    test_file = parent.test_file
+                    break
+                parent = parent._parent if hasattr(parent, '_parent') else None
+            
+            # If still no test_file, tests don't exist
+            if not test_file:
+                return False
+            
+            # Use story's test_class if available
+            if not test_class:
+                test_class = self.test_class
+        
+        # Check if test file exists on disk
+        from pathlib import Path
+        workspace_dir = Path(self._bot.bot_paths.workspace_directory if hasattr(self._bot.bot_paths, 'workspace_directory') else '.')
+        test_dir = workspace_dir / self._bot.bot_paths.test_path
+        test_file_path = test_dir / test_file
+        
+        if not test_file_path.exists():
+            return False
+        
+        # Check if test class exists in file
+        if test_class:
+            from utils import find_test_class_line
+            if not find_test_class_line(test_file_path, test_class):
+                return False
+        
+        return True
     
     @property
     def many_scenarios(self) -> int:
@@ -1186,9 +1232,54 @@ class Scenario(StoryNode):
 
     @property
     def behavior_needed(self) -> str:
-        if self.test_method:
-            return 'code'
-        return 'test'
+        # Only return 'code' if test_method exists AND the test file actually exists
+        if not self.test_method:
+            return 'test'
+        
+        # If no bot context, can't check file existence - fall back to simple check
+        if not self._bot or not hasattr(self._bot, 'bot_paths'):
+            return 'code' if self.test_method else 'test'
+        
+        # Check if the test file exists
+        # Get test_file and test_class from parent Story
+        parent = self._parent
+        while parent and not isinstance(parent, Story):
+            parent = parent._parent if hasattr(parent, '_parent') else None
+        
+        if not parent:
+            # No parent story - can't verify test exists, fall back to simple check
+            return 'code' if self.test_method else 'test'
+        
+        test_file = parent.test_file
+        test_class = parent.test_class
+        
+        # If story doesn't have test_file, get from parent sub-epic
+        if not test_file:
+            sub_epic_parent = parent._parent
+            while sub_epic_parent:
+                if hasattr(sub_epic_parent, 'test_file') and sub_epic_parent.test_file:
+                    test_file = sub_epic_parent.test_file
+                    break
+                sub_epic_parent = sub_epic_parent._parent if hasattr(sub_epic_parent, '_parent') else None
+        
+        if not test_file or not test_class:
+            return 'test'
+        
+        # Check if test file exists on disk
+        from pathlib import Path
+        workspace_dir = Path(self._bot.bot_paths.workspace_directory if hasattr(self._bot.bot_paths, 'workspace_directory') else '.')
+        test_dir = workspace_dir / self._bot.bot_paths.test_path
+        test_file_path = test_dir / test_file
+        
+        if not test_file_path.exists():
+            return 'test'
+        
+        # Check if test method exists in file
+        from utils import find_test_method_line
+        if not find_test_method_line(test_file_path, self.test_method):
+            return 'test'
+        
+        return 'code'
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any], index: int=0, parent: Optional[StoryNode]=None, bot: Optional[Any]=None) -> 'Scenario':

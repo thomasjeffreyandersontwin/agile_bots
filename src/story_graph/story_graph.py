@@ -38,24 +38,6 @@ class StoryGraph:
                 raise FileNotFoundError(f'Story graph file (story-graph.json) not found in {self._path.parent}. Cannot validate rules without story graph. Expected story graph to be created by build action before validate.')
             return {}
         
-        import sys
-        import os
-        
-        # Get file modification time
-        file_mtime = os.path.getmtime(self._path)
-        print(f"[DEBUG] StoryGraph: story-graph.json mtime={file_mtime}", file=sys.stderr)
-        
-        # Check when panel last edited the file
-        panel_edit_time_file = self._path.parent / '.story-graph-panel-edit-time'
-        panel_edit_time = 0
-        if panel_edit_time_file.exists():
-            try:
-                with open(panel_edit_time_file, 'r') as f:
-                    panel_edit_time = float(f.read().strip()) / 1000.0  # Convert ms to seconds
-                print(f"[DEBUG] StoryGraph: Panel last edited at {panel_edit_time}", file=sys.stderr)
-            except Exception as e:
-                print(f"[DEBUG] StoryGraph: Failed to read panel edit time: {e}", file=sys.stderr)
-        
         raw_content = read_json_file(self._path)
         
         return raw_content

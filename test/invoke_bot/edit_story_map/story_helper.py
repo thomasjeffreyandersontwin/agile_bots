@@ -1340,6 +1340,9 @@ class StoryTestHelper(BaseHelper):
         Returns:
             Epic node from loaded story graph
         """
+        # Create dummy test files for all stories with test_methods (including nested)
+        self._create_test_files_for_sub_epics(sub_epics_data)
+        
         # Build sub-epics
         sub_epics = []
         for idx, sub_epic_data in enumerate(sub_epics_data):
@@ -1388,9 +1391,19 @@ class StoryTestHelper(BaseHelper):
         # Build stories if present
         if sub_epic_data.get('stories'):
             stories = []
+            test_file_for_sub_epic = None
+            
             for story_idx, story_data in enumerate(sub_epic_data['stories']):
                 story = self._build_story_for_behavior_test(story_data, story_idx)
                 stories.append(story)
+                
+                # Get test file from first story with test_class
+                if not test_file_for_sub_epic and story_data.get('test_class'):
+                    test_file_for_sub_epic = story_data.get('test_class')  # This is the test file
+            
+            # Set test_file on sub-epic if found
+            if test_file_for_sub_epic:
+                sub_epic['test_file'] = test_file_for_sub_epic
             
             # Add stories to a story group
             sub_epic['story_groups'].append({
@@ -1406,14 +1419,22 @@ class StoryTestHelper(BaseHelper):
     
     def _build_story_for_behavior_test(self, story_data, idx):
         """Build a story dict for behavior testing."""
+        # Extract test class name from test file
+        test_file = story_data.get('test_class')  # This is actually the test file
+        test_class_name = None
+        if test_file:
+            test_class_name = test_file.replace('.py', '').replace('test_', '')
+            test_class_name = ''.join(word.capitalize() for word in test_class_name.split('_'))
+            test_class_name = 'Test' + test_class_name if not test_class_name.startswith('Test') else test_class_name
+        
         return {
             'name': story_data['story_name'],
             'sequential_order': float(idx + 1),
             'connector': None,
             'story_type': 'user',
             'users': [],
-            'test_file': None,
-            'test_class': story_data.get('test_class', None),
+            'test_file': test_file if test_file else None,  # Set test_file to the actual test file
+            'test_class': test_class_name,
             'scenarios': self._build_scenarios_for_behavior_test(
                 story_data.get('scenarios', []),
                 story_data.get('test_methods', [])
@@ -1471,6 +1492,11 @@ class StoryTestHelper(BaseHelper):
         Returns:
             SubEpic node from loaded story graph
         """
+        # Create dummy test files for stories with test_methods
+        for story_data in stories_data:
+            if story_data.get('test_class') and story_data.get('test_methods'):
+                self._create_dummy_test_file_for_story(story_data)
+        
         # Build stories for the story group
         stories = []
         for idx, story_data in enumerate(stories_data):
@@ -1565,6 +1591,21 @@ class StoryTestHelper(BaseHelper):
             ]
         }
         
+        # Create dummy test file if test_class and test_methods provided  
+        # Extract test file and test class properly
+        if test_class and test_methods:
+            # test_class is actually the test file (e.g., "test_file_upload.py")
+            test_file = test_class
+            # Convert test file to class name (test_file_upload.py -> TestFileUpload)
+            test_class_name = test_file.replace('.py', '').replace('test_', '')
+            test_class_name = ''.join(word.capitalize() for word in test_class_name.split('_'))
+            test_class_name = 'Test' + test_class_name if not test_class_name.startswith('Test') else test_class_name
+            
+            # Also set test_class on story for the domain to find
+            story_graph_data['epics'][0]['sub_epics'][0]['story_groups'][0]['stories'][0]['test_class'] = test_class_name
+            
+            self._create_dummy_test_file(test_file, test_class_name, test_methods)
+        
         # Save and load
         self.create_story_graph(story_graph_data)
         
@@ -1574,4 +1615,55 @@ class StoryTestHelper(BaseHelper):
         story = sub_epic.children[0]
         
         return story
+    
+    def _create_dummy_test_file(self, test_file, test_class, test_methods):
+        """Create a dummy test file with test class and methods."""
+        test_dir = self.workspace / 'test'
+        test_dir.mkdir(exist_ok=True)
+        
+        test_path = test_dir / test_file
+        
+        # Generate test file content
+        content = f"""import pytest
+
+class {test_class}:
+"""
+        for test_method in test_methods:
+            if test_method:
+                content += f"""    def {test_method}(self):
+        pass
+    
+"""
+        
+        test_path.write_text(content, encoding='utf-8')
+    
+    def _create_test_files_for_sub_epics(self, sub_epics_data):
+        """Recursively create test files for all stories in sub-epics."""
+        for sub_epic_data in sub_epics_data:
+            # Create test files for direct stories
+            if sub_epic_data.get('stories'):
+                for story_data in sub_epic_data['stories']:
+                    if story_data.get('test_class') and story_data.get('test_methods'):
+                        self._create_dummy_test_file_for_story(story_data)
+            
+            # Recursively handle nested sub-epics
+            if sub_epic_data.get('nested_sub_epics'):
+                self._create_test_files_for_sub_epics(sub_epic_data['nested_sub_epics'])
+    
+    def _create_dummy_test_file_for_story(self, story_data):
+        """Create a dummy test file for a story with test_class and test_methods."""
+        test_file = story_data.get('test_class')  # This is actually the test file
+        test_methods = story_data.get('test_methods', [])
+        
+        if not test_file or not test_methods:
+            return
+        
+        # Extract class name from test file (test_file_upload.py -> TestFileUpload)
+        test_class_name = test_file.replace('.py', '').replace('test_', '')
+        test_class_name = ''.join(word.capitalize() for word in test_class_name.split('_'))
+        test_class_name = 'Test' + test_class_name if not test_class_name.startswith('Test') else test_class_name
+        
+        # Don't modify story_data - that will be used later to build the story
+        # Just create the test file with the calculated class name
+        self._create_dummy_test_file(test_file, test_class_name, test_methods)
 

@@ -90,25 +90,32 @@ class StoryMapView extends PanelView {
         const vscode = require('vscode');
         
         // Get the proper webview URIs for icons
-        let magnifyingGlassIconPath = '';
-        let clearIconPath = '';
-        let showAllIconPath = '';
-        let plusIconPath = '';
-        let subtractIconPath = '';
-        let emptyIconPath = '';
-        let gearIconPath = '';
-        let epicIconPath = '';
-        let pageIconPath = '';
-        let testTubeIconPath = '';
-        let documentIconPath = '';
-        let addEpicIconPath = '';
-        let addSubEpicIconPath = '';
-        let addStoryIconPath = '';
-        let addTestsIconPath = '';
-        let addAcceptanceCriteriaIconPath = '';
-        let deleteIconPath = '';
-        let deleteChildrenIconPath = '';
-        let scopeToIconPath = '';
+        // In test mode (no webview), use simple paths so tests can verify icon presence
+        let magnifyingGlassIconPath = 'img/magnifying_glass.png';
+        let clearIconPath = 'img/close.png';
+        let showAllIconPath = 'img/show_all.png';
+        let plusIconPath = 'img/plus.png';
+        let subtractIconPath = 'img/subtract.png';
+        let emptyIconPath = 'img/empty.png';
+        let gearIconPath = 'img/gear.png';
+        let epicIconPath = 'img/light_bulb2.png';
+        let pageIconPath = 'img/page.png';
+        let testTubeIconPath = 'img/test_tube.png';
+        let documentIconPath = 'img/document.png';
+        let addEpicIconPath = 'img/add_epic.png';
+        let addSubEpicIconPath = 'img/add_sub_epic.png';
+        let addStoryIconPath = 'img/add_story.png';
+        let addTestsIconPath = 'img/add_tests.png';
+        let addAcceptanceCriteriaIconPath = 'img/add_ac.png';
+        let deleteIconPath = 'img/delete.png';
+        let deleteChildrenIconPath = 'img/delete_children.png';
+        let scopeToIconPath = 'img/bullseye.png';
+        let submitShapeIconPath = 'img/submit_subepic.png';
+        let submitExploreIconPath = 'img/submit_story.png';
+        let submitScenarioIconPath = 'img/submit_ac.png';
+        let submitTestIconPath = 'img/submit_tests.png';
+        let submitCodeIconPath = 'img/submit_code.png';
+        
         if (this.webview && this.extensionUri) {
             try {
                 const magnifyingGlassUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'magnifying_glass.png');
@@ -156,7 +163,7 @@ class StoryMapView extends PanelView {
                 const addTestsUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'add_tests.png');
                 addTestsIconPath = this.webview.asWebviewUri(addTestsUri).toString();
                 
-                const addAcceptanceCriteriaUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'clipboard.png');
+                const addAcceptanceCriteriaUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'add_ac.png');
                 addAcceptanceCriteriaIconPath = this.webview.asWebviewUri(addAcceptanceCriteriaUri).toString();
                 
                 const deleteUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'delete.png');
@@ -167,6 +174,21 @@ class StoryMapView extends PanelView {
                 
                 const scopeToUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'bullseye.png');
                 scopeToIconPath = this.webview.asWebviewUri(scopeToUri).toString();
+                
+                const submitShapeUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_subepic.png');
+                submitShapeIconPath = this.webview.asWebviewUri(submitShapeUri).toString();
+                
+                const submitExploreUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_story.png');
+                submitExploreIconPath = this.webview.asWebviewUri(submitExploreUri).toString();
+                
+                const submitScenarioUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_ac.png');
+                submitScenarioIconPath = this.webview.asWebviewUri(submitScenarioUri).toString();
+                
+                const submitTestUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_tests.png');
+                submitTestIconPath = this.webview.asWebviewUri(submitTestUri).toString();
+                
+                const submitCodeUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_code.png');
+                submitCodeIconPath = this.webview.asWebviewUri(submitCodeUri).toString();
             } catch (err) {
                 console.error('Failed to create icon URIs:', err);
             }
@@ -201,6 +223,24 @@ class StoryMapView extends PanelView {
                 <div style="display: flex; align-items: center; gap: 2px; margin-left: 10px;">
                     <button id="btn-scope-to" onclick="event.stopPropagation(); handleScopeTo();" style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Scope to selected node">
                         <img src="${scopeToIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Scope To" />
+                    </button>
+                    <button id="btn-submit" 
+                            onclick="event.stopPropagation(); handleSubmit();" 
+                            style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" 
+                            onmouseover="this.style.opacity='0.7'" 
+                            onmouseout="this.style.opacity='1'" 
+                            title="Submit shape instructions for epic"
+                            data-shape-icon="${submitShapeIconPath}"
+                            data-explore-icon="${submitExploreIconPath}"
+                            data-scenario-icon="${submitScenarioIconPath}"
+                            data-test-icon="${submitTestIconPath}"
+                            data-code-icon="${submitCodeIconPath}"
+                            data-shape-tooltip="Submit shape instructions for epic"
+                            data-explore-tooltip="Submit explore instructions for sub-epic"
+                            data-scenario-tooltip="Submit scenario instructions for story"
+                            data-test-tooltip="Submit test instructions for story"
+                            data-code-tooltip="Submit code instructions for story">
+                        <img id="btn-submit-icon" src="${submitShapeIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Submit" />
                     </button>
                 </div>
             </div>
@@ -362,10 +402,10 @@ class StoryMapView extends PanelView {
             // Make epic name a hyperlink if document exists, clickable to select, double-click to edit
             // CRITICAL: Escape the ENTIRE path including quotes - HTML parser stops at unescaped quotes
             const epicPath = this.escapeHtml(`story_graph."${epic.name}"`);
-            const epicBehavior = epic.behavior || '';
+            const epicBehavior = epic.behavior_needed || '';
             const epicNameHtml = epicDocLink
-                ? `<span class="story-node" draggable="true" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-behavior="${epicBehavior}" data-has-children="${epicHasChildren}" data-position="${epicIndex}" data-path="${epicPath}" data-file-link="${this.escapeHtml(epicDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(epic.name)}</span>`
-                : `<span class="story-node" draggable="true" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-behavior="${epicBehavior}" data-has-children="${epicHasChildren}" data-position="${epicIndex}" data-path="${epicPath}" style="cursor: pointer;">${this.escapeHtml(epic.name)}</span>`;
+                ? `<span class="story-node" draggable="true" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-behavior-needed="${epicBehavior}" data-has-children="${epicHasChildren}" data-position="${epicIndex}" data-path="${epicPath}" data-file-link="${this.escapeHtml(epicDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(epic.name)}</span>`
+                : `<span class="story-node" draggable="true" data-node-type="epic" data-node-name="${this.escapeHtml(epic.name)}" data-behavior-needed="${epicBehavior}" data-has-children="${epicHasChildren}" data-position="${epicIndex}" data-path="${epicPath}" style="cursor: pointer;">${this.escapeHtml(epic.name)}</span>`;
             
             // Render test tube icon for epic test link
             const epicTestIcon = (epicTestLink && testTubeIconPath)
@@ -400,10 +440,10 @@ class StoryMapView extends PanelView {
                 const subEpicHasChildren = hasStories || hasNestedSubEpics;
                 
                 // Make sub-epic name a hyperlink if document exists, clickable to select, double-click to edit
-                const subEpicBehavior = subEpic.behavior || '';
+                const subEpicBehavior = subEpic.behavior_needed || '';
                 const subEpicNameHtml = subEpicDocLink
-                    ? `<span class="story-node" draggable="true" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" data-behavior="${subEpicBehavior}" data-has-children="${subEpicHasChildren}" data-has-stories="${hasStories}" data-has-nested-sub-epics="${hasNestedSubEpics}" data-position="${subEpicIndex}" data-path="${subEpicPath}" data-file-link="${this.escapeHtml(subEpicDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
-                    : `<span class="story-node" draggable="true" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" data-behavior="${subEpicBehavior}" data-has-children="${subEpicHasChildren}" data-has-stories="${hasStories}" data-has-nested-sub-epics="${hasNestedSubEpics}" data-position="${subEpicIndex}" data-path="${subEpicPath}" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
+                    ? `<span class="story-node" draggable="true" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" data-behavior-needed="${subEpicBehavior}" data-has-children="${subEpicHasChildren}" data-has-stories="${hasStories}" data-has-nested-sub-epics="${hasNestedSubEpics}" data-position="${subEpicIndex}" data-path="${subEpicPath}" data-file-link="${this.escapeHtml(subEpicDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`
+                    : `<span class="story-node" draggable="true" data-node-type="sub-epic" data-node-name="${this.escapeHtml(subEpic.name)}" data-behavior-needed="${subEpicBehavior}" data-has-children="${subEpicHasChildren}" data-has-stories="${hasStories}" data-has-nested-sub-epics="${hasNestedSubEpics}" data-position="${subEpicIndex}" data-path="${subEpicPath}" style="cursor: pointer;">${this.escapeHtml(subEpic.name)}</span>`;
                 
                 // Only render test tube icon for test links
                 const subEpicTestIcon = (subEpicTestLink && testTubeIconPath)
@@ -455,11 +495,11 @@ class StoryMapView extends PanelView {
                                 const storyDocLink = story.links && story.links.find(l => l.text === 'story');
                                 
                                 // Story name with double-click to edit, clickable to select
-                                const storyBehavior = story.behavior || '';
+                                const storyBehavior = story.behavior_needed || '';
                                 if (storyDocLink) {
-                                    html += `<span class="story-node" draggable="true" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" data-behavior="${storyBehavior}" data-has-children="${hasScenarios}" data-position="${storyIndex}" data-path="${storyPath}" data-file-link="${this.escapeHtml(storyDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
+                                    html += `<span class="story-node" draggable="true" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" data-behavior-needed="${storyBehavior}" data-has-children="${hasScenarios}" data-position="${storyIndex}" data-path="${storyPath}" data-file-link="${this.escapeHtml(storyDocLink.url)}" style="text-decoration: underline; cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
                                 } else {
-                                    html += `<span class="story-node" draggable="true" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" data-behavior="${storyBehavior}" data-has-children="${hasScenarios}" data-position="${storyIndex}" data-path="${storyPath}" style="cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
+                                    html += `<span class="story-node" draggable="true" data-node-type="story" data-node-name="${this.escapeHtml(story.name)}" data-behavior-needed="${storyBehavior}" data-has-children="${hasScenarios}" data-position="${storyIndex}" data-path="${storyPath}" style="cursor: pointer;">${storyIcon}${this.escapeHtml(story.name)}</span>`;
                                 }
                                 
                                 // Render test tube icon for test link
@@ -489,12 +529,13 @@ class StoryMapView extends PanelView {
                                         
                                         // Link scenario name to story file with scenario anchor
                                         // Make scenarios draggable and renameable like other nodes
+                                        const scenarioBehavior = scenario.behavior_needed || '';
                                         if (storyDocLink) {
                                             const scenarioLink = `${storyDocLink.url}#${scenarioAnchor}`;
-                                            html += `<span class="story-node" draggable="true" data-node-type="scenario" data-node-name="${this.escapeHtml(scenario.name)}" data-has-children="false" data-position="${scenarioIndex}" data-path="${scenarioPath}" data-file-link="${this.escapeHtml(scenarioLink)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(scenario.name)}</span>`;
+                                            html += `<span class="story-node" draggable="true" data-node-type="scenario" data-node-name="${this.escapeHtml(scenario.name)}" data-behavior-needed="${scenarioBehavior}" data-has-children="false" data-position="${scenarioIndex}" data-path="${scenarioPath}" data-file-link="${this.escapeHtml(scenarioLink)}" style="text-decoration: underline; cursor: pointer;">${this.escapeHtml(scenario.name)}</span>`;
                                         } else {
                                             // No story doc link - just display scenario name with drag/rename support
-                                            html += `<span class="story-node" draggable="true" data-node-type="scenario" data-node-name="${this.escapeHtml(scenario.name)}" data-has-children="false" data-position="${scenarioIndex}" data-path="${scenarioPath}" style="cursor: pointer;">${this.escapeHtml(scenario.name)}</span>`;
+                                            html += `<span class="story-node" draggable="true" data-node-type="scenario" data-node-name="${this.escapeHtml(scenario.name)}" data-behavior-needed="${scenarioBehavior}" data-has-children="false" data-position="${scenarioIndex}" data-path="${scenarioPath}" style="cursor: pointer;">${this.escapeHtml(scenario.name)}</span>`;
                                         }
                                         
                                         // Render test tube icon for test link (separate from scenario name link)

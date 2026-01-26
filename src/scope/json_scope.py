@@ -69,12 +69,9 @@ class JSONScope(JSONAdapter):
                 
                 if content is None:
                     # Generate and enrich content (cache miss or invalid)
-                    import sys
-                    print(f"[DEBUG] json_scope: Generating fresh content (cache disabled)", file=sys.stderr)
                     from story_graph.json_story_graph import JSONStoryGraph
                     graph_adapter = JSONStoryGraph(story_graph)
                     content = graph_adapter.to_dict().get('content', [])
-                    print(f"[DEBUG] json_scope: Generated content with {len(content.get('epics', []))} epics", file=sys.stderr)
                     
                     if content and 'epics' in content:
                         # Always enrich scenarios with test links
@@ -205,9 +202,6 @@ class JSONScope(JSONAdapter):
     
     def _enrich_scenario_with_links(self, scenario: dict, test_dir: Path, story_test_file: str, story_test_class: str):
         test_method = scenario.get('test_method')
-        
-        # Add behavior based on test_method presence (matching backend logic)
-        scenario['behavior'] = 'code' if test_method else 'test'
         
         if story_test_file and test_method:
             test_file_path = test_dir / story_test_file

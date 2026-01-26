@@ -1447,7 +1447,7 @@ class BotPanel {
                 const hasNestedSubEpics = target.getAttribute('data-has-nested-sub-epics') === 'true';
                 const nodePath = target.getAttribute('data-path');
                 const fileLink = target.getAttribute('data-file-link');
-                const behavior = target.getAttribute('data-behavior') || null;
+                const behavior = target.getAttribute('data-behavior-needed') || null;
                 
                 console.log('[WebView]   nodeType:', nodeType);
                 console.log('[WebView]   nodeName:', nodeName);
@@ -1460,7 +1460,7 @@ class BotPanel {
                 
                 vscode.postMessage({
                     command: 'logToFile',
-                    message: '[WebView] Extracted behavior from DOM: "' + behavior + '" for node: ' + nodeName
+                    message: '[WebView] Extracted behavior_needed from DOM: "' + behavior + '" for node: ' + nodeName
                 });
                 
                 vscode.postMessage({
@@ -2269,6 +2269,7 @@ class BotPanel {
             const btnCreateAcceptanceCriteria = document.getElementById('btn-create-acceptance-criteria');
             const btnDelete = document.getElementById('btn-delete');
             const btnScopeTo = document.getElementById('btn-scope-to');
+            const btnSubmit = document.getElementById('btn-submit');
             
             // Hide all buttons first
             if (btnCreateEpic) btnCreateEpic.style.display = 'none';
@@ -2278,6 +2279,7 @@ class BotPanel {
             if (btnCreateAcceptanceCriteria) btnCreateAcceptanceCriteria.style.display = 'none';
             if (btnDelete) btnDelete.style.display = 'none';
             if (btnScopeTo) btnScopeTo.style.display = 'none';
+            if (btnSubmit) btnSubmit.style.display = 'none';
             
             // Show buttons based on selection
             if (window.selectedNode.type === 'root') {
@@ -2311,10 +2313,105 @@ class BotPanel {
                 if (btnDelete) btnDelete.style.display = 'block';
                 if (btnScopeTo) btnScopeTo.style.display = 'block';
             } else if (window.selectedNode.type === 'scenario') {
-                // Scenarios can also be scoped to
+                // Scenarios can also be scoped to and submitted
                 if (btnDelete) btnDelete.style.display = 'block';
                 if (btnScopeTo) btnScopeTo.style.display = 'block';
+                // Note: submit button will be shown below if scenario has behavior_needed
             }
+            
+            // Update submit button based on behavior_needed
+            console.log('═══════════════════════════════════════════════════════');
+            console.log('[SUBMIT BUTTON DEBUG] Starting submit button update');
+            console.log('[SUBMIT BUTTON DEBUG] Node clicked:', window.selectedNode.name);
+            console.log('[SUBMIT BUTTON DEBUG] Node type:', window.selectedNode.type);
+            console.log('[SUBMIT BUTTON DEBUG] behavior_needed from CLI:', window.selectedNode.behavior);
+            console.log('[SUBMIT BUTTON DEBUG] btnSubmit exists:', !!btnSubmit);
+            console.log('[SUBMIT BUTTON DEBUG] Is root?', window.selectedNode.type === 'root');
+            console.log('[SUBMIT BUTTON DEBUG] Has behavior_needed?', !!window.selectedNode.behavior);
+            
+            if (btnSubmit && window.selectedNode.type !== 'root' && window.selectedNode.behavior) {
+                const behavior = window.selectedNode.behavior;
+                const nodeType = window.selectedNode.type;
+                const btnSubmitIcon = document.getElementById('btn-submit-icon');
+                
+                console.log('[SUBMIT BUTTON DEBUG] Proceeding with button update...');
+                console.log('[SUBMIT BUTTON DEBUG] btnSubmitIcon exists:', !!btnSubmitIcon);
+                
+                // Map behavior to icon and tooltip
+                const behaviorMap = {
+                    'shape': {
+                        icon: btnSubmit.getAttribute('data-shape-icon'),
+                        tooltip: btnSubmit.getAttribute('data-shape-tooltip') || 'Submit shape instructions for ' + nodeType
+                    },
+                    'explore': {
+                        icon: btnSubmit.getAttribute('data-explore-icon'),
+                        tooltip: btnSubmit.getAttribute('data-explore-tooltip') || 'Submit explore instructions for ' + nodeType
+                    },
+                    'scenario': {
+                        icon: btnSubmit.getAttribute('data-scenario-icon'),
+                        tooltip: btnSubmit.getAttribute('data-scenario-tooltip') || 'Submit scenario instructions for ' + nodeType
+                    },
+                    'test': {
+                        icon: btnSubmit.getAttribute('data-test-icon'),
+                        tooltip: btnSubmit.getAttribute('data-test-tooltip') || 'Submit test instructions for ' + nodeType
+                    },
+                    'code': {
+                        icon: btnSubmit.getAttribute('data-code-icon'),
+                        tooltip: btnSubmit.getAttribute('data-code-tooltip') || 'Submit code instructions for ' + nodeType
+                    }
+                };
+                
+                console.log('[SUBMIT BUTTON DEBUG] Behavior map created for all behaviors');
+                console.log('[SUBMIT BUTTON DEBUG] Looking up behavior:', behavior);
+                
+                const behaviorConfig = behaviorMap[behavior];
+                console.log('[SUBMIT BUTTON DEBUG] Behavior config found:', !!behaviorConfig);
+                
+                if (behaviorConfig) {
+                    console.log('[SUBMIT BUTTON DEBUG] ✓ Behavior config exists');
+                    console.log('[SUBMIT BUTTON DEBUG] Image icon path:', behaviorConfig.icon);
+                    console.log('[SUBMIT BUTTON DEBUG] Hover tooltip:', behaviorConfig.tooltip);
+                } else {
+                    console.log('[SUBMIT BUTTON DEBUG] ✗ No behavior config found for:', behavior);
+                    console.log('[SUBMIT BUTTON DEBUG] Available behaviors:', Object.keys(behaviorMap));
+                }
+                
+                if (behaviorConfig && btnSubmitIcon) {
+                    btnSubmitIcon.src = behaviorConfig.icon;
+                    btnSubmit.title = behaviorConfig.tooltip;
+                    btnSubmit.style.display = 'block';
+                    
+                    console.log('[SUBMIT BUTTON DEBUG] ✓ Submit button updated successfully');
+                    console.log('[SUBMIT BUTTON DEBUG] ✓ Icon src set to:', behaviorConfig.icon);
+                    console.log('[SUBMIT BUTTON DEBUG] ✓ Tooltip set to:', behaviorConfig.tooltip);
+                    console.log('[SUBMIT BUTTON DEBUG] ✓ Button displayed');
+                    
+                    vscode.postMessage({
+                        command: 'logToFile',
+                        message: '[WebView] Submit button updated: behavior=' + behavior + ', nodeType=' + nodeType + ', icon=' + behaviorConfig.icon + ', tooltip="' + behaviorConfig.tooltip + '"'
+                    });
+                } else {
+                    if (!behaviorConfig) {
+                        console.log('[SUBMIT BUTTON DEBUG] ✗ Missing behaviorConfig');
+                    }
+                    if (!btnSubmitIcon) {
+                        console.log('[SUBMIT BUTTON DEBUG] ✗ Missing btnSubmitIcon element');
+                    }
+                }
+            } else {
+                console.log('[SUBMIT BUTTON DEBUG] Submit button NOT updated - conditions not met:');
+                if (!btnSubmit) {
+                    console.log('[SUBMIT BUTTON DEBUG] ✗ btnSubmit element not found');
+                }
+                if (window.selectedNode.type === 'root') {
+                    console.log('[SUBMIT BUTTON DEBUG] ✗ Node is root (submit not shown for root)');
+                }
+                if (!window.selectedNode.behavior) {
+                    console.log('[SUBMIT BUTTON DEBUG] ✗ No behavior_needed set on node');
+                    console.log('[SUBMIT BUTTON DEBUG]   This may indicate behavior_needed is not being read from story graph');
+                }
+            }
+            console.log('═══════════════════════════════════════════════════════');
         };
         
         // Select a node (called when clicking on node name/icon)
@@ -2376,10 +2473,20 @@ class BotPanel {
                 hasNestedSubEpics: options.hasNestedSubEpics || false
             };
             console.log('[WebView]   window.selectedNode updated:', JSON.stringify(window.selectedNode, null, 2));
+            console.log('');
+            console.log('[NODE CLICK DEBUG] ═══════════════════════════════════════');
+            console.log('[NODE CLICK DEBUG] Node clicked:', name);
+            console.log('[NODE CLICK DEBUG] Node type:', type);
+            console.log('[NODE CLICK DEBUG] behavior_needed from CLI:', options.behavior || '(none)');
+            if (!options.behavior) {
+                console.log('[NODE CLICK DEBUG] ⚠️ WARNING: No behavior_needed - check story graph data');
+            }
+            console.log('[NODE CLICK DEBUG] ═══════════════════════════════════════');
+            console.log('');
             
             vscode.postMessage({
                 command: 'logToFile',
-                message: '[WebView] window.selectedNode.behavior set to: "' + window.selectedNode.behavior + '" for node: ' + name
+                message: '[WebView] window.selectedNode.behavior_needed set to: "' + window.selectedNode.behavior + '" for node: ' + name
             });
             
             // Save selection to sessionStorage
@@ -2508,6 +2615,35 @@ class BotPanel {
             vscode.postMessage({
                 command: 'executeCommand',
                 commandText: 'scope "' + filterValue + '"'
+            });
+        };
+        
+        window.handleSubmit = function() {
+            console.log('[WebView] handleSubmit called for node:', window.selectedNode);
+            
+            if (!window.selectedNode.name) {
+                console.error('[WebView] ERROR: No node selected for submit');
+                return;
+            }
+            
+            if (!window.selectedNode.behavior) {
+                console.error('[WebView] ERROR: No behavior for selected node');
+                return;
+            }
+            
+            const behavior = window.selectedNode.behavior;
+            const nodeName = window.selectedNode.name;
+            
+            console.log('[WebView] Submit:', behavior, 'instructions for', nodeName);
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] SUBMIT: behavior=' + behavior + ', node=' + nodeName
+            });
+            
+            // Execute submit command for the current behavior/action
+            vscode.postMessage({
+                command: 'executeCommand',
+                commandText: 'submit'
             });
         };
         

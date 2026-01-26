@@ -606,23 +606,42 @@ Then Bot returns behavior <expected_behavior>
 | Archive Old Data |  |  | explore |
 
 
-<a id="scenario-submit-button-displays-behavior-specific-icon"></a>
-### Scenario: [Submit button displays behavior-specific icon](#scenario-submit-button-displays-behavior-specific-icon) (happy_path)
+<a id="scenario-panel-submit-button-displays-behavior-specific-icon-with-hover-tooltip"></a>
+### Scenario: [Panel submit button displays behavior-specific icon with hover tooltip](#scenario-panel-submit-button-displays-behavior-specific-icon-with-hover-tooltip) (happy_path)
 
 **Steps:**
 ```gherkin
-Given User has selected a <node_type> in the panel
-And Node state indicates <behavior> behavior is needed
+Given User has selected a <node_type> <node_name> in the panel
+And Node has behavior <behavior> needed
 When Panel renders the submit button
 Then Submit button displays <icon_file> icon indicating <behavior> behavior
+When User hovers over the submit button
+Then Submit button shows tooltip <tooltip_text>
 ```
 
 **Examples:**
-| node_type | behavior | icon_file |
+| node_type | node_name | behavior | icon_file | tooltip_text |
+| --- | --- | --- | --- | --- |
+| epic | Product Catalog | shape | submit_subepic.png | Submit shape instructions for epic |
+| sub-epic | Report Export | explore | submit_story.png | Submit explore instructions for sub-epic |
+| story | Create User | scenario | submit_ac.png | Submit scenario instructions for story |
+| story | Delete File | test | submit_tests.png | Submit test instructions for story |
+| story | Upload File | code | submit_code.png | Submit code instructions for story |
+
+
+<a id="scenario-display-behavior-needed-via-cli-with-json-format"></a>
+### Scenario: [Display behavior needed via CLI with JSON format](#scenario-display-behavior-needed-via-cli-with-json-format) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L1003)
+
+**Steps:**
+```gherkin
+Given CLI has story map loaded with <node_type> <epic_name>
+When User requests behavior for <epic_name> using JSON format
+Then CLI returns JSON with behavior <expected_behavior>
+```
+
+**Examples:**
+| node_type | epic_name | expected_behavior |
 | --- | --- | --- |
-| empty epic | shape | submit_subepic.png |
-| empty sub-epic | shape | submit_subepic.png |
-| story without AC | explore | submit_story.png |
-| story without scenarios | scenarios | submit_ac.png |
-| story without tests | tests | submit_tests.png |
-| story with failing tests | code | submit_code.png |
+| epic | Product Catalog | shape |
+
+**Note:** This scenario validates that `behavior_needed` is accessible for JSON formatting. Full behavior determination logic is comprehensively tested in previous scenarios: [Determine Behavior For Story](#scenario-determine-behavior-for-story), [Determine Behavior For Sub Epic](#scenario-determine-behavior-for-sub-epic), and [Determine Behavior For Epic](#scenario-determine-behavior-for-epic).

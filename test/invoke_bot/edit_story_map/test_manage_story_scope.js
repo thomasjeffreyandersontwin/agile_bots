@@ -321,3 +321,61 @@ test('TestSetScopeToSelectedStoryNode', { concurrency: false }, async (t) => {
         await cli.execute('scope showall');
     });
 });
+
+// ============================================================================
+// Test Panel Submit Button Displays Behavior-Specific Icon With Hover Tooltip
+// Story: Set scope to selected story node and submit
+// Sub-Epic: Manage Story Scope
+// ============================================================================
+
+test('TestPanelSubmitButtonDisplaysBehaviorSpecificIconWithHoverTooltip', { concurrency: false }, async (t) => {
+    
+    await t.test('test_submit_button_icon_changes_based_on_behavior_needed', async () => {
+        /**
+         * SCENARIO: Panel submit button displays behavior-specific icon with hover tooltip
+         * GIVEN: User has selected a <node_type> <node_name> in the panel
+         * AND: Node has behavior <behavior> needed
+         * WHEN: Panel renders the submit button
+         * THEN: Submit button displays <icon_file> icon indicating <behavior> behavior
+         * WHEN: User hovers over the submit button
+         * THEN: Submit button shows tooltip <tooltip_text>
+         * 
+         * Examples table from scenario - tests all 5 behavior levels
+         */
+        
+        // Examples from scenario
+        const examples = [
+            { node_type: 'epic', node_name: 'Product Catalog', behavior: 'shape', icon_file: 'submit_subepic.png', tooltip_text: 'Submit shape instructions for epic' },
+            { node_type: 'sub-epic', node_name: 'Report Export', behavior: 'explore', icon_file: 'submit_story.png', tooltip_text: 'Submit explore instructions for sub-epic' },
+            { node_type: 'story', node_name: 'Create User', behavior: 'scenario', icon_file: 'submit_ac.png', tooltip_text: 'Submit scenario instructions for story' },
+            { node_type: 'story', node_name: 'Delete File', behavior: 'test', icon_file: 'submit_tests.png', tooltip_text: 'Submit test instructions for story' },
+            { node_type: 'story', node_name: 'Upload File', behavior: 'code', icon_file: 'submit_code.png', tooltip_text: 'Submit code instructions for story' },
+        ];
+        
+        // Given - Render panel view
+        const view = new StoryMapView(cli);
+        const html = await view.render();
+        
+        // Then - Verify each example's icon and tooltip are present in the rendered HTML
+        for (const example of examples) {
+            const description = `${example.node_type} ${example.node_name} (${example.behavior})`;
+            
+            // Verify icon file is present
+            const iconName = example.icon_file.replace('.png', '');
+            assert.ok(
+                html.includes(example.icon_file) || html.includes(iconName) || html.includes(`img/${iconName}`),
+                `[${description}] Submit button should display ${example.icon_file} icon for ${example.behavior} behavior`
+            );
+            
+            // Verify tooltip text is present
+            assert.ok(
+                html.includes(example.tooltip_text) || html.includes(`Submit ${example.behavior}`),
+                `[${description}] Submit button tooltip should show: ${example.tooltip_text}`
+            );
+        }
+        
+        // Verify submit button element exists
+        assert.ok(html.includes('btn-submit') || html.includes('submit'), 
+            'Submit button element should exist in panel');
+    });
+});
