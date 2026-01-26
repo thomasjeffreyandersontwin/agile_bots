@@ -23,8 +23,33 @@ const assert = require('assert');
 const path = require('path');
 const os = require('os');
 const fs = require('fs');
-const PanelView = require('../../../src/panel/panel_view');
-const StoryMapView = require('../../../src/panel/story_map_view');
+
+// Prevent direct imports of production code
+const Module = require('module');
+const originalRequire = Module.prototype.require;
+Module.prototype.require = function(...args) {
+    if (args[0] === 'vscode') {
+        return require('../../helpers/mock_vscode');
+    }
+    // Prevent direct imports of production code
+    if (args[0] && (args[0].includes('/src/') || args[0].includes('\\src\\'))) {
+        const stack = new Error().stack;
+        const callerMatch = stack.match(/at .* \((.+):\d+:\d+\)/);
+        const callerPath = callerMatch ? callerMatch[1] : '';
+        throw new Error(
+            `TEST SAFETY VIOLATION: Direct import of production code detected!\n` +
+            `  File: ${callerPath}\n` +
+            `  Import: ${args[0]}\n\n` +
+            `RULE: Tests must NEVER directly import from src/\n` +
+            `SOLUTION: Use test helpers instead.\n`
+        );
+    }
+    return originalRequire.apply(this, args);
+};
+
+// Use test helpers instead of direct production imports
+const PanelViewTestHelper = require('../../helpers/panel_view_test_helper');
+const StoryMapViewTestHelper = require('../../helpers/story_map_view_test_helper');
 
 // Setup - Use temp directory for test workspace to avoid modifying production data
 const repoRoot = path.join(__dirname, '../../..');
@@ -87,9 +112,9 @@ test('TestDisplayStoryScopeHierarchy', { concurrency: false }, async (t) => {
         // Verify scope data
         assert.ok(scopeJSON, 'Should get scope data');
         
-        // Render scope view
-        const view = new StoryMapView(cli);
-        const html = await view.render();
+        // Render scope view using test helper
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const html = await viewHelper.render();
         
         // Verify structure
         assert.ok(html.includes('Scope'), 'Should have Scope header');
@@ -97,7 +122,8 @@ test('TestDisplayStoryScopeHierarchy', { concurrency: false }, async (t) => {
     });
     
     await t.test('test_scope_has_filter_input', async () => {
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Verify filter input
@@ -115,7 +141,8 @@ test('TestFilterStoryScope', { concurrency: false }, async (t) => {
         const scopeJSON = await cli.execute('scope');
         
         // Render view
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Verify filter is applied
@@ -155,7 +182,8 @@ test('TestShowAllScopeThroughPanel', { concurrency: false }, async (t) => {
 test('TestOpenStoryFiles', { concurrency: false }, async (t) => {
     
     await t.test('test_story_graph_and_story_map_links_visible', async () => {
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Verify links exist
@@ -167,7 +195,8 @@ test('TestOpenStoryFiles', { concurrency: false }, async (t) => {
 test('TestScopeView', { concurrency: false }, async (t) => {
     
     await t.test('testScopeSectionRenders', async () => {
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         assert.ok(typeof html === 'string', 'Should return HTML string');
@@ -175,14 +204,16 @@ test('TestScopeView', { concurrency: false }, async (t) => {
     });
     
     await t.test('testScopeHasFilterInput', async () => {
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         assert.ok(html.includes('scopeFilterInput'), 'Should have filter input');
     });
     
     await t.test('testScopeHasHeader', async () => {
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         assert.ok(html.includes('Scope'), 'Should have Scope header');
@@ -197,7 +228,8 @@ test('TestScopeView', { concurrency: false }, async (t) => {
         assert.ok(status, 'Should get status after filter');
         
         // Render view
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         assert.ok(html.includes('Scope'), 'Should render scope section');
     });
@@ -218,14 +250,16 @@ test('TestScopeView', { concurrency: false }, async (t) => {
         // Show all
         await cli.execute('scope showall');
         
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         assert.ok(html.includes('Scope'), 'Should render scope section');
     });
     
     await t.test('testScopeContentStructure', async () => {
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Verify structural elements
@@ -234,7 +268,8 @@ test('TestScopeView', { concurrency: false }, async (t) => {
     });
     
     await t.test('testStoryLinksPresent', async () => {
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // If there's content, verify links
@@ -272,7 +307,8 @@ test('TestSetScopeToSelectedStoryNode', { concurrency: false }, async (t) => {
         await cli.execute(`scope "${selectedEpicName}"`);
         
         // Then - Verify scope is set and panel shows filtered results
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Verify filter input shows the selected epic name
@@ -301,7 +337,8 @@ test('TestSetScopeToSelectedStoryNode', { concurrency: false }, async (t) => {
         await cli.execute(`scope "${selectedSubEpicName}"`);
         
         // Then - Verify scope is set and panel shows filtered results
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Verify the sub-epic name appears in the filtered view
@@ -326,7 +363,8 @@ test('TestSetScopeToSelectedStoryNode', { concurrency: false }, async (t) => {
         await cli.execute(`scope "${selectedStoryName}"`);
         
         // Then - Verify scope is set and panel shows filtered results
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Verify the story name appears in the filtered view
@@ -347,7 +385,8 @@ test('TestSetScopeToSelectedStoryNode', { concurrency: false }, async (t) => {
         
         // Given - No node selected (root is default)
         // When - Render the view with root selected
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Then - Scope To button should be hidden (display: none in initial state)
@@ -401,7 +440,8 @@ test('TestPanelSubmitButtonDisplaysBehaviorSpecificIconWithHoverTooltip', { conc
         ];
         
         // Given - Render panel view
-        const view = new StoryMapView(cli);
+        const viewHelper = new StoryMapViewTestHelper(cli);
+        const view = viewHelper.getView();
         const html = await view.render();
         
         // Then - Verify each example's icon and tooltip are present in the rendered HTML
