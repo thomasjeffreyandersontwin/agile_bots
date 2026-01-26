@@ -11,6 +11,20 @@
  */
 
 const PanelView = require('./panel_view');
+const fs = require('fs');
+const path = require('path');
+
+// Simple file logger
+function log(msg) {
+    const timestamp = new Date().toISOString();
+    try {
+        const logFile = path.join(process.cwd(), 'panel-debug.log');
+        fs.appendFileSync(logFile, `${timestamp} ${msg}\n`);
+    } catch (e) {
+        // Ignore
+    }
+    console.log(msg);
+}
 
 class StoryMapView extends PanelView {
     /**
@@ -19,11 +33,13 @@ class StoryMapView extends PanelView {
      * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
+     * @param {Object} parentView - Parent BotView (optional, for accessing cached botData)
      */
-    constructor(botPathOrCli, webview, extensionUri) {
+    constructor(botPathOrCli, webview, extensionUri, parentView = null) {
         super(botPathOrCli);
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;
+        this.parentView = parentView;
     }
     
     /**
@@ -87,12 +103,13 @@ class StoryMapView extends PanelView {
     async render() {
         // ===== PERFORMANCE: Start story map rendering =====
         const perfRenderStart = performance.now();
-        console.log('[StoryMapView] render() start');
         
+        // Use cached botData from parent if available, otherwise fetch it
         const perfStatusStart = performance.now();
-        const botData = await this.execute('status');
+        const botData = this.parentView?.botData || await this.execute('status');
         const perfStatusEnd = performance.now();
-        console.log(`[StoryMapView] [PERF] execute('status'): ${(perfStatusEnd - perfStatusStart).toFixed(2)}ms`);
+        const dataSource = this.parentView?.botData ? 'cached' : 'fetched';
+        log(`[StoryMapView] [PERF] Bot data (${dataSource}): ${(perfStatusEnd - perfStatusStart).toFixed(2)}ms`);
         
         const scopeData = botData.scope || { type: 'all', filter: '', content: null, graphLinks: [] };
         const vscode = require('vscode');
@@ -281,12 +298,12 @@ class StoryMapView extends PanelView {
             const perfRootNodeStart = performance.now();
             const rootNode = this.renderRootNode(actionButtonsHtml);
             const perfRootNodeEnd = performance.now();
-            console.log(`[StoryMapView] [PERF] renderRootNode: ${(perfRootNodeEnd - perfRootNodeStart).toFixed(2)}ms`);
+            log(`[StoryMapView] [PERF] renderRootNode: ${(perfRootNodeEnd - perfRootNodeStart).toFixed(2)}ms`);
             
             const perfTreeStart = performance.now();
             const treeHtml = this.renderStoryTree(epics, gearIconPath, epicIconPath, pageIconPath, testTubeIconPath, documentIconPath, plusIconPath, subtractIconPath, emptyIconPath);
             const perfTreeEnd = performance.now();
-            console.log(`[StoryMapView] [PERF] renderStoryTree (${epics.length} epics): ${(perfTreeEnd - perfTreeStart).toFixed(2)}ms`);
+            log(`[StoryMapView] [PERF] renderStoryTree (${epics.length} epics): ${(perfTreeEnd - perfTreeStart).toFixed(2)}ms`);
             
             contentHtml = rootNode + treeHtml;
             contentSummary = `${epics.length} epic${epics.length !== 1 ? 's' : ''}`;
@@ -298,7 +315,7 @@ class StoryMapView extends PanelView {
             contentSummary = 'all files';
         }
         const perfContentEnd = performance.now();
-        console.log(`[StoryMapView] [PERF] Content rendering: ${(perfContentEnd - perfContentStart).toFixed(2)}ms`);
+        log(`[StoryMapView] [PERF] Content rendering: ${(perfContentEnd - perfContentStart).toFixed(2)}ms`);
         
         const filterValue = this.escapeHtml(scopeData.filter || '');
         const hasFilter = filterValue.length > 0;
@@ -390,12 +407,12 @@ class StoryMapView extends PanelView {
         </div>
     </div>`;
         const perfAssemblyEnd = performance.now();
-        console.log(`[StoryMapView] [PERF] HTML assembly: ${(perfAssemblyEnd - perfAssemblyStart).toFixed(2)}ms`);
+        log(`[StoryMapView] [PERF] HTML assembly: ${(perfAssemblyEnd - perfAssemblyStart).toFixed(2)}ms`);
         
         // ===== PERFORMANCE: Log total render time =====
         const perfRenderEnd = performance.now();
         const totalRenderTime = (perfRenderEnd - perfRenderStart).toFixed(2);
-        console.log(`[StoryMapView] [PERF] TOTAL render() duration: ${totalRenderTime}ms`);
+        log(`[StoryMapView] [PERF] TOTAL render() duration: ${totalRenderTime}ms`);
         
         return result;
     }

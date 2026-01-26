@@ -17,12 +17,14 @@ class InstructionsSection extends PanelView {
      * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
+     * @param {Object} parentView - Parent BotView (optional, for accessing cached botData)
      */
-    constructor(botPathOrCli, webview, extensionUri) {
+    constructor(botPathOrCli, webview, extensionUri, parentView = null) {
         super(botPathOrCli);
         this.promptContent = '';
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;
+        this.parentView = parentView;
     }
     
     /**
@@ -77,7 +79,8 @@ class InstructionsSection extends PanelView {
 
         // Fallback to status if no cached instructions
         if (!instructionsData || Object.keys(instructionsData).length === 0) {
-            const botData = await this.execute('status');
+            // Use cached botData from parent if available, otherwise fetch it
+            const botData = this.parentView?.botData || await this.execute('status');
             
             // Check if there's a current behavior and action
             const currentBehavior = botData?.behaviors?.current_behavior || botData?.current_behavior;

@@ -16,12 +16,14 @@ class BotHeaderView extends PanelView {
      * @param {string} panelVersion - Panel extension version (optional)
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
+     * @param {Object} parentView - Parent BotView (optional, for accessing cached botData)
      */
-    constructor(botPathOrCli, panelVersion, webview, extensionUri) {
+    constructor(botPathOrCli, panelVersion, webview, extensionUri, parentView = null) {
         super(botPathOrCli);
         this.panelVersion = panelVersion || null;
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;
+        this.parentView = parentView;
     }
     
     /**
@@ -77,8 +79,9 @@ class BotHeaderView extends PanelView {
         console.log('[BotHeaderView] Has webview:', !!this.webview);
         console.log('[BotHeaderView] Has extensionUri:', !!this.extensionUri);
         
-        console.log('[BotHeaderView] Executing status command...');
-        const botData = await this.execute('status');
+        // Use cached botData from parent if available, otherwise fetch it
+        const botData = this.parentView?.botData || await this.execute('status');
+        console.log('[BotHeaderView] Bot data source:', this.parentView?.botData ? 'cached' : 'fetched');
         console.log('[BotHeaderView] Status response:', JSON.stringify(botData).substring(0, 300));
         
         const vscode = require('vscode');

@@ -11,6 +11,20 @@ const BotHeaderView = require('./bot_header_view');
 const BehaviorsView = require('./behaviors_view');
 const StoryMapView = require('./story_map_view');
 const InstructionsSection = require('./instructions_view');
+const fs = require('fs');
+const path = require('path');
+
+// Simple file logger
+function log(msg) {
+    const timestamp = new Date().toISOString();
+    try {
+        const logFile = path.join(process.cwd(), 'panel-debug.log');
+        fs.appendFileSync(logFile, `${timestamp} ${msg}\n`);
+    } catch (e) {
+        // Ignore
+    }
+    console.log(msg);
+}
 
 class BotView extends PanelView {
     /**
@@ -26,12 +40,13 @@ class BotView extends PanelView {
         this.panelVersion = panelVersion || null;
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;
+        this.botData = null; // Cached bot data - populated during render
         
-        // Initialize domain views - pass CLI to all child views
-        this.headerView = new BotHeaderView(botPathOrCli, this.panelVersion, webview, extensionUri);
-        this.behaviorsView = new BehaviorsView(botPathOrCli, webview, extensionUri);
-        this.storyMapView = new StoryMapView(botPathOrCli, webview, extensionUri);
-        this.instructionsSection = new InstructionsSection(botPathOrCli, webview, extensionUri);
+        // Initialize domain views - pass 'this' so they can access this.botData
+        this.headerView = new BotHeaderView(botPathOrCli, this.panelVersion, webview, extensionUri, this);
+        this.behaviorsView = new BehaviorsView(botPathOrCli, webview, extensionUri, this);
+        this.storyMapView = new StoryMapView(botPathOrCli, webview, extensionUri, this);
+        this.instructionsSection = new InstructionsSection(botPathOrCli, webview, extensionUri, this);
     }
     
     /**
@@ -42,39 +57,37 @@ class BotView extends PanelView {
     async render() {
         // ===== PERFORMANCE: BotView render =====
         const perfRenderStart = performance.now();
-        console.log('[BotView] Starting render');
+        log('[BotView] Starting render');
+        
+        // Fetch bot data ONCE and cache it for all child views
+        const perfFetchStart = performance.now();
+        this.botData = await this.execute('status');
+        const perfFetchEnd = performance.now();
+        log(`[BotView] [PERF] Fetch bot data (status): ${(perfFetchEnd - perfFetchStart).toFixed(2)}ms`);
         
         // Header
         const perfHeaderStart = performance.now();
-        console.log('[BotView] Rendering header...');
         const header = await this.headerView.render();
         const perfHeaderEnd = performance.now();
-        console.log('[BotView] Header rendered, length:', header.length);
-        console.log(`[BotView] [PERF] Header render: ${(perfHeaderEnd - perfHeaderStart).toFixed(2)}ms`);
+        log(`[BotView] [PERF] Header render: ${(perfHeaderEnd - perfHeaderStart).toFixed(2)}ms`);
         
         // Behaviors
         const perfBehaviorsStart = performance.now();
-        console.log('[BotView] Rendering behaviors...');
         const behaviors = await this.behaviorsView.render();
         const perfBehaviorsEnd = performance.now();
-        console.log('[BotView] Behaviors rendered, length:', behaviors.length);
-        console.log(`[BotView] [PERF] Behaviors render: ${(perfBehaviorsEnd - perfBehaviorsStart).toFixed(2)}ms`);
+        log(`[BotView] [PERF] Behaviors render: ${(perfBehaviorsEnd - perfBehaviorsStart).toFixed(2)}ms`);
         
         // Story map
         const perfStoryMapStart = performance.now();
-        console.log('[BotView] Rendering story map...');
         const storyMap = await this.storyMapView.render();
         const perfStoryMapEnd = performance.now();
-        console.log('[BotView] Story map rendered, length:', storyMap.length);
-        console.log(`[BotView] [PERF] Story map render: ${(perfStoryMapEnd - perfStoryMapStart).toFixed(2)}ms`);
+        log(`[BotView] [PERF] Story map render: ${(perfStoryMapEnd - perfStoryMapStart).toFixed(2)}ms`);
         
         // Instructions
         const perfInstructionsStart = performance.now();
-        console.log('[BotView] Rendering instructions...');
         const instructions = await this.instructionsSection.render();
         const perfInstructionsEnd = performance.now();
-        console.log('[BotView] Instructions rendered, length:', instructions.length);
-        console.log(`[BotView] [PERF] Instructions render: ${(perfInstructionsEnd - perfInstructionsStart).toFixed(2)}ms`);
+        log(`[BotView] [PERF] Instructions render: ${(perfInstructionsEnd - perfInstructionsStart).toFixed(2)}ms`);
         
         // Final assembly
         const perfAssemblyStart = performance.now();
@@ -87,12 +100,11 @@ class BotView extends PanelView {
             </div>
         `;
         const perfAssemblyEnd = performance.now();
-        console.log(`[BotView] [PERF] Final HTML assembly: ${(perfAssemblyEnd - perfAssemblyStart).toFixed(2)}ms`);
+        log(`[BotView] [PERF] Final HTML assembly: ${(perfAssemblyEnd - perfAssemblyStart).toFixed(2)}ms`);
         
         const perfRenderEnd = performance.now();
         const totalRenderTime = (perfRenderEnd - perfRenderStart).toFixed(2);
-        console.log('[BotView] Render complete, total HTML length:', finalHtml.length);
-        console.log(`[BotView] [PERF] TOTAL render() duration: ${totalRenderTime}ms`);
+        log(`[BotView] [PERF] TOTAL render() duration: ${totalRenderTime}ms`);
         return finalHtml;
     }
     
@@ -138,14 +150,13 @@ class BotView extends PanelView {
     async refresh() {
         // ===== PERFORMANCE: BotView refresh =====
         const perfRefreshStart = performance.now();
-        console.log('[BotView] Starting refresh (execute status)');
         
         // "status" command returns the Bot object itself
         const botJSON = await this.execute('status');
         
         const perfRefreshEnd = performance.now();
         const refreshDuration = (perfRefreshEnd - perfRefreshStart).toFixed(2);
-        console.log(`[BotView] [PERF] refresh() (execute status) duration: ${refreshDuration}ms`);
+        log(`[BotView] [PERF] refresh() (execute status) duration: ${refreshDuration}ms`);
         return botJSON;
     }
     

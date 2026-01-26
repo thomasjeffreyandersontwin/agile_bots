@@ -70,32 +70,13 @@ class StoryNode(ABC):
         # Same as save() since updating the parent updates all children
         self.save()
 
-    def get_required_behavior_instructions(self, action: str) -> str:
+    def get_required_behavior_instructions(self, action: str):
         if not self._bot:
             raise RuntimeError(f"Cannot get instructions: node '{self.name}' has no bot reference")
         
         behavior_needed = self.behavior_needed
-        
-        result = self._bot.execute(behavior_needed, action)
-        
-        if isinstance(result, dict) and result.get('status') == 'error':
-            raise RuntimeError(f"Failed to get instructions: {result.get('message')}")
-        
-        from instructions.instructions import Instructions
-        
-        node_name_lower = self.name.lower().replace('-', ' ').replace('_', ' ')
-        header = f"{behavior_needed} behavior; {action} action; {node_name_lower} functionality\n\n"
-        
-        if isinstance(result, Instructions):
-            base_instructions = result.get('base_instructions', [])
-            instructions_text = '\n'.join(base_instructions) if base_instructions else ''
-            return header + instructions_text
-        elif isinstance(result, dict):
-            return header + json.dumps(result, indent=2)
-        elif isinstance(result, str):
-            return header + result
-        else:
-            return header + str(result)
+        self._bot.scope(f"story {self.name}")
+        return self._bot.execute(behavior_needed, action_name=action)
 
     @staticmethod
     def _parse_steps_from_data(steps_value: Any) -> List[str]:

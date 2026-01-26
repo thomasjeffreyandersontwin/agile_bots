@@ -15,12 +15,14 @@ class BehaviorsView extends PanelView {
      * @param {string|PanelView} botPathOrCli - Bot path or CLI instance
      * @param {Object} webview - VS Code webview instance (optional)
      * @param {Object} extensionUri - Extension URI (optional)
+     * @param {Object} parentView - Parent BotView (optional, for accessing cached botData)
      */
-    constructor(botPathOrCli, webview, extensionUri) {
+    constructor(botPathOrCli, webview, extensionUri, parentView = null) {
         super(botPathOrCli);
         this.expansionState = {};
         this.webview = webview || null;
         this.extensionUri = extensionUri || null;
+        this.parentView = parentView;
     }
     
     /**
@@ -99,7 +101,8 @@ class BehaviorsView extends PanelView {
      * @returns {Promise<string>} HTML string
      */
     async render() {
-        const botData = await this.execute('status');
+        // Use cached botData from parent if available, otherwise fetch it
+        const botData = this.parentView?.botData || await this.execute('status');
         // NO FALLBACKS - let it fail if data is missing
         if (!botData) throw new Error('[BehaviorsView] botData is null/undefined');
         if (!botData.behaviors) throw new Error('[BehaviorsView] No behaviors in response');

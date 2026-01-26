@@ -2,7 +2,7 @@
     "name": "bot-panel",
     "displayName": "Bot Panel",
     "description": "Visual dashboard for bot status showing workflow, scope, behaviors, and instructions",
-    "version": "0.1.470",
+    "version": "0.1.474",
     "publisher": "agilebot",
     "repository": {
         "type": "git",

@@ -9682,6 +9682,724 @@
         }
       ],
       "story_groups": []
+    },
+    {
+      "name": "Test Epic Creation",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Epic Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Parent Validation Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Child SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "DuplicateTestEpic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Child1",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "OrderTestEpic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Epic Button Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic1",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Empty SubEpic Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Empty SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Empty SubEpic Test Epic\\Empty SubEpic\\📄 Story1.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Hierarchy Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            },
+            {
+              "name": "Second SubEpic",
+              "sequential_order": 1.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Story Hierarchy Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic With Stories",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Story Hierarchy Test\\SubEpic With Stories\\📄 Story1.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Scenario Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Scenario SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Test Story",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Scenario Test Epic\\Scenario SubEpic\\📄 Test Story.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Auto Name Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Child1",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Sibling Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Existing Child",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Rename Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Updated Name",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Original Name",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Valid Rename Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "New SubEpic Name",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Old SubEpic Name",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Empty Name Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Valid Name",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Rename Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Authentication",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Authorization",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Invalid Chars Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Valid Name",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Cancel Rename Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Original Name Preserved",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Source Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic To Move",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Target Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic To Move",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Type Validation Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic Level 1",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "SubEpic Level 2",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Valid Target Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic Level 2",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Incompatible Move Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Source SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "SubEpic To Move",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        },
+        {
+          "name": "Target With Stories",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Incompatible Move Test\\Target With Stories\\📄 Story1.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Reorder Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic A",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "SubEpic B",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "SubEpic C",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "SubEpic D",
+          "sequential_order": 3.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Circular Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [
+                {
+                  "name": "Grandchild SubEpic",
+                  "sequential_order": 0.0,
+                  "behavior": null,
+                  "sub_epics": [],
+                  "story_groups": []
+                }
+              ],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Action Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Action SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Target Story",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Action Test Epic\\Action SubEpic\\📄 Target Story.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Graph Modify Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Test SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Create Scenarios",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [
+                    {
+                      "name": "New Scenario",
+                      "sequential_order": 0.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": ""
+                    }
+                  ],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Graph Modify Epic\\Test SubEpic\\📄 Create Scenarios.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Modify SubEpic",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story With Action",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Graph Modify Epic\\Modify SubEpic\\📄 Story With Action.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Externally Added Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
     }
   ],
   "increments": [

@@ -232,7 +232,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             ],
             "code",
             "build",
-            "code behavior; build action; file upload functionality; implement production code"
+            "code behavior; build action; upload file functionality"
         ),
         # Some scenarios tested -> test behavior
         (
@@ -252,7 +252,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             ],
             "tests",
             "build",
-            "tests behavior; build action; file download test coverage; implement test methods for scenarios"
+            "tests behavior; build action; download file functionality"
         ),
         # Scenarios exist but no tests -> tests behavior
         (
@@ -268,7 +268,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             [],
             "tests",
             "validate",
-            "tests behavior; validate action; file deletion test coverage; verify test implementation"
+            "tests behavior; validate action; delete file functionality"
         ),
         # Has AC but no scenarios -> scenarios behavior
         (
@@ -280,7 +280,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             [],
             "scenarios",
             "build",
-            "scenarios behavior; build action; user creation domain language; write detailed Given/When/Then scenarios"
+            "scenarios behavior; build action; create user functionality"
         ),
         # No AC and no scenarios -> exploration behavior
         (
@@ -292,7 +292,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             [],
             "exploration",
             "clarify",
-            "exploration behavior; clarify action; report viewing concepts; add acceptance criteria and domain understanding"
+            "exploration behavior; clarify action; view report functionality"
         ),
         # No AC but scenarios all tested -> code behavior
         (
@@ -312,7 +312,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             ],
             "code",
             "validate",
-            "code behavior; validate action; password reset functionality; verify implementation meets requirements"
+            "code behavior; validate action; reset password functionality"
         ),
         # No AC but some scenarios tested -> tests behavior
         (
@@ -334,7 +334,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             ],
             "tests",
             "clarify",
-            "tests behavior; clarify action; CSV export test requirements; clarify test expectations"
+            "tests behavior; clarify action; export csv functionality"
         ),
         # No AC but scenarios without tests -> tests behavior
         (
@@ -414,16 +414,16 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert helper.bot.behaviors.current.name == expected_behavior
         assert helper.bot.behaviors.current.actions.current.action_name == action
         
-        # And - Instructions are returned
-        assert instructions is not None, "Instructions should not be None"
-        assert len(instructions) > 0, "Instructions should not be empty"
+        # And - Scope is set to the story
+        helper.scope.assert_scope_is_set('story', [story.name])
         
-        # And - Instructions contain required sections for behavior
-        expected_phrases = expected_instructions_contain.split('; ')
-        for phrase in expected_phrases:
-            assert phrase.lower() in instructions.lower(), (
-                f"Expected instruction phrase '{phrase}' not found in instructions"
-            )
+        # And - Instructions object is returned
+        from instructions.instructions import Instructions
+        assert isinstance(instructions, Instructions), "Should return Instructions object"
+        assert instructions.get('behavior_metadata') is not None, "Instructions should have behavior metadata"
+        assert instructions.get('action_metadata') is not None, "Instructions should have action metadata"
+        assert instructions.get('behavior_metadata')['name'] == expected_behavior
+        assert instructions.get('action_metadata')['name'] == action
 
     @pytest.mark.parametrize("sub_epic_name,stories_data,expected_behavior,action,expected_instructions_contain", [
         # Example 1: All stories have tests -> code behavior
@@ -653,16 +653,16 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert helper.bot.behaviors.current.name == expected_behavior
         assert helper.bot.behaviors.current.actions.current.action_name == action
         
-        # And - Instructions are returned
-        assert instructions is not None, "Instructions should not be None"
-        assert len(instructions) > 0, "Instructions should not be empty"
+        # And - Scope is set to the sub-epic
+        helper.scope.assert_scope_is_set('story', [sub_epic.name])
         
-        # And - Instructions contain required sections for behavior
-        expected_phrases = expected_instructions_contain.split('; ')
-        for phrase in expected_phrases:
-            assert phrase.lower() in instructions.lower(), (
-                f"Expected instruction phrase '{phrase}' not found in instructions"
-            )
+        # And - Instructions object is returned
+        from instructions.instructions import Instructions
+        assert isinstance(instructions, Instructions), "Should return Instructions object"
+        assert instructions.get('behavior_metadata') is not None, "Instructions should have behavior metadata"
+        assert instructions.get('action_metadata') is not None, "Instructions should have action metadata"
+        assert instructions.get('behavior_metadata')['name'] == expected_behavior
+        assert instructions.get('action_metadata')['name'] == action
 
     @pytest.mark.parametrize("scenario_name,test_method,expected_behavior", [
         # Scenario with test method -> code behavior
@@ -1089,16 +1089,16 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert helper.bot.behaviors.current.name == expected_behavior
         assert helper.bot.behaviors.current.actions.current.action_name == action
         
-        # And - Instructions are returned
-        assert instructions is not None, "Instructions should not be None"
-        assert len(instructions) > 0, "Instructions should not be empty"
+        # And - Scope is set to the epic
+        helper.scope.assert_scope_is_set('story', [epic.name])
         
-        # And - Instructions contain required sections for behavior
-        expected_phrases = expected_instructions_contain.split('; ')
-        for phrase in expected_phrases:
-            assert phrase.lower() in instructions.lower(), (
-                f"Expected instruction phrase '{phrase}' not found in instructions"
-            )
+        # And - Instructions object is returned
+        from instructions.instructions import Instructions
+        assert isinstance(instructions, Instructions), "Should return Instructions object"
+        assert instructions.get('behavior_metadata') is not None, "Instructions should have behavior metadata"
+        assert instructions.get('action_metadata') is not None, "Instructions should have action metadata"
+        assert instructions.get('behavior_metadata')['name'] == expected_behavior
+        assert instructions.get('action_metadata')['name'] == action
 
     def test_display_behavior_needed_via_cli_and_get_instructions(self, tmp_path):
         """
@@ -1210,18 +1210,21 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         instructions = epic.get_required_behavior_instructions(action)
         
         # Then - Bot is set to behavior and action
-        assert helper.bot.behaviors.current.name == expected_behavior
-        assert helper.bot.behaviors.current.actions.current.action_name == action
+        assert helper.domain.bot.behaviors.current.name == expected_behavior
+        assert helper.domain.bot.behaviors.current.actions.current.action_name == action
         
-        # And - Instructions are returned
-        assert instructions is not None, "Instructions should not be None"
-        assert len(instructions) > 0, "Instructions should not be empty"
+        # And - Instructions object is returned
+        from instructions.instructions import Instructions
+        assert isinstance(instructions, Instructions), "Should return Instructions object"
         
-        # And - Instructions contain expected phrases for shape behavior and build action
-        expected_instructions_contain = "shape behavior; build action; product catalog domain concepts; add sub-epics and stories"
-        expected_phrases = expected_instructions_contain.split('; ')
-        for phrase in expected_phrases:
-            assert phrase.lower() in instructions.lower(), (
-                f"Expected instruction phrase '{phrase}' not found in instructions"
-            )
+        # Format instructions using JSON formatter for CLI
+        from instructions.json_instructions import JSONInstructions
+        formatter = JSONInstructions(instructions)
+        instructions_dict = formatter.to_dict()
+        
+        assert instructions_dict is not None, "Instructions dict should not be None"
+        assert 'behavior_metadata' in instructions_dict
+        assert 'action_metadata' in instructions_dict
+        assert instructions_dict['behavior_metadata']['name'] == expected_behavior
+        assert instructions_dict['action_metadata']['name'] == action
 

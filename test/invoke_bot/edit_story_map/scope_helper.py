@@ -38,14 +38,14 @@ class ScopeTestHelper(BaseHelper):
     
     def assert_scope_is_set(self, scope_type: str, scope_value: list):
         """Assert bot scope is set with specified type and value."""
-        assert self.parent.bot.scope.type == scope_type
-        assert self.parent.bot.scope.value == scope_value
-        assert self.parent.bot.scope.is_active()
+        scope = self.parent.bot.scope()
+        assert scope.type.value == scope_type, f"Expected scope type '{scope_type}', got '{scope.type.value}'"
+        assert scope.value == scope_value, f"Expected scope value {scope_value}, got {scope.value}"
     
     def assert_scope_is_cleared(self):
         """Assert bot scope is cleared (not active)."""
-        assert not self.parent.bot.scope.is_active()
-        assert self.parent.bot.scope.type is None
+        scope = self.parent.bot.scope()
+        assert scope.type.value == 'all' and len(scope.value) == 0
     
     def assert_story_graph_contains_epic(self, filtered_graph: dict, epic_name: str):
         """Assert filtered story graph contains epic."""
