@@ -68,10 +68,13 @@ class BotTestHelper:
             if not config_path.exists():
                 config_path = self.bot_directory / 'config' / 'bot_config.json'
         
+        # Pass workspace_path explicitly so tests use temp workspace, not production
+        # BotPath will use this instance variable instead of loading from config
         self.bot = Bot(
             bot_name='story_bot',
             bot_directory=self.bot_directory,
-            config_path=config_path
+            config_path=config_path,
+            workspace_path=self.workspace
         )
         
         self.state = StateTestHelper(parent=self)
@@ -120,8 +123,10 @@ class BotTestHelper:
                 config_path = self.bot_directory / 'config' / 'bot_config.json'
             
             if config_path.exists():
+                # Pass workspace_path explicitly so tests use temp workspace, not production
                 self.bot = Bot(
                     bot_name='story_bot',
                     bot_directory=self.bot_directory,
-                    config_path=config_path
+                    config_path=config_path,
+                    workspace_path=self.workspace
                 )

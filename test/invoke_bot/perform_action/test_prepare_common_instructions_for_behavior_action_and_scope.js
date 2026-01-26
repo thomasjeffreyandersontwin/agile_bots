@@ -54,6 +54,10 @@ function setupTestWorkspace() {
 
 before(() => {
     setupTestWorkspace();
+    
+    // Verify WORKING_AREA is set to temp directory before creating PanelView
+    const { verifyTestWorkspace } = require('../../helpers/prevent_production_writes');
+    verifyTestWorkspace();
 });
 
 // Use production bot path (has config and behaviors) but temp workspace for data
@@ -102,9 +106,10 @@ test('TestDisplayClarifyInstructions', { concurrency: false }, async (t) => {
         const result = await cli.execute('shape.clarify');
         assert(result, 'Navigation should return result');
         
-        // Render instructions
-        const view = new InstructionsSection(cli);
-        const html = await view.render();
+        // Render instructions - use test helper
+        const instructionsHelper = new InstructionsViewTestHelper(repoRoot);
+        const html = await instructionsHelper.render_html();
+        instructionsHelper.cleanup();
         
         assert(typeof html === 'string', 'Should render HTML string');
     });
@@ -117,9 +122,10 @@ test('TestDisplayStrategyInstructions', { concurrency: false }, async (t) => {
         const result = await cli.execute('shape.strategy');
         assert(result, 'Navigation should return result');
         
-        // Render instructions
-        const view = new InstructionsSection(cli);
-        const html = await view.render();
+        // Render instructions - use test helper
+        const instructionsHelper = new InstructionsViewTestHelper(repoRoot);
+        const html = await instructionsHelper.render_html();
+        instructionsHelper.cleanup();
         
         assert(typeof html === 'string', 'Should render HTML string');
     });

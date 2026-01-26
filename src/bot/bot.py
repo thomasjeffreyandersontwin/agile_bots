@@ -26,7 +26,7 @@ class Bot:
     _active_bot_instance: Optional['Bot'] = None
     _active_bot_name: Optional[str] = None
 
-    def __init__(self, bot_name: str, bot_directory: Path, config_path: Path):
+    def __init__(self, bot_name: str, bot_directory: Path, config_path: Path, workspace_path: Path=None):
         import json; from pathlib import Path as P; log_path = P(r'c:\dev\augmented-teams\.cursor\debug.log'); log_path.parent.mkdir(parents=True, exist_ok=True); log_file = open(log_path, 'a', encoding='utf-8'); log_file.write(json.dumps({'location':'bot.py:24','message':'Bot.__init__ entry','data':{'bot_name':bot_name,'bot_directory_param':str(bot_directory),'bot_directory_name':bot_directory.name if bot_directory else None},'timestamp':__import__('time').time()*1000,'sessionId':'debug-session','hypothesisId':'H1'})+'\n'); log_file.close()
         self.name = bot_name
         self.bot_name = bot_name
@@ -35,7 +35,10 @@ class Bot:
         Bot._active_bot_instance = self
         Bot._active_bot_name = bot_name
         import json; from pathlib import Path as P; log_path = P(r'c:\dev\augmented-teams\.cursor\debug.log'); log_file = open(log_path, 'a', encoding='utf-8'); log_file.write(json.dumps({'location':'bot.py:28','message':'Before BotPaths creation','data':{'bot_directory_to_pass':str(bot_directory)},'timestamp':__import__('time').time()*1000,'sessionId':'debug-session','hypothesisId':'H1'})+'\n'); log_file.close()
-        self.bot_paths = BotPath(bot_directory=bot_directory)
+        
+        # Pass workspace_path to BotPath - BotPath will load from bot_config.json if None
+        # Tests can pass workspace_path explicitly to override without persisting
+        self.bot_paths = BotPath(workspace_path=workspace_path, bot_directory=bot_directory)
         import json; from pathlib import Path as P; log_path = P(r'c:\dev\augmented-teams\.cursor\debug.log'); log_file = open(log_path, 'a', encoding='utf-8'); log_file.write(json.dumps({'location':'bot.py:28','message':'After BotPaths creation','data':{},'timestamp':__import__('time').time()*1000,'sessionId':'debug-session','hypothesisId':'H1'})+'\n'); log_file.close()
         bot_config_path = self.bot_paths.bot_directory / 'bot_config.json'
         if not bot_config_path.exists():

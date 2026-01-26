@@ -87,6 +87,10 @@ function setupTestWorkspace() {
     fs.writeFileSync(storyGraphPath, JSON.stringify(testStoryGraph, null, 2));
     
     process.env.WORKING_AREA = tempWorkspaceDir;
+    
+    // Verify WORKING_AREA is set to temp directory
+    const { verifyTestWorkspace } = require('../../helpers/prevent_production_writes');
+    verifyTestWorkspace();
 }
 
 // Cleanup

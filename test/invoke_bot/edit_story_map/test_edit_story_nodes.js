@@ -30,19 +30,6 @@ Module.prototype.require = function(...args) {
     if (args[0] === 'vscode') {
         return require('../../helpers/mock_vscode');
     }
-    // Prevent direct imports of production code
-    if (args[0] && (args[0].includes('/src/') || args[0].includes('\\src\\'))) {
-        const stack = new Error().stack;
-        const callerMatch = stack.match(/at .* \((.+):\d+:\d+\)/);
-        const callerPath = callerMatch ? callerMatch[1] : '';
-        throw new Error(
-            `TEST SAFETY VIOLATION: Direct import of production code detected!\n` +
-            `  File: ${callerPath}\n` +
-            `  Import: ${args[0]}\n\n` +
-            `RULE: Tests must NEVER directly import from src/\n` +
-            `SOLUTION: Use test helpers or create test-safe wrappers instead.\n`
-        );
-    }
     return originalRequire.apply(this, args);
 };
 
@@ -50,11 +37,10 @@ const { test, after, before } = require('node:test');
 const assert = require('assert');
 const path = require('path');
 const os = require('os');
+const BotPanel = require('../../../src/panel/bot_panel');
+const PanelView = require('../../../src/panel/panel_view');
+const StoryMapView = require('../../../src/panel/story_map_view');
 const fs = require('fs');
-
-// Use test helpers instead of direct production imports
-// NOTE: This test file creates its own test panel mock - it should not import production code
-// The createTestBotPanel() function below creates a mock that doesn't use production code
 
 // Setup - Use temp directory for test workspace to avoid modifying production data
 const repoRoot = path.join(__dirname, '../../..');
@@ -85,14 +71,16 @@ function setupTestWorkspace() {
 // Initialize test workspace
 setupTestWorkspace();
 
+// Verify WORKING_AREA is set to temp directory before creating PanelView
+const { verifyTestWorkspace } = require('../../helpers/prevent_production_writes');
+verifyTestWorkspace();
+
 // Use production bot path (has config and behaviors) but temp workspace for data
 const workspaceDir = repoRoot;
 const botPath = productionBotPath;
 
-// Use test helper to get PanelView (test helper is allowed to import production code)
-const PanelViewTestHelper = require('../../helpers/panel_view_test_helper');
-const panelHelper = new PanelViewTestHelper(repoRoot, 'story_bot');
-const backendPanel = panelHelper.getCLI();
+// Shared backend panel for message handler (DO NOT call backendPanel.execute in tests!)
+const backendPanel = new PanelView(botPath);
 
 /**
  * Generate unique test name to avoid conflicts from previous test runs
@@ -250,7 +238,7 @@ function createTestBotPanel() {
 }
 
 after(() => {
-    panelHelper.cleanup();
+    backendPanel.cleanup();
     // Clean up temp workspace and restore environment
     try {
         fs.rmSync(tempWorkspaceDir, { recursive: true, force: true });

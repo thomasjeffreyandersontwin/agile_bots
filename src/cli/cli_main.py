@@ -64,6 +64,7 @@ def main():
         sys.exit(1)
     
     try:
+        # Pass workspace_directory to Bot so it can create BotPath with explicit workspace
         bot = Bot(
             bot_name=bot_name,
             bot_directory=bot_directory,

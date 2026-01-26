@@ -49,6 +49,10 @@ function setupTestWorkspace() {
     
     // Set environment variable so Python backend uses temp workspace for data
     process.env.WORKING_AREA = tempWorkspaceDir;
+    
+    // Verify WORKING_AREA is set to temp directory before creating PanelView
+    const { verifyTestWorkspace } = require('../../helpers/prevent_production_writes');
+    verifyTestWorkspace();
 }
 
 before(() => {

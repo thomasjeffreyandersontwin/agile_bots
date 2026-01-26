@@ -192,6 +192,7 @@ class InstructionsSection extends PanelView {
         let bullseyeIconPath = '';
         let storyIconPath = '';
         let botSubmitIconPath = '';
+        let copyIconPath = '';
         if (this.webview && this.extensionUri) {
             try {
                 const clipboardUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'clipboard.png');
@@ -214,6 +215,9 @@ class InstructionsSection extends PanelView {
                 
                 const submitUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit.png');
                 botSubmitIconPath = this.webview.asWebviewUri(submitUri).toString();
+                
+                // Use clipboard.png as copy icon (copy.png doesn't exist)
+                copyIconPath = clipboardIconPath;
             } catch (err) {
                 console.error('Failed to create icon URIs:', err);
             }
@@ -611,10 +615,10 @@ class InstructionsSection extends PanelView {
                                 user-select: none;
                             " onclick="toggleSection('raw-instructions-content')">
                                 <span class="expand-icon">▸</span>
-                                <img src="${this.webview && this.extensionUri ? this.webview.asWebviewUri(vscode.Uri.joinPath(this.extensionUri, 'img', 'copy.png')).toString() : ''}" 
+                                ${copyIconPath ? `<img src="${copyIconPath}" 
                                      style="margin-right: 8px; width: 20px; height: 20px; object-fit: contain; opacity: 0.9;" 
                                      alt="Raw" 
-                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+                                     onerror="this.style.display='none';" />` : ''}
                                 <span style="font-weight: 600; font-size: 14px;">Raw Instructions (Test)</span>
                             </div>
                             <div id="raw-instructions-content" class="collapsible-content" style="max-height: 0; overflow: hidden; display: none; transition: max-height 0.3s ease;">

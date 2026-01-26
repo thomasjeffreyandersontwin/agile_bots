@@ -409,7 +409,13 @@ class BehaviorTestHelper(BaseHelper):
         
         # Reload bot to get updated behavior
         config_path = self.parent.bot_directory / 'bot_config.json'
-        bot = Bot(bot_name='story_bot', bot_directory=self.parent.bot_directory, config_path=config_path)
+        # Pass workspace_path explicitly so tests use temp workspace, not production
+        bot = Bot(
+            bot_name='story_bot', 
+            bot_directory=self.parent.bot_directory, 
+            config_path=config_path,
+            workspace_path=self.parent.workspace
+        )
         
         # Navigate to behavior and action
         behavior_obj = bot.behaviors.find_by_name(behavior)
@@ -445,7 +451,13 @@ class BehaviorTestHelper(BaseHelper):
         
         # Reload bot to get updated behavior
         config_path = self.parent.bot_directory / 'bot_config.json'
-        bot = Bot(bot_name='story_bot', bot_directory=self.parent.bot_directory, config_path=config_path)
+        # Pass workspace_path explicitly so tests use temp workspace, not production
+        bot = Bot(
+            bot_name='story_bot', 
+            bot_directory=self.parent.bot_directory, 
+            config_path=config_path,
+            workspace_path=self.parent.workspace
+        )
         
         # Navigate to action and close it (this saves it as completed)
         behavior_obj = bot.behaviors.find_by_name(behavior)

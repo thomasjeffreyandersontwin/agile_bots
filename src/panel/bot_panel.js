@@ -126,12 +126,17 @@ class BotPanel {
     this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
 
     // Update the content when the webview becomes visible
+    // But don't update if we just opened a file (which can cause visibility changes)
     this._panel.onDidChangeViewState(
       (e) => {
-        if (this._panel.visible) {
+        if (this._panel.visible && !this._isOpeningFile) {
           this._update().catch(err => {
             console.error(`[BotPanel] ERROR in visibility update: ${err.message}`);
           });
+        }
+        // Reset flag after a short delay to allow file opening to complete
+        if (this._isOpeningFile) {
+          setTimeout(() => { this._isOpeningFile = false; }, 500);
         }
       },
       null,
@@ -302,7 +307,8 @@ class BotPanel {
             }
             
             if (message.filter && message.filter.trim()) {
-              const scopeCmd = `scope ${message.filter.trim()}`;
+              const filterValue = message.filter.trim();
+              const scopeCmd = `scope "${filterValue}"`;
               this._log('[BotPanel] Executing scope command: ' + scopeCmd);
               
               this._botView.execute(scopeCmd)

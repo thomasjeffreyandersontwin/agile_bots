@@ -1,4 +1,4 @@
-﻿
+
 import json
 from cli.adapters import JSONAdapter
 from cli.base_hierarchical_adapter import BaseBotAdapter
@@ -61,6 +61,8 @@ class JSONBot(BaseBotAdapter, JSONAdapter):
             result['behaviors'] = self._behaviors_adapter.to_dict() if hasattr(self._behaviors_adapter, 'to_dict') else {}
         
         if hasattr(self.bot, '_scope') and self.bot._scope:
+            # Reload scope from file to ensure we have the latest persisted state
+            self.bot._scope.load()
             from cli.adapter_factory import AdapterFactory
             scope_adapter = AdapterFactory.create(self.bot._scope, 'json')
             result['scope'] = scope_adapter.to_dict()

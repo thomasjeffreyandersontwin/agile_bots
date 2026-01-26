@@ -9,6 +9,29 @@ const fs = require('fs');
 const os = require('os');
 const vscode = require("vscode");
 
+/**
+ * Check if a path is a temp directory
+ */
+function isTempPath(filePath) {
+    if (!filePath) return false;
+    const normalized = path.resolve(filePath);
+    const tempDir = os.tmpdir();
+    return normalized.startsWith(tempDir);
+}
+
+/**
+ * Check if a path is the production repo root
+ * This is used to prevent tests from accidentally using production paths
+ */
+function isProductionRepoPath(filePath) {
+    if (!filePath) return false;
+    const normalized = path.resolve(filePath);
+    // Check if it's the repo root by looking for src/ and test/ directories
+    return fs.existsSync(path.join(normalized, 'src')) && 
+           fs.existsSync(path.join(normalized, 'test')) &&
+           fs.existsSync(path.join(normalized, 'bots'));
+}
+
 // End-of-response marker that Python CLI sends after each JSON response
 const END_MARKER = '<<<END_OF_RESPONSE>>>';
 
@@ -66,11 +89,21 @@ class PanelView {
         const testDir = path.join(this._workspaceDir, 'test');
         const pythonPath = `${srcDir}${path.delimiter}${testDir}${path.delimiter}${this._workspaceDir}`;
         
+        // Respect WORKING_AREA if already set, UNLESS it's the production repo root
+        // This allows:
+        // - Tests to use temp directories (safe)
+        // - Users to set custom working areas via UI commands (workspace command)
+        // - Prevents accidental use of production repo root in tests
+        const envWorkingArea = process.env.WORKING_AREA;
+        const workingArea = (envWorkingArea && !isProductionRepoPath(envWorkingArea))
+            ? envWorkingArea 
+            : this._workspaceDir;
+        
         const env = {
             ...process.env,
             PYTHONPATH: pythonPath,
             BOT_DIRECTORY: this._botPath,
-            WORKING_AREA: this._workspaceDir,
+            WORKING_AREA: workingArea,
             CLI_MODE: 'json',
             SUPPRESS_CLI_HEADER: '1',            
             IDE: vscode.env.uriScheme.toLowerCase().includes('cursor') ? 'cursor' : 'vscode'

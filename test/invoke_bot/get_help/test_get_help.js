@@ -47,6 +47,10 @@ function setupTestWorkspace() {
 
 before(() => {
     setupTestWorkspace();
+    
+    // Verify WORKING_AREA is set to temp directory before creating PanelView
+    const { verifyTestWorkspace } = require('../../helpers/prevent_production_writes');
+    verifyTestWorkspace();
 });
 
 // Use production bot path (has config and behaviors) but temp workspace for data

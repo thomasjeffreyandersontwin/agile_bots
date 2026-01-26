@@ -1,8 +1,8 @@
-﻿from pathlib import Path
+from pathlib import Path
 import os
 import json
 import logging
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from bot.workspace import get_workspace_directory, get_bot_directory, get_base_actions_directory, get_python_workspace_root
 from utils import read_json_file
 
@@ -12,13 +12,58 @@ class BotPath:
 
     def __init__(self, workspace_path: Path=None, bot_directory: Path=None):
         self._python_workspace_root = get_python_workspace_root()
-        self._workspace_directory = Path(workspace_path) if workspace_path else get_workspace_directory()
-        import json; from pathlib import Path as P; log_path = P(r'c:\dev\augmented-teams\.cursor\debug.log'); log_path.parent.mkdir(parents=True, exist_ok=True); log_file = open(log_path, 'a', encoding='utf-8'); log_file.write(json.dumps({'location':'bot_path.py:16','message':'BotPath.__init__ setting bot_directory','data':{'bot_directory_param':str(bot_directory) if bot_directory else None,'bot_directory_param_name':bot_directory.name if bot_directory else None,'BOT_DIRECTORY_env':__import__('os').environ.get('BOT_DIRECTORY')},'timestamp':__import__('time').time()*1000,'sessionId':'debug-session','hypothesisId':'H2'})+'\n'); log_file.close()
         self._bot_directory = Path(bot_directory) if bot_directory else get_bot_directory()
-        import json; from pathlib import Path as P; log_path = P(r'c:\dev\augmented-teams\.cursor\debug.log'); log_file = open(log_path, 'a', encoding='utf-8'); log_file.write(json.dumps({'location':'bot_path.py:17','message':'BotPath.__init__ bot_directory set','data':{'final_bot_directory':str(self._bot_directory),'final_bot_directory_name':self._bot_directory.name},'timestamp':__import__('time').time()*1000,'sessionId':'debug-session','hypothesisId':'H2'})+'\n'); log_file.close()
+        
+        # Determine workspace directory:
+        # 1. Use explicitly passed workspace_path (doesn't persist - for tests)
+        # 2. Load from bot_config.json (mcp.env.WORKING_AREA)
+        # 3. Use environment variable (last resort)
+        # NOTE: workspace_directory is independent of bot_directory - don't derive from bot path
+        if workspace_path is not None:
+            # Explicitly passed - use as-is (for tests, doesn't persist)
+            self._workspace_directory = Path(workspace_path).resolve()
+        else:
+            # Try to load from bot_config.json first
+            workspace_from_config = self._load_workspace_from_config()
+            if workspace_from_config:
+                self._workspace_directory = workspace_from_config
+            else:
+                # Last resort: use environment variable
+                self._workspace_directory = get_workspace_directory()
         self._base_actions_directory = self._load_base_actions_directory()
         self._documentation_path = self._load_documentation_path()
 
+    def _load_workspace_from_config(self) -> Optional[Path]:
+        """Load workspace directory from bot_config.json (mcp.env.WORKING_AREA)"""
+        if not self._bot_directory:
+            return None
+            
+        config_paths = [
+            self._bot_directory / 'bot_config.json',
+            self._bot_directory / 'config' / 'bot_config.json'
+        ]
+        
+        for config_path in config_paths:
+            if config_path.exists():
+                try:
+                    config = read_json_file(config_path)
+                    # Check mcp.env.WORKING_AREA first (preferred location)
+                    if 'mcp' in config and 'env' in config['mcp']:
+                        mcp_env = config['mcp']['env']
+                        if 'WORKING_AREA' in mcp_env:
+                            workspace_str = mcp_env['WORKING_AREA']
+                            if workspace_str:
+                                return Path(workspace_str).expanduser().resolve()
+                    # Fallback to top-level WORKING_AREA (legacy)
+                    if 'WORKING_AREA' in config:
+                        workspace_str = config['WORKING_AREA']
+                        if workspace_str:
+                            return Path(workspace_str).expanduser().resolve()
+                except Exception as e:
+                    logger.debug(f'Failed to load WORKING_AREA from {config_path}: {e}')
+        
+        return None
+    
     def _load_base_actions_directory(self) -> Path:
         config_paths = [
             self._bot_directory / 'bot_config.json',
@@ -92,7 +137,8 @@ class BotPath:
     def update_workspace_directory(self, new_path: Path, persist: bool=True) -> Path:
         resolved_path = Path(new_path).expanduser().resolve()
         previous = getattr(self, '_workspace_directory', None)
-        os.environ['WORKING_AREA'] = str(resolved_path)
+        # Update instance variable only - don't mutate global environment variable
+        # This prevents tests from accidentally affecting other instances
         self._workspace_directory = resolved_path
         if persist:
             self._persist_workspace_directory(resolved_path)
