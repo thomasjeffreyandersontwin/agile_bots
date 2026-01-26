@@ -1,6 +1,6 @@
 # 📄 Delete Story Node
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L779)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L787)
 
 **User:** System
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
@@ -20,7 +20,7 @@ Delete Story Node functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-delete-node-without-children"></a>
-### Scenario: [Delete node without children](#scenario-delete-node-without-children) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L788)
+### Scenario: [Delete node without children](#scenario-delete-node-without-children) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L796)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Node is removed and siblings are resequenced
 
 
 <a id="scenario-delete-node-including-children-cascade-delete"></a>
-### Scenario: [Delete node including children (cascade delete)](#scenario-delete-node-including-children-cascade-delete) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L818)
+### Scenario: [Delete node including children (cascade delete)](#scenario-delete-node-including-children-cascade-delete) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L826)
 
 **Steps:**
 ```gherkin
@@ -42,7 +42,7 @@ Then Node and all descendants are deleted
 
 
 <a id="scenario-delete-node-at-different-positions-verifies-resequencing"></a>
-### Scenario: [Delete node at different positions verifies resequencing](#scenario-delete-node-at-different-positions-verifies-resequencing) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L847)
+### Scenario: [Delete node at different positions verifies resequencing](#scenario-delete-node-at-different-positions-verifies-resequencing) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L855)
 
 **Steps:**
 ```gherkin

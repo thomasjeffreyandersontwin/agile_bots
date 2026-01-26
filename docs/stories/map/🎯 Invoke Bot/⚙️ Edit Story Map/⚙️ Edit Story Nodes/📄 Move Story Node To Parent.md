@@ -1,6 +1,6 @@
 # 📄 Move Story Node To Parent
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1032)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1040)
 
 **User:** System
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
@@ -20,7 +20,7 @@ Move Story Node To Parent functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-move-node-to-new-parent-with-default-position"></a>
-### Scenario: [Move node to new parent with default position](#scenario-move-node-to-new-parent-with-default-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1041)
+### Scenario: [Move node to new parent with default position](#scenario-move-node-to-new-parent-with-default-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1049)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ Then Node is removed from source and added to target at last position
 
 
 <a id="scenario-move-node-to-new-parent-with-specified-position"></a>
-### Scenario: [Move node to new parent with specified position](#scenario-move-node-to-new-parent-with-specified-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1076)
+### Scenario: [Move node to new parent with specified position](#scenario-move-node-to-new-parent-with-specified-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1084)
 
 **Steps:**
 ```gherkin
@@ -42,7 +42,7 @@ Then Node is inserted at position and target children shift
 
 
 <a id="scenario-move-node-with-invalid-position-adjusts-to-last"></a>
-### Scenario: [Move node with invalid position adjusts to last](#scenario-move-node-with-invalid-position-adjusts-to-last) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1101)
+### Scenario: [Move node with invalid position adjusts to last](#scenario-move-node-with-invalid-position-adjusts-to-last) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1109)
 
 **Steps:**
 ```gherkin
@@ -53,7 +53,7 @@ Then Position is adjusted to last valid position
 
 
 <a id="scenario-move-node-to-same-parent-at-different-position"></a>
-### Scenario: [Move node to same parent at different position](#scenario-move-node-to-same-parent-at-different-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1126)
+### Scenario: [Move node to same parent at different position](#scenario-move-node-to-same-parent-at-different-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1134)
 
 **Steps:**
 ```gherkin
@@ -64,7 +64,7 @@ Then Children are reordered correctly
 
 
 <a id="scenario-move-node-to-parent-where-it-already-exists-returns-error"></a>
-### Scenario: [Move node to parent where it already exists returns error](#scenario-move-node-to-parent-where-it-already-exists-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1154)
+### Scenario: [Move node to parent where it already exists returns error](#scenario-move-node-to-parent-where-it-already-exists-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1162)
 
 **Steps:**
 ```gherkin
@@ -75,7 +75,7 @@ Then System identifies duplicate and returns error
 
 
 <a id="scenario-move-subepic-to-subepic-with-stories-returns-error"></a>
-### Scenario: [Move SubEpic to SubEpic with Stories returns error](#scenario-move-subepic-to-subepic-with-stories-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1181)
+### Scenario: [Move SubEpic to SubEpic with Stories returns error](#scenario-move-subepic-to-subepic-with-stories-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1189)
 
 **Steps:**
 ```gherkin
@@ -86,7 +86,7 @@ Then System identifies hierarchy violation and returns error
 
 
 <a id="scenario-move-story-to-subepic-with-subepics-returns-error"></a>
-### Scenario: [Move Story to SubEpic with SubEpics returns error](#scenario-move-story-to-subepic-with-subepics-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1205)
+### Scenario: [Move Story to SubEpic with SubEpics returns error](#scenario-move-story-to-subepic-with-subepics-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1213)
 
 **Steps:**
 ```gherkin
@@ -97,7 +97,7 @@ Then System identifies hierarchy violation and returns error
 
 
 <a id="scenario-move-node-to-create-circular-reference-returns-error"></a>
-### Scenario: [Move node to create circular reference returns error](#scenario-move-node-to-create-circular-reference-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1229)
+### Scenario: [Move node to create circular reference returns error](#scenario-move-node-to-create-circular-reference-returns-error) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1237)
 
 **Steps:**
 ```gherkin
@@ -108,7 +108,7 @@ Then System identifies circular reference and returns error
 
 
 <a id="scenario-move-story-node-to-new-sub-epic-moves-associative-test-class-to-correct-test-epic-sub-epic-file"></a>
-### Scenario: [Move story node to new sub epic moves associative test class to correct test epic sub-epic file](#scenario-move-story-node-to-new-sub-epic-moves-associative-test-class-to-correct-test-epic-sub-epic-file) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1251)
+### Scenario: [Move story node to new sub epic moves associative test class to correct test epic sub-epic file](#scenario-move-story-node-to-new-sub-epic-moves-associative-test-class-to-correct-test-epic-sub-epic-file) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1259)
 
 **Steps:**
 ```gherkin

@@ -1571,6 +1571,76 @@ class BotPanel {
                 e.stopPropagation();
                 console.log('═══════════════════════════════════════════════════════');
             }
+            
+            // Handle behavior and action clicks (CSP-safe event delegation)
+            // Traverse up the DOM tree to find element with data-action attribute
+            let actionElement = target;
+            let action = actionElement.getAttribute('data-action');
+            let searchDepth = 0;
+            while (!action && actionElement && actionElement.parentElement && searchDepth < 5) {
+                actionElement = actionElement.parentElement;
+                action = actionElement.getAttribute('data-action');
+                searchDepth++;
+            }
+            
+            if (action) {
+                console.log('[WebView] Behavior/Action click detected, action:', action);
+                vscode.postMessage({
+                    command: 'logToFile',
+                    message: '[WebView] Behavior/Action click: action=' + action + ', element=' + actionElement.tagName + ', className=' + actionElement.className
+                });
+                
+                if (action === 'navigateToBehavior') {
+                    const behaviorName = actionElement.getAttribute('data-behavior-name');
+                    if (behaviorName && window.navigateToBehavior) {
+                        console.log('[WebView] Calling navigateToBehavior with:', behaviorName);
+                        window.navigateToBehavior(behaviorName);
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                } else if (action === 'navigateToAction') {
+                    const behaviorName = actionElement.getAttribute('data-behavior-name');
+                    const actionName = actionElement.getAttribute('data-action-name');
+                    if (behaviorName && actionName && window.navigateToAction) {
+                        console.log('[WebView] Calling navigateToAction with:', behaviorName, actionName);
+                        window.navigateToAction(behaviorName, actionName);
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                } else if (action === 'toggleCollapse') {
+                    const targetId = actionElement.getAttribute('data-target');
+                    if (targetId && window.toggleCollapse) {
+                        console.log('[WebView] Calling toggleCollapse with:', targetId);
+                        window.toggleCollapse(targetId);
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                } else if (action === 'getBehaviorRules') {
+                    const behaviorName = actionElement.getAttribute('data-behavior-name');
+                    if (behaviorName && window.getBehaviorRules) {
+                        console.log('[WebView] Calling getBehaviorRules with:', behaviorName);
+                        window.getBehaviorRules(behaviorName);
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                } else if (action === 'executeNavigationCommand') {
+                    const command = actionElement.getAttribute('data-command');
+                    if (command && window.executeNavigationCommand) {
+                        console.log('[WebView] Calling executeNavigationCommand with:', command);
+                        window.executeNavigationCommand(command);
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                } else if (action === 'toggleSection') {
+                    const sectionId = actionElement.getAttribute('data-section-id');
+                    if (sectionId && window.toggleSection) {
+                        console.log('[WebView] Calling toggleSection with:', sectionId);
+                        window.toggleSection(sectionId);
+                        e.stopPropagation();
+                        e.preventDefault();
+                    }
+                }
+            }
         }, true); // Use capture phase to catch all clicks
         
         // Handle double-click on story nodes to enable edit mode

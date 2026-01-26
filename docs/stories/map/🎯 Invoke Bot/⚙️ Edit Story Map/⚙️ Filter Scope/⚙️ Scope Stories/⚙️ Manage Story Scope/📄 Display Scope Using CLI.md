@@ -1,6 +1,6 @@
 # 📄 Display Scope Using CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L119)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L120)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Filter Scope](../..) / [⚙️ Scope Stories](..) / [⚙️ Manage Story Scope](.)  
@@ -20,7 +20,7 @@ Display Scope Using CLI functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-display-scope-shows-current-scope-via-cli"></a>
-### Scenario: [Display scope shows current scope via CLI](#scenario-display-scope-shows-current-scope-via-cli) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L131)
+### Scenario: [Display scope shows current scope via CLI](#scenario-display-scope-shows-current-scope-via-cli) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.py#L132)
 
 **Steps:**
 ```gherkin

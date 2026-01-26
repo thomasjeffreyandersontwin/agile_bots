@@ -74,7 +74,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-scenario-has-properties"></a>
-### Scenario: [Scenario Has Properties](#scenario-scenario-has-properties) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L141)
+### Scenario: [Scenario Has Properties](#scenario-scenario-has-properties) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L143)
 
 **Steps:**
 ```gherkin
@@ -83,7 +83,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-scenario-default-test-method"></a>
-### Scenario: [Scenario Default Test Method](#scenario-scenario-default-test-method) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L160)
+### Scenario: [Scenario Default Test Method](#scenario-scenario-default-test-method) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L162)
 
 **Steps:**
 ```gherkin
@@ -92,7 +92,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-story-has-scenario-outlines"></a>
-### Scenario: [Story Has Scenario Outlines](#scenario-story-has-scenario-outlines) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L173)
+### Scenario: [Story Has Scenario Outlines](#scenario-story-has-scenario-outlines) (happy_path)
 
 **Steps:**
 ```gherkin
@@ -101,7 +101,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-scenario-outline-has-examples"></a>
-### Scenario: [Scenario Outline Has Examples](#scenario-scenario-outline-has-examples) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L188)
+### Scenario: [Scenario Outline Has Examples](#scenario-scenario-outline-has-examples) (happy_path)
 
 **Steps:**
 ```gherkin
@@ -110,7 +110,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-story-default-test-class"></a>
-### Scenario: [Story Default Test Class](#scenario-story-default-test-class) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L205)
+### Scenario: [Story Default Test Class](#scenario-story-default-test-class) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L209)
 
 **Steps:**
 ```gherkin
@@ -119,7 +119,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-story-map-walk-traverses-all-nodes"></a>
-### Scenario: [Story Map Walk Traverses All Nodes](#scenario-story-map-walk-traverses-all-nodes) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L217)
+### Scenario: [Story Map Walk Traverses All Nodes](#scenario-story-map-walk-traverses-all-nodes) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L221)
 
 **Steps:**
 ```gherkin
@@ -128,7 +128,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-map-location-for-epic"></a>
-### Scenario: [Map Location For Epic](#scenario-map-location-for-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L238)
+### Scenario: [Map Location For Epic](#scenario-map-location-for-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L242)
 
 **Steps:**
 ```gherkin
@@ -137,7 +137,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-map-location-for-sub-epic"></a>
-### Scenario: [Map Location For Sub Epic](#scenario-map-location-for-sub-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L251)
+### Scenario: [Map Location For Sub Epic](#scenario-map-location-for-sub-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L255)
 
 **Steps:**
 ```gherkin
@@ -146,7 +146,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-map-location-for-story"></a>
-### Scenario: [Map Location For Story](#scenario-map-location-for-story) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L264)
+### Scenario: [Map Location For Story](#scenario-map-location-for-story) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L268)
 
 **Steps:**
 ```gherkin
@@ -155,7 +155,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-scenario-map-location"></a>
-### Scenario: [Scenario Map Location](#scenario-scenario-map-location) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L277)
+### Scenario: [Scenario Map Location](#scenario-scenario-map-location) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L281)
 
 **Steps:**
 ```gherkin
@@ -164,7 +164,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-scenario-outline-map-location"></a>
-### Scenario: [Scenario Outline Map Location](#scenario-scenario-outline-map-location) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L290)
+### Scenario: [Scenario Outline Map Location](#scenario-scenario-outline-map-location) (happy_path)
 
 **Steps:**
 ```gherkin
@@ -173,7 +173,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-from-bot-loads-story-graph"></a>
-### Scenario: [From Bot Loads Story Graph](#scenario-from-bot-loads-story-graph) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L303)
+### Scenario: [From Bot Loads Story Graph](#scenario-from-bot-loads-story-graph) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L309)
 
 **Steps:**
 ```gherkin
@@ -182,7 +182,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-from-bot-with-path"></a>
-### Scenario: [From Bot With Path](#scenario-from-bot-with-path) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L316)
+### Scenario: [From Bot With Path](#scenario-from-bot-with-path) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L322)
 
 **Steps:**
 ```gherkin
@@ -191,7 +191,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-scenario-map-location"></a>
-### Scenario: [Scenario Map Location](#scenario-scenario-map-location) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L332)
+### Scenario: [Scenario Map Location](#scenario-scenario-map-location) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L338)
 
 **Steps:**
 ```gherkin
@@ -200,7 +200,7 @@ Navigate Story Graph functionality for the mob minion system.
 
 
 <a id="scenario-scenario-outline-map-location"></a>
-### Scenario: [Scenario Outline Map Location](#scenario-scenario-outline-map-location) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L345)
+### Scenario: [Scenario Outline Map Location](#scenario-scenario-outline-map-location) (happy_path)
 
 **Steps:**
 ```gherkin

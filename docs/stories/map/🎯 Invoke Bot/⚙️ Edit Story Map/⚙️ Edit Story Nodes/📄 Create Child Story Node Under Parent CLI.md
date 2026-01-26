@@ -1,6 +1,6 @@
 # 📄 Create Child Story Node Under Parent CLI
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1551)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1559)
 
 **User:** User
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
@@ -51,7 +51,7 @@ Given Story Graph is initialized
 ## Scenarios
 
 <a id="scenario-user-creates-child-with-dot-notation-at-default-position"></a>
-### Scenario: [User creates child with dot notation at default position](#scenario-user-creates-child-with-dot-notation-at-default-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1564)
+### Scenario: [User creates child with dot notation at default position](#scenario-user-creates-child-with-dot-notation-at-default-position) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1572)
 
 **Steps:**
 ```gherkin
@@ -67,7 +67,7 @@ And Story Graph shows "Manage Bot Information" at position 2 under "Invoke Bot"
 
 
 <a id="scenario-user-creates-child-with-position-specified"></a>
-### Scenario: [User creates child with position specified](#scenario-user-creates-child-with-position-specified) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1593)
+### Scenario: [User creates child with position specified](#scenario-user-creates-child-with-position-specified) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1601)
 
 **Steps:**
 ```gherkin
@@ -83,7 +83,7 @@ And Story Graph shows children in order: "SubEpic A", "Info", "SubEpic B", "SubE
 
 
 <a id="scenario-user-creates-child-with-invalid-position-and-cli-adjusts"></a>
-### Scenario: [User creates child with invalid position and CLI adjusts](#scenario-user-creates-child-with-invalid-position-and-cli-adjusts) (edge_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L607)
+### Scenario: [User creates child with invalid position and CLI adjusts](#scenario-user-creates-child-with-invalid-position-and-cli-adjusts) (edge_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L615)
 
 **Steps:**
 ```gherkin
@@ -99,7 +99,7 @@ And Story Graph shows "Info" as last child
 
 
 <a id="scenario-user-enters-non-existent-parent-path-and-cli-outputs-error"></a>
-### Scenario: [User enters non-existent parent path and CLI outputs error](#scenario-user-enters-non-existent-parent-path-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1649)
+### Scenario: [User enters non-existent parent path and CLI outputs error](#scenario-user-enters-non-existent-parent-path-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1657)
 
 **Steps:**
 ```gherkin
@@ -115,7 +115,7 @@ And CLI does not create SubEpic
 
 
 <a id="scenario-user-enters-incompatible-child-type-and-cli-outputs-error"></a>
-### Scenario: [User enters incompatible child type and CLI outputs error](#scenario-user-enters-incompatible-child-type-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1673)
+### Scenario: [User enters incompatible child type and CLI outputs error](#scenario-user-enters-incompatible-child-type-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1681)
 
 **Steps:**
 ```gherkin
@@ -131,7 +131,7 @@ And CLI does not create SubEpic "OAuth Flow"
 
 
 <a id="scenario-user-enters-duplicate-name-and-cli-outputs-error"></a>
-### Scenario: [User enters duplicate name and CLI outputs error](#scenario-user-enters-duplicate-name-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1697)
+### Scenario: [User enters duplicate name and CLI outputs error](#scenario-user-enters-duplicate-name-and-cli-outputs-error) (error_case)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1705)
 
 **Steps:**
 ```gherkin

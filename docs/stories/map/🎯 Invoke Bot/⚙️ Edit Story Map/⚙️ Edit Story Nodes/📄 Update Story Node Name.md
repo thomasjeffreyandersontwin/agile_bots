@@ -1,6 +1,6 @@
 # 📄 Update Story Node Name
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L870)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L878)
 
 **User:** Bot Behavior
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Edit Story Nodes](.)  
@@ -20,7 +20,7 @@ Update Story Node Name functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-rename-node-with-valid-name-across-hierarchy-levels"></a>
-### Scenario: [Rename node with valid name across hierarchy levels](#scenario-rename-node-with-valid-name-across-hierarchy-levels) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L880)
+### Scenario: [Rename node with valid name across hierarchy levels](#scenario-rename-node-with-valid-name-across-hierarchy-levels) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L888)
 
 **Steps:**
 ```gherkin
@@ -31,7 +31,7 @@ THEN: Node name is updated and accessible by new name
 
 
 <a id="scenario-rename-node-with-empty-or-whitespace-name-returns-error"></a>
-### Scenario: [Rename node with empty or whitespace name returns error](#scenario-rename-node-with-empty-or-whitespace-name-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L911)
+### Scenario: [Rename node with empty or whitespace name returns error](#scenario-rename-node-with-empty-or-whitespace-name-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L919)
 
 **Steps:**
 ```gherkin
@@ -42,7 +42,7 @@ THEN: System identifies invalid name and returns error
 
 
 <a id="scenario-rename-node-with-duplicate-sibling-name-returns-error"></a>
-### Scenario: [Rename node with duplicate sibling name returns error](#scenario-rename-node-with-duplicate-sibling-name-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L941)
+### Scenario: [Rename node with duplicate sibling name returns error](#scenario-rename-node-with-duplicate-sibling-name-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L949)
 
 **Steps:**
 ```gherkin
@@ -53,7 +53,7 @@ THEN: System identifies duplicate and returns error
 
 
 <a id="scenario-rename-node-with-valid-special-characters"></a>
-### Scenario: [Rename node with valid special characters](#scenario-rename-node-with-valid-special-characters) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L974)
+### Scenario: [Rename node with valid special characters](#scenario-rename-node-with-valid-special-characters) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L982)
 
 **Steps:**
 ```gherkin
@@ -64,7 +64,7 @@ THEN: Name is updated and special characters are preserved
 
 
 <a id="scenario-rename-node-with-invalid-special-characters-returns-error"></a>
-### Scenario: [Rename node with invalid special characters returns error](#scenario-rename-node-with-invalid-special-characters-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1006)
+### Scenario: [Rename node with invalid special characters returns error](#scenario-rename-node-with-invalid-special-characters-returns-error) (error)  | [Test](/test/invoke_bot/edit_story_map/test_edit_story_nodes.py#L1014)
 
 **Steps:**
 ```gherkin

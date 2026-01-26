@@ -172,7 +172,7 @@ class BehaviorsView extends PanelView {
         return `
     <div class="section card-primary">
         <div class="collapsible-section expanded">
-            <div class="collapsible-header" onclick="toggleSection('behaviors-content')" style="
+            <div class="collapsible-header" data-action="toggleSection" data-section-id="behaviors-content" style="
                 cursor: pointer;
                 padding: 4px 5px;
                 background-color: transparent;
@@ -190,7 +190,7 @@ class BehaviorsView extends PanelView {
                 <div class="card-secondary" style="padding: 5px;">
                     ${behaviorsHtml}
                     <div style="margin-top: 8px; padding-top: 5px; border-top: none; display: flex; gap: 4px; flex-wrap: wrap;">
-                        <button onclick="executeNavigationCommand('back')" title="Back - Go to previous action" style="
+                        <button class="nav-command-button" data-action="executeNavigationCommand" data-command="back" title="Back - Go to previous action" style="
                             background-color: var(--vscode-button-secondaryBackground);
                             color: var(--vscode-button-secondaryForeground);
                             border: none;
@@ -204,7 +204,7 @@ class BehaviorsView extends PanelView {
                             align-items: center;
                             justify-content: center;
                         ">${leftIconPath ? `<img src="${leftIconPath}" style="width: 20px; height: 20px; object-fit: contain;" alt="Back" />` : ''}</button>
-                        <button onclick="executeNavigationCommand('current')" title="Current - Show current action details" style="
+                        <button class="nav-command-button" data-action="executeNavigationCommand" data-command="current" title="Current - Show current action details" style="
                             background-color: var(--vscode-button-secondaryBackground);
                             color: var(--vscode-button-secondaryForeground);
                             border: none;
@@ -218,7 +218,7 @@ class BehaviorsView extends PanelView {
                             align-items: center;
                             justify-content: center;
                         ">${pointerIconPath ? `<img src="${pointerIconPath}" style="width: 20px; height: 20px; object-fit: contain;" alt="Current" />` : ''}</button>
-                        <button onclick="executeNavigationCommand('next')" title="Next - Advance to next action" style="
+                        <button class="nav-command-button" data-action="executeNavigationCommand" data-command="next" title="Next - Advance to next action" style="
                             background-color: var(--vscode-button-secondaryBackground);
                             color: var(--vscode-button-secondaryForeground);
                             border: none;
@@ -253,7 +253,7 @@ class BehaviorsView extends PanelView {
         return `
     <div class="section card-primary">
         <div class="collapsible-section expanded">
-            <div class="collapsible-header" onclick="toggleSection('behaviors-content')" style="
+            <div class="collapsible-header" data-action="toggleSection" data-section-id="behaviors-content" style="
                 cursor: pointer;
                 padding: 4px 5px;
                 background-color: transparent;
@@ -271,7 +271,7 @@ class BehaviorsView extends PanelView {
                 <div class="card-secondary" style="padding: 5px;">
                     <div class="empty-state">No behaviors available</div>
                     <div style="margin-top: 8px; padding-top: 5px; border-top: none; display: flex; gap: 4px; flex-wrap: wrap;">
-                        <button onclick="executeNavigationCommand('back')" title="Back - Go to previous action" style="
+                        <button class="nav-command-button" data-action="executeNavigationCommand" data-command="back" title="Back - Go to previous action" style="
                             background-color: var(--vscode-button-secondaryBackground);
                             color: var(--vscode-button-secondaryForeground);
                             border: none;
@@ -285,7 +285,7 @@ class BehaviorsView extends PanelView {
                             align-items: center;
                             justify-content: center;
                         ">${leftIconPath ? `<img src="${leftIconPath}" style="width: 20px; height: 20px; object-fit: contain;" alt="Back" />` : ''}</button>
-                        <button onclick="executeNavigationCommand('current')" title="Current - Show current action details" style="
+                        <button class="nav-command-button" data-action="executeNavigationCommand" data-command="current" title="Current - Show current action details" style="
                             background-color: var(--vscode-button-secondaryBackground);
                             color: var(--vscode-button-secondaryForeground);
                             border: none;
@@ -299,7 +299,7 @@ class BehaviorsView extends PanelView {
                             align-items: center;
                             justify-content: center;
                         ">${pointerIconPath ? `<img src="${pointerIconPath}" style="width: 20px; height: 20px; object-fit: contain;" alt="Current" />` : ''}</button>
-                        <button onclick="executeNavigationCommand('next')" title="Next - Advance to next action" style="
+                        <button class="nav-command-button" data-action="executeNavigationCommand" data-command="next" title="Next - Advance to next action" style="
                             background-color: var(--vscode-button-secondaryBackground);
                             color: var(--vscode-button-secondaryForeground);
                             border: none;
@@ -358,7 +358,7 @@ class BehaviorsView extends PanelView {
         const behaviorDisplay = behaviorExpanded ? 'block' : 'none';
         
         const behaviorActiveClass = isCurrent ? ' active' : '';
-        let html = `<div class="collapsible-header card-item${behaviorActiveClass}" data-behavior="${behaviorName}" title="${behaviorTooltip}"><span id="${behaviorId}-icon" class="${behaviorIconClass}" style="display: inline-block; min-width: 12px; cursor: pointer;" onclick="toggleCollapse('${behaviorId}')" data-plus="${plusIconPath}" data-subtract="${subtractIconPath}">${plusIconPath && subtractIconPath ? `<img src="${behaviorIconSrc}" alt="${behaviorIconAlt}" style="width: 12px; height: 12px; vertical-align: middle;" />` : ''}</span> <span style="cursor: pointer; text-decoration: underline;" onclick="navigateToBehavior('${behaviorNameJs}')">${behaviorMarker}${behaviorName}</span>${clipboardIconPath ? `<button onclick="event.stopPropagation(); getBehaviorRules('${behaviorNameJs}');" style="background: transparent; border: none; padding: 0 0 0 8px; margin: 0; cursor: pointer; vertical-align: middle; display: inline-flex; align-items: center; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Get rules for ${behaviorName} and send to chat"><img src="${clipboardIconPath}" style="width: 16px; height: 16px; object-fit: contain;" alt="Get Rules" /></button>` : ''}</div>`;
+        let html = `<div class="collapsible-header card-item${behaviorActiveClass}" data-behavior="${behaviorName}" title="${behaviorTooltip}"><span id="${behaviorId}-icon" class="${behaviorIconClass}" style="display: inline-block; min-width: 12px; cursor: pointer;" data-action="toggleCollapse" data-target="${behaviorId}" data-plus="${plusIconPath}" data-subtract="${subtractIconPath}">${plusIconPath && subtractIconPath ? `<img src="${behaviorIconSrc}" alt="${behaviorIconAlt}" style="width: 12px; height: 12px; vertical-align: middle;" />` : ''}</span> <span class="behavior-name-clickable" style="cursor: pointer; text-decoration: underline;" data-action="navigateToBehavior" data-behavior-name="${behaviorNameJs}">${behaviorMarker}${behaviorName}</span>${clipboardIconPath ? `<button class="behavior-rules-button" data-action="getBehaviorRules" data-behavior-name="${behaviorNameJs}" style="background: transparent; border: none; padding: 0 0 0 8px; margin: 0; cursor: pointer; vertical-align: middle; display: inline-flex; align-items: center; transition: opacity 0.15s ease;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'" title="Get rules for ${behaviorName} and send to chat"><img src="${clipboardIconPath}" style="width: 16px; height: 16px; object-fit: contain;" alt="Get Rules" /></button>` : ''}</div>`;
         
         // Always create collapsible content, even if empty
         const actionsArray = behavior.actions?.all_actions || behavior.actions || [];
@@ -426,7 +426,8 @@ class BehaviorsView extends PanelView {
         }
         
         const actionActiveClass = isCurrent ? ' active' : '';
-        const actionHtml = `<div class="collapsible-header action-item card-item${actionActiveClass}" title="${actionTooltip}"><span style="cursor: pointer; text-decoration: underline;" onclick="navigateToAction('${behaviorName}', '${actionName}')">${actionMarker}${actionName}</span></div>`;
+        const actionNameJs = this.escapeForJs(action.action_name || action.name || '');
+        const actionHtml = `<div class="collapsible-header action-item card-item${actionActiveClass}" title="${actionTooltip}"><span class="action-name-clickable" style="cursor: pointer; text-decoration: underline;" data-action="navigateToAction" data-behavior-name="${behaviorName}" data-action-name="${actionNameJs}">${actionMarker}${actionName}</span></div>`;
         
         // Log final HTML
         const logEntry3 = `  Generated HTML: ${actionHtml.substring(0, 200)}...\n`;

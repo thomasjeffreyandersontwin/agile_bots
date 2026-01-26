@@ -1,6 +1,6 @@
 # 📄 Set scope to selected story node
 
-**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L214)
+**Navigation:** [📄‹ Story Map](../../../../story-map.drawio) | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L263)
 
 **User:** System
 **Path:** [🎯 Invoke Bot](../..) / [⚙️ Edit Story Map](..) / [⚙️ Filter Scope](../..) / [⚙️ Scope Stories](..) / [⚙️ Manage Story Scope](.)  
@@ -20,7 +20,7 @@ Set scope to selected story node functionality for the mob minion system.
 ## Scenarios
 
 <a id="scenario-user-sets-scope-to-selected-epic"></a>
-### Scenario: [User sets scope to selected epic](#scenario-user-sets-scope-to-selected-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L216)
+### Scenario: [User sets scope to selected epic](#scenario-user-sets-scope-to-selected-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L265)
 
 **Steps:**
 ```gherkin
@@ -33,7 +33,7 @@ And Panel displays only story nodes matching Invoke Bot
 
 
 <a id="scenario-user-sets-scope-to-selected-sub-epic"></a>
-### Scenario: [User sets scope to selected sub-epic](#scenario-user-sets-scope-to-selected-sub-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L245)
+### Scenario: [User sets scope to selected sub-epic](#scenario-user-sets-scope-to-selected-sub-epic) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L294)
 
 **Steps:**
 ```gherkin
@@ -46,7 +46,7 @@ And Panel displays only story nodes matching Edit Story Map
 
 
 <a id="scenario-user-sets-scope-to-selected-story"></a>
-### Scenario: [User sets scope to selected story](#scenario-user-sets-scope-to-selected-story) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L270)
+### Scenario: [User sets scope to selected story](#scenario-user-sets-scope-to-selected-story) (happy_path)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L319)
 
 **Steps:**
 ```gherkin
@@ -59,7 +59,7 @@ And Panel displays only story nodes matching Display Story Hierarchy Panel
 
 
 <a id="scenario-user-attempts-to-set-scope-without-selecting-a-node"></a>
-### Scenario: [User attempts to set scope without selecting a node](#scenario-user-attempts-to-set-scope-without-selecting-a-node) (edge_case)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L295)
+### Scenario: [User attempts to set scope without selecting a node](#scenario-user-attempts-to-set-scope-without-selecting-a-node) (edge_case)  | [Test](/test/invoke_bot/edit_story_map/test_manage_story_scope.js#L344)
 
 **Steps:**
 ```gherkin
