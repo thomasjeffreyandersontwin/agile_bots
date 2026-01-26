@@ -2897,49 +2897,125 @@
                                     {
                                       "example_name": "Example 1: All stories have tests - code behavior",
                                       "sub_epic": {
-                                        "columns": ["sub_epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["User Authentication", "code", "build", "code behavior; build action; authentication functionality; implement production code for feature"]
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "User Authentication",
+                                          "code",
+                                          "build",
+                                          "code behavior; build action; authentication functionality; implement production code for feature"
+                                        ]
                                       },
                                       "stories": [
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Login User", "test_login_user.py", "Valid credentials accepted; Invalid credentials rejected; Account locked after 3 failures", "code"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Login User",
+                                              "test_login_user.py",
+                                              "Valid credentials accepted; Invalid credentials rejected; Account locked after 3 failures",
+                                              "code"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User enters valid username and password and sees dashboard", "test_user_enters_valid_username_and_password_and_sees_dashboard"],
-                                              ["User enters invalid password and sees error message", "test_user_enters_invalid_password_and_sees_error_message"],
-                                              ["User fails login 3 times and account is locked", "test_user_fails_login_3_times_and_account_is_locked"]
+                                              [
+                                                "User enters valid username and password and sees dashboard",
+                                                "test_user_enters_valid_username_and_password_and_sees_dashboard"
+                                              ],
+                                              [
+                                                "User enters invalid password and sees error message",
+                                                "test_user_enters_invalid_password_and_sees_error_message"
+                                              ],
+                                              [
+                                                "User fails login 3 times and account is locked",
+                                                "test_user_fails_login_3_times_and_account_is_locked"
+                                              ]
                                             ]
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Logout User", "test_logout_user.py", "Session terminated on logout; User redirected to login page; Auth token invalidated", "code"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Logout User",
+                                              "test_logout_user.py",
+                                              "Session terminated on logout; User redirected to login page; Auth token invalidated",
+                                              "code"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User clicks logout button and session ends", "test_user_clicks_logout_button_and_session_ends"],
-                                              ["User clicks logout and is redirected to login", "test_user_clicks_logout_and_is_redirected_to_login"],
-                                              ["Logged out user cannot access protected pages", "test_logged_out_user_cannot_access_protected_pages"]
+                                              [
+                                                "User clicks logout button and session ends",
+                                                "test_user_clicks_logout_button_and_session_ends"
+                                              ],
+                                              [
+                                                "User clicks logout and is redirected to login",
+                                                "test_user_clicks_logout_and_is_redirected_to_login"
+                                              ],
+                                              [
+                                                "Logged out user cannot access protected pages",
+                                                "test_logged_out_user_cannot_access_protected_pages"
+                                              ]
                                             ]
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Refresh Token", "test_refresh_token.py", "Token refreshed before expiry; Expired token triggers re-login; Refresh token rotated after use", "code"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Refresh Token",
+                                              "test_refresh_token.py",
+                                              "Token refreshed before expiry; Expired token triggers re-login; Refresh token rotated after use",
+                                              "code"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User with expiring token gets new token automatically", "test_user_with_expiring_token_gets_new_token_automatically"],
-                                              ["User with expired token is prompted to login", "test_user_with_expired_token_is_prompted_to_login"],
-                                              ["Used refresh token becomes invalid", "test_used_refresh_token_becomes_invalid"]
+                                              [
+                                                "User with expiring token gets new token automatically",
+                                                "test_user_with_expiring_token_gets_new_token_automatically"
+                                              ],
+                                              [
+                                                "User with expired token is prompted to login",
+                                                "test_user_with_expired_token_is_prompted_to_login"
+                                              ],
+                                              [
+                                                "Used refresh token becomes invalid",
+                                                "test_used_refresh_token_becomes_invalid"
+                                              ]
                                             ]
                                           }
                                         }
@@ -2948,31 +3024,76 @@
                                     {
                                       "example_name": "Example 2: One story needs scenario, sub-epic follows lowest - scenario behavior",
                                       "sub_epic": {
-                                        "columns": ["sub_epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Payment Processing", "scenario", "validate", "scenario behavior; validate action; payment processing domain language; verify scenarios are complete"]
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Payment Processing",
+                                          "scenario",
+                                          "validate",
+                                          "scenario behavior; validate action; payment processing domain language; verify scenarios are complete"
+                                        ]
                                       },
                                       "stories": [
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Process Payment", "test_process_payment.py", "Card details validated; Payment amount verified; Transaction receipt generated", "test"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Process Payment",
+                                              "test_process_payment.py",
+                                              "Card details validated; Payment amount verified; Transaction receipt generated",
+                                              "test"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User enters valid card and payment succeeds", ""],
-                                              ["User enters invalid card number and sees validation error", ""],
-                                              ["Payment succeeds and receipt is emailed to user", ""]
+                                              [
+                                                "User enters valid card and payment succeeds",
+                                                ""
+                                              ],
+                                              [
+                                                "User enters invalid card number and sees validation error",
+                                                ""
+                                              ],
+                                              [
+                                                "Payment succeeds and receipt is emailed to user",
+                                                ""
+                                              ]
                                             ]
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Refund Payment", "", "Original payment verified; Refund amount calculated; Customer notified of refund", "scenario"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Refund Payment",
+                                              "",
+                                              "Original payment verified; Refund amount calculated; Customer notified of refund",
+                                              "scenario"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": []
                                           }
                                         }
@@ -2981,51 +3102,122 @@
                                     {
                                       "example_name": "Example 3: One story at explore level makes entire sub-epic explore - explore behavior",
                                       "sub_epic": {
-                                        "columns": ["sub_epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Data Management", "explore", "build", "explore behavior; build action; data management domain concepts; add stories with acceptance criteria"]
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Data Management",
+                                          "explore",
+                                          "build",
+                                          "explore behavior; build action; data management domain concepts; add stories with acceptance criteria"
+                                        ]
                                       },
                                       "stories": [
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Import Data", "test_import_data.py", "CSV file format validated; Data schema verified; Import progress tracked", "test"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Import Data",
+                                              "test_import_data.py",
+                                              "CSV file format validated; Data schema verified; Import progress tracked",
+                                              "test"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User uploads valid CSV and data is imported", ""],
-                                              ["User uploads invalid CSV and sees format error", ""],
-                                              ["User sees progress bar during import", ""]
+                                              [
+                                                "User uploads valid CSV and data is imported",
+                                                ""
+                                              ],
+                                              [
+                                                "User uploads invalid CSV and sees format error",
+                                                ""
+                                              ],
+                                              [
+                                                "User sees progress bar during import",
+                                                ""
+                                              ]
                                             ]
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Export Data", "", "Export format selected; Data filtered before export; Download link generated", "scenario"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Export Data",
+                                              "",
+                                              "Export format selected; Data filtered before export; Download link generated",
+                                              "scenario"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": []
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Validate Data", "", "Data types checked; Required fields verified; Business rules applied", "scenario"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Validate Data",
+                                              "",
+                                              "Data types checked; Required fields verified; Business rules applied",
+                                              "scenario"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": []
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Archive Data", "", "", "explore"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Archive Data",
+                                              "",
+                                              "",
+                                              "explore"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": []
                                           }
                                         }
@@ -3034,51 +3226,133 @@
                                     {
                                       "example_name": "Example 4: Two stories need tests, sub-epic follows lowest - test behavior",
                                       "sub_epic": {
-                                        "columns": ["sub_epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["File Operations", "test", "clarify", "test behavior; clarify action; file operations test requirements; clarify test coverage expectations"]
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "File Operations",
+                                          "test",
+                                          "clarify",
+                                          "test behavior; clarify action; file operations test requirements; clarify test coverage expectations"
+                                        ]
                                       },
                                       "stories": [
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Upload File", "test_file_upload.py", "File size validated; File type checked; Upload progress tracked", "code"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Upload File",
+                                              "test_file_upload.py",
+                                              "File size validated; File type checked; Upload progress tracked",
+                                              "code"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User uploads valid file and sees success confirmation", "test_user_uploads_valid_file_and_sees_success_confirmation"],
-                                              ["User uploads oversized file and sees size limit error", "test_user_uploads_oversized_file_and_sees_size_limit_error"],
-                                              ["User uploads invalid file type and sees type error", "test_user_uploads_invalid_file_type_and_sees_type_error"],
-                                              ["User cancels upload mid-transfer and sees cancellation confirmation", "test_user_cancels_upload_mid_transfer_and_sees_cancellation_confirmation"],
-                                              ["Upload fails with network error and user sees retry option", "test_upload_fails_with_network_error_and_user_sees_retry_option"]
+                                              [
+                                                "User uploads valid file and sees success confirmation",
+                                                "test_user_uploads_valid_file_and_sees_success_confirmation"
+                                              ],
+                                              [
+                                                "User uploads oversized file and sees size limit error",
+                                                "test_user_uploads_oversized_file_and_sees_size_limit_error"
+                                              ],
+                                              [
+                                                "User uploads invalid file type and sees type error",
+                                                "test_user_uploads_invalid_file_type_and_sees_type_error"
+                                              ],
+                                              [
+                                                "User cancels upload mid-transfer and sees cancellation confirmation",
+                                                "test_user_cancels_upload_mid_transfer_and_sees_cancellation_confirmation"
+                                              ],
+                                              [
+                                                "Upload fails with network error and user sees retry option",
+                                                "test_upload_fails_with_network_error_and_user_sees_retry_option"
+                                              ]
                                             ]
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Download File", "test_file_download.py", "Download initiated; Progress displayed", "test"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Download File",
+                                              "test_file_download.py",
+                                              "Download initiated; Progress displayed",
+                                              "test"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User clicks download and file transfer starts", ""],
-                                              ["User sees download progress bar", ""],
-                                              ["Download completes and file appears in downloads folder", ""]
+                                              [
+                                                "User clicks download and file transfer starts",
+                                                ""
+                                              ],
+                                              [
+                                                "User sees download progress bar",
+                                                ""
+                                              ],
+                                              [
+                                                "Download completes and file appears in downloads folder",
+                                                ""
+                                              ]
                                             ]
                                           }
                                         },
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Delete File", "test_file_delete.py", "Confirmation required; File removed from storage", "test"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Delete File",
+                                              "test_file_delete.py",
+                                              "Confirmation required; File removed from storage",
+                                              "test"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": [
-                                              ["User clicks delete and sees confirmation dialog", ""],
-                                              ["User confirms deletion and file is removed", ""],
-                                              ["User sees success message after deletion", ""]
+                                              [
+                                                "User clicks delete and sees confirmation dialog",
+                                                ""
+                                              ],
+                                              [
+                                                "User confirms deletion and file is removed",
+                                                ""
+                                              ],
+                                              [
+                                                "User sees success message after deletion",
+                                                ""
+                                              ]
                                             ]
                                           }
                                         }
@@ -3087,17 +3361,40 @@
                                     {
                                       "example_name": "Example 5: Single story at scenario level - scenario behavior",
                                       "sub_epic": {
-                                        "columns": ["sub_epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Search", "scenario", "build", "scenario behavior; build action; search domain language; write detailed scenarios"]
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Search",
+                                          "scenario",
+                                          "build",
+                                          "scenario behavior; build action; search domain language; write detailed scenarios"
+                                        ]
                                       },
                                       "stories": [
                                         {
                                           "story": {
-                                            "columns": ["story_name", "test_class", "acceptance_criteria", "expected_behavior"],
-                                            "row": ["Basic Search", "", "Search term entered; Results displayed; No results message shown when empty", "scenario"]
+                                            "columns": [
+                                              "story_name",
+                                              "test_class",
+                                              "acceptance_criteria",
+                                              "expected_behavior"
+                                            ],
+                                            "row": [
+                                              "Basic Search",
+                                              "",
+                                              "Search term entered; Results displayed; No results message shown when empty",
+                                              "scenario"
+                                            ]
                                           },
                                           "scenarios": {
-                                            "columns": ["scenario", "test_method"],
+                                            "columns": [
+                                              "scenario",
+                                              "test_method"
+                                            ],
                                             "rows": []
                                           }
                                         }
@@ -3116,95 +3413,222 @@
                                     {
                                       "example_name": "Example 1: All sub-epics at code level - code behavior",
                                       "parent": {
-                                        "columns": ["epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["File Management", "code", "validate", "code behavior; validate action; file management functionality; verify implementation is complete"]
+                                        "columns": [
+                                          "epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "File Management",
+                                          "code",
+                                          "validate",
+                                          "code behavior; validate action; file management functionality; verify implementation is complete"
+                                        ]
                                       },
                                       "children": {
-                                        "columns": ["sub_epic_name", "sub_epic_expected_behavior"],
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "sub_epic_expected_behavior"
+                                        ],
                                         "rows": [
-                                          ["File Operations", "code"],
-                                          ["File Search", "code"]
+                                          [
+                                            "File Operations",
+                                            "code"
+                                          ],
+                                          [
+                                            "File Search",
+                                            "code"
+                                          ]
                                         ]
                                       }
                                     },
                                     {
                                       "example_name": "Example 2: One sub-epic at explore level makes entire epic explore - explore behavior",
                                       "parent": {
-                                        "columns": ["epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Reporting", "explore", "clarify", "explore behavior; clarify action; reporting domain concepts; clarify feature requirements"]
+                                        "columns": [
+                                          "epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Reporting",
+                                          "explore",
+                                          "clarify",
+                                          "explore behavior; clarify action; reporting domain concepts; clarify feature requirements"
+                                        ]
                                       },
                                       "children": {
-                                        "columns": ["sub_epic_name", "sub_epic_expected_behavior"],
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "sub_epic_expected_behavior"
+                                        ],
                                         "rows": [
-                                          ["Report Generation", "test"],
-                                          ["Report Scheduling", "scenario"],
-                                          ["Report Export", "explore"]
+                                          [
+                                            "Report Generation",
+                                            "test"
+                                          ],
+                                          [
+                                            "Report Scheduling",
+                                            "scenario"
+                                          ],
+                                          [
+                                            "Report Export",
+                                            "explore"
+                                          ]
                                         ]
                                       }
                                     },
                                     {
                                       "example_name": "Example 3: One sub-epic at scenario level with others at code - scenario behavior",
                                       "parent": {
-                                        "columns": ["epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["User Management", "scenario", "build", "scenario behavior; build action; user management domain language; write detailed scenarios"]
+                                        "columns": [
+                                          "epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "User Management",
+                                          "scenario",
+                                          "build",
+                                          "scenario behavior; build action; user management domain language; write detailed scenarios"
+                                        ]
                                       },
                                       "children": {
-                                        "columns": ["sub_epic_name", "sub_epic_expected_behavior"],
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "sub_epic_expected_behavior"
+                                        ],
                                         "rows": [
-                                          ["Authentication", "code"],
-                                          ["User Profile", "scenario"]
+                                          [
+                                            "Authentication",
+                                            "code"
+                                          ],
+                                          [
+                                            "User Profile",
+                                            "scenario"
+                                          ]
                                         ]
                                       }
                                     },
                                     {
                                       "example_name": "Example 4: Multiple sub-epics at test level - test behavior",
                                       "parent": {
-                                        "columns": ["epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Payment Processing", "test", "build", "test behavior; build action; payment processing test coverage; implement test methods"]
+                                        "columns": [
+                                          "epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Payment Processing",
+                                          "test",
+                                          "build",
+                                          "test behavior; build action; payment processing test coverage; implement test methods"
+                                        ]
                                       },
                                       "children": {
-                                        "columns": ["sub_epic_name", "sub_epic_expected_behavior"],
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "sub_epic_expected_behavior"
+                                        ],
                                         "rows": [
-                                          ["Process Payment", "test"],
-                                          ["Refund Payment", "test"]
+                                          [
+                                            "Process Payment",
+                                            "test"
+                                          ],
+                                          [
+                                            "Refund Payment",
+                                            "test"
+                                          ]
                                         ]
                                       }
                                     },
                                     {
                                       "example_name": "Example 5: Empty epic with no sub-epics - shape behavior",
                                       "parent": {
-                                        "columns": ["epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Product Catalog", "shape", "build", "shape behavior; build action; product catalog domain concepts; add sub-epics and stories"]
+                                        "columns": [
+                                          "epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Product Catalog",
+                                          "shape",
+                                          "build",
+                                          "shape behavior; build action; product catalog domain concepts; add sub-epics and stories"
+                                        ]
                                       },
                                       "children": {
-                                        "columns": ["sub_epic_name", "sub_epic_expected_behavior"],
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "sub_epic_expected_behavior"
+                                        ],
                                         "rows": []
                                       }
                                     },
                                     {
                                       "example_name": "Example 6: Epic with nested sub-epics - scenario behavior",
                                       "parent": {
-                                        "columns": ["epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Product Management", "scenario", "validate", "scenario behavior; validate action; product management domain language; verify scenarios are complete"]
+                                        "columns": [
+                                          "epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Product Management",
+                                          "scenario",
+                                          "validate",
+                                          "scenario behavior; validate action; product management domain language; verify scenarios are complete"
+                                        ]
                                       },
                                       "children": {
-                                        "columns": ["sub_epic_name", "sub_epic_expected_behavior"],
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "sub_epic_expected_behavior"
+                                        ],
                                         "rows": [
-                                          ["Product Catalog (nested)", "scenario"],
-                                          ["Inventory Management", "code"]
+                                          [
+                                            "Product Catalog (nested)",
+                                            "scenario"
+                                          ],
+                                          [
+                                            "Inventory Management",
+                                            "code"
+                                          ]
                                         ]
                                       }
                                     },
                                     {
                                       "example_name": "Example 7: Parent sub-epic with nested sub-epics at explore - explore behavior",
                                       "parent": {
-                                        "columns": ["epic_name", "expected_behavior", "action", "expected_instructions_contain"],
-                                        "row": ["Data Management Epic", "explore", "clarify", "explore behavior; clarify action; data management domain concepts; clarify feature requirements"]
+                                        "columns": [
+                                          "epic_name",
+                                          "expected_behavior",
+                                          "action",
+                                          "expected_instructions_contain"
+                                        ],
+                                        "row": [
+                                          "Data Management Epic",
+                                          "explore",
+                                          "clarify",
+                                          "explore behavior; clarify action; data management domain concepts; clarify feature requirements"
+                                        ]
                                       },
                                       "children": {
-                                        "columns": ["sub_epic_name", "sub_epic_expected_behavior"],
+                                        "columns": [
+                                          "sub_epic_name",
+                                          "sub_epic_expected_behavior"
+                                        ],
                                         "rows": [
-                                          ["Data Management (nested)", "explore"]
+                                          [
+                                            "Data Management (nested)",
+                                            "explore"
+                                          ]
                                         ]
                                       }
                                     }
@@ -3773,7 +4197,7 @@
                     },
                     {
                       "name": "Navigate Story Graph Using CLI",
-                      "sequential_order": 2.0,
+                      "sequential_order": 1.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [
@@ -3796,7 +4220,7 @@
                     },
                     {
                       "name": "Display Story Hierarchy Panel",
-                      "sequential_order": 3.0,
+                      "sequential_order": 2.0,
                       "connector": "and",
                       "story_type": "user",
                       "users": [
@@ -4102,7 +4526,7 @@
                     },
                     {
                       "name": "Create Child Story Node",
-                      "sequential_order": 4.0,
+                      "sequential_order": 3.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [],
@@ -4187,7 +4611,7 @@
                     },
                     {
                       "name": "Create Child Story Node Under Parent Panel",
-                      "sequential_order": 5.0,
+                      "sequential_order": 4.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -4308,7 +4732,7 @@
                     },
                     {
                       "name": "Create Child Story Node Under Parent CLI",
-                      "sequential_order": 6.0,
+                      "sequential_order": 5.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -4409,7 +4833,7 @@
                     },
                     {
                       "name": "Create Epic",
-                      "sequential_order": 7.0,
+                      "sequential_order": 6.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [],
@@ -4494,7 +4918,7 @@
                     },
                     {
                       "name": "Delete Story Node",
-                      "sequential_order": 8.0,
+                      "sequential_order": 7.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [],
@@ -4531,7 +4955,7 @@
                     },
                     {
                       "name": "Delete Story Node From Parent CLI",
-                      "sequential_order": 9.0,
+                      "sequential_order": 8.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -4592,7 +5016,7 @@
                     },
                     {
                       "name": "Delete Story Node From Parent Panel",
-                      "sequential_order": 10.0,
+                      "sequential_order": 9.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -4713,7 +5137,7 @@
                     },
                     {
                       "name": "Move Story Node To Parent",
-                      "sequential_order": 11.0,
+                      "sequential_order": 10.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [],
@@ -4798,7 +5222,7 @@
                     },
                     {
                       "name": "Move Story Node  CLI",
-                      "sequential_order": 12.0,
+                      "sequential_order": 11.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -4904,7 +5328,7 @@
                     },
                     {
                       "name": "Move Story Node Panel",
-                      "sequential_order": 13.0,
+                      "sequential_order": 12.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -5005,7 +5429,7 @@
                     },
                     {
                       "name": "Update Story Node name  CLI",
-                      "sequential_order": 14.0,
+                      "sequential_order": 13.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -5096,7 +5520,7 @@
                     },
                     {
                       "name": "Update Story Node name Panel",
-                      "sequential_order": 15.0,
+                      "sequential_order": 14.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -5217,7 +5641,7 @@
                     },
                     {
                       "name": "Update Story Node Name",
-                      "sequential_order": 16.0,
+                      "sequential_order": 15.0,
                       "connector": "or",
                       "story_type": "user",
                       "users": [
@@ -5271,6 +5695,531 @@
                       "behavior": "exploration"
                     },
                     {
+                      "name": "Save Story Map Changes Asynchronously",
+                      "sequential_order": 16.0,
+                      "connector": "and",
+                      "story_type": "user",
+                      "users": [
+                        "User"
+                      ],
+                      "test_file": "test/invoke_bot/edit_story_map/test_edit_story_nodes.js",
+                      "test_class": "TestSaveStoryMapChangesAsynchronously",
+                      "scenarios": [
+                        {
+                          "name": "User moves node and sees optimistic update with async save",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_moves_node_optimistic_update_subepic",
+                          "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <node_name> at position <original_position>\nAnd Panel is displaying story map\nWhen User drags <node_type> <node_name> to new position <target_position>\nThen Panel moves <node_type> <node_name> to position <target_position> in DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes move command to Backend\nAnd Backend moves <node_type> <node_name> from position <original_position> to <target_position>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <node_type> <node_name> at position <target_position>",
+                          "examples": {
+                            "columns": [
+                              "parent_node_type",
+                              "parent_node_name",
+                              "node_type",
+                              "node_name",
+                              "original_position",
+                              "target_position",
+                              "status_indicator",
+                              "operation_count",
+                              "debounce_time",
+                              "success_indicator",
+                              "success_message",
+                              "auto_hide_time"
+                            ],
+                            "rows": [
+                              [
+                                "Epic",
+                                "Invoke Bot",
+                                "SubEpic",
+                                "Edit Story Map",
+                                1,
+                                3,
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "SubEpic",
+                                "Edit Story Map",
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                0,
+                                5,
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "Scenario",
+                                "User moves node and sees optimistic update",
+                                0,
+                                2,
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "name": "User renames node and sees optimistic update with async save",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_renames_node_optimistic_update_subepic",
+                          "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <original_name>\nAnd Panel is displaying story map\nWhen User renames <node_type> from <original_name> to <new_name>\nThen Panel updates <node_type> name to <new_name> in DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes rename command to Backend\nAnd Backend renames <node_type> from <original_name> to <new_name>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <node_type> named <new_name>",
+                          "examples": {
+                            "columns": [
+                              "parent_node_type",
+                              "parent_node_name",
+                              "node_type",
+                              "original_name",
+                              "new_name",
+                              "status_indicator",
+                              "operation_count",
+                              "debounce_time",
+                              "success_indicator",
+                              "success_message",
+                              "auto_hide_time"
+                            ],
+                            "rows": [
+                              [
+                                "Epic",
+                                "Invoke Bot",
+                                "SubEpic",
+                                "Edit Story Map",
+                                "Modify Story Map",
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "SubEpic",
+                                "Edit Story Map",
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "Persist Story Map Changes Async",
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "Scenario",
+                                "User moves node",
+                                "User drags and drops node to reorder",
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "name": "User deletes node and sees optimistic update with async save",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_deletes_node_optimistic_update_story",
+                          "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <node_name> at position <node_position>\nAnd Panel is displaying story map\nWhen User clicks delete on <node_type> <node_name>\nThen Panel removes <node_type> <node_name> from DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes delete command to Backend\nAnd Backend deletes <node_type> <node_name> from <parent_node_type>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel confirms <node_type> <node_name> no longer exists",
+                          "examples": {
+                            "columns": [
+                              "parent_node_type",
+                              "parent_node_name",
+                              "node_type",
+                              "node_name",
+                              "node_position",
+                              "status_indicator",
+                              "operation_count",
+                              "debounce_time",
+                              "success_indicator",
+                              "success_message",
+                              "auto_hide_time"
+                            ],
+                            "rows": [
+                              [
+                                "SubEpic",
+                                "Edit Story Map",
+                                "Story",
+                                "Deprecated Story Example",
+                                8,
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "Scenario",
+                                "Obsolete test scenario",
+                                5,
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "Acceptance Criterion",
+                                "Outdated AC for feature",
+                                15,
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "name": "User creates node and sees optimistic update with async save",
+                          "sequential_order": 4.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_creates_node_optimistic_update_subepic",
+                          "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd Panel is displaying story map\nWhen User clicks create new <node_type> under <parent_node_type>\nAnd User enters <node_type> name <new_node_name>\nThen Panel adds <node_type> <new_node_name> to DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes create command to Backend\nAnd Backend creates <node_type> <new_node_name> under <parent_node_type>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <node_type> <new_node_name> under <parent_node_type>",
+                          "examples": {
+                            "columns": [
+                              "parent_node_type",
+                              "parent_node_name",
+                              "node_type",
+                              "new_node_name",
+                              "status_indicator",
+                              "operation_count",
+                              "debounce_time",
+                              "success_indicator",
+                              "success_message",
+                              "auto_hide_time"
+                            ],
+                            "rows": [
+                              [
+                                "Epic",
+                                "Invoke Bot",
+                                "SubEpic",
+                                "Export Story Map",
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "SubEpic",
+                                "Edit Story Map",
+                                "Story",
+                                "Undo Story Map Changes",
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ],
+                              [
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "Scenario",
+                                "User creates SubEpic and saves",
+                                "spinner icon",
+                                "1 operation",
+                                "500ms",
+                                "green checkmark",
+                                "Saved",
+                                "2 seconds"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "name": "User makes multiple rapid changes and sees batched async save",
+                          "sequential_order": 5.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_user_makes_multiple_rapid_changes_batched_async_save",
+                          "steps": "Given Story Map contains Epic <epic_name> with SubEpic <sub_epic_name>\nAnd SubEpic contains Story <story_name_a> at position <pos_a>\nAnd SubEpic contains Story <story_name_b> at position <pos_b>\nAnd SubEpic contains Story <story_name_c> at position <pos_c>\nAnd Panel is displaying story map\nWhen User moves <story_name_a> to position <new_pos_a>\nAnd User renames <story_name_b> to <new_name_b> within <batch_window>\nAnd User deletes <story_name_c> within <batch_window>\nThen Panel updates all changes in DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows <batch_message>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes <operation_count> commands sequentially to Backend\nAnd Backend processes all operations\nAnd Backend writes changes to story-graph.json\nWhen Backend completes all saves successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <story_name_a> at position <new_pos_a>\nAnd Panel displays Story named <new_name_b>\nAnd Panel confirms <story_name_c> no longer exists",
+                          "examples": {
+                            "columns": [
+                              "epic_name",
+                              "sub_epic_name",
+                              "story_name_a",
+                              "pos_a",
+                              "new_pos_a",
+                              "story_name_b",
+                              "new_name_b",
+                              "pos_b",
+                              "story_name_c",
+                              "pos_c",
+                              "batch_window",
+                              "status_indicator",
+                              "batch_message",
+                              "debounce_time",
+                              "operation_count",
+                              "success_indicator",
+                              "success_message"
+                            ],
+                            "rows": [
+                              [
+                                "Invoke Bot",
+                                "Edit Story Map",
+                                "Save Story Map Changes Asynchronously",
+                                0,
+                                2,
+                                "Filter Scope",
+                                "Apply Scope Filter",
+                                1,
+                                "Deprecated Feature X",
+                                3,
+                                "500ms",
+                                "spinner icon",
+                                "Saving 3 changes...",
+                                "500ms",
+                                "3",
+                                "green checkmark",
+                                "Saved"
+                              ],
+                              [
+                                "Invoke Bot",
+                                "Navigate Behavior Actions",
+                                "Display Current Behavior State",
+                                0,
+                                1,
+                                "Navigate to Next Action",
+                                "Advance to Next Action",
+                                1,
+                                "Old Navigation Test",
+                                2,
+                                "500ms",
+                                "spinner icon",
+                                "Saving 3 changes...",
+                                "500ms",
+                                "3",
+                                "green checkmark",
+                                "Saved"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "name": "User sees error handling when async save fails",
+                          "sequential_order": 6.0,
+                          "type": "error_case",
+                          "background": [],
+                          "test_method": "test_user_sees_error_handling_validation_error_story",
+                          "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <original_name>\nAnd Panel is displaying story map\nWhen User renames <node_type> to <invalid_name>\nThen Panel updates <node_type> name to <invalid_name> in DOM immediately\nAnd Panel displays <status_indicator> in header\nWhen Panel waits <debounce_time> after last change\nThen Panel executes rename command to Backend\nWhen Backend returns <error_type> error with message <error_message>\nThen Panel shows <error_indicator>\nAnd Panel shows <error_display_message>\nAnd Panel makes error indicator clickable\nAnd Panel does not auto-hide error\nAnd Panel restores original name <original_name> in DOM\nWhen User clicks error indicator\nThen Panel displays error dialog\nAnd Panel shows error details: <error_details>",
+                          "examples": {
+                            "columns": [
+                              "parent_node_type",
+                              "parent_node_name",
+                              "node_type",
+                              "original_name",
+                              "invalid_name",
+                              "status_indicator",
+                              "debounce_time",
+                              "error_type",
+                              "error_message",
+                              "error_indicator",
+                              "error_display_message",
+                              "error_details"
+                            ],
+                            "rows": [
+                              [
+                                "SubEpic",
+                                "Edit Story Map",
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "",
+                                "spinner icon",
+                                "500ms",
+                                "validation",
+                                "Story name cannot be empty",
+                                "red X icon",
+                                "Save failed - click for details",
+                                "ValidationError: Story name is required and cannot be empty string"
+                              ],
+                              [
+                                "Story",
+                                "Save Story Map Changes Asynchronously",
+                                "Scenario",
+                                "User moves node",
+                                "User moves node (contains 🎯 invalid emoji)",
+                                "spinner icon",
+                                "500ms",
+                                "validation",
+                                "Scenario name contains invalid characters",
+                                "red X icon",
+                                "Save failed - click for details",
+                                "ValidationError: Scenario name cannot contain emoji or special unicode characters"
+                              ],
+                              [
+                                "SubEpic",
+                                "Edit Story Map",
+                                "Story",
+                                "Filter Scope",
+                                "Navigate Behavior Actions",
+                                "spinner icon",
+                                "500ms",
+                                "hierarchy",
+                                "Duplicate story name in parent SubEpic",
+                                "red X icon",
+                                "Save failed - click for details",
+                                "HierarchyError: Story 'Navigate Behavior Actions' already exists in SubEpic 'Edit Story Map'"
+                              ]
+                            ]
+                          }
+                        }
+                      ],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN User moves node in Panel THEN Panel moves node in DOM immediately AND Panel displays spinner",
+                          "text": "WHEN User moves node in Panel THEN Panel moves node in DOM immediately AND Panel displays spinner",
+                          "sequential_order": 0.0
+                        },
+                        {
+                          "name": "WHEN User renames node in Panel THEN Panel updates name in DOM immediately AND Panel displays spinner",
+                          "text": "WHEN User renames node in Panel THEN Panel updates name in DOM immediately AND Panel displays spinner",
+                          "sequential_order": 1.0
+                        },
+                        {
+                          "name": "WHEN User deletes node in Panel THEN Panel removes node from DOM immediately AND Panel displays spinner",
+                          "text": "WHEN User deletes node in Panel THEN Panel removes node from DOM immediately AND Panel displays spinner",
+                          "sequential_order": 3.0
+                        },
+                        {
+                          "name": "WHEN User creates node in Panel THEN Panel adds node to DOM immediately AND Panel displays spinner",
+                          "text": "WHEN User creates node in Panel THEN Panel adds node to DOM immediately AND Panel displays spinner",
+                          "sequential_order": 4.0
+                        },
+                        {
+                          "name": "WHEN Panel updates DOM THEN Panel keeps UI responsive BUT does not refresh entire panel",
+                          "text": "WHEN Panel updates DOM THEN Panel keeps UI responsive BUT does not refresh entire panel",
+                          "sequential_order": 5.0
+                        },
+                        {
+                          "name": "WHEN User makes change THEN Panel enqueues save operation AND Panel debounces for 500ms",
+                          "text": "WHEN User makes change THEN Panel enqueues save operation AND Panel debounces for 500ms",
+                          "sequential_order": 6.0
+                        },
+                        {
+                          "name": "WHEN User makes multiple rapid changes THEN Panel batches all operations in queue AND Panel displays operation count",
+                          "text": "WHEN User makes multiple rapid changes THEN Panel batches all operations in queue AND Panel displays operation count",
+                          "sequential_order": 7.0
+                        },
+                        {
+                          "name": "WHEN 500ms elapses after last change THEN Panel processes entire queue sequentially AND Panel executes each command",
+                          "text": "WHEN 500ms elapses after last change THEN Panel processes entire queue sequentially AND Panel executes each command",
+                          "sequential_order": 8.0
+                        },
+                        {
+                          "name": "WHEN Panel processes queue THEN Panel spawns Python process for each command BUT does not block UI",
+                          "text": "WHEN Panel processes queue THEN Panel spawns Python process for each command BUT does not block UI",
+                          "sequential_order": 9.0
+                        },
+                        {
+                          "name": "WHEN Panel executes command THEN Panel marks operation as optimistic AND Panel skips panel refresh",
+                          "text": "WHEN Panel executes command THEN Panel marks operation as optimistic AND Panel skips panel refresh",
+                          "sequential_order": 10.0
+                        },
+                        {
+                          "name": "WHEN Panel enqueues operation THEN Panel displays status indicator in header AND Panel shows spinner icon AND Panel shows operation count",
+                          "text": "WHEN Panel enqueues operation THEN Panel displays status indicator in header AND Panel shows spinner icon AND Panel shows operation count",
+                          "sequential_order": 11.0
+                        },
+                        {
+                          "name": "WHEN Backend completes save successfully THEN Panel shows green checkmark AND Panel shows 'Saved' message AND Panel auto-hides after 2 seconds",
+                          "text": "WHEN Backend completes save successfully THEN Panel shows green checkmark AND Panel shows 'Saved' message AND Panel auto-hides after 2 seconds",
+                          "sequential_order": 12.0
+                        },
+                        {
+                          "name": "WHEN Backend returns error THEN Panel shows red X icon AND Panel shows 'Save failed' message AND Panel makes indicator clickable BUT does not auto-hide",
+                          "text": "WHEN Backend returns error THEN Panel shows red X icon AND Panel shows 'Save failed' message AND Panel makes indicator clickable BUT does not auto-hide",
+                          "sequential_order": 13.0
+                        },
+                        {
+                          "name": "WHEN User clicks error indicator THEN Panel displays error dialog AND Panel shows error message AND Panel shows stack trace",
+                          "text": "WHEN User clicks error indicator THEN Panel displays error dialog AND Panel shows error message AND Panel shows stack trace",
+                          "sequential_order": 14.0
+                        },
+                        {
+                          "name": "WHEN Backend returns validation error THEN Panel restores original DOM state AND Panel displays error indicator",
+                          "text": "WHEN Backend returns validation error THEN Panel restores original DOM state AND Panel displays error indicator",
+                          "sequential_order": 15.0
+                        },
+                        {
+                          "name": "WHEN Backend returns hierarchy error THEN Panel restores original node position AND Panel displays error indicator",
+                          "text": "WHEN Backend returns hierarchy error THEN Panel restores original node position AND Panel displays error indicator",
+                          "sequential_order": 16.0
+                        },
+                        {
+                          "name": "WHEN Backend fails operation in batch THEN Panel rolls back only failed operation AND Panel keeps successful operations BUT does not roll back entire batch",
+                          "text": "WHEN Backend fails operation in batch THEN Panel rolls back only failed operation AND Panel keeps successful operations BUT does not roll back entire batch",
+                          "sequential_order": 17.0
+                        },
+                        {
+                          "name": "WHEN Panel rolls back operation THEN Panel executes rollback function AND Panel restores captured state AND Panel updates DOM to match original",
+                          "text": "WHEN Panel rolls back operation THEN Panel executes rollback function AND Panel restores captured state AND Panel updates DOM to match original",
+                          "sequential_order": 18.0
+                        },
+                        {
+                          "name": "WHEN User initiates move THEN Panel captures original parent AND Panel captures original position AND Panel captures node reference",
+                          "text": "WHEN User initiates move THEN Panel captures original parent AND Panel captures original position AND Panel captures node reference",
+                          "sequential_order": 19.0
+                        },
+                        {
+                          "name": "WHEN User initiates rename THEN Panel captures original name AND Panel captures name element reference",
+                          "text": "WHEN User initiates rename THEN Panel captures original name AND Panel captures name element reference",
+                          "sequential_order": 20.0
+                        },
+                        {
+                          "name": "WHEN User initiates delete THEN Panel captures entire node HTML AND Panel captures parent element AND Panel captures position index",
+                          "text": "WHEN User initiates delete THEN Panel captures entire node HTML AND Panel captures parent element AND Panel captures position index",
+                          "sequential_order": 21.0
+                        },
+                        {
+                          "name": "WHEN Backend completes save successfully THEN Backend writes changes to story-graph.json AND Backend persists all node changes",
+                          "text": "WHEN Backend completes save successfully THEN Backend writes changes to story-graph.json AND Backend persists all node changes",
+                          "sequential_order": 22.0
+                        },
+                        {
+                          "name": "WHEN User reloads Panel after successful save THEN Panel loads story-graph.json AND Panel displays all saved changes",
+                          "text": "WHEN User reloads Panel after successful save THEN Panel loads story-graph.json AND Panel displays all saved changes",
+                          "sequential_order": 23.0
+                        }
+                      ],
+                      "behavior": null,
+                      "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Invoke Bot\\Edit Story Map\\Edit Story Nodes\\📄 Save Story Map Changes Asynchronously.md"
+                    },
+                    {
                       "name": "Execute Action Scoped To Story Node",
                       "sequential_order": 17.0,
                       "connector": "or",
@@ -5308,19 +6257,6 @@
                       ],
                       "acceptance_criteria": [],
                       "behavior": "exploration"
-                    },
-                    {
-                      "name": "Save Story Map CHanges On Panel Asynchronously",
-                      "sequential_order": 17.0,
-                      "connector": null,
-                      "story_type": "user",
-                      "users": [],
-                      "test_file": null,
-                      "test_class": null,
-                      "scenarios": [],
-                      "acceptance_criteria": [],
-                      "behavior": null,
-                      "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Invoke Bot\\Edit Story Map\\Edit Story Nodes\\📄 Save Story Map CHanges On Panel Asynchronously.md"
                     }
                   ]
                 }
@@ -5534,7 +6470,7 @@
             },
             {
               "name": "Submit Scoped Action",
-              "sequential_order": 4.0,
+              "sequential_order": 3.0,
               "behavior": "exploration",
               "test_file": "invoke_bot/edit_story_map/test_submit_scoped_action.py",
               "sub_epics": [],
@@ -6009,238 +6945,11 @@
           "story_groups": [
             {
               "name": "",
-              "sequential_order": 0.0,
+              "sequential_order": 4.0,
               "type": "and",
               "connector": null,
               "behavior": "exploration",
-              "stories": [
-                {
-                  "name": "Save Story Map Changes Asynchronously",
-                  "sequential_order": 0.0,
-                  "connector": "and",
-                  "story_type": "user",
-                  "users": [
-                    "User"
-                  ],
-                  "test_file": null,
-                  "test_class": null,
-                  "scenario_outlines": [
-                    {
-                      "name": "User moves node and sees optimistic update with async save",
-                      "sequential_order": 1.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <node_name> at position <original_position>\nAnd Panel is displaying story map\nWhen User drags <node_type> <node_name> to new position <target_position>\nThen Panel moves <node_type> <node_name> to position <target_position> in DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes move command to Backend\nAnd Backend moves <node_type> <node_name> from position <original_position> to <target_position>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <node_type> <node_name> at position <target_position>",
-                      "examples": {
-                        "columns": ["parent_node_type", "parent_node_name", "node_type", "node_name", "original_position", "target_position", "status_indicator", "operation_count", "debounce_time", "success_indicator", "success_message", "auto_hide_time"],
-                        "rows": [
-                          ["Epic", "Invoke Bot", "SubEpic", "Edit Story Map", 1, 3, "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["SubEpic", "Edit Story Map", "Story", "Save Story Map Changes Asynchronously", 0, 5, "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["Story", "Save Story Map Changes Asynchronously", "Scenario", "User moves node and sees optimistic update", 0, 2, "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"]
-                        ]
-                      }
-                    },
-                    {
-                      "name": "User renames node and sees optimistic update with async save",
-                      "sequential_order": 2.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <original_name>\nAnd Panel is displaying story map\nWhen User renames <node_type> from <original_name> to <new_name>\nThen Panel updates <node_type> name to <new_name> in DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes rename command to Backend\nAnd Backend renames <node_type> from <original_name> to <new_name>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <node_type> named <new_name>",
-                      "examples": {
-                        "columns": ["parent_node_type", "parent_node_name", "node_type", "original_name", "new_name", "status_indicator", "operation_count", "debounce_time", "success_indicator", "success_message", "auto_hide_time"],
-                        "rows": [
-                          ["Epic", "Invoke Bot", "SubEpic", "Edit Story Map", "Modify Story Map", "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["SubEpic", "Edit Story Map", "Story", "Save Story Map Changes Asynchronously", "Persist Story Map Changes Async", "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["Story", "Save Story Map Changes Asynchronously", "Scenario", "User moves node", "User drags and drops node to reorder", "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"]
-                        ]
-                      }
-                    },
-                    {
-                      "name": "User deletes node and sees optimistic update with async save",
-                      "sequential_order": 3.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <node_name> at position <node_position>\nAnd Panel is displaying story map\nWhen User clicks delete on <node_type> <node_name>\nThen Panel removes <node_type> <node_name> from DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes delete command to Backend\nAnd Backend deletes <node_type> <node_name> from <parent_node_type>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel confirms <node_type> <node_name> no longer exists",
-                      "examples": {
-                        "columns": ["parent_node_type", "parent_node_name", "node_type", "node_name", "node_position", "status_indicator", "operation_count", "debounce_time", "success_indicator", "success_message", "auto_hide_time"],
-                        "rows": [
-                          ["SubEpic", "Edit Story Map", "Story", "Deprecated Story Example", 8, "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["Story", "Save Story Map Changes Asynchronously", "Scenario", "Obsolete test scenario", 5, "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["Story", "Save Story Map Changes Asynchronously", "Acceptance Criterion", "Outdated AC for feature", 15, "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"]
-                        ]
-                      }
-                    },
-                    {
-                      "name": "User creates node and sees optimistic update with async save",
-                      "sequential_order": 4.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd Panel is displaying story map\nWhen User clicks create new <node_type> under <parent_node_type>\nAnd User enters <node_type> name <new_node_name>\nThen Panel adds <node_type> <new_node_name> to DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows operation count <operation_count>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes create command to Backend\nAnd Backend creates <node_type> <new_node_name> under <parent_node_type>\nAnd Backend writes changes to story-graph.json\nWhen Backend completes save successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nAnd Panel auto-hides status after <auto_hide_time>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <node_type> <new_node_name> under <parent_node_type>",
-                      "examples": {
-                        "columns": ["parent_node_type", "parent_node_name", "node_type", "new_node_name", "status_indicator", "operation_count", "debounce_time", "success_indicator", "success_message", "auto_hide_time"],
-                        "rows": [
-                          ["Epic", "Invoke Bot", "SubEpic", "Export Story Map", "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["SubEpic", "Edit Story Map", "Story", "Undo Story Map Changes", "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"],
-                          ["Story", "Save Story Map Changes Asynchronously", "Scenario", "User creates SubEpic and saves", "spinner icon", "1 operation", "500ms", "green checkmark", "Saved", "2 seconds"]
-                        ]
-                      }
-                    },
-                    {
-                      "name": "User makes multiple rapid changes and sees batched async save",
-                      "sequential_order": 5.0,
-                      "type": "happy_path",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Story Map contains Epic <epic_name> with SubEpic <sub_epic_name>\nAnd SubEpic contains Story <story_name_a> at position <pos_a>\nAnd SubEpic contains Story <story_name_b> at position <pos_b>\nAnd SubEpic contains Story <story_name_c> at position <pos_c>\nAnd Panel is displaying story map\nWhen User moves <story_name_a> to position <new_pos_a>\nAnd User renames <story_name_b> to <new_name_b> within <batch_window>\nAnd User deletes <story_name_c> within <batch_window>\nThen Panel updates all changes in DOM immediately\nAnd Panel displays <status_indicator> in header\nAnd Panel shows <batch_message>\nWhen Panel waits <debounce_time> after last change\nThen Panel executes <operation_count> commands sequentially to Backend\nAnd Backend processes all operations\nAnd Backend writes changes to story-graph.json\nWhen Backend completes all saves successfully\nThen Panel shows <success_indicator>\nAnd Panel shows <success_message>\nWhen User reloads Panel\nThen Panel loads story-graph.json\nAnd Panel displays <story_name_a> at position <new_pos_a>\nAnd Panel displays Story named <new_name_b>\nAnd Panel confirms <story_name_c> no longer exists",
-                      "examples": {
-                        "columns": ["epic_name", "sub_epic_name", "story_name_a", "pos_a", "new_pos_a", "story_name_b", "new_name_b", "pos_b", "story_name_c", "pos_c", "batch_window", "status_indicator", "batch_message", "debounce_time", "operation_count", "success_indicator", "success_message"],
-                        "rows": [
-                          ["Invoke Bot", "Edit Story Map", "Save Story Map Changes Asynchronously", 0, 2, "Filter Scope", "Apply Scope Filter", 1, "Deprecated Feature X", 3, "500ms", "spinner icon", "Saving 3 changes...", "500ms", "3", "green checkmark", "Saved"],
-                          ["Invoke Bot", "Navigate Behavior Actions", "Display Current Behavior State", 0, 1, "Navigate to Next Action", "Advance to Next Action", 1, "Old Navigation Test", 2, "500ms", "spinner icon", "Saving 3 changes...", "500ms", "3", "green checkmark", "Saved"]
-                        ]
-                      }
-                    },
-                    {
-                      "name": "User sees error handling when async save fails",
-                      "sequential_order": 6.0,
-                      "type": "error_case",
-                      "background": [],
-                      "test_method": null,
-                      "steps": "Given Story Map contains <parent_node_type> named <parent_node_name>\nAnd <parent_node_type> contains <node_type> named <original_name>\nAnd Panel is displaying story map\nWhen User renames <node_type> to <invalid_name>\nThen Panel updates <node_type> name to <invalid_name> in DOM immediately\nAnd Panel displays <status_indicator> in header\nWhen Panel waits <debounce_time> after last change\nThen Panel executes rename command to Backend\nWhen Backend returns <error_type> error with message <error_message>\nThen Panel shows <error_indicator>\nAnd Panel shows <error_display_message>\nAnd Panel makes error indicator clickable\nAnd Panel does not auto-hide error\nAnd Panel restores original name <original_name> in DOM\nWhen User clicks error indicator\nThen Panel displays error dialog\nAnd Panel shows error details: <error_details>",
-                      "examples": {
-                        "columns": ["parent_node_type", "parent_node_name", "node_type", "original_name", "invalid_name", "status_indicator", "debounce_time", "error_type", "error_message", "error_indicator", "error_display_message", "error_details"],
-                        "rows": [
-                          ["SubEpic", "Edit Story Map", "Story", "Save Story Map Changes Asynchronously", "", "spinner icon", "500ms", "validation", "Story name cannot be empty", "red X icon", "Save failed - click for details", "ValidationError: Story name is required and cannot be empty string"],
-                          ["Story", "Save Story Map Changes Asynchronously", "Scenario", "User moves node", "User moves node (contains 🎯 invalid emoji)", "spinner icon", "500ms", "validation", "Scenario name contains invalid characters", "red X icon", "Save failed - click for details", "ValidationError: Scenario name cannot contain emoji or special unicode characters"],
-                          ["SubEpic", "Edit Story Map", "Story", "Filter Scope", "Navigate Behavior Actions", "spinner icon", "500ms", "hierarchy", "Duplicate story name in parent SubEpic", "red X icon", "Save failed - click for details", "HierarchyError: Story 'Navigate Behavior Actions' already exists in SubEpic 'Edit Story Map'"]
-                        ]
-                      }
-                    }
-                  ],
-                  "acceptance_criteria": [
-                    {
-                      "name": "WHEN User moves node in Panel THEN Panel moves node in DOM immediately AND Panel displays spinner",
-                      "text": "WHEN User moves node in Panel THEN Panel moves node in DOM immediately AND Panel displays spinner",
-                      "sequential_order": 0.0
-                    },
-                    {
-                      "name": "WHEN User renames node in Panel THEN Panel updates name in DOM immediately AND Panel displays spinner",
-                      "text": "WHEN User renames node in Panel THEN Panel updates name in DOM immediately AND Panel displays spinner",
-                      "sequential_order": 1.0
-                    },
-                    {
-                      "name": "WHEN User deletes node in Panel THEN Panel removes node from DOM immediately AND Panel displays spinner",
-                      "text": "WHEN User deletes node in Panel THEN Panel removes node from DOM immediately AND Panel displays spinner",
-                      "sequential_order": 3.0
-                    },
-                    {
-                      "name": "WHEN User creates node in Panel THEN Panel adds node to DOM immediately AND Panel displays spinner",
-                      "text": "WHEN User creates node in Panel THEN Panel adds node to DOM immediately AND Panel displays spinner",
-                      "sequential_order": 4.0
-                    },
-                    {
-                      "name": "WHEN Panel updates DOM THEN Panel keeps UI responsive BUT does not refresh entire panel",
-                      "text": "WHEN Panel updates DOM THEN Panel keeps UI responsive BUT does not refresh entire panel",
-                      "sequential_order": 5.0
-                    },
-                    {
-                      "name": "WHEN User makes change THEN Panel enqueues save operation AND Panel debounces for 500ms",
-                      "text": "WHEN User makes change THEN Panel enqueues save operation AND Panel debounces for 500ms",
-                      "sequential_order": 6.0
-                    },
-                    {
-                      "name": "WHEN User makes multiple rapid changes THEN Panel batches all operations in queue AND Panel displays operation count",
-                      "text": "WHEN User makes multiple rapid changes THEN Panel batches all operations in queue AND Panel displays operation count",
-                      "sequential_order": 7.0
-                    },
-                    {
-                      "name": "WHEN 500ms elapses after last change THEN Panel processes entire queue sequentially AND Panel executes each command",
-                      "text": "WHEN 500ms elapses after last change THEN Panel processes entire queue sequentially AND Panel executes each command",
-                      "sequential_order": 8.0
-                    },
-                    {
-                      "name": "WHEN Panel processes queue THEN Panel spawns Python process for each command BUT does not block UI",
-                      "text": "WHEN Panel processes queue THEN Panel spawns Python process for each command BUT does not block UI",
-                      "sequential_order": 9.0
-                    },
-                    {
-                      "name": "WHEN Panel executes command THEN Panel marks operation as optimistic AND Panel skips panel refresh",
-                      "text": "WHEN Panel executes command THEN Panel marks operation as optimistic AND Panel skips panel refresh",
-                      "sequential_order": 10.0
-                    },
-                    {
-                      "name": "WHEN Panel enqueues operation THEN Panel displays status indicator in header AND Panel shows spinner icon AND Panel shows operation count",
-                      "text": "WHEN Panel enqueues operation THEN Panel displays status indicator in header AND Panel shows spinner icon AND Panel shows operation count",
-                      "sequential_order": 11.0
-                    },
-                    {
-                      "name": "WHEN Backend completes save successfully THEN Panel shows green checkmark AND Panel shows 'Saved' message AND Panel auto-hides after 2 seconds",
-                      "text": "WHEN Backend completes save successfully THEN Panel shows green checkmark AND Panel shows 'Saved' message AND Panel auto-hides after 2 seconds",
-                      "sequential_order": 12.0
-                    },
-                    {
-                      "name": "WHEN Backend returns error THEN Panel shows red X icon AND Panel shows 'Save failed' message AND Panel makes indicator clickable BUT does not auto-hide",
-                      "text": "WHEN Backend returns error THEN Panel shows red X icon AND Panel shows 'Save failed' message AND Panel makes indicator clickable BUT does not auto-hide",
-                      "sequential_order": 13.0
-                    },
-                    {
-                      "name": "WHEN User clicks error indicator THEN Panel displays error dialog AND Panel shows error message AND Panel shows stack trace",
-                      "text": "WHEN User clicks error indicator THEN Panel displays error dialog AND Panel shows error message AND Panel shows stack trace",
-                      "sequential_order": 14.0
-                    },
-                    {
-                      "name": "WHEN Backend returns validation error THEN Panel restores original DOM state AND Panel displays error indicator",
-                      "text": "WHEN Backend returns validation error THEN Panel restores original DOM state AND Panel displays error indicator",
-                      "sequential_order": 15.0
-                    },
-                    {
-                      "name": "WHEN Backend returns hierarchy error THEN Panel restores original node position AND Panel displays error indicator",
-                      "text": "WHEN Backend returns hierarchy error THEN Panel restores original node position AND Panel displays error indicator",
-                      "sequential_order": 16.0
-                    },
-                    {
-                      "name": "WHEN Backend fails operation in batch THEN Panel rolls back only failed operation AND Panel keeps successful operations BUT does not roll back entire batch",
-                      "text": "WHEN Backend fails operation in batch THEN Panel rolls back only failed operation AND Panel keeps successful operations BUT does not roll back entire batch",
-                      "sequential_order": 17.0
-                    },
-                    {
-                      "name": "WHEN Panel rolls back operation THEN Panel executes rollback function AND Panel restores captured state AND Panel updates DOM to match original",
-                      "text": "WHEN Panel rolls back operation THEN Panel executes rollback function AND Panel restores captured state AND Panel updates DOM to match original",
-                      "sequential_order": 18.0
-                    },
-                    {
-                      "name": "WHEN User initiates move THEN Panel captures original parent AND Panel captures original position AND Panel captures node reference",
-                      "text": "WHEN User initiates move THEN Panel captures original parent AND Panel captures original position AND Panel captures node reference",
-                      "sequential_order": 19.0
-                    },
-                    {
-                      "name": "WHEN User initiates rename THEN Panel captures original name AND Panel captures name element reference",
-                      "text": "WHEN User initiates rename THEN Panel captures original name AND Panel captures name element reference",
-                      "sequential_order": 20.0
-                    },
-                    {
-                      "name": "WHEN User initiates delete THEN Panel captures entire node HTML AND Panel captures parent element AND Panel captures position index",
-                      "text": "WHEN User initiates delete THEN Panel captures entire node HTML AND Panel captures parent element AND Panel captures position index",
-                      "sequential_order": 21.0
-                    },
-                    {
-                      "name": "WHEN Backend completes save successfully THEN Backend writes changes to story-graph.json AND Backend persists all node changes",
-                      "text": "WHEN Backend completes save successfully THEN Backend writes changes to story-graph.json AND Backend persists all node changes",
-                      "sequential_order": 22.0
-                    },
-                    {
-                      "name": "WHEN User reloads Panel after successful save THEN Panel loads story-graph.json AND Panel displays all saved changes",
-                      "text": "WHEN User reloads Panel after successful save THEN Panel loads story-graph.json AND Panel displays all saved changes",
-                      "sequential_order": 23.0
-                    }
-                  ],
-                  "behavior": null
-                }
-              ]
+              "stories": []
             }
           ]
         },
@@ -10268,6 +10977,1767 @@
               ]
             }
           ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Test Epic Creation 1769441294734-1221",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Epic Test 1769441294844-6260",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Parent Validation Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Child SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "DuplicateTestEpic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Child1",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "OrderTestEpic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Epic Button Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic1",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Empty SubEpic Test Epic 1769441296059-7662",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Empty SubEpic 1769441296059-4578",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441296059-128",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Empty SubEpic Test Epic 1769441296059-7662\\Empty SubEpic 1769441296059-4578\\📄 Story1 1769441296059-128.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Hierarchy Test Epic 1769441296305-5684",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic 1769441296305-9045",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic 1769441296305-2055",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            },
+            {
+              "name": "Second SubEpic 1769441296305-6222",
+              "sequential_order": 1.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Story Hierarchy Test 1769441296585-1035",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic With Stories 1769441296585-7076",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441296585-9521",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Story Hierarchy Test 1769441296585-1035\\SubEpic With Stories 1769441296585-7076\\📄 Story1 1769441296585-9521.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Scenario Test Epic 1769441296761-470",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Scenario SubEpic 1769441296761-2090",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Test Story 1769441296761-1951",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Scenario Test Epic 1769441296761-470\\Scenario SubEpic 1769441296761-2090\\📄 Test Story 1769441296761-1951.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Auto Name Test 1769441296944-8013",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First 1769441296944-4546",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second 1769441296944-1794",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Child1",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Sibling Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Existing Child",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Rename Test Epic 1769441297437-8503",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Updated Name 1769441297437-5002",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Valid Rename Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "New SubEpic Name",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Old SubEpic Name",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Empty Name Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Valid Name",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Rename Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Authentication",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Authorization",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Invalid Chars Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Valid Name",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Cancel Rename Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Original Name Preserved",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Source Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic To Move",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Target Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic To Move",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Type Validation Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic Level 1",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "SubEpic Level 2",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Valid Target Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic Level 2",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Incompatible Move Test",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Source SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "SubEpic To Move",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        },
+        {
+          "name": "Target With Stories",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Incompatible Move Test\\Target With Stories\\📄 Story1.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Reorder Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic A",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "SubEpic B",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "SubEpic C",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "SubEpic D",
+          "sequential_order": 3.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Circular Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [
+                {
+                  "name": "Grandchild SubEpic",
+                  "sequential_order": 0.0,
+                  "behavior": null,
+                  "sub_epics": [],
+                  "story_groups": []
+                }
+              ],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Action Test Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Action SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Target Story",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Action Test Epic\\Action SubEpic\\📄 Target Story.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Graph Modify Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Test SubEpic",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Create Scenarios",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [
+                    {
+                      "name": "New Scenario",
+                      "sequential_order": 0.0,
+                      "type": "",
+                      "background": [],
+                      "test_method": null,
+                      "steps": ""
+                    }
+                  ],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Graph Modify Epic\\Test SubEpic\\📄 Create Scenarios.md"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Modify SubEpic",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story With Action",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Graph Modify Epic\\Modify SubEpic\\📄 Story With Action.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Externally Added Epic",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Test Epic Creation 1769441346474-7014",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Epic Test 1769441346568-6842",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Empty SubEpic Test Epic 1769441347229-493",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Empty SubEpic 1769441347229-4913",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441347229-3245",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Empty SubEpic Test Epic 1769441347229-493\\Empty SubEpic 1769441347229-4913\\📄 Story1 1769441347229-3245.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Hierarchy Test Epic 1769441347458-309",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic 1769441347458-7618",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic 1769441347458-9277",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            },
+            {
+              "name": "Second SubEpic 1769441347458-8102",
+              "sequential_order": 1.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Story Hierarchy Test 1769441347739-8628",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic With Stories 1769441347739-4181",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441347739-410",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Story Hierarchy Test 1769441347739-8628\\SubEpic With Stories 1769441347739-4181\\📄 Story1 1769441347739-410.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Scenario Test Epic 1769441347908-7854",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Scenario SubEpic 1769441347908-1012",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Test Story 1769441347908-8877",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Scenario Test Epic 1769441347908-7854\\Scenario SubEpic 1769441347908-1012\\📄 Test Story 1769441347908-8877.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Auto Name Test 1769441348092-2143",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First 1769441348092-4827",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second 1769441348092-3732",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Child1",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Rename Test Epic 1769441348534-6340",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Updated Name 1769441348534-574",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Test Epic Creation 1769441402277-2221",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Epic Test 1769441402376-3518",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Empty SubEpic Test Epic 1769441403031-1703",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Empty SubEpic 1769441403031-2445",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441403031-570",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Empty SubEpic Test Epic 1769441403031-1703\\Empty SubEpic 1769441403031-2445\\📄 Story1 1769441403031-570.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Hierarchy Test Epic 1769441403269-5702",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic 1769441403269-8623",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic 1769441403269-3386",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            },
+            {
+              "name": "Second SubEpic 1769441403269-3917",
+              "sequential_order": 1.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Story Hierarchy Test 1769441403601-5688",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic With Stories 1769441403601-9223",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441403601-3788",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Story Hierarchy Test 1769441403601-5688\\SubEpic With Stories 1769441403601-9223\\📄 Story1 1769441403601-3788.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Scenario Test Epic 1769441403768-5275",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Scenario SubEpic 1769441403768-2094",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Test Story 1769441403768-3154",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Scenario Test Epic 1769441403768-5275\\Scenario SubEpic 1769441403768-2094\\📄 Test Story 1769441403768-3154.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Auto Name Test 1769441403940-8101",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First 1769441403940-5213",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second 1769441403940-3528",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Child1",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Rename Test Epic 1769441404374-8307",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Updated Name 1769441404374-2382",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Test Epic Creation 1769441494379-5015",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Epic Test 1769441494482-8631",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Empty SubEpic Test Epic 1769441495140-9078",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Empty SubEpic 1769441495140-5766",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441495140-8337",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Empty SubEpic Test Epic 1769441495140-9078\\Empty SubEpic 1769441495140-5766\\📄 Story1 1769441495140-8337.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Hierarchy Test Epic 1769441495432-5288",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic 1769441495432-930",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic 1769441495432-9920",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            },
+            {
+              "name": "Second SubEpic 1769441495432-3258",
+              "sequential_order": 1.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Story Hierarchy Test 1769441495730-6695",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic With Stories 1769441495730-9043",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441495730-9796",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Story Hierarchy Test 1769441495730-6695\\SubEpic With Stories 1769441495730-9043\\📄 Story1 1769441495730-9796.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Scenario Test Epic 1769441495921-9294",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Scenario SubEpic 1769441495921-7756",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Test Story 1769441495921-4074",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Scenario Test Epic 1769441495921-9294\\Scenario SubEpic 1769441495921-7756\\📄 Test Story 1769441495921-4074.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Auto Name Test 1769441496142-2087",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First 1769441496142-2859",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second 1769441496142-6817",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Child1",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Rename Test Epic 1769441496598-911",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Updated Name 1769441496598-5392",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Test Epic Creation 1769441574358-4915",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Epic Test 1769441574472-1345",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Empty SubEpic Test Epic 1769441575126-6964",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Empty SubEpic 1769441575126-1779",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441575126-4640",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Empty SubEpic Test Epic 1769441575126-6964\\Empty SubEpic 1769441575126-1779\\📄 Story1 1769441575126-4640.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Hierarchy Test Epic 1769441575385-6860",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic 1769441575385-6006",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic 1769441575385-4412",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            },
+            {
+              "name": "Second SubEpic 1769441575385-1558",
+              "sequential_order": 1.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Story Hierarchy Test 1769441575736-5242",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic With Stories 1769441575736-2079",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441575736-885",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Story Hierarchy Test 1769441575736-5242\\SubEpic With Stories 1769441575736-2079\\📄 Story1 1769441575736-885.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Scenario Test Epic 1769441575938-5187",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Scenario SubEpic 1769441575938-8020",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Test Story 1769441575938-6872",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Scenario Test Epic 1769441575938-5187\\Scenario SubEpic 1769441575938-8020\\📄 Test Story 1769441575938-6872.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Auto Name Test 1769441576121-4522",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First 1769441576121-7804",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second 1769441576121-6806",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Child1",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Rename Test Epic 1769441576614-6459",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Updated Name 1769441576614-1733",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Test Epic Creation 1769441597415-3293",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Duplicate Epic Test 1769441597532-4394",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [],
+      "story_groups": []
+    },
+    {
+      "name": "Empty SubEpic Test Epic 1769441598183-3853",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Empty SubEpic 1769441598183-6637",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441598183-2547",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Empty SubEpic Test Epic 1769441598183-3853\\Empty SubEpic 1769441598183-6637\\📄 Story1 1769441598183-2547.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Hierarchy Test Epic 1769441598459-6372",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Parent SubEpic 1769441598459-5836",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [
+            {
+              "name": "Child SubEpic 1769441598459-8488",
+              "sequential_order": 0.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            },
+            {
+              "name": "Second SubEpic 1769441598459-9601",
+              "sequential_order": 1.0,
+              "behavior": null,
+              "sub_epics": [],
+              "story_groups": []
+            }
+          ],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Story Hierarchy Test 1769441598793-9702",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "SubEpic With Stories 1769441598793-5609",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Story1 1769441598793-2769",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Story Hierarchy Test 1769441598793-9702\\SubEpic With Stories 1769441598793-5609\\📄 Story1 1769441598793-2769.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Scenario Test Epic 1769441598981-1828",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Scenario SubEpic 1769441598981-1341",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": [
+            {
+              "name": "",
+              "sequential_order": 0.0,
+              "type": "and",
+              "connector": null,
+              "behavior": null,
+              "stories": [
+                {
+                  "name": "Test Story 1769441598981-8512",
+                  "sequential_order": 0.0,
+                  "connector": null,
+                  "story_type": "user",
+                  "users": [],
+                  "test_file": null,
+                  "test_class": null,
+                  "scenarios": [],
+                  "acceptance_criteria": [],
+                  "behavior": null,
+                  "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Scenario Test Epic 1769441598981-1828\\Scenario SubEpic 1769441598981-1341\\📄 Test Story 1769441598981-8512.md"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Auto Name Test 1769441599154-8646",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "First 1769441599154-1916",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Second 1769441599154-5288",
+          "sequential_order": 1.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        },
+        {
+          "name": "Child1",
+          "sequential_order": 2.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
+        }
+      ],
+      "story_groups": []
+    },
+    {
+      "name": "Rename Test Epic 1769441599611-8804",
+      "sequential_order": null,
+      "behavior": null,
+      "domain_concepts": [],
+      "sub_epics": [
+        {
+          "name": "Updated Name 1769441599611-661",
+          "sequential_order": 0.0,
+          "behavior": null,
+          "sub_epics": [],
+          "story_groups": []
         }
       ],
       "story_groups": []

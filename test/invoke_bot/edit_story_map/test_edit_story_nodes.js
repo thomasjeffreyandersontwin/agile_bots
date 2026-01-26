@@ -1816,3 +1816,534 @@ test('TestAutomaticallyRefreshStoryGraphChanges', { concurrency: false }, async 
         // This test verifies the message handler can query status and get valid structure back.
     });
 });
+
+
+// ============================================================================
+// STORY: Save Story Map Changes Asynchronously
+// Sub-Epic: Edit Story Map
+// Epic: Invoke Bot
+// ============================================================================
+
+const AsyncSaveTestHelper = require('../../../test/helpers/async_save_test_helper');
+
+// ============================================================================
+// TEST HELPER INSTANCE
+// ============================================================================
+
+const asyncSaveTestHelper = new AsyncSaveTestHelper(backendPanel);
+
+// ============================================================================
+// HELPER FUNCTIONS - Given/When/Then pattern
+// ============================================================================
+
+function given_async_save_controller() {
+    return asyncSaveTestHelper.createAsyncSaveController();
+}
+
+function when_move_operation_enqueued(controller, node_type, node_name, original_position, target_position) {
+    controller.enqueue({
+        type: 'move',
+        node_type: node_type,
+        node_name: node_name,
+        original_position: original_position,
+        target_position: target_position
+    });
+}
+
+function when_rename_operation_enqueued(controller, node_type, original_name, new_name) {
+    controller.enqueue({
+        type: 'rename',
+        node_type: node_type,
+        original_name: original_name,
+        new_name: new_name
+    });
+}
+
+function when_delete_operation_enqueued(controller, node_type, node_name, node_position) {
+    controller.enqueue({
+        type: 'delete',
+        node_type: node_type,
+        node_name: node_name,
+        node_position: node_position
+    });
+}
+
+function when_create_operation_enqueued(controller, parent_node_type, parent_node_name, node_type, new_node_name) {
+    controller.enqueue({
+        type: 'create',
+        parent_node_type: parent_node_type,
+        parent_node_name: parent_node_name,
+        node_type: node_type,
+        new_node_name: new_node_name
+    });
+}
+
+async function when_debounce_elapses(controller, debounce_time) {
+    await controller.waitForDebounce(debounce_time);
+}
+
+function then_panel_shows_optimistic_update(controller, operation_type, node_name, target_position) {
+    const dom_state = controller.getDOMState();
+    assert.ok(dom_state.optimisticUpdates.length > 0, 'Should have optimistic updates');
+    const update = dom_state.optimisticUpdates.find(u => 
+        u.type === operation_type && u.node_name === node_name
+    );
+    assert.ok(update, `Should have optimistic ${operation_type} update for ${node_name}`);
+    if (target_position !== undefined) {
+        assert.strictEqual(update.target_position, target_position);
+    }
+}
+
+function then_panel_displays_status_indicator(controller, status_indicator) {
+    assert.strictEqual(controller.getStatusIndicator().icon, status_indicator);
+}
+
+function then_panel_shows_operation_count(controller, operation_count) {
+    assert.strictEqual(controller.getQueueLength(), operation_count);
+}
+
+function then_backend_executed_command(controller, operation_type) {
+    const executed_commands = controller.getExecutedCommands();
+    assert.ok(executed_commands.some(cmd => cmd.type === operation_type), 
+        `Should have executed ${operation_type} command`);
+}
+
+function then_panel_shows_success(controller, success_indicator, success_message) {
+    const status = controller.getStatusIndicator();
+    assert.strictEqual(status.icon, success_indicator);
+    assert.strictEqual(status.message, success_message);
+}
+
+function then_panel_shows_error_and_rollback(controller, error_indicator, original_value) {
+    const status = controller.getStatusIndicator();
+    assert.strictEqual(status.icon, error_indicator);
+    assert.strictEqual(status.isError, true);
+    
+    const dom_state = controller.getDOMState();
+    const rollback = dom_state.rollbacks.find(r => r.restoredValue === original_value);
+    assert.ok(rollback, `Should have rolled back to ${original_value}`);
+}
+
+function given_story_map_contains(controller, parent_node_type, parent_node_name) {
+    asyncSaveTestHelper.setupStoryMap(parent_node_type, parent_node_name);
+}
+
+function given_parent_contains_node(controller, parent_node_type, node_type, node_name, position) {
+    asyncSaveTestHelper.addNodeToParent(parent_node_type, node_type, node_name, position);
+}
+
+function given_panel_is_displaying_story_map(controller) {
+    controller.displayStoryMap();
+}
+
+function then_panel_updates_name_in_dom_immediately(controller, node_type, new_name) {
+    const dom_state = controller.getDOMState();
+    const update = dom_state.optimisticUpdates.find(u => 
+        u.type === 'rename' && u.new_name === new_name
+    );
+    assert.ok(update, `Should have updated ${node_type} name to ${new_name} in DOM immediately`);
+}
+
+function then_panel_removes_node_from_dom_immediately(controller, node_type, node_name) {
+    const dom_state = controller.getDOMState();
+    const update = dom_state.optimisticUpdates.find(u => 
+        u.type === 'delete' && u.node_name === node_name
+    );
+    assert.ok(update, `Should have removed ${node_type} ${node_name} from DOM immediately`);
+}
+
+function then_panel_adds_node_to_dom_immediately(controller, node_type, new_node_name) {
+    const dom_state = controller.getDOMState();
+    const update = dom_state.optimisticUpdates.find(u => 
+        u.type === 'create' && u.new_node_name === new_node_name
+    );
+    assert.ok(update, `Should have added ${node_type} ${new_node_name} to DOM immediately`);
+}
+
+function then_panel_updates_all_changes_in_dom_immediately(controller) {
+    const dom_state = controller.getDOMState();
+    assert.ok(dom_state.optimisticUpdates.length > 0, 'Should have optimistic updates for all changes');
+}
+
+function then_backend_writes_changes_to_story_graph_json(controller) {
+    const executed_commands = controller.getExecutedCommands();
+    assert.ok(executed_commands.length > 0, 'Backend should have executed commands');
+    executed_commands.forEach(cmd => {
+        assert.ok(cmd.persisted, `Backend should have written ${cmd.type} changes to story-graph.json`);
+    });
+}
+
+function then_panel_auto_hides_status_after(controller, auto_hide_time) {
+    const status = controller.getStatusIndicator();
+    assert.ok(status.autoHideTimeout === auto_hide_time || status.autoHideScheduled, 
+        `Panel should auto-hide status after ${auto_hide_time}`);
+}
+
+function when_user_reloads_panel(controller) {
+    controller.reloadPanel();
+}
+
+function then_panel_loads_story_graph_json(controller) {
+    assert.ok(controller.isStoryGraphLoaded(), 'Panel should load story-graph.json');
+}
+
+function then_panel_displays_node_at_position(controller, node_type, node_name, target_position) {
+    const node = controller.findNodeInGraph(node_type, node_name);
+    assert.ok(node, `Panel should display ${node_type} ${node_name}`);
+    assert.strictEqual(node.sequential_order, target_position, 
+        `Panel should display ${node_type} ${node_name} at position ${target_position}`);
+}
+
+function then_panel_displays_node_named(controller, node_type, new_name) {
+    const node = controller.findNodeInGraph(node_type, new_name);
+    assert.ok(node, `Panel should display ${node_type} named ${new_name}`);
+}
+
+function then_panel_confirms_node_no_longer_exists(controller, node_type, node_name) {
+    const node = controller.findNodeInGraph(node_type, node_name);
+    assert.ok(!node, `Panel should confirm ${node_type} ${node_name} no longer exists`);
+}
+
+function then_panel_displays_node_under_parent(controller, node_type, new_node_name, parent_node_type, parent_node_name) {
+    const node = controller.findNodeInGraph(node_type, new_node_name);
+    assert.ok(node, `Panel should display ${node_type} ${new_node_name}`);
+    const parent = controller.findNodeInGraph(parent_node_type, parent_node_name);
+    assert.ok(parent, `Panel should display ${node_type} ${new_node_name} under ${parent_node_type} ${parent_node_name}`);
+}
+
+function then_panel_shows_batch_message(controller, batch_message) {
+    const status = controller.getStatusIndicator();
+    assert.ok(status.message.includes(batch_message) || status.message.includes('3'), 
+        `Panel should show batch message: ${batch_message}`);
+}
+
+function then_backend_processes_all_operations(controller, operation_count) {
+    const executed_commands = controller.getExecutedCommands();
+    assert.strictEqual(executed_commands.length, operation_count, 
+        `Backend should process all ${operation_count} operations`);
+}
+
+function then_panel_makes_error_indicator_clickable(controller) {
+    const status = controller.getStatusIndicator();
+    assert.ok(status.isClickable, 'Panel should make error indicator clickable');
+}
+
+function then_panel_does_not_auto_hide_error(controller) {
+    const status = controller.getStatusIndicator();
+    assert.ok(!status.autoHideScheduled && status.autoHideTimeout === null, 
+        'Panel should not auto-hide error');
+}
+
+function when_user_clicks_error_indicator(controller) {
+    controller.clickErrorIndicator();
+}
+
+function then_panel_displays_error_dialog(controller) {
+    assert.ok(controller.isErrorDialogDisplayed(), 'Panel should display error dialog');
+}
+
+function then_panel_shows_error_details(controller, error_details) {
+    const error_dialog = controller.getErrorDialog();
+    assert.ok(error_dialog, 'Panel should show error dialog');
+    assert.ok(error_dialog.message.includes(error_details) || error_dialog.stack.includes(error_details), 
+        `Panel should show error details: ${error_details}`);
+}
+
+// ============================================================================
+// TEST DATA - From specification Examples tables
+// ============================================================================
+
+const MOVE_NODE_EXAMPLES = [
+    { parent_node_type: 'Epic', parent_node_name: 'Invoke Bot', node_type: 'SubEpic', node_name: 'Edit Story Map', original_position: 1, target_position: 3 },
+    { parent_node_type: 'SubEpic', parent_node_name: 'Edit Story Map', node_type: 'Story', node_name: 'Save Story Map Changes Asynchronously', original_position: 0, target_position: 5 },
+    { parent_node_type: 'Story', parent_node_name: 'Save Story Map Changes Asynchronously', node_type: 'Scenario', node_name: 'User moves node and sees optimistic update', original_position: 0, target_position: 2 }
+];
+
+const RENAME_NODE_EXAMPLES = [
+    { parent_node_type: 'Epic', parent_node_name: 'Invoke Bot', node_type: 'SubEpic', original_name: 'Edit Story Map', new_name: 'Modify Story Map' },
+    { parent_node_type: 'SubEpic', parent_node_name: 'Edit Story Map', node_type: 'Story', original_name: 'Save Story Map Changes Asynchronously', new_name: 'Persist Story Map Changes Async' },
+    { parent_node_type: 'Story', parent_node_name: 'Save Story Map Changes Asynchronously', node_type: 'Scenario', original_name: 'User moves node', new_name: 'User drags and drops node to reorder' }
+];
+
+const DELETE_NODE_EXAMPLES = [
+    { parent_node_type: 'SubEpic', parent_node_name: 'Edit Story Map', node_type: 'Story', node_name: 'Deprecated Story Example', node_position: 8 },
+    { parent_node_type: 'Story', parent_node_name: 'Save Story Map Changes Asynchronously', node_type: 'Scenario', node_name: 'Obsolete test scenario', node_position: 5 }
+];
+
+const CREATE_NODE_EXAMPLES = [
+    { parent_node_type: 'Epic', parent_node_name: 'Invoke Bot', node_type: 'SubEpic', new_node_name: 'Export Story Map' },
+    { parent_node_type: 'SubEpic', parent_node_name: 'Edit Story Map', node_type: 'Story', new_node_name: 'Undo Story Map Changes' },
+    { parent_node_type: 'Story', parent_node_name: 'Save Story Map Changes Asynchronously', node_type: 'Scenario', new_node_name: 'User creates SubEpic and saves' }
+];
+
+const ERROR_HANDLING_EXAMPLES = [
+    { parent_node_type: 'SubEpic', parent_node_name: 'Edit Story Map', node_type: 'Story', original_name: 'Save Story Map Changes Asynchronously', invalid_name: '', error_type: 'validation' },
+    { parent_node_type: 'Story', parent_node_name: 'Save Story Map Changes Asynchronously', node_type: 'Scenario', original_name: 'User moves node', invalid_name: 'User moves node (contains invalid emoji)', error_type: 'validation' },
+    { parent_node_type: 'SubEpic', parent_node_name: 'Edit Story Map', node_type: 'Story', original_name: 'Filter Scope', invalid_name: 'Navigate Behavior Actions', error_type: 'hierarchy' }
+];
+
+// ============================================================================
+// TEST SUITE
+// ============================================================================
+
+test('TestSaveStoryMapChangesAsynchronously', { concurrency: false }, async (t) => {
+    
+    // Scenario: User moves node and sees optimistic update with async save
+    for (const example of MOVE_NODE_EXAMPLES) {
+        await t.test(`test_user_moves_node_optimistic_update_${example.node_type.toLowerCase()}`, async () => {
+            // Given
+            const controller = given_async_save_controller();
+            given_story_map_contains(controller, example.parent_node_type, example.parent_node_name);
+            given_parent_contains_node(controller, example.parent_node_type, example.node_type, 
+                example.node_name, example.original_position);
+            given_panel_is_displaying_story_map(controller);
+            
+            // When
+            when_move_operation_enqueued(controller, example.node_type, example.node_name, 
+                example.original_position, example.target_position);
+            
+            // Then
+            then_panel_shows_optimistic_update(controller, 'move', example.node_name, example.target_position);
+            then_panel_displays_status_indicator(controller, 'spinner icon');
+            then_panel_shows_operation_count(controller, 1);
+            
+            // When
+            await when_debounce_elapses(controller, 500);
+            
+            // Then
+            then_backend_executed_command(controller, 'move');
+            then_backend_writes_changes_to_story_graph_json(controller);
+            
+            // When
+            controller.completeSaveSuccessfully();
+            
+            // Then
+            then_panel_shows_success(controller, 'green checkmark', 'Saved');
+            then_panel_auto_hides_status_after(controller, '2 seconds');
+            
+            // When
+            when_user_reloads_panel(controller);
+            
+            // Then
+            then_panel_loads_story_graph_json(controller);
+            then_panel_displays_node_at_position(controller, example.node_type, example.node_name, example.target_position);
+        });
+    }
+    
+    // Scenario: User renames node and sees optimistic update with async save
+    for (const example of RENAME_NODE_EXAMPLES) {
+        await t.test(`test_user_renames_node_optimistic_update_${example.node_type.toLowerCase()}`, async () => {
+            // Given
+            const controller = given_async_save_controller();
+            given_story_map_contains(controller, example.parent_node_type, example.parent_node_name);
+            given_parent_contains_node(controller, example.parent_node_type, example.node_type, 
+                example.original_name, 0);
+            given_panel_is_displaying_story_map(controller);
+            
+            // When
+            when_rename_operation_enqueued(controller, example.node_type, 
+                example.original_name, example.new_name);
+            
+            // Then
+            then_panel_updates_name_in_dom_immediately(controller, example.node_type, example.new_name);
+            then_panel_displays_status_indicator(controller, 'spinner icon');
+            then_panel_shows_operation_count(controller, 1);
+            
+            // When
+            await when_debounce_elapses(controller, 500);
+            
+            // Then
+            then_backend_executed_command(controller, 'rename');
+            then_backend_writes_changes_to_story_graph_json(controller);
+            
+            // When
+            controller.completeSaveSuccessfully();
+            
+            // Then
+            then_panel_shows_success(controller, 'green checkmark', 'Saved');
+            then_panel_auto_hides_status_after(controller, '2 seconds');
+            
+            // When
+            when_user_reloads_panel(controller);
+            
+            // Then
+            then_panel_loads_story_graph_json(controller);
+            then_panel_displays_node_named(controller, example.node_type, example.new_name);
+        });
+    }
+    
+    // Scenario: User deletes node and sees optimistic update with async save
+    for (const example of DELETE_NODE_EXAMPLES) {
+        await t.test(`test_user_deletes_node_optimistic_update_${example.node_type.toLowerCase()}`, async () => {
+            // Given
+            const controller = given_async_save_controller();
+            given_story_map_contains(controller, example.parent_node_type, example.parent_node_name);
+            given_parent_contains_node(controller, example.parent_node_type, example.node_type, 
+                example.node_name, example.node_position);
+            given_panel_is_displaying_story_map(controller);
+            
+            // When
+            when_delete_operation_enqueued(controller, example.node_type, 
+                example.node_name, example.node_position);
+            
+            // Then
+            then_panel_removes_node_from_dom_immediately(controller, example.node_type, example.node_name);
+            then_panel_displays_status_indicator(controller, 'spinner icon');
+            then_panel_shows_operation_count(controller, 1);
+            
+            // When
+            await when_debounce_elapses(controller, 500);
+            
+            // Then
+            then_backend_executed_command(controller, 'delete');
+            then_backend_writes_changes_to_story_graph_json(controller);
+            
+            // When
+            controller.completeSaveSuccessfully();
+            
+            // Then
+            then_panel_shows_success(controller, 'green checkmark', 'Saved');
+            then_panel_auto_hides_status_after(controller, '2 seconds');
+            
+            // When
+            when_user_reloads_panel(controller);
+            
+            // Then
+            then_panel_loads_story_graph_json(controller);
+            then_panel_confirms_node_no_longer_exists(controller, example.node_type, example.node_name);
+        });
+    }
+    
+    // Scenario: User creates node and sees optimistic update with async save
+    for (const example of CREATE_NODE_EXAMPLES) {
+        await t.test(`test_user_creates_node_optimistic_update_${example.node_type.toLowerCase()}`, async () => {
+            // Given
+            const controller = given_async_save_controller();
+            given_story_map_contains(controller, example.parent_node_type, example.parent_node_name);
+            given_panel_is_displaying_story_map(controller);
+            
+            // When
+            when_create_operation_enqueued(controller, example.parent_node_type, 
+                example.parent_node_name, example.node_type, example.new_node_name);
+            
+            // Then
+            then_panel_adds_node_to_dom_immediately(controller, example.node_type, example.new_node_name);
+            then_panel_displays_status_indicator(controller, 'spinner icon');
+            then_panel_shows_operation_count(controller, 1);
+            
+            // When
+            await when_debounce_elapses(controller, 500);
+            
+            // Then
+            then_backend_executed_command(controller, 'create');
+            then_backend_writes_changes_to_story_graph_json(controller);
+            
+            // When
+            controller.completeSaveSuccessfully();
+            
+            // Then
+            then_panel_shows_success(controller, 'green checkmark', 'Saved');
+            then_panel_auto_hides_status_after(controller, '2 seconds');
+            
+            // When
+            when_user_reloads_panel(controller);
+            
+            // Then
+            then_panel_loads_story_graph_json(controller);
+            then_panel_displays_node_under_parent(controller, example.node_type, example.new_node_name, 
+                example.parent_node_type, example.parent_node_name);
+        });
+    }
+    
+    // Scenario: User makes multiple rapid changes and sees batched async save
+    await t.test('test_user_makes_multiple_rapid_changes_batched_async_save', async () => {
+        // Given
+        const controller = given_async_save_controller();
+        given_story_map_contains(controller, 'Epic', 'Invoke Bot');
+        given_story_map_contains(controller, 'SubEpic', 'Edit Story Map');
+        given_parent_contains_node(controller, 'SubEpic', 'Story', 'Save Story Map Changes Asynchronously', 0);
+        given_parent_contains_node(controller, 'SubEpic', 'Story', 'Filter Scope', 1);
+        given_parent_contains_node(controller, 'SubEpic', 'Story', 'Deprecated Feature X', 3);
+        given_panel_is_displaying_story_map(controller);
+        
+        // When - multiple rapid changes
+        when_move_operation_enqueued(controller, 'Story', 'Save Story Map Changes Asynchronously', 0, 2);
+        when_rename_operation_enqueued(controller, 'Story', 'Filter Scope', 'Apply Scope Filter');
+        when_delete_operation_enqueued(controller, 'Story', 'Deprecated Feature X', 3);
+        
+        // Then
+        then_panel_updates_all_changes_in_dom_immediately(controller);
+        then_panel_displays_status_indicator(controller, 'spinner icon');
+        then_panel_shows_batch_message(controller, 'Saving 3 changes...');
+        
+        // When
+        await when_debounce_elapses(controller, 500);
+        
+        // Then
+        then_backend_executed_command(controller, 'move');
+        then_backend_executed_command(controller, 'rename');
+        then_backend_executed_command(controller, 'delete');
+        then_backend_processes_all_operations(controller, 3);
+        then_backend_writes_changes_to_story_graph_json(controller);
+        
+        // When
+        controller.completeSaveSuccessfully();
+        
+        // Then
+        then_panel_shows_success(controller, 'green checkmark', 'Saved');
+        
+        // When
+        when_user_reloads_panel(controller);
+        
+        // Then
+        then_panel_loads_story_graph_json(controller);
+        then_panel_displays_node_at_position(controller, 'Story', 'Save Story Map Changes Asynchronously', 2);
+        then_panel_displays_node_named(controller, 'Story', 'Apply Scope Filter');
+        then_panel_confirms_node_no_longer_exists(controller, 'Story', 'Deprecated Feature X');
+    });
+    
+    // Scenario: User sees error handling when async save fails
+    for (const example of ERROR_HANDLING_EXAMPLES) {
+        await t.test(`test_user_sees_error_handling_${example.error_type}_error_${example.node_type.toLowerCase()}`, async () => {
+            // Given
+            const controller = given_async_save_controller();
+            given_story_map_contains(controller, example.parent_node_type, example.parent_node_name);
+            given_parent_contains_node(controller, example.parent_node_type, example.node_type, 
+                example.original_name, 0);
+            given_panel_is_displaying_story_map(controller);
+            
+            // When
+            when_rename_operation_enqueued(controller, example.node_type, 
+                example.original_name, example.invalid_name);
+            
+            // Then
+            then_panel_updates_name_in_dom_immediately(controller, example.node_type, example.invalid_name);
+            then_panel_displays_status_indicator(controller, 'spinner icon');
+            
+            // When
+            await when_debounce_elapses(controller, 500);
+            
+            // Then
+            then_backend_executed_command(controller, 'rename');
+            
+            // When
+            controller.returnError(example.error_type, example.error_type === 'validation' ? 
+                'Story name cannot be empty' : 'Duplicate story name in parent SubEpic');
+            
+            // Then
+            then_panel_shows_error_and_rollback(controller, 'red X icon', example.original_name);
+            then_panel_makes_error_indicator_clickable(controller);
+            then_panel_does_not_auto_hide_error(controller);
+            
+            // When
+            when_user_clicks_error_indicator(controller);
+            
+            // Then
+            then_panel_displays_error_dialog(controller);
+            const error_details = example.error_type === 'validation' ? 
+                'ValidationError: Story name is required and cannot be empty string' :
+                'HierarchyError: Story \'Navigate Behavior Actions\' already exists in SubEpic \'Edit Story Map\'';
+            then_panel_shows_error_details(controller, error_details);
+        });
+    }
+});
