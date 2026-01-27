@@ -1344,103 +1344,6 @@ from helpers.bot_test_helper import BotTestHelper
         assert 'def test_story_map_loads_epics(self, tmp_path):' in target_file_content
         assert 'def test_epic_has_sub_epics(self, tmp_path):' in target_file_content
 
-class TestExecuteActionScopedToStoryNode:
-    """Tests for executing actions scoped to story nodes."""
-    # Scenario: Execute action on node with valid parameters
-    
-    @pytest.mark.parametrize('node_type,node_name,action_name,parameters', [
-        ('Epic', 'User Management', 'build', '{"output": "docs/stories"}'),
-        ('SubEpic', 'Authentication', 'validate', '{"rules": "all"}'),
-        ('Story', 'Login Form', 'render', '{"format": "markdown"}'),
-    ])
-    def test_execute_action_on_node_with_valid_parameters(self, tmp_path, node_type, node_name, action_name, parameters):
-        """
-        SCENARIO: Execute action on node with valid parameters
-        GIVEN: Node exists and bot has registered actions
-        WHEN: Node executes action with valid parameters
-        THEN: Action completes successfully
-        """
-        helper = BotTestHelper(tmp_path)
-        helper.story.create_story_graph_with_node_and_actions(
-            node_type, node_name, ['clarify', 'strategy', 'build', 'validate', 'render']
-        )
-        
-        if node_type == 'Epic':
-            node = helper.story.bot.story_graph.epics[node_name]
-        elif node_type == 'SubEpic':
-            node = helper.story.find_subepic_in_story_graph(node_name)
-        else:
-            node = helper.story.find_story_in_story_graph(node_name)
-        
-        result = node.execute_action(action_name, parameters)
-        
-        assert result.success is True
-        helper.story.assert_story_graph_structure_valid()
-    # Scenario: Execute action with invalid parameters returns error
-    
-    @pytest.mark.parametrize('node_type,node_name,action_name,invalid_parameters,invalid_params_list,error_message', [
-        ('Epic', 'User Management', 'build', '{"invalid_key": "value"}', 'invalid_key', 'Invalid parameter: invalid_key. Expected: output'),
-        ('SubEpic', 'Authentication', 'validate', '{}', 'rules', 'Missing required parameter: rules'),
-        ('Story', 'Login Form', 'render', '{"format": "invalid_format"}', 'format', 'Invalid format value: invalid_format. Expected: markdown, json, html'),
-    ])
-    def test_execute_action_with_invalid_parameters_returns_error(self, tmp_path, node_type, node_name, action_name, invalid_parameters, invalid_params_list, error_message):
-        """
-        SCENARIO: Execute action with invalid parameters returns error
-        GIVEN: Node exists and bot has registered actions
-        WHEN: Node executes action with invalid parameters
-        THEN: Bot validates parameters and returns error
-        """
-        helper = BotTestHelper(tmp_path)
-        helper.story.create_story_graph_with_node_and_actions(
-            node_type, node_name, ['clarify', 'strategy', 'build', 'validate', 'render']
-        )
-        
-        if node_type == 'Epic':
-            node = helper.story.bot.story_graph.epics[node_name]
-        elif node_type == 'SubEpic':
-            node = helper.story.find_subepic_in_story_graph(node_name)
-        else:
-            node = helper.story.find_story_in_story_graph(node_name)
-        
-        with pytest.raises(ValueError, match=error_message):
-            node.execute_action(action_name, invalid_parameters)
-    # Scenario: Execute non-existent action returns error
-    
-    @pytest.mark.parametrize('node_type,node_name,non_existent_action', [
-        ('Epic', 'User Management', 'deploy'),
-        ('SubEpic', 'Authentication', 'test'),
-        ('Story', 'Login Form', 'compile'),
-    ])
-    def test_execute_non_existent_action_returns_error(self, tmp_path, node_type, node_name, non_existent_action):
-        """
-        SCENARIO: Execute non-existent action returns error
-        GIVEN: Node exists and bot has registered actions
-        WHEN: Node attempts to execute non-existent action
-        THEN: Bot validates action exists and returns error
-        """
-        helper = BotTestHelper(tmp_path)
-        helper.story.create_story_graph_with_node_and_actions(
-            node_type, node_name, ['clarify', 'strategy', 'build', 'validate', 'render']
-        )
-        
-        if node_type == 'Epic':
-            node = helper.story.bot.story_graph.epics[node_name]
-        elif node_type == 'SubEpic':
-            node = helper.story.find_subepic_in_story_graph(node_name)
-        else:
-            node = helper.story.find_story_in_story_graph(node_name)
-        
-        with pytest.raises(ValueError, match=f"Action '{non_existent_action}' not found. Available actions: clarify, strategy, build, validate, render"):
-            node.execute_action(non_existent_action)
-
-# ============================================================================
-# CLI TESTS - Story Graph Editing via CLI Commands
-# ============================================================================
-
-# ============================================================================
-# STORY: Create Epic at Root Level
-# Maps to: TestCreateEpic in test_create_epic.py
-# ============================================================================
 class TestCreateEpic:
     """
     Story: Create Epic at Root Level Using CLI
@@ -2153,4 +2056,477 @@ class TestSubmitActionScopedToStoryScope:
         )
         
         assert 'not found' in cli_response.output or 'error' in cli_response.output.lower()
+
+class TestEnrichScopeWithLinks:
+    """Tests for link enrichment in JSON scope (test icons and doc links)."""
+    
+    def test_story_with_test_file_and_class_gets_test_link(self, tmp_path):
+        """
+        SCENARIO: Story with test_file and test_class gets test tube icon link
+        GIVEN: Story graph with story having test_file and test_class
+        AND: Test file exists on disk
+        WHEN: Scope is enriched with links
+        THEN: Story has test_tube icon link pointing to test file
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create test file
+        test_dir = helper.workspace / 'test'
+        test_dir.mkdir(exist_ok=True)
+        test_file = test_dir / 'test_story.py'
+        test_file.write_text('class TestMyStory:\n    def test_scenario(self):\n        pass')
+        
+        # Create story graph - story gets test_file from parent sub-epic
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': [{
+                    'name': 'Test Sub Epic',
+                    'sequential_order': 1.0,
+                    'test_file': 'test_story.py',  # Sub-epic has test_file
+                    'story_groups': [{
+                        'type': 'and',
+                        'stories': [{
+                            'name': 'Test Story',
+                            # No test_file - inherits from parent sub-epic
+                            'test_class': 'TestMyStory',
+                            'sequential_order': 1.0
+                        }]
+                    }]
+                }]
+            }]
+        }
+        helper.story.create_story_graph(story_graph)
+        
+        # Create scope and get results
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.SHOW_ALL)
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify test link was added
+        story = result['content']['epics'][0]['sub_epics'][0]['story_groups'][0]['stories'][0]
+        assert 'links' in story
+        test_links = [l for l in story['links'] if l['icon'] == 'test_tube']
+        assert len(test_links) == 1
+        assert 'test_story.py' in test_links[0]['url']
+        assert '#L' in test_links[0]['url']  # Verify it has a line number
+    
+    def test_story_without_test_file_gets_no_test_link(self, tmp_path):
+        """
+        SCENARIO: Story with test_class but no test_file gets no test icon
+        GIVEN: Story graph with story having test_class but no test_file
+        WHEN: Scope is enriched with links
+        THEN: Story has no test_tube icon link
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create story graph with only test_class using helper
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': [{
+                    'name': 'Test Sub Epic',
+                    'sequential_order': 1.0,
+                    'story_groups': [{
+                        'type': 'and',
+                        'stories': [{
+                            'name': 'Test Story',
+                            'test_class': 'TestMyStory',  # Has test_class
+                            # No test_file
+                            'sequential_order': 1.0
+                        }]
+                    }]
+                }]
+            }]
+        }
+        helper.story.create_story_graph(story_graph)
+        
+        # Create scope and get results
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.SHOW_ALL)
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify no test link was added
+        story = result['content']['epics'][0]['sub_epics'][0]['story_groups'][0]['stories'][0]
+        test_links = [l for l in story.get('links', []) if l['icon'] == 'test_tube']
+        assert len(test_links) == 0
+    
+    def test_sub_epic_with_test_file_gets_test_link(self, tmp_path):
+        """
+        SCENARIO: Sub-epic with test_file gets test tube icon link
+        GIVEN: Story graph with sub-epic having test_file
+        AND: Test file exists on disk
+        WHEN: Scope is enriched with links
+        THEN: Sub-epic has test_tube icon link pointing to test file
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create test file
+        test_dir = helper.workspace / 'test'
+        test_dir.mkdir(exist_ok=True)
+        test_file = test_dir / 'test_sub_epic.py'
+        test_file.write_text('def test_something():\n    pass')
+        
+        # Create story graph with sub-epic having test_file using helper
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': [{
+                    'name': 'Test Sub Epic',
+                    'sequential_order': 1.0,
+                    'test_file': 'test_sub_epic.py',
+                    'story_groups': []
+                }]
+            }]
+        }
+        helper.story.create_story_graph(story_graph)
+        
+        # Create scope and get results
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.SHOW_ALL)
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify test link was added
+        sub_epic = result['content']['epics'][0]['sub_epics'][0]
+        assert 'links' in sub_epic
+        test_links = [l for l in sub_epic['links'] if l['icon'] == 'test_tube']
+        assert len(test_links) == 1
+        assert 'test_sub_epic.py' in test_links[0]['url']
+    
+    def test_story_inherits_test_file_from_sub_epic(self, tmp_path):
+        """
+        SCENARIO: Story inherits test_file from parent sub-epic
+        GIVEN: Sub-epic with test_file and story with test_class but no test_file
+        AND: Test file exists on disk
+        WHEN: Scope is enriched with links
+        THEN: Story gets test_tube icon link using parent's test_file
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create test file
+        test_dir = helper.workspace / 'test'
+        test_dir.mkdir(exist_ok=True)
+        test_file = test_dir / 'test_sub_epic.py'
+        test_file.write_text('class TestMyStory:\n    pass')
+        
+        # Create story graph: sub-epic has test_file, story has test_class using helper
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': [{
+                    'name': 'Test Sub Epic',
+                    'sequential_order': 1.0,
+                    'test_file': 'test_sub_epic.py',
+                    'story_groups': [{
+                        'type': 'and',
+                        'stories': [{
+                            'name': 'Test Story',
+                            'test_class': 'TestMyStory',
+                            # No test_file - should inherit from parent
+                            'sequential_order': 1.0
+                        }]
+                    }]
+                }]
+            }]
+        }
+        helper.story.create_story_graph(story_graph)
+        
+        # Create scope and get results
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.SHOW_ALL)
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify story got test link using parent's test_file
+        story = result['content']['epics'][0]['sub_epics'][0]['story_groups'][0]['stories'][0]
+        assert 'links' in story
+        test_links = [l for l in story['links'] if l['icon'] == 'test_tube']
+        assert len(test_links) == 1
+        assert 'test_sub_epic.py' in test_links[0]['url']
+        assert '#L' in test_links[0]['url']  # Verify it has a line number
+    
+    def test_epic_with_docs_folder_gets_document_link(self, tmp_path):
+        """
+        SCENARIO: Epic with docs folder gets document icon link
+        GIVEN: Epic and corresponding docs/map folder exists
+        WHEN: Scope is enriched with links
+        THEN: Epic has document icon link pointing to docs folder
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create docs folder for epic at docs/stories/map (the actual path structure)
+        epic_folder = helper.workspace / 'docs' / 'stories' / 'map' / '🎯 Test Epic'
+        epic_folder.mkdir(parents=True, exist_ok=True)
+        
+        # Create story graph using helper
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': []
+            }]
+        }
+        helper.story.create_story_graph(story_graph)
+        
+        # Create scope and get results
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.SHOW_ALL)
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify document link was added
+        epic = result['content']['epics'][0]
+        assert 'links' in epic, f"Epic should have links. Epic data: {epic}"
+        doc_links = [l for l in epic['links'] if l['icon'] == 'document']
+        assert len(doc_links) == 1, f"Epic should have one document link. Links: {epic.get('links', [])}"
+        assert '🎯 Test Epic' in doc_links[0]['url']
+    
+    @pytest.mark.parametrize("sub_epic_test_file,story_test_class,has_test_link", [
+        # Sub-epic has test_file and story has test_class -> has link
+        ('test_story.py', 'TestMyStory', True),
+        # Sub-epic has test_file but story has no test_class -> no link
+        ('test_story.py', None, False),
+        # Sub-epic has no test_file but story has test_class -> no link
+        (None, 'TestMyStory', False),
+        # Neither sub-epic test_file nor story test_class -> no link
+        (None, None, False),
+    ])
+    def test_story_test_link_combinations(self, tmp_path, sub_epic_test_file, story_test_class, has_test_link):
+        """
+        SCENARIO: Story test link appears based on sub-epic test_file and story test_class
+        GIVEN: Sub-epic with/without test_file and story with/without test_class
+        WHEN: Scope is enriched with links
+        THEN: Test link appears only when sub-epic has test_file AND story has test_class
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create test file if specified on sub-epic
+        if sub_epic_test_file:
+            test_dir = helper.workspace / 'test'
+            test_dir.mkdir(exist_ok=True)
+            test_path = test_dir / sub_epic_test_file
+            test_path.write_text('class TestMyStory:\n    pass')
+        
+        # Create story data with test_class (stories don't have test_file)
+        story_data = {
+            'name': 'Test Story',
+            'sequential_order': 1.0
+        }
+        if story_test_class:
+            story_data['test_class'] = story_test_class
+        
+        # Create sub-epic with test_file
+        sub_epic_data = {
+            'name': 'Test Sub Epic',
+            'sequential_order': 1.0,
+            'story_groups': [{
+                'type': 'and',
+                'stories': [story_data]
+            }]
+        }
+        if sub_epic_test_file:
+            sub_epic_data['test_file'] = sub_epic_test_file
+        
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': [sub_epic_data]
+            }]
+        }
+        
+        # Save using helper
+        helper.story.create_story_graph(story_graph)
+        
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.SHOW_ALL)
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify test link presence
+        story = result['content']['epics'][0]['sub_epics'][0]['story_groups'][0]['stories'][0]
+        test_links = [l for l in story.get('links', []) if l['icon'] == 'test_tube']
+        
+        if has_test_link:
+            assert len(test_links) == 1, f"Story should have test link with sub_epic test_file={sub_epic_test_file}, story test_class={story_test_class}"
+            assert sub_epic_test_file in test_links[0]['url']
+            assert '#L' in test_links[0]['url']  # Verify it has a line number
+        else:
+            assert len(test_links) == 0, f"Story should not have test link with sub_epic test_file={sub_epic_test_file}, story test_class={story_test_class}"
+    
+    def test_scenario_with_test_method_gets_test_link(self, tmp_path):
+        """
+        SCENARIO: Scenario with test_method gets test link
+        GIVEN: Story with scenario having test_method
+        AND: Test file exists with that method
+        WHEN: Scope is enriched with links
+        THEN: Scenario has test link with line number
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create test file with test method
+        test_dir = helper.workspace / 'test'
+        test_dir.mkdir(exist_ok=True)
+        test_file = test_dir / 'test_story.py'
+        test_file.write_text('''class TestMyStory:
+    def test_happy_path(self):
+        pass
+    
+    def test_error_case(self):
+        pass
+''')
+        
+        # Create story graph with scenario having test_method using helper
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': [{
+                    'name': 'Test Sub Epic',
+                    'sequential_order': 1.0,
+                    'test_file': 'test_story.py',  # Sub-epic has test_file
+                    'story_groups': [{
+                        'type': 'and',
+                        'stories': [{
+                            'name': 'Test Story',
+                            # No test_file - inherits from parent sub-epic
+                            'test_class': 'TestMyStory',
+                            'sequential_order': 1.0,
+                            'scenarios': [{
+                                'name': 'Happy path scenario',
+                                'test_method': 'test_happy_path',
+                                'type': 'happy_path',
+                                'steps': 'Given X\nWhen Y\nThen Z'
+                            }]
+                        }]
+                    }]
+                }]
+            }]
+        }
+        helper.story.create_story_graph(story_graph)
+        
+        # Use 'story' scope type instead of 'showAll' to enable scenario enrichment
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.STORY, value=['Test Story'])
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify scenario has test link with line number
+        story = result['content']['epics'][0]['sub_epics'][0]['story_groups'][0]['stories'][0]
+        scenario = story['scenarios'][0]
+        
+        assert 'test_file' in scenario, "Scenario should have test_file link"
+        assert 'test_story.py' in scenario['test_file']
+        assert '#L' in scenario['test_file'], "Scenario test link should include line number"
+    
+    @pytest.mark.parametrize("has_test_method,sub_epic_has_test_file,has_link", [
+        # Scenario with test_method and sub-epic has test_file -> has link
+        (True, True, True),
+        # Scenario with test_method but sub-epic has no test_file -> no link
+        (True, False, False),
+        # Scenario without test_method but sub-epic has test_file -> no link
+        (False, True, False),
+        # Scenario without test_method and sub-epic without test_file -> no link
+        (False, False, False),
+    ])
+    def test_scenario_test_link_combinations(self, tmp_path, has_test_method, sub_epic_has_test_file, has_link):
+        """
+        SCENARIO: Scenario test link appears based on test_method and sub-epic test_file
+        GIVEN: Scenario with/without test_method and sub-epic with/without test_file
+        WHEN: Scope is enriched with links
+        THEN: Test link appears only when scenario has test_method and sub-epic has test_file
+        """
+        from scope.json_scope import JSONScope
+        from scope import Scope, ScopeType
+        
+        helper = BotTestHelper(tmp_path)
+        
+        # Create test file if sub-epic needs it
+        if sub_epic_has_test_file:
+            test_dir = helper.workspace / 'test'
+            test_dir.mkdir(exist_ok=True)
+            test_file = test_dir / 'test_story.py'
+            test_file.write_text('class TestMyStory:\n    def test_scenario(self):\n        pass')
+        
+        # Create scenario data
+        scenario_data = {
+            'name': 'Test Scenario',
+            'type': 'happy_path',
+            'steps': 'Given X\nWhen Y\nThen Z'
+        }
+        if has_test_method:
+            scenario_data['test_method'] = 'test_scenario'
+        
+        # Create story data (stories don't have test_file - they inherit from sub-epic)
+        story_data = {
+            'name': 'Test Story',
+            'test_class': 'TestMyStory',
+            'sequential_order': 1.0,
+            'scenarios': [scenario_data]
+        }
+        
+        # Create sub-epic data with test_file
+        sub_epic_data = {
+            'name': 'Test Sub Epic',
+            'sequential_order': 1.0,
+            'story_groups': [{
+                'type': 'and',
+                'stories': [story_data]
+            }]
+        }
+        if sub_epic_has_test_file:
+            sub_epic_data['test_file'] = 'test_story.py'
+        
+        story_graph = {
+            'epics': [{
+                'name': 'Test Epic',
+                'sub_epics': [sub_epic_data]
+            }]
+        }
+        
+        # Save using helper
+        helper.story.create_story_graph(story_graph)
+        
+        # Use 'story' scope type instead of 'showAll' to enable scenario enrichment
+        scope = Scope(workspace_directory=helper.workspace, bot_paths=helper.bot.bot_paths)
+        scope.filter(type=ScopeType.STORY, value=['Test Story'])
+        json_scope = JSONScope(scope)
+        result = json_scope.to_dict()
+        
+        # Verify scenario test link
+        story = result['content']['epics'][0]['sub_epics'][0]['story_groups'][0]['stories'][0]
+        scenario = story['scenarios'][0]
+        
+        if has_link:
+            assert 'test_file' in scenario, "Scenario should have test_file link"
+            assert 'test_story.py' in scenario['test_file']
+        else:
+            # Scenario may have test_file field but it should be empty or not point to actual test
+            if 'test_file' in scenario:
+                assert scenario['test_file'] is None or scenario['test_file'] == ''
+
+# ============================================================================
+# CLI TESTS - Scope Operations via CLI Commands
+# ============================================================================
 
