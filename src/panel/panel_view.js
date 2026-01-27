@@ -35,6 +35,24 @@ function isProductionRepoPath(filePath) {
 // End-of-response marker that Python CLI sends after each JSON response
 const END_MARKER = '<<<END_OF_RESPONSE>>>';
 
+/**
+ * Sanitize JSON string by removing invalid control characters.
+ * JSON only allows \n (0x0A), \r (0x0D), and \t (0x09) as control characters.
+ * All other control characters (0x00-0x1F) are invalid and will cause parse errors.
+ * 
+ * @param {string} jsonString - JSON string that may contain invalid control characters
+ * @returns {string} Sanitized JSON string
+ */
+function sanitizeJsonString(jsonString) {
+    if (typeof jsonString !== 'string') {
+        return jsonString;
+    }
+    
+    // Remove invalid control characters (0x00-0x1F) except \n (0x0A), \r (0x0D), \t (0x09)
+    // This regex matches control chars but preserves newlines, carriage returns, and tabs
+    return jsonString.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+}
+
 class PanelView {
     /**
      * Static logging method for panel views
@@ -151,7 +169,17 @@ class PanelView {
                             console.error('[PanelView] No JSON found in CLI output');
                             this._pendingReject(new Error('No JSON found in CLI output'));
                         } else {
-                            const jsonData = JSON.parse(jsonMatch[0]);
+                            // Sanitize JSON string to remove invalid control characters
+                            const rawJson = jsonMatch[0];
+                            const sanitizedJson = sanitizeJsonString(rawJson);
+                            
+                            // Log if sanitization removed characters (for debugging)
+                            if (rawJson.length !== sanitizedJson.length) {
+                                const removed = rawJson.length - sanitizedJson.length;
+                                console.warn(`[PanelView] Removed ${removed} invalid control character(s) from JSON response`);
+                            }
+                            
+                            const jsonData = JSON.parse(sanitizedJson);
                             
                             // Check if response indicates an error from CLI
                             if (jsonData.status === 'error' && jsonData.error) {
@@ -165,6 +193,13 @@ class PanelView {
                         }
                     } catch (parseError) {
                         console.error('[PanelView] JSON parse error:', parseError.message);
+                        console.error('[PanelView] JSON parse error stack:', parseError.stack);
+                        // Log a sample of the JSON that failed to parse (first 500 chars)
+                        const jsonMatch = jsonOutput.match(/\{[\s\S]*\}/);
+                        if (jsonMatch) {
+                            const sample = jsonMatch[0].substring(0, 500);
+                            console.error('[PanelView] Failed JSON sample:', sample);
+                        }
                         this._pendingReject(new Error(`Failed to parse CLI JSON: ${parseError.message}`));
                     }
                     this._pendingResolve = null;

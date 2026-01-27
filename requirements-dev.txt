@@ -10,3 +10,6 @@ pytest-watch>=4.2.0
 pytest-cov>=4.0.0
 pytest-asyncio>=0.23.0
 pytest-describe>=3.0.0
+
+# Activity logging storage
+tinydb>=4.8.0

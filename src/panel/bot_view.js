@@ -61,7 +61,21 @@ class BotView extends PanelView {
         
         // Fetch bot data ONCE and cache it for all child views
         const perfFetchStart = performance.now();
-        this.botData = await this.execute('status');
+        try {
+            this.botData = await this.execute('status');
+            // Validate botData has required fields
+            if (!this.botData) {
+                throw new Error('Status command returned null/undefined bot data');
+            }
+            if (!this.botData.name && !this.botData.bot_name) {
+                log(`[BotView] WARNING: Bot data missing name field. Keys: ${Object.keys(this.botData).join(', ')}`);
+                log(`[BotView] Bot data structure: ${JSON.stringify(this.botData).substring(0, 500)}`);
+            }
+        } catch (error) {
+            log(`[BotView] ERROR fetching bot data: ${error.message}`);
+            log(`[BotView] ERROR stack: ${error.stack}`);
+            throw error;
+        }
         const perfFetchEnd = performance.now();
         log(`[BotView] [PERF] Fetch bot data (status): ${(perfFetchEnd - perfFetchStart).toFixed(2)}ms`);
         
@@ -129,8 +143,20 @@ class BotView extends PanelView {
         
         // In JSON mode, CLI returns unified structure: { execution?, instructions?, bot, scope? }
         // For "status" command, return bot data (response is already { bot: ... })
-        if (command === 'status' && response.bot) {
-            return response.bot;
+        if (command === 'status') {
+            if (response.bot) {
+                return response.bot;
+            }
+            // If response.bot is missing, check if response itself has bot data structure
+            // (sometimes the response IS the bot data directly)
+            if (response.name || response.bot_name) {
+                log(`[BotView] Status response is bot data directly (no .bot wrapper)`);
+                return response;
+            }
+            // Log the actual response structure for debugging
+            log(`[BotView] ERROR: Status command response missing bot data. Response keys: ${Object.keys(response).join(', ')}`);
+            log(`[BotView] Response structure: ${JSON.stringify(response).substring(0, 500)}`);
+            throw new Error(`Status command returned invalid response: missing bot data. Response structure: ${JSON.stringify(response).substring(0, 200)}`);
         }
         
         // For "scope" command, return scope data with bot
@@ -152,12 +178,26 @@ class BotView extends PanelView {
         const perfRefreshStart = performance.now();
         
         // "status" command returns the Bot object itself
-        const botJSON = await this.execute('status');
-        
-        const perfRefreshEnd = performance.now();
-        const refreshDuration = (perfRefreshEnd - perfRefreshStart).toFixed(2);
-        log(`[BotView] [PERF] refresh() (execute status) duration: ${refreshDuration}ms`);
-        return botJSON;
+        try {
+            const botJSON = await this.execute('status');
+            // Update cached botData
+            this.botData = botJSON;
+            // Validate botData has required fields
+            if (!botJSON) {
+                throw new Error('Status command returned null/undefined bot data');
+            }
+            if (!botJSON.name && !botJSON.bot_name) {
+                log(`[BotView] WARNING: Refresh returned bot data missing name field. Keys: ${Object.keys(botJSON).join(', ')}`);
+            }
+            const perfRefreshEnd = performance.now();
+            const refreshDuration = (perfRefreshEnd - perfRefreshStart).toFixed(2);
+            log(`[BotView] [PERF] refresh() (execute status) duration: ${refreshDuration}ms`);
+            return botJSON;
+        } catch (error) {
+            log(`[BotView] ERROR in refresh(): ${error.message}`);
+            log(`[BotView] ERROR stack: ${error.stack}`);
+            throw error;
+        }
     }
     
     /**
@@ -174,7 +214,7 @@ class BotView extends PanelView {
             case 'executeBehavior':
                 return await this.behaviorsView.handleEvent('execute', eventData);
             case 'updateScope':
-                return await this.scopeSection.handleEvent('updateFilter', eventData);
+                return await this.storyMapView.handleEvent('updateFilter', eventData);
             case 'updateWorkspace':
                 return await this.headerView.handleEvent('updateWorkspace', eventData);
             case 'switchBot':

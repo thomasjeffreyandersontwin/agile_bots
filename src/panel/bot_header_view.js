@@ -80,18 +80,40 @@ class BotHeaderView extends PanelView {
         console.log('[BotHeaderView] Has extensionUri:', !!this.extensionUri);
         
         // Use cached botData from parent if available, otherwise fetch it
-        const botData = this.parentView?.botData || await this.execute('status');
-        console.log('[BotHeaderView] Bot data source:', this.parentView?.botData ? 'cached' : 'fetched');
-        console.log('[BotHeaderView] Status response:', JSON.stringify(botData).substring(0, 300));
+        let botData;
+        try {
+            botData = this.parentView?.botData || await this.execute('status');
+            console.log('[BotHeaderView] Bot data source:', this.parentView?.botData ? 'cached' : 'fetched');
+            console.log('[BotHeaderView] Status response:', JSON.stringify(botData).substring(0, 300));
+        } catch (error) {
+            console.error('[BotHeaderView] ERROR fetching bot data:', error.message);
+            console.error('[BotHeaderView] ERROR stack:', error.stack);
+            throw new Error(`[BotHeaderView] Failed to fetch bot data: ${error.message}`);
+        }
         
         const vscode = require('vscode');
         const maxPathLength = 80;
         
-        // NO FALLBACKS - let it fail if data is missing
-        if (!botData) throw new Error('[BotHeaderView] botData is null/undefined');
-        if (!botData.name && !botData.bot_name) throw new Error('[BotHeaderView] No bot name in response');
-        if (!botData.bot_directory) throw new Error('[BotHeaderView] No bot_directory in response');
-        if (!botData.workspace_directory) throw new Error('[BotHeaderView] No workspace_directory in response');
+        // Validate required fields with detailed error messages
+        if (!botData) {
+            console.error('[BotHeaderView] botData is null/undefined');
+            throw new Error('[BotHeaderView] botData is null/undefined');
+        }
+        if (!botData.name && !botData.bot_name) {
+            const keys = Object.keys(botData).join(', ');
+            const dataPreview = JSON.stringify(botData).substring(0, 500);
+            console.error(`[BotHeaderView] No bot name in response. Available keys: ${keys}`);
+            console.error(`[BotHeaderView] Response data: ${dataPreview}`);
+            throw new Error(`[BotHeaderView] No bot name in response. Available keys: ${keys}. Response: ${dataPreview}`);
+        }
+        if (!botData.bot_directory) {
+            console.error('[BotHeaderView] No bot_directory in response');
+            throw new Error('[BotHeaderView] No bot_directory in response');
+        }
+        if (!botData.workspace_directory) {
+            console.error('[BotHeaderView] No workspace_directory in response');
+            throw new Error('[BotHeaderView] No workspace_directory in response');
+        }
         
         const currentBot = botData.name || botData.bot_name;
         const availableBots = botData.available_bots || [];

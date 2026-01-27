@@ -50,6 +50,7 @@ class BotTestHelper:
         
         self.workspace = workspace_directory if workspace_directory is not None else tmp_path / 'workspace'
         self.workspace.mkdir(parents=True, exist_ok=True)
+        self._ensure_workspace_scope_file()
 
         os.environ['BOT_DIRECTORY'] = str(self.bot_directory)
         os.environ['WORKING_AREA'] = str(self.workspace)
@@ -130,3 +131,22 @@ class BotTestHelper:
                     config_path=config_path,
                     workspace_path=self.workspace
                 )
+
+    def _ensure_workspace_scope_file(self):
+        """Ensure workspace has a scope.json so StoryNode can restore scope."""
+        scope_file = self.workspace / 'scope.json'
+        if scope_file.exists():
+            return
+
+        repo_root = Path(__file__).parent.parent.parent
+        template_scope = repo_root / 'scope.json'
+        if template_scope.exists():
+            scope_file.write_text(template_scope.read_text(encoding='utf-8'), encoding='utf-8')
+        else:
+            default_scope = {
+                "type": "showAll",
+                "value": [],
+                "exclude": [],
+                "skiprule": []
+            }
+            scope_file.write_text(json.dumps(default_scope, indent=2), encoding='utf-8')

@@ -428,7 +428,7 @@ class BotPanel {
               this._botView?.execute(message.commandText)
                 .then((result) => {
                   this._log(`[BotPanel] executeNavigationCommand success: ${message.commandText} | result keys: ${Object.keys(result || {})}`);
-                  return this._updateBehaviorsOnly();
+                  return this._update();
                 })
                 .catch((error) => {
                   this._log(`[BotPanel] executeNavigationCommand ERROR: ${error.message}`);
@@ -715,11 +715,9 @@ class BotPanel {
           case "navigateToBehavior":
             if (message.behaviorName) {
               const cmd = `${message.behaviorName}`;
-              this._log(`[BotPanel] navigateToBehavior -> ${cmd}`);
               this._botView?.execute(cmd)
                 .then((result) => {
-                  this._log(`[BotPanel] navigateToBehavior success: ${cmd} | result keys: ${Object.keys(result || {})}`);
-                  return this._updateBehaviorsOnly();
+                  return this._update();
                 })
                 .catch((error) => {
                   this._log(`[BotPanel] navigateToBehavior ERROR: ${error.message}`);
@@ -731,14 +729,9 @@ class BotPanel {
           case "navigateToAction":
             if (message.behaviorName && message.actionName) {
               const cmd = `${message.behaviorName}.${message.actionName}`;
-              this._log(`[BotPanel] navigateToAction -> ${cmd}`);
               this._botView?.execute(cmd)
                 .then((result) => {
-                  this._log(`[BotPanel] navigateToAction success: ${cmd} | result keys: ${Object.keys(result || {})}`);
-                  const currentAction = result?.bot?.current_action || result?.current_action;
-                  const currentBehavior = result?.bot?.current_behavior || result?.current_behavior;
-                  this._log(`[BotPanel] After navigation - current_behavior: ${currentBehavior}, current_action: ${currentAction}`);
-                  return this._updateBehaviorsOnly();
+                  return this._update();
                 })
                 .catch((error) => {
                   this._log(`[BotPanel] navigateToAction ERROR: ${error.message}`);
@@ -998,8 +991,6 @@ class BotPanel {
   async _update() {
     // ===== PERFORMANCE: Start overall timing =====
     const perfUpdateStart = performance.now();
-    console.log('[BotPanel] _update() called');
-    this._log('[BotPanel] _update() called - hasBotView: ' + !!this._botView);
     try {
       this._log('[BotPanel] _update() START');
       // #region agent log
@@ -1154,35 +1145,6 @@ class BotPanel {
     }
   }
 
-  async _updateBehaviorsOnly() {
-    try {
-      this._log('[BotPanel] _updateBehaviorsOnly() called');
-      
-      // Refresh botData to get updated current_behavior/current_action
-      await this._botView.refresh();
-      
-      // Get current behavior from botData
-      const botData = this._botView.botData;
-      const currentBehavior = botData?.behaviors?.current_behavior || botData?.current_behavior || null;
-      
-      // Re-render only the behaviors section
-      const behaviorsHtml = await this._botView.behaviorsView.render();
-      
-      // Send message to webview to update just the behaviors section and current behavior
-      this._panel.webview.postMessage({
-        command: 'updateBehaviorsSection',
-        html: behaviorsHtml,
-        currentBehavior: currentBehavior
-      });
-      
-      this._log('[BotPanel] _updateBehaviorsOnly() completed');
-    } catch (err) {
-      console.error(`[BotPanel] ERROR in _updateBehaviorsOnly: ${err.message}`);
-      this._log(`[BotPanel] ERROR in _updateBehaviorsOnly: ${err.message}`);
-      // Fallback to full update on error
-      return this._update();
-    }
-  }
 
   _escapeHtml(text) {
     if (typeof text !== 'string') {
@@ -1808,7 +1770,6 @@ class BotPanel {
                 if (action === 'navigateToBehavior') {
                     const behaviorName = actionElement.getAttribute('data-behavior-name');
                     if (behaviorName && window.navigateToBehavior) {
-                        console.log('[WebView] Calling navigateToBehavior with:', behaviorName);
                         window.navigateToBehavior(behaviorName);
                         e.stopPropagation();
                         e.preventDefault();
@@ -1817,7 +1778,6 @@ class BotPanel {
                     const behaviorName = actionElement.getAttribute('data-behavior-name');
                     const actionName = actionElement.getAttribute('data-action-name');
                     if (behaviorName && actionName && window.navigateToAction) {
-                        console.log('[WebView] Calling navigateToAction with:', behaviorName, actionName);
                         window.navigateToAction(behaviorName, actionName);
                         e.stopPropagation();
                         e.preventDefault();
@@ -2395,7 +2355,6 @@ class BotPanel {
         };
         
         window.navigateToBehavior = function(behaviorName) {
-            console.log('[WebView] navigateToBehavior click ->', behaviorName);
             vscode.postMessage({
                 command: 'navigateToBehavior',
                 behaviorName: behaviorName
@@ -2403,7 +2362,6 @@ class BotPanel {
         };
         
         window.navigateToAction = function(behaviorName, actionName) {
-            console.log('[WebView] navigateToAction click ->', behaviorName, actionName);
             vscode.postMessage({
                 command: 'navigateToAction',
                 behaviorName: behaviorName,
@@ -3491,37 +3449,6 @@ class BotPanel {
                 } else {
                     console.log('[WebView] No saved collapse state found');
                 }
-            }
-            
-            if (message.command === 'updateBehaviorsSection') {
-                console.log('[WebView] Updating behaviors section only');
-                
-                // Update current behavior if provided
-                if (message.currentBehavior !== undefined) {
-                    window.currentBehavior = message.currentBehavior;
-                    console.log('[WebView] Updated window.currentBehavior to:', window.currentBehavior);
-                    // If a node is selected, update the submit button with new behavior
-                    if (window.selectedNode && window.selectedNode.type !== 'root') {
-                        window.updateContextualButtons();
-                    }
-                }
-                
-                const behaviorsSection = document.querySelector('.section.card-primary');
-                if (behaviorsSection && message.html) {
-                    // Create a temporary container to parse the HTML
-                    const temp = document.createElement('div');
-                    temp.innerHTML = message.html;
-                    const newSection = temp.querySelector('.section.card-primary');
-                    if (newSection) {
-                        behaviorsSection.outerHTML = newSection.outerHTML;
-                        console.log('[WebView] Behaviors section updated successfully');
-                    } else {
-                        console.warn('[WebView] Could not find behaviors section in provided HTML');
-                    }
-                } else {
-                    console.warn('[WebView] Behaviors section element not found or HTML missing');
-                }
-                return;
             }
             
             // Optimistic update disabled - full refresh preserves icons and structure

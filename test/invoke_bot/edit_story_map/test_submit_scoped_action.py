@@ -232,8 +232,10 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert helper.bot.behaviors.current.name == expected_behavior
         assert helper.bot.behaviors.current.actions.current.action_name == 'build'
         
-        # And - Scope is restored to 'all' after getting instructions
-        helper.scope.assert_scope_is_cleared()
+        # And - Scope remains set to the story node
+        scope = helper.bot.scope()
+        assert scope.type.value == 'story', f"Expected scope type 'story', got '{scope.type.value}'"
+        assert story.name in scope.value, f"Expected story '{story.name}' in scope value {scope.value}"
         
         # And - Instructions object is returned
         from instructions.instructions import Instructions
