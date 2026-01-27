@@ -1477,7 +1477,7 @@
             },
             {
               "name": "Set Workspace",
-              "sequential_order": 0.5,
+              "sequential_order": 3.0,
               "behavior": "exploration",
               "test_file": "invoke_bot/initialize_bot/test_set_workspace.py",
               "sub_epics": [],
