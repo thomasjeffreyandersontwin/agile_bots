@@ -100,7 +100,7 @@
                   "scenarios": [
                     {
                       "name": "Generator creates MCP server for test_bot",
-                      "sequential_order": 1.0,
+                      "sequential_order": 2.0,
                       "type": "",
                       "background": [],
                       "test_method": "test_generator_creates_mcp_server_for_test_bot",
@@ -108,7 +108,7 @@
                     },
                     {
                       "name": "Generator fails when Bot Config is missing",
-                      "sequential_order": 2.0,
+                      "sequential_order": 5.0,
                       "type": "",
                       "background": [],
                       "test_method": "test_generator_fails_when_bot_config_missing",
@@ -116,7 +116,7 @@
                     },
                     {
                       "name": "Generator fails when Bot Config is malformed",
-                      "sequential_order": 3.0,
+                      "sequential_order": 6.0,
                       "type": "",
                       "background": [],
                       "test_method": "test_generator_fails_when_bot_config_malformed",
@@ -127,12 +127,12 @@
                     {
                       "name": "WHEN MCP Server Generator receives Bot Config",
                       "text": "WHEN MCP Server Generator receives Bot Config",
-                      "sequential_order": 1.0
+                      "sequential_order": 0.0
                     },
                     {
                       "name": "THEN Generator generates unique MCP Server instance with Unique server name from bot name",
                       "text": "THEN Generator generates unique MCP Server instance with Unique server name from bot name",
-                      "sequential_order": 2.0
+                      "sequential_order": 1.0
                     },
                     {
                       "name": "AND Generated server includes Bot Config reference",

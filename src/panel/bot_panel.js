@@ -1088,12 +1088,15 @@ class BotPanel {
       this._log('[BotPanel] Webview HTML property set');
       this._log(`[PERF] HTML update (set webview.html): ${htmlUpdateDuration}ms`);
       
-      // Give webview time to load, then trigger collapse state restoration
+      // Give webview time to load
       setTimeout(() => {
-        this._panel.webview.postMessage({ 
-          command: 'restoreCollapseState' 
+        // Show refreshing status (will auto-hide after 1 second)
+        this._panel.webview.postMessage({
+          command: 'refreshStatus',
+          state: 'refreshing',
+          message: 'Refreshing...'
         });
-        this._log('[BotPanel] Sent restoreCollapseState message to webview');
+        this._log('[BotPanel] Sent refreshStatus refreshing message to webview');
       }, 100);
       
       // ===== PERFORMANCE: Log total duration =====
@@ -1508,36 +1511,45 @@ class BotPanel {
             animation: spin 1s linear infinite;
         }
         
-        /* Save status indicator styles */
+        /* Save status indicator styles - matches input container design */
         .save-status {
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            transition: opacity 0.3s;
+            padding: 6px 12px;
+            border: var(--input-border-width) solid var(--accent-color);
+            border-radius: var(--input-border-radius);
+            background-color: rgba(255, 140, 0, 0.1); /* Dark black with orange tint */
+            color: var(--vscode-foreground);
+            font-size: var(--font-size-sm);
+            transition: opacity 0.3s, background-color 150ms ease;
             white-space: nowrap;
         }
         
-        .save-status.saving {
-            background: #f0f0f0;
-            color: #666;
+        .save-status.saving,
+        .save-status.refreshing {
+            background-color: rgba(255, 140, 0, 0.15); /* Slightly brighter when active */
+            border-color: var(--accent-color);
         }
         
         .save-status.success {
-            background: #e8f5e9;
-            color: #2e7d32;
+            background-color: rgba(255, 140, 0, 0.1);
+            border-color: var(--accent-color);
+            color: #ff8c00;
+        }
+        
+        .save-status.success #save-status-message {
+            color: #ff8c00;
         }
         
         .save-status.error {
-            background: #ffebee;
-            color: #c62828;
+            background-color: rgba(255, 140, 0, 0.15);
+            border-color: var(--accent-color);
             cursor: pointer;
         }
         
         .save-status.error:hover {
-            background: #ffcdd2;
+            background-color: rgba(255, 140, 0, 0.2);
         }
         
         .save-icon {
@@ -2454,7 +2466,7 @@ class BotPanel {
                 indicator.style.display = 'flex';
                 spinner.style.display = 'none';
                 message.textContent = 'Saved';
-                message.style.color = '#4ec9b0';
+                message.style.color = '#ff8c00';
                 console.log('[ASYNC_SAVE] [SUCCESS] Scheduling auto-hide in 2000ms');
                 setTimeout(() => {
                     console.log('[ASYNC_SAVE] [SUCCESS] Auto-hide timeout fired, hiding indicator');

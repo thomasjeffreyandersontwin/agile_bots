@@ -57,10 +57,6 @@ class StoryMapView extends PanelView {
         return `
             <div class="story-map-header" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
                 <div>${headerHtml}</div>
-                <div id="save-status-indicator" class="save-status" style="display: none;">
-                    <span class="save-icon"></span>
-                    <span class="save-message"></span>
-                </div>
             </div>
         `;
     }
@@ -625,15 +621,15 @@ class StoryMapView extends PanelView {
             '                    \n' +
             '                    console.log(\'[SaveQueue.updateStatus] Called with state=\', state, \'message=\', message);\n' +
             '                    \n' +
-            '                    var indicator = document.getElementById(\'save-status-indicator\');\n' +
+            '                    var indicator = document.getElementById(\'story-map-save-status-indicator\');\n' +
             '                    if (!indicator) {\n' +
-            '                        console.warn(\'[SaveQueue.updateStatus] save-status-indicator element not found in DOM - status indicator may not be rendered yet\');\n' +
+            '                        console.warn(\'[SaveQueue.updateStatus] story-map-save-status-indicator element not found in DOM - status indicator may not be rendered yet\');\n' +
             '                        return;\n' +
             '                    }\n' +
             '                    \n' +
-            '                    // Use IDs that match bot_header_view.js structure\n' +
-            '                    var spinner = document.getElementById(\'save-status-spinner\');\n' +
-            '                    var msg = document.getElementById(\'save-status-message\');\n' +
+            '                    // Use story map specific IDs\n' +
+            '                    var spinner = document.getElementById(\'story-map-save-status-spinner\');\n' +
+            '                    var msg = document.getElementById(\'story-map-save-status-message\');\n' +
             '                    \n' +
             '                    if (!spinner || !msg) {\n' +
             '                        console.warn(\'[SaveQueue.updateStatus] Missing spinner or message element! spinner=\', !!spinner, \'msg=\', !!msg, \' - status indicator may not be fully rendered\');\n' +
@@ -662,7 +658,7 @@ class StoryMapView extends PanelView {
             '                        // Auto-hide after 2 seconds\n' +
             '                        setTimeout(function() {\n' +
             '                            try {\n' +
-            '                                var ind = document.getElementById(\'save-status-indicator\');\n' +
+            '                                var ind = document.getElementById(\'story-map-save-status-indicator\');\n' +
             '                                if (ind && ind.className.indexOf(\'success\') !== -1) {\n' +
             '                                    ind.style.display = \'none\';\n' +
             '                                }\n' +
@@ -776,6 +772,67 @@ class StoryMapView extends PanelView {
             '            \n' +
             '            // Start initialization (will retry if vscode not ready)\n' +
             '            initializeSaveQueue();\n' +
+            '            \n' +
+            '            /**\n' +
+            '             * Handle refresh status messages from extension host\n' +
+            '             * Shows "Refreshing..." indicator during panel refresh\n' +
+            '             */\n' +
+            '            var refreshStatusTimeout = null;\n' +
+            '            function updateRefreshStatus(state, message) {\n' +
+            '                try {\n' +
+            '                    // Clear any existing timeout\n' +
+            '                    if (refreshStatusTimeout) {\n' +
+            '                        clearTimeout(refreshStatusTimeout);\n' +
+            '                        refreshStatusTimeout = null;\n' +
+            '                    }\n' +
+            '                    \n' +
+            '                    var indicator = document.getElementById(\'story-map-save-status-indicator\');\n' +
+            '                    if (!indicator) {\n' +
+            '                        console.warn(\'[RefreshStatus] story-map-save-status-indicator element not found\');\n' +
+            '                        return;\n' +
+            '                    }\n' +
+            '                    \n' +
+            '                    var spinner = document.getElementById(\'story-map-save-status-spinner\');\n' +
+            '                    var msg = document.getElementById(\'story-map-save-status-message\');\n' +
+            '                    \n' +
+            '                    if (!spinner || !msg) {\n' +
+            '                        console.warn(\'[RefreshStatus] Missing spinner or message element\');\n' +
+            '                        return;\n' +
+            '                    }\n' +
+            '                    \n' +
+            '                    if (state === \'hidden\') {\n' +
+            '                        indicator.style.display = \'none\';\n' +
+            '                        return;\n' +
+            '                    }\n' +
+            '                    \n' +
+            '                    // Show refreshing status\n' +
+            '                    indicator.style.display = \'flex\';\n' +
+            '                    spinner.style.display = \'inline-block\';\n' +
+            '                    msg.textContent = message || \'Refreshing...\';\n' +
+            '                    indicator.className = \'save-status refreshing\';\n' +
+            '                    \n' +
+            '                    // Auto-hide after refresh completes (if not explicitly hidden)\n' +
+            '                    if (state === \'refreshing\') {\n' +
+            '                        refreshStatusTimeout = setTimeout(function() {\n' +
+            '                            var ind = document.getElementById(\'story-map-save-status-indicator\');\n' +
+            '                            if (ind && ind.className.indexOf(\'refreshing\') !== -1) {\n' +
+            '                                ind.style.display = \'none\';\n' +
+            '                            }\n' +
+            '                            refreshStatusTimeout = null;\n' +
+            '                        }, 1000); // Hide after 1 second\n' +
+            '                    }\n' +
+            '                } catch (e) {\n' +
+            '                    console.error(\'[RefreshStatus] Error updating refresh status:\', e);\n' +
+            '                }\n' +
+            '            }\n' +
+            '            \n' +
+            '            // Listen for refresh status messages\n' +
+            '            window.addEventListener(\'message\', function(event) {\n' +
+            '                var message = event.data;\n' +
+            '                if (message.command === \'refreshStatus\') {\n' +
+            '                    updateRefreshStatus(message.state, message.message);\n' +
+            '                }\n' +
+            '            });\n' +
             '            \n' +
             '            /**\n' +
             '             * StoryMapView handler methods - handle optimistic updates for move/rename/delete operations\n' +
@@ -2066,15 +2123,24 @@ class StoryMapView extends PanelView {
             '                \n' +
             '                // Find icon paths from existing DOM elements\n' +
             '                var plusIconPath = null;\n' +
+            '                var subtractIconPath = null;\n' +
             '                var epicIconPath = null;\n' +
             '                var gearIconPath = null;\n' +
             '                var emptyIconPath = null;\n' +
             '                var documentIconPath = null;\n' +
             '                \n' +
-            '                // Find plus icon from existing epic collapse icon\n' +
+            '                // Find plus and subtract icons from existing epic collapse icon\n' +
             '                var existingEpicIcon = document.querySelector(\'#epic-0-icon img.collapse-icon\');\n' +
             '                if (existingEpicIcon) {\n' +
             '                    plusIconPath = existingEpicIcon.src;\n' +
+            '                    // Try to find subtract icon from data attributes or derive from plus icon\n' +
+            '                    var epicIconSpan = document.querySelector(\'#epic-0-icon\');\n' +
+            '                    if (epicIconSpan && epicIconSpan.getAttribute) {\n' +
+            '                        subtractIconPath = epicIconSpan.getAttribute(\'data-subtract\');\n' +
+            '                    }\n' +
+            '                    if (!subtractIconPath && plusIconPath) {\n' +
+            '                        subtractIconPath = plusIconPath.replace(\'plus\', \'subtract\');\n' +
+            '                    }\n' +
             '                }\n' +
             '                \n' +
             '                // Find epic icon from existing epic\n' +
@@ -2250,15 +2316,31 @@ class StoryMapView extends PanelView {
             '                    marginLeft = nodeType === \'epic\' ? 0 : (nodeType === \'sub-epic\' ? 7 : 14);\n' +
             '                }\n' +
             '                \n' +
-            '                // Create collapse icon span OR empty placeholder (matching backend logic)\n' +
-            '                // Backend: Only show collapse icon if node has children, otherwise use empty placeholder\n' +
-            '                // Since this is a new node, it has no children yet, so use empty placeholder\n' +
+            '                // Create collapse icon span - nodes that can have children get a collapse icon from the start\n' +
+            '                // Epics, sub-epics, and stories can have children, so they get a + icon\n' +
+            '                // Scenarios and acceptance-criteria cannot have children, so they get empty placeholder\n' +
             '                var collapseIconSpan = document.createElement(\'span\');\n' +
             '                var collapsibleId = tempNodeId + \'-content\';\n' +
-            '                collapseIconSpan.style.cssText = \'display: inline-block; min-width: 9px;\';\n' +
+            '                var canHaveChildren = (nodeType === \'epic\' || nodeType === \'sub-epic\' || nodeType === \'story\');\n' +
             '                \n' +
-            '                // New nodes don\'t have children yet, so use empty placeholder (matches backend line 2266)\n' +
-            '                if (emptyIconPath) {\n' +
+            '                if (canHaveChildren && plusIconPath) {\n' +
+            '                    // Node can have children - create clickable collapse icon\n' +
+            '                    collapseIconSpan.id = collapsibleId + \'-icon\';\n' +
+            '                    collapseIconSpan.style.cssText = \'display: inline-block; min-width: 9px; cursor: pointer;\';\n' +
+            '                    collapseIconSpan.setAttribute(\'onclick\', \'event.stopPropagation(); toggleCollapse("\' + collapsibleId + \'")\');\n' +
+            '                    collapseIconSpan.setAttribute(\'data-plus\', plusIconPath);\n' +
+            '                    collapseIconSpan.setAttribute(\'data-subtract\', subtractIconPath || plusIconPath.replace(\'plus\', \'subtract\'));\n' +
+            '                    \n' +
+            '                    var collapseImg = document.createElement(\'img\');\n' +
+            '                    collapseImg.className = \'collapse-icon\';\n' +
+            '                    collapseImg.src = plusIconPath;\n' +
+            '                    collapseImg.setAttribute(\'data-state\', \'collapsed\');\n' +
+            '                    collapseImg.style.cssText = \'width: 9px; height: 9px; vertical-align: middle;\';\n' +
+            '                    collapseImg.alt = \'Expand\';\n' +
+            '                    collapseIconSpan.appendChild(collapseImg);\n' +
+            '                } else if (emptyIconPath) {\n' +
+            '                    // Node cannot have children - use empty placeholder\n' +
+            '                    collapseIconSpan.style.cssText = \'display: inline-block; min-width: 9px;\';\n' +
             '                    var emptyImg = document.createElement(\'img\');\n' +
             '                    emptyImg.src = emptyIconPath;\n' +
             '                    emptyImg.style.cssText = \'width: 9px; height: 9px; vertical-align: middle;\';\n' +
@@ -2351,8 +2433,8 @@ class StoryMapView extends PanelView {
             '                // Insert node line at end of parent container\n' +
             '                parentContainer.appendChild(nodeLineDiv);\n' +
             '                \n' +
-            '                // For epics and sub-epics, add empty collapsible-content div as sibling\n' +
-            '                if (collapsibleId) {\n' +
+            '                // For nodes that can have children (epics, sub-epics, stories), add empty collapsible-content div as sibling\n' +
+            '                if (canHaveChildren && collapsibleId) {\n' +
             '                    var collapsibleDiv = document.createElement(\'div\');\n' +
             '                    collapsibleDiv.id = collapsibleId;\n' +
             '                    collapsibleDiv.className = \'collapsible-content\';\n' +
@@ -2493,11 +2575,7 @@ class StoryMapView extends PanelView {
                         ✕
                     </button>` : ''}
                 </div>
-                <div onclick="event.stopPropagation();" style="display: flex; align-items: center;">
-                    <div id="save-status-indicator" class="save-status" style="display: none; margin-left: 12px;">
-                        <span class="save-icon"></span>
-                        <span class="save-message"></span>
-                    </div>
+                <div onclick="event.stopPropagation();" style="display: flex; align-items: center; gap: 8px;">
                     ${linksHtml}
                     ${permanentLinksHtml}
                 </div>
@@ -2537,9 +2615,15 @@ ${clientScript}    </script>`;
      * @returns {string} HTML string
      */
     renderRootNode(actionButtonsHtml) {
-        return `<div style="margin-top: 8px; margin-bottom: 4px; font-size: 12px; font-weight: 600; display: flex; align-items: center;">
-            <span class="story-node" data-node-type="root" data-node-name="Story Map" style="display: inline-block; cursor: pointer;" onclick="selectNode('root', null)">Story Map</span>
-            ${actionButtonsHtml}
+        return `<div style="margin-top: 8px; margin-bottom: 4px; font-size: 12px; font-weight: 600; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center;">
+                <span class="story-node" data-node-type="root" data-node-name="Story Map" style="display: inline-block; cursor: pointer;" onclick="selectNode('root', null)">Story Map</span>
+                ${actionButtonsHtml}
+            </div>
+            <div id="save-status-indicator" class="save-status" style="display: none;">
+                <span id="save-status-spinner" class="save-spinner" style="display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255, 140, 0, 0.3); border-top-color: #ff8c00; border-radius: 50%;"></span>
+                <span id="save-status-message" style="font-size: 12px; color: var(--vscode-foreground); margin-left: 6px;"></span>
+            </div>
         </div>`;
     }
     
