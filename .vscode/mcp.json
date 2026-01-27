@@ -3,7 +3,7 @@
     "story_bot": {
       "type": "stdio",
       "command": "${command:python.interpreterPath}",
-      "args": ["agile_bot/bots/story_bot/src/story_bot_mcp_server.py"]
+      "args": ["bots/story_bot/src/story_bot_mcp_server.py"]
     }
   }
 }

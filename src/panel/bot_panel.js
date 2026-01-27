@@ -438,20 +438,41 @@ class BotPanel {
             }
             return;
           case "renameNode":
+            this._log(`[ASYNC_SAVE] [EXTENSION_HOST] ========== RENAME OPERATION RECEIVED ==========`);
+            this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] Received renameNode message`, {
+              nodePath: message.nodePath,
+              currentName: message.currentName,
+              timestamp: new Date().toISOString()
+            });
             if (message.nodePath && message.currentName) {
               // Prompt for new name
+              this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] Prompting user for new name`);
               vscode.window.showInputBox({
                 prompt: `Rename "${message.currentName}"`,
                 value: message.currentName,
                 placeHolder: 'Enter new name'
               }).then((newName) => {
+                this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] User provided new name`, {
+                  newName: newName,
+                  currentName: message.currentName,
+                  changed: newName && newName !== message.currentName
+                });
                 if (newName && newName !== message.currentName) {
                   // Strip any surrounding quotes from the input first (user shouldn't need to quote the name)
                   const trimmedName = newName.trim().replace(/^"(.*)"$/, '$1');
                   // Escape quotes and backslashes in the new name
                   const escapedName = trimmedName.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
                   const command = `${message.nodePath}.rename name:"${escapedName}"`;
-                  this._log(`[BotPanel] Rename command: ${command}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] Built rename command: ${command}`);
+                  
+                  // Send optimistic update message to webview
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] Sending optimistic update to webview`);
+                  this._panel.webview.postMessage({
+                    command: 'optimisticRename',
+                    nodePath: message.nodePath,
+                    oldName: message.currentName,
+                    newName: trimmedName
+                  });
                   
                   // Log to file
                   const fs = require('fs');
@@ -465,10 +486,12 @@ class BotPanel {
                     this._log(`[BotPanel] Failed to write to log file: ${err.message}`);
                   }
                   
-                  // Execute backend command and always refresh to show accurate state
+                  // Execute backend command with optimistic flag
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] Executing rename command via backend (optimistic)...`);
                   this._botView?.execute(command)
                     .then((result) => {
-                      this._log(`[BotPanel] Rename success: ${JSON.stringify(result).substring(0, 500)}`);
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] [SUCCESS] Backend rename executed successfully`);
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] Result: ${JSON.stringify(result).substring(0, 500)}`);
                       
                       // Log result to file
                       const resultLog = `[${timestamp}] RESULT: ${JSON.stringify(result, null, 2)}\n`;
@@ -478,11 +501,28 @@ class BotPanel {
                         this._log(`[BotPanel] Failed to write result to log file: ${err.message}`);
                       }
                       
-                      // Always refresh after rename to show backend state
-                      return this._update();
+                      // Send saveCompleted message for optimistic update handling
+                      this._panel.webview.postMessage({
+                        command: 'saveCompleted',
+                        success: true,
+                        result: result
+                      });
+                      
+                      // Don't refresh - optimistic update already handled in webview
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] Optimistic update - skipping panel refresh`);
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] ========== RENAME OPERATION COMPLETE ==========`);
                     })
                     .catch((error) => {
-                      this._log(`[BotPanel] Rename ERROR: ${error.message}`);
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] [ERROR] Rename failed`);
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] [ERROR] Error: ${error.message}`);
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] [ERROR] Stack: ${error.stack}`);
+                      
+                      // Send error message to webview for SaveQueue rollback
+                      this._panel.webview.postMessage({
+                        command: 'saveCompleted',
+                        success: false,
+                        error: error.message
+                      });
                       
                       // Log error to file
                       const errorLog = `[${timestamp}] ERROR: ${error.message}\nSTACK: ${error.stack}\n`;
@@ -495,8 +535,9 @@ class BotPanel {
                       vscode.window.showErrorMessage(`Failed to rename: ${error.message}`);
                       
                       // Always refresh on error to show accurate backend state
+                      this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] [ERROR] Refreshing panel after error...`);
                       this._update().catch(err => {
-                        this._log(`[BotPanel] ERROR in _update after rename failure: ${err.message}`);
+                        this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [RENAME] [ERROR] Panel refresh failed: ${err.message}`);
                       });
                     });
                 }
@@ -506,9 +547,24 @@ class BotPanel {
           case "executeCommand":
             if (message.commandText) {
               this._log(`\n${'='.repeat(80)}`);
-              this._log(`[BotPanel] *** RECEIVED executeCommand MESSAGE ***`);
+              this._log(`[BotPanel] RECEIVED executeCommand MESSAGE`);
               this._log(`[BotPanel] commandText: ${message.commandText}`);
-              this._log(`[BotPanel] Full message: ${JSON.stringify(message)}`);
+              
+              // Detect operation types
+              // Create operations can be: .create_epic, .create_story, .create (for sub-epics), create child, create epic
+              const isCreateOp = message.commandText.includes('.create_') || 
+                                 message.commandText.includes('.create ') || 
+                                 message.commandText.match(/\.create(?:$| name:)/) ||
+                                 message.commandText.includes('create child') || 
+                                 message.commandText.includes('create epic');
+              const isDeleteOp = message.commandText.includes('.delete');
+              const isMoveOp = message.commandText.includes('.move_to');
+              const isRenameOp = message.commandText.includes('.rename');
+              const isStoryGraphOp = isCreateOp || isDeleteOp || isMoveOp || isRenameOp;
+              
+              // ALL story-changing operations use optimistic updates and skip refresh
+              // This preserves the optimistic DOM updates made in the frontend
+              // No need to check optimistic flag - story-changing ops always skip refresh
               
               // Special debug for submit commands
               if (message.commandText.includes('submit_required_behavior_instructions')) {
@@ -516,10 +572,12 @@ class BotPanel {
                 this._log(`[BotPanel] Command contains 'submit_required_behavior_instructions': YES`);
               }
               
-              // All operations now refresh - optimistic updates disabled for simplicity
-              const isCreateOp = message.commandText.includes('.create_') || message.commandText.includes('create child') || message.commandText.includes('create epic');
-              const isDeleteOp = message.commandText.includes('.delete');
-              const isMoveOp = message.commandText.includes('.move_to');
+              this._log(`[BotPanel] Operation type detected`, {
+                isMoveOp,
+                isRenameOp,
+                isCreateOp,
+                isDeleteOp
+              });
               
               // Log to file for create/delete/rename operations
               const fs = require('fs');
@@ -533,12 +591,13 @@ class BotPanel {
                 this._log(`[BotPanel] Failed to write to log file: ${err.message}`);
               }
               
-              this._log(`[BotPanel] Calling botView.execute...`);
+              this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [STEP 5] Executing command via backend...`);
               this._botView?.execute(message.commandText)
                 .then((result) => {
-                  this._log(`[BotPanel] *** executeCommand SUCCESS ***`);
-                  this._log(`[BotPanel] command: ${message.commandText}`);
-                  this._log(`[BotPanel] result: ${JSON.stringify(result).substring(0, 500)}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [STEP 6] [SUCCESS] Backend command executed successfully`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [STEP 6] Command: ${message.commandText}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [STEP 6] Result: ${JSON.stringify(result).substring(0, 500)}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [STEP 6] Timestamp: ${new Date().toISOString()}`);
                   
                   // Log result to file
                   const resultLog = `[${timestamp}] SUCCESS RESULT: ${JSON.stringify(result, null, 2)}\n`;
@@ -574,19 +633,45 @@ class BotPanel {
                     this._log(`[BotPanel] Failed to write timestamp file: ${err.message}`);
                   }
                   
-                  // Always refresh to show latest backend state
-                  this._log(`[BotPanel] Command completed - calling _update() to refresh panel...`);
-                  return this._update();
+                  // Notify webview of successful save
+                  if (isMoveOp || isCreateOp || isDeleteOp || isRenameOp) {
+                    this._log(`[BotPanel] Sending saveCompleted(success=true) to webview`);
+                    this._panel.webview.postMessage({
+                      command: 'saveCompleted',
+                      success: true,
+                      result: result
+                    });
+                    this._log(`[BotPanel] Message sent to webview`);
+                  }
+                  
+                  // CRITICAL: Always skip refresh for story-changing operations
+                  // All story-changing operations use optimistic updates in the frontend
+                  // Refreshing would remove those optimistic updates, so we never refresh
+                  if (isStoryGraphOp) {
+                    this._log(`[BotPanel] Story-changing operation - skipping panel refresh`);
+                    this._log(`[BotPanel] Operation type: create=${isCreateOp}, move=${isMoveOp}, delete=${isDeleteOp}, rename=${isRenameOp}`);
+                    this._log(`[BotPanel] Panel will NOT refresh - optimistic updates remain visible`);
+                    return Promise.resolve();
+                  } else {
+                    // Non-story operations (like submit, scope, etc.) may refresh if needed
+                    // But story-changing operations NEVER refresh
+                    this._log(`[BotPanel] Non-story operation - checking if refresh needed...`);
+                    // For now, skip refresh for all operations to be safe
+                    // Can add specific cases later if needed
+                    return Promise.resolve();
+                  }
                 })
                 .then(() => {
-                  this._log(`[BotPanel] Panel update completed`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [STEP 9] Panel refresh completed`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] ========== COMMAND FLOW COMPLETE ==========`);
                   this._log(`${'='.repeat(80)}\n`);
                 })
                 .catch((error) => {
-                  this._log(`[BotPanel] *** executeCommand ERROR ***`);
-                  this._log(`[BotPanel] command: ${message.commandText}`);
-                  this._log(`[BotPanel] error: ${error.message}`);
-                  this._log(`[BotPanel] stack: ${error.stack}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [ERROR] Command execution failed`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [ERROR] Command: ${message.commandText}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [ERROR] Error: ${error.message}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [ERROR] Stack: ${error.stack}`);
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] [ERROR] Timestamp: ${new Date().toISOString()}`);
                   
                   // Log error to file
                   const errorLog = `[${timestamp}] ERROR: ${error.message}\nSTACK: ${error.stack}\n`;
@@ -598,12 +683,29 @@ class BotPanel {
                   
                   vscode.window.showErrorMessage(`Failed to execute ${message.commandText}: ${error.message}`);
                   
-                  // Always refresh on error to show accurate backend state
-                  this._log(`[BotPanel] Command failed - calling _update() to refresh panel...`);
-                  this._update().catch(err => {
-                    this._log(`[BotPanel] ERROR in _update after command failure: ${err.message}`);
-                  });
+                  // Notify webview of save error
+                  if (isMoveOp || isCreateOp || isDeleteOp || isRenameOp) {
+                    this._log(`[BotPanel] Sending saveCompleted(success=false) to webview`);
+                    this._panel.webview.postMessage({
+                      command: 'saveCompleted',
+                      success: false,
+                      error: error.message
+                    });
+                    this._log(`[BotPanel] Error message sent to webview`);
+                  }
                   
+                  // Always refresh on error to show accurate backend state
+                  // (rollback should have already happened in SaveQueue)
+                  if (!isOptimistic) {
+                    this._log(`[BotPanel] Refreshing panel after error...`);
+                    this._update().catch(err => {
+                      this._log(`[BotPanel] ERROR in _update after failure: ${err.message}`);
+                    });
+                  } else {
+                    this._log(`[BotPanel] Optimistic operation failed - skipping refresh (rollback handled by SaveQueue)`);
+                  }
+                  
+                  this._log(`[ASYNC_SAVE] [EXTENSION_HOST] ========== COMMAND FLOW FAILED ==========`);
                   this._log(`${'='.repeat(80)}\n`);
                 });
             } else {
@@ -1372,7 +1474,6 @@ class BotPanel {
             color: var(--vscode-foreground);
         }
         .main-header-refresh {
-            margin-left: auto;
             background-color: transparent;
             border: none;
             color: var(--vscode-foreground);
@@ -1384,6 +1485,71 @@ class BotPanel {
         }
         .main-header-refresh:hover {
             background-color: rgba(255, 140, 0, 0.1);
+        }
+        
+        .main-header-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            visibility: visible;
+            opacity: 1;
+        }
+        
+        .main-header-status[style*="display: none"] {
+            display: none !important;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .save-spinner {
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Save status indicator styles */
+        .save-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: opacity 0.3s;
+            white-space: nowrap;
+        }
+        
+        .save-status.saving {
+            background: #f0f0f0;
+            color: #666;
+        }
+        
+        .save-status.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .save-status.error {
+            background: #ffebee;
+            color: #c62828;
+            cursor: pointer;
+        }
+        
+        .save-status.error:hover {
+            background: #ffcdd2;
+        }
+        
+        .save-icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            font-size: 16px;
+            line-height: 1;
+        }
+        
+        .save-icon.spinner {
+            animation: spin 1s linear infinite;
         }
         
         input[type="text"],
@@ -1472,6 +1638,7 @@ class BotPanel {
         console.log('[WebView] ========== SCRIPT LOADING ==========');
         console.log('[WebView] vscode API acquired:', !!vscode);
         console.log('[WebView] vscode.postMessage available:', typeof vscode.postMessage);
+        
         
         // Restore collapse state and selected node when DOM is ready
         document.addEventListener('DOMContentLoaded', function() {
@@ -1910,11 +2077,7 @@ class BotPanel {
                 });
                 
                 if (draggedNode.path !== targetPath) {
-                    console.log('[WebView] Drop detected:', {
-                        dragged: draggedNode,
-                        target: { path: targetPath, name: targetName, type: targetType },
-                        dropZone: dropZone
-                    });
+                    console.log('[WebView] Drop detected: dragged=' + draggedNode.name + ' targetPath=' + targetPath + ' targetName=' + targetName + ' targetType=' + targetType + ' dropZone=' + dropZone);
                     
                     vscode.postMessage({
                         command: 'logToFile',
@@ -1972,16 +2135,39 @@ class BotPanel {
                         });
                     }
                     
-                    console.log('[WebView] Move command:', command);
-                    vscode.postMessage({
-                        command: 'logToFile',
-                        message: '[WebView] SENDING MOVE COMMAND (panel will refresh after backend completes): ' + command
-                    });
-                    
-                    vscode.postMessage({
-                        command: 'executeCommand',
-                        commandText: command
-                    });
+                    // ========== ASYNC SAVE FLOW: MOVE OPERATION ==========
+                    // Use StoryMapView handler for optimistic updates
+                    if (dropZone === 'after' && typeof window.handleMoveNode === 'function') {
+                        // Calculate parent path and position
+                        var parentMatch = targetPath.match(/(.*)\."[^"]+"/);
+                        var parentPath = parentMatch ? parentMatch[1] : 'story_graph';
+                        var finalPos = (draggedNode.position < targetPos) ? targetPos : (targetPos + 1);
+                        
+                        // Call StoryMapView handler - pass targetPath so we can insert after the specific node
+                        window.handleMoveNode({
+                            sourceNodePath: draggedNode.path,
+                            targetParentPath: parentPath,
+                            targetNodePath: targetPath,  // Pass target node path for "after" positioning
+                            position: finalPos,
+                            dropZone: 'after'
+                        });
+                    } else if (dropZone === 'inside' && typeof window.handleMoveNode === 'function') {
+                        // Moving inside target
+                        window.handleMoveNode({
+                            sourceNodePath: draggedNode.path,
+                            targetParentPath: targetPath,
+                            position: 0,
+                            dropZone: 'inside'
+                        });
+                    } else {
+                        // Fallback: send command directly (defaults to optimistic for story-changing ops)
+                        console.warn('[WebView] handleMoveNode not available, sending command directly');
+                        vscode.postMessage({
+                            command: 'executeCommand',
+                            commandText: command
+                            // optimistic defaults to true for story-changing operations
+                        });
+                    }
                 } else {
                     vscode.postMessage({
                         command: 'logToFile',
@@ -2215,6 +2401,174 @@ class BotPanel {
             });
         }
         
+        // Async save status indicator functions
+        let pendingOperations = 0;
+        
+        function showSaveStatus(operationCount) {
+            console.log('[ASYNC_SAVE] [STEP 1] showSaveStatus() called operationCount=' + operationCount + ' timestamp=' + new Date().toISOString());
+            pendingOperations = operationCount;
+            const indicator = document.getElementById('save-status-indicator');
+            const spinner = document.getElementById('save-status-spinner');
+            const message = document.getElementById('save-status-message');
+            
+            if (!indicator) {
+                console.error('[ASYNC_SAVE] [ERROR] save-status-indicator element not found!');
+                return;
+            }
+            if (!spinner) {
+                console.error('[ASYNC_SAVE] [ERROR] save-status-spinner element not found!');
+                return;
+            }
+            if (!message) {
+                console.error('[ASYNC_SAVE] [ERROR] save-status-message element not found!');
+                return;
+            }
+            
+            console.log('[ASYNC_SAVE] [STEP 2] Setting indicator display to flex');
+            indicator.style.display = 'flex';
+            spinner.style.display = 'inline-block';
+            const statusMessage = operationCount > 1 
+                ? 'Saving ' + operationCount + ' changes...' 
+                : 'Saving 1 change...';
+            message.textContent = statusMessage;
+            console.log('[ASYNC_SAVE] [STEP 3] Status indicator visible indicatorDisplay=' + indicator.style.display + ' spinnerDisplay=' + spinner.style.display + ' messageText=' + statusMessage + ' elementVisible=' + (indicator.offsetParent !== null));
+        }
+        
+        function hideSaveStatus() {
+            console.log('[ASYNC_SAVE] hideSaveStatus() called timestamp=' + new Date().toISOString());
+            const indicator = document.getElementById('save-status-indicator');
+            if (indicator) {
+                indicator.style.display = 'none';
+                console.log('[ASYNC_SAVE] Status indicator hidden');
+            }
+            pendingOperations = 0;
+        }
+        
+        function showSaveSuccess() {
+            console.log('[ASYNC_SAVE] [SUCCESS] showSaveSuccess() called timestamp=' + new Date().toISOString());
+            const indicator = document.getElementById('save-status-indicator');
+            const spinner = document.getElementById('save-status-spinner');
+            const message = document.getElementById('save-status-message');
+            if (indicator && spinner && message) {
+                console.log('[ASYNC_SAVE] [SUCCESS] Updating indicator to show success');
+                indicator.style.display = 'flex';
+                spinner.style.display = 'none';
+                message.textContent = 'Saved';
+                message.style.color = '#4ec9b0';
+                console.log('[ASYNC_SAVE] [SUCCESS] Scheduling auto-hide in 2000ms');
+                setTimeout(() => {
+                    console.log('[ASYNC_SAVE] [SUCCESS] Auto-hide timeout fired, hiding indicator');
+                    hideSaveStatus();
+                }, 2000);
+            } else {
+                console.error('[ASYNC_SAVE] [ERROR] Cannot show success - elements missing hasIndicator=' + !!indicator + ' hasSpinner=' + !!spinner + ' hasMessage=' + !!message);
+            }
+        }
+        
+        function showSaveError(errorMessage) {
+            console.log('[ASYNC_SAVE] [ERROR] showSaveError() called errorMessage=' + errorMessage + ' timestamp=' + new Date().toISOString());
+            const indicator = document.getElementById('save-status-indicator');
+            const spinner = document.getElementById('save-status-spinner');
+            const message = document.getElementById('save-status-message');
+            if (indicator && spinner && message) {
+                console.log('[ASYNC_SAVE] [ERROR] Updating indicator to show error');
+                indicator.style.display = 'flex';
+                spinner.style.display = 'none';
+                message.textContent = 'Save failed - click for details';
+                message.style.color = '#f48771';
+                message.style.cursor = 'pointer';
+                message.onclick = function() {
+                    console.log('[ASYNC_SAVE] [ERROR] Error indicator clicked, showing alert');
+                    alert('Save Error: ' + errorMessage);
+                };
+                console.log('[ASYNC_SAVE] [ERROR] Error indicator displayed (will not auto-hide)');
+            } else {
+                console.error('[ASYNC_SAVE] [ERROR] Cannot show error - elements missing hasIndicator=' + !!indicator + ' hasSpinner=' + !!spinner + ' hasMessage=' + !!message);
+            }
+        }
+        
+        // Optimistic DOM update for move operations
+        function applyOptimisticMove(draggedNodeElement, targetElement, dropZone, finalPosition) {
+            var draggedNodeName = draggedNodeElement ? draggedNodeElement.getAttribute('data-node-name') : null;
+            var targetNodeName = targetElement ? targetElement.getAttribute('data-node-name') : null;
+            console.log('[ASYNC_SAVE] [OPTIMISTIC] applyOptimisticMove() called dropZone=' + dropZone + ' finalPosition=' + finalPosition + ' draggedNode=' + draggedNodeName + ' targetNode=' + targetNodeName + ' timestamp=' + new Date().toISOString());
+            
+            if (!draggedNodeElement || !targetElement) {
+                console.error('[ASYNC_SAVE] [OPTIMISTIC] [ERROR] Cannot apply optimistic move - missing elements hasDraggedElement=' + !!draggedNodeElement + ' hasTargetElement=' + !!targetElement);
+                return;
+            }
+            
+            // Find the parent container
+            const draggedParent = draggedNodeElement.parentElement;
+            const targetParent = dropZone === 'inside' ? targetElement : targetElement.parentElement;
+            
+            console.log('[ASYNC_SAVE] [OPTIMISTIC] Found parent elements hasDraggedParent=' + !!draggedParent + ' hasTargetParent=' + !!targetParent + ' sameParent=' + (draggedParent === targetParent));
+            
+            if (!draggedParent || !targetParent) {
+                console.error('[ASYNC_SAVE] [OPTIMISTIC] [ERROR] Cannot apply optimistic move - missing parent elements');
+                return;
+            }
+            
+            // If moving within same parent, reorder
+            if (draggedParent === targetParent && dropZone === 'after') {
+                const targetPos = parseInt(targetElement.getAttribute('data-position') || '0');
+                const draggedPos = parseInt(draggedNodeElement.getAttribute('data-position') || '0');
+                
+                console.log('[ASYNC_SAVE] [OPTIMISTIC] Moving within same parent draggedPos=' + draggedPos + ' targetPos=' + targetPos + ' finalPosition=' + finalPosition + ' dropZone=' + dropZone);
+                
+                // Remove dragged node from its current position
+                const draggedClone = draggedNodeElement.cloneNode(true);
+                draggedNodeElement.remove();
+                console.log('[ASYNC_SAVE] [OPTIMISTIC] Removed dragged node from original position');
+                
+                // Find insertion point
+                const children = Array.from(targetParent.children).filter(child => 
+                    child.classList.contains('story-node') || 
+                    child.querySelector && child.querySelector('.story-node')
+                );
+                
+                console.log('[ASYNC_SAVE] [OPTIMISTIC] Found children childrenCount=' + children.length);
+                
+                let insertIndex = finalPosition;
+                if (insertIndex >= children.length) {
+                    targetParent.appendChild(draggedClone);
+                    console.log('[ASYNC_SAVE] [OPTIMISTIC] Appended to end');
+                } else {
+                    const insertBefore = children[insertIndex];
+                    if (insertBefore) {
+                        targetParent.insertBefore(draggedClone, insertBefore);
+                        console.log('[ASYNC_SAVE] [OPTIMISTIC] Inserted before child at index', insertIndex);
+                    } else {
+                        targetParent.appendChild(draggedClone);
+                        console.log('[ASYNC_SAVE] [OPTIMISTIC] Fallback: appended to end');
+                    }
+                }
+                
+                // Update position attributes
+                updateNodePositions(targetParent);
+                
+                console.log('[ASYNC_SAVE] [OPTIMISTIC] [SUCCESS] Optimistic move applied - node moved in DOM');
+            } else if (dropZone === 'inside') {
+                // Moving into a container - this is more complex and may require full refresh
+                console.log('[ASYNC_SAVE] [OPTIMISTIC] Moving to inside container - will rely on backend refresh');
+            } else {
+                console.warn('[ASYNC_SAVE] [OPTIMISTIC] Unhandled move scenario dropZone=' + dropZone + ' sameParent=' + (draggedParent === targetParent));
+            }
+        }
+        
+        function updateNodePositions(container) {
+            const nodes = Array.from(container.children).filter(child => 
+                child.classList.contains('story-node') || 
+                (child.querySelector && child.querySelector('.story-node'))
+            );
+            nodes.forEach((node, index) => {
+                const storyNode = node.classList.contains('story-node') ? node : node.querySelector('.story-node');
+                if (storyNode) {
+                    storyNode.setAttribute('data-position', index.toString());
+                }
+            });
+        }
+        
         function updateWorkspace(workspacePath) {
             console.log('[WebView] updateWorkspace called with:', workspacePath);
             vscode.postMessage({
@@ -2251,11 +2605,23 @@ class BotPanel {
                 command: 'logToFile',
                 message: '[WebView] createEpic called'
             });
-            console.log('[WebView] SENDING COMMAND: story_graph.create_epic');
-            vscode.postMessage({
-                command: 'executeCommand',
-                commandText: 'story_graph.create_epic'
-            });
+            
+            // Use optimistic update handler from story_map_view.js if available
+            if (typeof window.handleCreateNode === 'function') {
+                console.log('[WebView] Using optimistic create handler');
+                window.handleCreateNode({
+                    parentPath: 'story_graph',
+                    nodeType: 'epic'
+                    // placeholderName will be auto-generated (Epic1, Epic2, etc.)
+                });
+            } else {
+                console.warn('[WebView] handleCreateNode not available, falling back to direct command');
+                vscode.postMessage({
+                    command: 'executeCommand',
+                    commandText: 'story_graph.create_epic',
+                    optimistic: true
+                });
+            }
             console.log('[WebView] postMessage sent successfully');
             console.log('═══════════════════════════════════════════════════════');
         };
@@ -2264,7 +2630,8 @@ class BotPanel {
             console.log('[WebView] createSubEpic called for:', parentName);
             vscode.postMessage({
                 command: 'executeCommand',
-                commandText: \`story_graph."\${parentName}".create\`
+                commandText: \`story_graph."\${parentName}".create\`,
+                optimistic: true
             });
         };
         
@@ -2272,7 +2639,8 @@ class BotPanel {
             console.log('[WebView] createStory called for:', parentName);
             vscode.postMessage({
                 command: 'executeCommand',
-                commandText: \`story_graph."\${parentName}".create_story\`
+                commandText: \`story_graph."\${parentName}".create_story\`,
+                optimistic: true
             });
         };
         
@@ -2280,7 +2648,8 @@ class BotPanel {
             console.log('[WebView] createScenario called for:', storyName);
             vscode.postMessage({
                 command: 'executeCommand',
-                commandText: \`story_graph."\${storyName}".create_scenario\`
+                commandText: \`story_graph."\${storyName}".create_scenario\`,
+                optimistic: true
             });
         };
         
@@ -2289,7 +2658,8 @@ class BotPanel {
             console.log('[WebView] Note: ScenarioOutline deprecated, creating Scenario instead');
             vscode.postMessage({
                 command: 'executeCommand',
-                commandText: \`story_graph."\${storyName}".create_scenario\`
+                commandText: \`story_graph."\${storyName}".create_scenario\`,
+                optimistic: true
             });
         };
         
@@ -2297,87 +2667,69 @@ class BotPanel {
             console.log('[WebView] createAcceptanceCriteria called for:', storyName);
             vscode.postMessage({
                 command: 'executeCommand',
-                commandText: \`story_graph."\${storyName}".create_acceptance_criteria\`
+                commandText: \`story_graph."\${storyName}".create_acceptance_criteria\`,
+                optimistic: true
             });
         };
         
         window.deleteNode = function(nodePath) {
             console.log('[WebView] deleteNode called for:', nodePath);
             
-            // OPTIMISTIC UPDATE: Remove from DOM immediately
-            const nodes = document.querySelectorAll('.story-node');
-            for (const node of nodes) {
-                if (node.getAttribute('data-path') === nodePath) {
-                    // Find the container div (parent that has the full node structure)
-                    let container = node.parentElement;
-                    while (container && !container.style.marginLeft && !container.style.marginTop && container.parentElement) {
-                        container = container.parentElement;
-                    }
-                    if (container) {
-                        console.log('[WebView] Optimistically removing node container');
-                        container.style.opacity = '0.5';
-                        container.style.transition = 'opacity 0.2s';
-                        setTimeout(() => {
-                            if (container.parentElement) {
-                                container.parentElement.removeChild(container);
-                            }
-                        }, 200);
-                    }
-                    break;
-                }
+            // Use optimistic update handler from story_map_view.js if available
+            if (typeof window.handleDeleteNode === 'function') {
+                console.log('[WebView] Using optimistic delete handler');
+                window.handleDeleteNode({
+                    nodePath: nodePath
+                });
+            } else {
+                console.warn('[WebView] handleDeleteNode not available, falling back to direct command');
+                // Fallback: send command directly (defaults to optimistic for story-changing ops)
+                vscode.postMessage({
+                    command: 'executeCommand',
+                    commandText: \`\${nodePath}.delete\`
+                    // optimistic defaults to true for story-changing operations
+                });
             }
-            
-            vscode.postMessage({
-                command: 'executeCommand',
-                commandText: \`\${nodePath}.delete\`
-            });
         };
         
         window.deleteNodeIncludingChildren = function(nodePath) {
             console.log('[WebView] deleteNodeIncludingChildren called for:', nodePath);
             
-            // OPTIMISTIC UPDATE: Remove from DOM immediately
-            const nodes = document.querySelectorAll('.story-node');
-            for (const node of nodes) {
-                if (node.getAttribute('data-path') === nodePath) {
-                    // Find the container div (parent that has the full node structure)
-                    let container = node.parentElement;
-                    while (container && !container.style.marginLeft && !container.style.marginTop && container.parentElement) {
-                        container = container.parentElement;
-                    }
-                    if (container) {
-                        console.log('[WebView] Optimistically removing node container with children');
-                        container.style.opacity = '0.5';
-                        container.style.transition = 'opacity 0.2s';
-                        setTimeout(() => {
-                            if (container.parentElement) {
-                                container.parentElement.removeChild(container);
-                            }
-                        }, 200);
-                    }
-                    break;
-                }
+            // Use optimistic update handler from story_map_view.js if available
+            // Delete ALWAYS includes children - no version without children
+            if (typeof window.handleDeleteNode === 'function') {
+                console.log('[WebView] Using optimistic delete handler (always includes children)');
+                window.handleDeleteNode({
+                    nodePath: nodePath
+                });
+            } else {
+                console.warn('[WebView] handleDeleteNode not available, falling back to direct command');
+                // Fallback: send command directly (defaults to optimistic for story-changing ops)
+                // Backend delete() method defaults to cascade=True (always includes children)
+                vscode.postMessage({
+                    command: 'executeCommand',
+                    commandText: \`\${nodePath}.delete()\`
+                    // optimistic defaults to true for story-changing operations
+                });
             }
-            
-            vscode.postMessage({
-                command: 'executeCommand',
-                commandText: \`\${nodePath}.delete_including_children\`
-            });
         };
         
         window.enableEditMode = function(nodePath) {
-            console.log('[WebView] enableEditMode called for:', nodePath);
+            console.log('[ASYNC_SAVE] ========== RENAME OPERATION START ==========');
+            console.log('[ASYNC_SAVE] [USER_ACTION] User double-clicked node to rename nodePath=' + nodePath + ' timestamp=' + new Date().toISOString());
             // Extract the current node name from the path
             // Path format: story_graph."Epic"."SubEpic"."Story"
             const matches = nodePath.match(/"([^"]+)"[^"]*$/);
             const currentName = matches ? matches[1] : '';
             
-            console.log('[WebView] Double-click detected on node:', nodePath, 'currentName:', currentName);
+            console.log('[ASYNC_SAVE] [USER_ACTION] Extracted current name currentName=' + currentName);
+            console.log('[ASYNC_SAVE] [USER_ACTION] Sending renameNode message to extension host');
             vscode.postMessage({
                 command: 'renameNode',
                 nodePath: nodePath,
                 currentName: currentName
             });
+            console.log('[ASYNC_SAVE] ========== RENAME OPERATION INITIATED ==========');
         };
         
         // Track selected node for contextual actions (initialize window.selectedNode)
@@ -2681,36 +3033,44 @@ class BotPanel {
             console.log('[WebView]   path:', window.selectedNode.path);
             console.log('[WebView]   hasValidPath:', hasValidPath);
             
-            // For create operations, send the command using the path or construct from name
-            let commandText;
-            switch(actionType) {
-                case 'sub-epic':
-                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create\` : \`story_graph."\${window.selectedNode.name}".create\`;
-                    break;
-                case 'story':
-                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create_story\` : \`story_graph."\${window.selectedNode.name}".create_story\`;
-                    break;
-                case 'scenario':
-                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create_scenario\` : \`story_graph."\${window.selectedNode.name}".create_scenario\`;
-                    break;
-                case 'acceptance-criteria':
-                    commandText = hasValidPath ? \`\${window.selectedNode.path}.create_acceptance_criteria\` : \`story_graph."\${window.selectedNode.name}".create_acceptance_criteria\`;
-                    break;
-            }
-            
-            if (commandText) {
-                console.log('[WebView]   SENDING COMMAND:', commandText);
-                vscode.postMessage({
-                    command: 'logToFile',
-                    message: '[WebView] SENDING COMMAND: ' + commandText
+            // Use optimistic update handler from story_map_view.js if available
+            if (typeof window.handleCreateNode === 'function') {
+                var parentPath = hasValidPath ? window.selectedNode.path : \`story_graph."\${window.selectedNode.name}"\`;
+                
+                console.log('[WebView] Using optimistic create handler for:', actionType);
+                window.handleCreateNode({
+                    parentPath: parentPath,
+                    nodeType: actionType
+                    // placeholderName will be auto-generated (Epic1, SubEpic1, Story1, etc.)
                 });
-                vscode.postMessage({
-                    command: 'executeCommand',
-                    commandText: commandText
-                });
-                console.log('[WebView]   postMessage sent successfully');
             } else {
-                console.error('[WebView] ERROR: No commandText generated');
+                console.warn('[WebView] handleCreateNode not available, falling back to direct command');
+                // Fallback: send command directly
+                let commandText;
+                switch(actionType) {
+                    case 'sub-epic':
+                        commandText = hasValidPath ? \`\${window.selectedNode.path}.create\` : \`story_graph."\${window.selectedNode.name}".create\`;
+                        break;
+                    case 'story':
+                        commandText = hasValidPath ? \`\${window.selectedNode.path}.create_story\` : \`story_graph."\${window.selectedNode.name}".create_story\`;
+                        break;
+                    case 'scenario':
+                        commandText = hasValidPath ? \`\${window.selectedNode.path}.create_scenario\` : \`story_graph."\${window.selectedNode.name}".create_scenario\`;
+                        break;
+                    case 'acceptance-criteria':
+                        commandText = hasValidPath ? \`\${window.selectedNode.path}.create_acceptance_criteria\` : \`story_graph."\${window.selectedNode.name}".create_acceptance_criteria\`;
+                        break;
+                }
+                
+                if (commandText) {
+                    vscode.postMessage({
+                        command: 'executeCommand',
+                        commandText: commandText,
+                        optimistic: true
+                    });
+                } else {
+                    console.error('[WebView] ERROR: No commandText generated');
+                }
             }
             console.log('═══════════════════════════════════════════════════════');
         };
@@ -2719,29 +3079,36 @@ class BotPanel {
         window.handleDelete = function() {
             console.log('[WebView] handleDelete called for node:', window.selectedNode);
             
-            if (!window.selectedNode.name) {
+            if (!window.selectedNode || !window.selectedNode.name) {
                 console.error('[WebView] ERROR: No node selected for delete');
                 return;
             }
             
-            const hasValidPath = window.selectedNode.path && 
-                                window.selectedNode.path.length > 'story_graph.'.length &&
-                                window.selectedNode.path.includes(window.selectedNode.name);
+            // Build node path
+            let nodePath = window.selectedNode.path;
+            if (!nodePath || nodePath.length <= 'story_graph.'.length) {
+                // Fallback: construct path from name
+                nodePath = \`story_graph."\${window.selectedNode.name}"\`;
+            }
             
-            const commandText = hasValidPath 
-                ? \`\${window.selectedNode.path}.delete\`
-                : \`story_graph."\${window.selectedNode.name}".delete\`;
+            console.log('[WebView] Calling handleDeleteNode with path:', nodePath);
             
-            console.log('[WebView] Delete command:', commandText);
-            vscode.postMessage({
-                command: 'logToFile',
-                message: '[WebView] SENDING DELETE COMMAND: ' + commandText
-            });
-            
-            vscode.postMessage({
-                command: 'executeCommand',
-                commandText: commandText
-            });
+            // Call handleDeleteNode for optimistic update (removes from DOM immediately)
+            // Delete ALWAYS includes children - no version without children
+            if (typeof window.handleDeleteNode === 'function') {
+                window.handleDeleteNode({
+                    nodePath: nodePath
+                });
+            } else {
+                console.warn('[WebView] handleDeleteNode not available, falling back to direct command');
+                // Fallback: send command directly (will still work, but no optimistic update)
+                // Backend delete() method defaults to cascade=True (always includes children)
+                const commandText = \`\${nodePath}.delete()\`;
+                vscode.postMessage({
+                    command: 'executeCommand',
+                    commandText: commandText
+                });
+            }
         };
         
         // Handle scope to action - set filter to selected node
@@ -2911,9 +3278,39 @@ class BotPanel {
         };
         
         // Listen for messages from extension host (e.g. error displays)
+        // Listen for messages from extension host (e.g. error displays)
         window.addEventListener('message', event => {
             const message = event.data;
             console.log('[WebView] Received message from extension:', message);
+            
+            if (message.command === 'saveCompleted') {
+                console.log('[ASYNC_SAVE] [WEBVIEW] [STEP 10] Received saveCompleted message from extension host success=' + message.success + ' error=' + (message.error || 'none') + ' timestamp=' + new Date().toISOString());
+                if (message.success) {
+                    console.log('[ASYNC_SAVE] [WEBVIEW] [STEP 10] Processing success response');
+                    showSaveSuccess();
+                } else {
+                    console.log('[ASYNC_SAVE] [WEBVIEW] [STEP 10] Processing error response error=' + (message.error || 'Unknown error'));
+                    showSaveError(message.error || 'Unknown error');
+                }
+                console.log('[ASYNC_SAVE] [WEBVIEW] ========== SAVE FLOW COMPLETE ==========');
+                return;
+            }
+            
+            if (message.command === 'optimisticRename') {
+                console.log('[WebView] Received optimisticRename message:', message);
+                // Use optimistic update handler from story_map_view.js if available
+                if (typeof window.handleRenameNode === 'function') {
+                    console.log('[WebView] Using optimistic rename handler');
+                    window.handleRenameNode({
+                        nodePath: message.nodePath,
+                        oldName: message.oldName,
+                        newName: message.newName
+                    });
+                } else {
+                    console.warn('[WebView] handleRenameNode not available');
+                }
+                return;
+            }
             
             if (message.command === 'displayError') {
                 // Display error prominently in the panel

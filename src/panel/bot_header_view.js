@@ -152,6 +152,10 @@ class BotHeaderView extends PanelView {
         <div class="main-header">
             ${imagePath ? `<img src="${imagePath}" class="main-header-icon" alt="Company Icon" onerror="console.error('Failed to load icon:', this.src); this.style.border='1px solid red';" />` : ''}
             <span class="main-header-title">Agile Bots ${versionHtml}</span>
+            <div id="save-status-indicator" class="main-header-status" style="display: none; margin-left: auto; margin-right: 8px;">
+                <span id="save-status-spinner" class="save-spinner" style="display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255, 140, 0, 0.3); border-top-color: #ff8c00; border-radius: 50%;"></span>
+                <span id="save-status-message" style="font-size: 12px; color: var(--vscode-foreground); margin-left: 6px;"></span>
+            </div>
             <button class="main-header-refresh" onclick="refreshStatus()" title="Refresh">
                 ${refreshIconPath ? `<img src="${refreshIconPath}" style="width: 36px; height: 36px; object-fit: contain; filter: saturate(1.3) brightness(0.95) hue-rotate(-5deg);" alt="Refresh" />` : ''}
             </button>

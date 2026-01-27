@@ -123,11 +123,11 @@ Given Story Map contains <parent_node_type> named <parent_node_name>
 And <parent_node_type> contains <node_type> named <node_name> at position <original_position>
 And Panel is displaying story map
 When User drags <node_type> <node_name> to new position <target_position>
-Then Panel moves <node_type> <node_name> to position <target_position> in DOM immediately
-And Panel displays <status_indicator> in header
-And Panel shows operation count <operation_count>
-When Panel waits <debounce_time> after last change
-Then Panel executes move command to Backend
+Then StoryMapView.handleMoveNode moves <node_type> <node_name> to position <target_position> in DOM immediately
+And StoryMapView.SaveQueue displays <status_indicator> in header
+And StoryMapView.SaveQueue shows operation count <operation_count>
+When StoryMapView.SaveQueue waits <debounce_time> after last change
+Then StoryMapView.SaveQueue executes move command to Backend
 And Backend moves <node_type> <node_name> from position <original_position> to <target_position>
 And Backend writes changes to story-graph.json
 When Backend completes save successfully
@@ -156,11 +156,11 @@ Given Story Map contains <parent_node_type> named <parent_node_name>
 And <parent_node_type> contains <node_type> named <original_name>
 And Panel is displaying story map
 When User renames <node_type> from <original_name> to <new_name>
-Then Panel updates <node_type> name to <new_name> in DOM immediately
-And Panel displays <status_indicator> in header
-And Panel shows operation count <operation_count>
-When Panel waits <debounce_time> after last change
-Then Panel executes rename command to Backend
+Then StoryMapView.handleRenameNode updates <node_type> name to <new_name> in DOM immediately
+And StoryMapView.SaveQueue displays <status_indicator> in header
+And StoryMapView.SaveQueue shows operation count <operation_count>
+When StoryMapView.SaveQueue waits <debounce_time> after last change
+Then StoryMapView.SaveQueue executes rename command to Backend
 And Backend renames <node_type> from <original_name> to <new_name>
 And Backend writes changes to story-graph.json
 When Backend completes save successfully
@@ -189,11 +189,11 @@ Given Story Map contains <parent_node_type> named <parent_node_name>
 And <parent_node_type> contains <node_type> named <node_name> at position <node_position>
 And Panel is displaying story map
 When User clicks delete on <node_type> <node_name>
-Then Panel removes <node_type> <node_name> from DOM immediately
-And Panel displays <status_indicator> in header
-And Panel shows operation count <operation_count>
-When Panel waits <debounce_time> after last change
-Then Panel executes delete command to Backend
+Then StoryMapView.handleDeleteNode removes <node_type> <node_name> from DOM immediately
+And StoryMapView.SaveQueue displays <status_indicator> in header
+And StoryMapView.SaveQueue shows operation count <operation_count>
+When StoryMapView.SaveQueue waits <debounce_time> after last change
+Then StoryMapView.SaveQueue executes delete command to Backend
 And Backend deletes <node_type> <node_name> from <parent_node_type>
 And Backend writes changes to story-graph.json
 When Backend completes save successfully
@@ -292,16 +292,16 @@ Given Story Map contains <parent_node_type> named <parent_node_name>
 And <parent_node_type> contains <node_type> named <original_name>
 And Panel is displaying story map
 When User renames <node_type> to <invalid_name>
-Then Panel updates <node_type> name to <invalid_name> in DOM immediately
-And Panel displays <status_indicator> in header
-When Panel waits <debounce_time> after last change
-Then Panel executes rename command to Backend
+Then StoryMapView.handleRenameNode updates <node_type> name to <invalid_name> in DOM immediately
+And StoryMapView.SaveQueue displays <status_indicator> in header
+When StoryMapView.SaveQueue waits <debounce_time> after last change
+Then StoryMapView.SaveQueue executes rename command to Backend
 When Backend returns <error_type> error with message <error_message>
-Then Panel shows <error_indicator>
-And Panel shows <error_display_message>
-And Panel makes error indicator clickable
-And Panel does not auto-hide error
-And Panel restores original name <original_name> in DOM
+Then StoryMapView.SaveQueue shows <error_indicator>
+And StoryMapView.SaveQueue shows <error_display_message>
+And StoryMapView.SaveQueue makes error indicator clickable
+And StoryMapView.SaveQueue does not auto-hide error
+And StoryMapView.handleRenameNode rollback restores original name <original_name> in DOM
 When User clicks error indicator
 Then Panel displays error dialog
 And Panel shows error details: <error_details>

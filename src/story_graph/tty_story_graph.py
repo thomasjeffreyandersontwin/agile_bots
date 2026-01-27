@@ -70,8 +70,9 @@ class TTYStoryGraph(TTYAdapter):
             for story in story_group.get('stories', []):
                 self._render_story(story, lines, indent_level + 2)
         
-        for story in sub_epic.get('stories', []):
-            self._render_story(story, lines, indent_level + 2)
+        # Render nested sub-epics
+        for nested_sub_epic in sub_epic.get('sub_epics', []):
+            self._render_sub_epic(nested_sub_epic, lines, indent_level + 1)
     
     def _render_story(self, story: dict, lines: list, indent_level: int):
         story_name = story.get('name', 'Unknown')
@@ -85,9 +86,6 @@ class TTYStoryGraph(TTYAdapter):
             for scenario in scenarios:
                 scenario_name = scenario.get('name', 'Unknown')
                 lines.append(f"{scenario_indent}🎬  {scenario_name}")
-        
-        for nested_sub_epic in sub_epic.get('sub_epics', []):
-            self._render_sub_epic(nested_sub_epic, lines, indent_level + 1)
     
     
     def parse_command_text(self, text: str) -> tuple[str, str]:

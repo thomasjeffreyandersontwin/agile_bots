@@ -1829,6 +1829,9 @@ const AsyncSaveTestHelper = require('../../../test/helpers/async_save_test_helpe
 // ============================================================================
 // TEST HELPER INSTANCE
 // ============================================================================
+// Note: In production, StoryGraphAsyncSaveController is accessed via StoryMapView.saveQueue
+// The tests create controllers directly for unit testing the controller logic
+// The webview uses window.storyMapSaveQueue (client-side SaveQueue) that coordinates with backend
 
 const asyncSaveTestHelper = new AsyncSaveTestHelper(backendPanel);
 
@@ -1883,19 +1886,29 @@ async function when_debounce_elapses(controller, debounce_time) {
 }
 
 function then_panel_shows_optimistic_update(controller, operation_type, node_name, target_position) {
+    // Verify optimistic update is applied IMMEDIATELY (before debounce/backend processing)
+    // This ensures the UI is responsive and shows changes right away
     const dom_state = controller.getDOMState();
-    assert.ok(dom_state.optimisticUpdates.length > 0, 'Should have optimistic updates');
+    assert.ok(dom_state.optimisticUpdates.length > 0, 
+        'Should have optimistic updates IMMEDIATELY after enqueue - UI should update before backend processing');
     const update = dom_state.optimisticUpdates.find(u => 
         u.type === operation_type && u.node_name === node_name
     );
-    assert.ok(update, `Should have optimistic ${operation_type} update for ${node_name}`);
+    assert.ok(update, 
+        `Should have optimistic ${operation_type} update for ${node_name} IMMEDIATELY - defect: move takes forever without optimistic update`);
     if (target_position !== undefined) {
-        assert.strictEqual(update.target_position, target_position);
+        assert.strictEqual(update.target_position, target_position,
+            `Optimistic update should have correct target_position ${target_position} immediately`);
     }
 }
 
 function then_panel_displays_status_indicator(controller, status_indicator) {
-    assert.strictEqual(controller.getStatusIndicator().icon, status_indicator);
+    // Verify status indicator (spinner) is shown IMMEDIATELY when operation is enqueued
+    // This ensures user sees feedback that save is in progress
+    const status = controller.getStatusIndicator();
+    assert.strictEqual(status.icon, status_indicator,
+        `Should display ${status_indicator} IMMEDIATELY - defect: no spinner displayed on move`);
+    assert.ok(status.message, 'Status indicator should have a message displayed');
 }
 
 function then_panel_shows_operation_count(controller, operation_count) {

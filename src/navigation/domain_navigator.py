@@ -31,6 +31,11 @@ class DomainNavigator:
         for i, part in enumerate(parts):
             is_last = i == len(parts) - 1
             
+            # Strip trailing () from method calls (e.g., 'delete()' -> 'delete')
+            if is_last and part.endswith('()'):
+                part = part[:-2]
+                logger.info(f"[DomainNavigator] Stripped () from method name, using: '{part}'")
+            
             if hasattr(current_object, part):
                 attr = getattr(current_object, part)
                 
