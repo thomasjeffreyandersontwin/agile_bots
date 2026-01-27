@@ -65,10 +65,12 @@ def main():
     
     try:
         # Pass workspace_directory to Bot so it can create BotPath with explicit workspace
+        # This ensures WORKING_AREA environment variable takes precedence over bot_config.json
         bot = Bot(
             bot_name=bot_name,
             bot_directory=bot_directory,
-            config_path=bot_config_path
+            config_path=bot_config_path,
+            workspace_path=workspace_directory
         )
     except Exception as e:
         print(f"ERROR: Failed to initialize bot: {e}", file=sys.stderr)

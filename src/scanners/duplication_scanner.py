@@ -411,72 +411,6 @@ class DuplicationScanner(CodeScanner):
                         duplicate_pairs.append((i, j, max_similarity))
                         _safe_print(f"[DuplicationScanner] Found duplicate pair: block {i} (line {block1['start_line']}) vs block {j} (line {block2['start_line']}), similarity={max_similarity:.2f}")
         
-    def _calculate_block_similarities(self, block1: Dict, block2: Dict) -> Tuple[float, float, float]:
-        """Calculate AST, normalized, and content similarities between two blocks."""
-        try:
-            ast_similarity = self._compare_ast_blocks(block1['ast_nodes'], block2['ast_nodes'])
-        except Exception as e:
-            _safe_print(f"Error comparing AST blocks: {e}")
-            ast_similarity = 0.0
-        
-        try:
-            normalized_similarity = SequenceMatcher(None, block1['normalized'], block2['normalized']).ratio()
-        except Exception as e:
-            _safe_print(f"Error comparing normalized blocks: {e}")
-            normalized_similarity = 0.0
-        
-        try:
-            preview1_normalized = ' '.join(block1['preview'].split())
-            preview2_normalized = ' '.join(block2['preview'].split())
-            content_similarity = SequenceMatcher(None, preview1_normalized, preview2_normalized).ratio()
-        except Exception as e:
-            _safe_print(f"Error comparing content blocks: {e}")
-            content_similarity = 0.0
-        
-        return ast_similarity, normalized_similarity, content_similarity
-    
-    def _determine_max_similarity(self, ast_sim: float, content_sim: float, normalized_sim: float, threshold: float) -> float:
-        """Determine the maximum similarity score based on multiple metrics."""
-        if ast_sim >= 0.85 and content_sim >= 0.50:
-            return max(ast_sim, content_sim)
-        if ast_sim >= 0.80 and content_sim >= 0.70:
-            return max(ast_sim, content_sim)
-        if max(ast_sim, content_sim) >= 0.90 and min(ast_sim, content_sim) >= 0.60:
-            return max(ast_sim, content_sim)
-        if ast_sim >= threshold:
-            return ast_sim
-        return 0.0
-    
-    def _should_skip_duplicate_pair(self, block1: Dict, block2: Dict) -> bool:
-        """Check if a duplicate pair should be skipped based on various filters."""
-        if self._is_interface_method(block1['func_name']) or self._is_interface_method(block2['func_name']):
-            return True
-        
-        if self._is_mostly_helper_calls(block1['ast_nodes']) or self._is_mostly_helper_calls(block2['ast_nodes']):
-            return True
-        
-        if self._is_helper_function(block1['func_name']) and self._is_helper_function(block2['func_name']):
-            return True
-        
-        if self._operates_on_different_domains(block1, block2):
-            return True
-        
-        if self._calls_different_methods(block1['ast_nodes'], block2['ast_nodes']):
-            return True
-        
-        if self._is_sequential_appends_with_different_content(block1['ast_nodes'], block2['ast_nodes']):
-            return True
-        
-        return False
-    
-    def _should_report_duplicate(self, block1: Dict, block2: Dict) -> bool:
-        """Determine if a duplicate should be reported."""
-        if block1['func_name'] != block2['func_name']:
-            return True
-        if abs(block1['start_line'] - block2['start_line']) > 10:
-            return True
-        return False
-        
         _safe_print(f"[DuplicationScanner] Compared {comparison_count} block pairs")
         _safe_print(f"[DuplicationScanner] Found {len(duplicate_pairs)} duplicate pairs (threshold: {SIMILARITY_THRESHOLD})")
         if similarity_scores:
@@ -624,6 +558,72 @@ class DuplicationScanner(CodeScanner):
         
         _safe_print(f"[DuplicationScanner._check_duplicate_code_blocks] Returning {len(violations)} violations")
         return violations
+    
+    def _calculate_block_similarities(self, block1: Dict, block2: Dict) -> Tuple[float, float, float]:
+        """Calculate AST, normalized, and content similarities between two blocks."""
+        try:
+            ast_similarity = self._compare_ast_blocks(block1['ast_nodes'], block2['ast_nodes'])
+        except Exception as e:
+            _safe_print(f"Error comparing AST blocks: {e}")
+            ast_similarity = 0.0
+        
+        try:
+            normalized_similarity = SequenceMatcher(None, block1['normalized'], block2['normalized']).ratio()
+        except Exception as e:
+            _safe_print(f"Error comparing normalized blocks: {e}")
+            normalized_similarity = 0.0
+        
+        try:
+            preview1_normalized = ' '.join(block1['preview'].split())
+            preview2_normalized = ' '.join(block2['preview'].split())
+            content_similarity = SequenceMatcher(None, preview1_normalized, preview2_normalized).ratio()
+        except Exception as e:
+            _safe_print(f"Error comparing content blocks: {e}")
+            content_similarity = 0.0
+        
+        return ast_similarity, normalized_similarity, content_similarity
+    
+    def _determine_max_similarity(self, ast_sim: float, content_sim: float, normalized_sim: float, threshold: float) -> float:
+        """Determine the maximum similarity score based on multiple metrics."""
+        if ast_sim >= 0.85 and content_sim >= 0.50:
+            return max(ast_sim, content_sim)
+        if ast_sim >= 0.80 and content_sim >= 0.70:
+            return max(ast_sim, content_sim)
+        if max(ast_sim, content_sim) >= 0.90 and min(ast_sim, content_sim) >= 0.60:
+            return max(ast_sim, content_sim)
+        if ast_sim >= threshold:
+            return ast_sim
+        return 0.0
+    
+    def _should_skip_duplicate_pair(self, block1: Dict, block2: Dict) -> bool:
+        """Check if a duplicate pair should be skipped based on various filters."""
+        if self._is_interface_method(block1['func_name']) or self._is_interface_method(block2['func_name']):
+            return True
+        
+        if self._is_mostly_helper_calls(block1['ast_nodes']) or self._is_mostly_helper_calls(block2['ast_nodes']):
+            return True
+        
+        if self._is_helper_function(block1['func_name']) and self._is_helper_function(block2['func_name']):
+            return True
+        
+        if self._operates_on_different_domains(block1, block2):
+            return True
+        
+        if self._calls_different_methods(block1['ast_nodes'], block2['ast_nodes']):
+            return True
+        
+        if self._is_sequential_appends_with_different_content(block1['ast_nodes'], block2['ast_nodes']):
+            return True
+        
+        return False
+    
+    def _should_report_duplicate(self, block1: Dict, block2: Dict) -> bool:
+        """Determine if a duplicate should be reported."""
+        if block1['func_name'] != block2['func_name']:
+            return True
+        if abs(block1['start_line'] - block2['start_line']) > 10:
+            return True
+        return False
     
     def _extract_code_blocks(self, func_node: ast.FunctionDef, func_start_line: int, func_name: str) -> List[Dict[str, Any]]:
         blocks = []

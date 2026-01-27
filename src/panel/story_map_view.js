@@ -159,6 +159,7 @@ class StoryMapView extends PanelView {
         let submitScenarioIconPath = 'img/submit_ac.png';
         let submitTestIconPath = 'img/submit_tests.png';
         let submitCodeIconPath = 'img/submit_code.png';
+        let refreshIconPath = 'img/refresh.png';
         
         if (this.webview && this.extensionUri) {
             try {
@@ -233,6 +234,9 @@ class StoryMapView extends PanelView {
                 
                 const submitCodeUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'submit_code.png');
                 submitCodeIconPath = this.webview.asWebviewUri(submitCodeUri).toString();
+                
+                const refreshUri = vscode.Uri.joinPath(this.extensionUri, 'img', 'refresh.png');
+                refreshIconPath = this.webview.asWebviewUri(refreshUri).toString();
             } catch (err) {
                 console.error('Failed to create icon URIs:', err);
             }
@@ -285,6 +289,15 @@ class StoryMapView extends PanelView {
                             data-tests-tooltip="Submit tests instructions for story"
                             data-code-tooltip="Submit code instructions for story">
                         <img id="btn-submit-icon" src="${submitShapeIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Submit" />
+                    </button>
+                    <button id="btn-submit-current" 
+                            onclick="event.stopPropagation(); handleSubmitCurrent();" 
+                            style="display: none; background: transparent; border: none; padding: 4px; cursor: pointer; transition: opacity 0.15s ease;" 
+                            onmouseover="this.style.opacity='0.7'" 
+                            onmouseout="this.style.opacity='1'" 
+                            title=""
+                            data-refresh-icon="${refreshIconPath}">
+                        <img id="btn-submit-current-icon" src="${refreshIconPath}" style="width: 28px; height: 28px; object-fit: contain;" alt="Submit Current" />
                     </button>
                 </div>
             </div>

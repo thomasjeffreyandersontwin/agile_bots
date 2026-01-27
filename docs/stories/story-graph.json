@@ -5580,7 +5580,7 @@
               "name": "Act With Selected Node",
               "sequential_order": 4.0,
               "behavior": "exploration",
-              "test_file": "invoke_bot/edit_story_map/test_submit_scoped_action.py",
+              "test_file": "test/invoke_bot/edit_story_map/test_submit_scoped_action.py",
               "sub_epics": [],
               "story_groups": [
                 {
@@ -6750,8 +6750,142 @@
                       "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Invoke Bot\\Work With Story Map\\Act With Selected Node\\📄 Submit action for selected story node.md"
                     },
                     {
-                      "name": "Set scope to selected Increment",
+                      "name": "Submit Current Behavior Action For Selected Node",
                       "sequential_order": 2.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [],
+                      "test_file": null,
+                      "test_class": "TestSubmitCurrentBehaviorActionForSelectedNode",
+                      "scenarios": [
+                        {
+                          "name": "Submit Current Behavior Action For Selected Node",
+                          "sequential_order": 1.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_submit_current_behavior_action_for_selected_node",
+                          "steps": "Given Bot has story map loaded with node <node_name>\nAnd Bot has current behavior <behavior>\nAnd Bot has current action <action>\nWhen User calls bot.story_graph.\"<node_path>\".submit_current_instructions\nThen Bot submits instructions using current behavior <behavior> and action <action>\nAnd Scope is set to node <node_name>",
+                          "examples": {
+                            "columns": [
+                              "node_name",
+                              "node_path",
+                              "behavior",
+                              "action"
+                            ],
+                            "rows": [
+                              [
+                                "Upload File",
+                                "File Management.Upload File",
+                                "code",
+                                "build"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "name": "Panel submit button uses current behavior action and submits instructions",
+                          "sequential_order": 2.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_panel_submit_button_uses_current_behavior_action_and_submits_instructions",
+                          "steps": "Given User has selected a <node_type> <node_name> in the panel\nAnd Bot has current behavior <behavior>\nAnd Bot has current action <action>\nAnd Panel displays behavior <behavior> and action <action> for selected node\nWhen Panel renders the submit button\nThen Submit button displays <icon_file> icon indicating <behavior> behavior\nWhen User hovers over the submit button\nThen Submit button shows tooltip <tooltip_text>\nWhen User clicks the submit button\nThen Panel calls node.get_required_behavior_instructions with action <action>\nAnd Instructions for <behavior> behavior and <action> action are returned\nAnd Panel sets scope to selected <node_type> <node_name>\nAnd Scope is set to <node_type> <node_name>",
+                          "examples": {
+                            "columns": [
+                              "node_type",
+                              "node_name",
+                              "behavior",
+                              "action",
+                              "icon_file",
+                              "tooltip_text",
+                              "node_path"
+                            ],
+                            "rows": [
+                              [
+                                "epic",
+                                "Product Catalog",
+                                "shape",
+                                "build",
+                                "submit_subepic.png",
+                                "Submit shape instructions for epic",
+                                "Product Catalog"
+                              ],
+                              [
+                                "sub-epic",
+                                "Report Export",
+                                "explore",
+                                "build",
+                                "submit_story.png",
+                                "Submit exploration instructions for sub-epic",
+                                "Test Epic.Report Export"
+                              ],
+                              [
+                                "story",
+                                "Create User",
+                                "scenario",
+                                "build",
+                                "submit_ac.png",
+                                "Submit scenario instructions for story",
+                                "Test Epic.Test SubEpic.Create User"
+                              ],
+                              [
+                                "story",
+                                "Delete File",
+                                "test",
+                                "validate",
+                                "submit_tests.png",
+                                "Submit test instructions for story",
+                                "Test Epic.Test SubEpic.Delete File"
+                              ],
+                              [
+                                "story",
+                                "Upload File",
+                                "code",
+                                "build",
+                                "submit_code.png",
+                                "Submit code instructions for story",
+                                "Test Epic.Test SubEpic.Upload File"
+                              ]
+                            ]
+                          }
+                        },
+                        {
+                          "name": "Submit Current Instructions Via CLI JSON Format",
+                          "sequential_order": 3.0,
+                          "type": "happy_path",
+                          "background": [],
+                          "test_method": "test_submit_current_instructions_via_cli_json_format",
+                          "steps": "Given CLI has story map loaded with node <node_name>\nAnd Bot has current behavior <behavior>\nAnd Bot has current action <action>\nWhen User executes CLI command story_graph.\"<node_path>\".submit_current_instructions\nThen CLI returns JSON with submit result\nAnd Bot submits instructions using current behavior <behavior> and action <action>\nAnd Scope is set to node <node_name>",
+                          "examples": {
+                            "columns": [
+                              "node_name",
+                              "node_path",
+                              "behavior",
+                              "action"
+                            ],
+                            "rows": [
+                              [
+                                "Upload File",
+                                "File Management.Upload File",
+                                "code",
+                                "build"
+                              ]
+                            ]
+                          }
+                        }
+                      ],
+                      "acceptance_criteria": [
+                        {
+                          "name": "WHEN action executes THEN action completes successfully",
+                          "text": "WHEN action executes THEN action completes successfully",
+                          "sequential_order": 1.0
+                        }
+                      ],
+                      "behavior": null,
+                      "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Invoke Bot\\Work With Story Map\\Act With Selected Node\\📄 Submit Current Behavior Action For Selected Node.md"
+                    },
+                    {
+                      "name": "Set scope to selected Increment",
+                      "sequential_order": 3.0,
                       "connector": null,
                       "story_type": "user",
                       "users": [],
@@ -6761,6 +6895,19 @@
                       "acceptance_criteria": [],
                       "behavior": "exploration",
                       "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Invoke Bot\\Edit Story Map\\Act With Selected Node\\📄 Set scope to selected Increment.md"
+                    },
+                    {
+                      "name": "Story1",
+                      "sequential_order": 4.0,
+                      "connector": null,
+                      "story_type": "user",
+                      "users": [],
+                      "test_file": null,
+                      "test_class": null,
+                      "scenarios": [],
+                      "acceptance_criteria": [],
+                      "behavior": null,
+                      "file_link": "C:\\dev\\agile_bots\\docs\\stories\\map\\Invoke Bot\\Work With Story Map\\Act With Selected Node\\📄 Story1.md"
                     }
                   ]
                 }

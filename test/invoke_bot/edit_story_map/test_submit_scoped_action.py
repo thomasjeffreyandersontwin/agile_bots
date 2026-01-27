@@ -225,12 +225,12 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             f"Expected behavior '{expected_behavior}' but got '{actual_behavior}'"
         )
         
-        # When - User calls story.get_required_behavior_instructions with action
-        instructions = story.get_required_behavior_instructions(action)
+        # When - User calls story.get_required_behavior_instructions (always uses build)
+        instructions = story.get_required_behavior_instructions()
         
-        # Then - Bot is set to behavior and action
+        # Then - Bot is set to behavior and action (always build)
         assert helper.bot.behaviors.current.name == expected_behavior
-        assert helper.bot.behaviors.current.actions.current.action_name == action
+        assert helper.bot.behaviors.current.actions.current.action_name == 'build'
         
         # And - Scope is restored to 'all' after getting instructions
         helper.scope.assert_scope_is_cleared()
@@ -241,7 +241,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert instructions.get('behavior_metadata') is not None, "Instructions should have behavior metadata"
         assert instructions.get('action_metadata') is not None, "Instructions should have action metadata"
         assert instructions.get('behavior_metadata')['name'] == expected_behavior
-        assert instructions.get('action_metadata')['name'] == action
+        assert instructions.get('action_metadata')['name'] == 'build'
         
         # And - Instructions contain the scope that was set
         assert instructions.scope is not None, "Instructions should contain scope"
@@ -469,12 +469,12 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             f"for sub-epic '{sub_epic_name}' with {len(stories_data)} stories"
         )
         
-        # When - User calls sub_epic.get_required_behavior_instructions with action
-        instructions = sub_epic.get_required_behavior_instructions(action)
+        # When - User calls sub_epic.get_required_behavior_instructions (always uses build)
+        instructions = sub_epic.get_required_behavior_instructions()
         
-        # Then - Bot is set to behavior and action
+        # Then - Bot is set to behavior and action (always build)
         assert helper.bot.behaviors.current.name == expected_behavior
-        assert helper.bot.behaviors.current.actions.current.action_name == action
+        assert helper.bot.behaviors.current.actions.current.action_name == 'build'
         
         # And - Scope is restored to 'all' after getting instructions
         helper.scope.assert_scope_is_cleared()
@@ -485,7 +485,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert instructions.get('behavior_metadata') is not None, "Instructions should have behavior metadata"
         assert instructions.get('action_metadata') is not None, "Instructions should have action metadata"
         assert instructions.get('behavior_metadata')['name'] == expected_behavior
-        assert instructions.get('action_metadata')['name'] == action
+        assert instructions.get('action_metadata')['name'] == 'build'
 
     @pytest.mark.parametrize("scenario_name,test_method,expected_behavior", [
         # Scenario with test method -> code behavior
@@ -905,12 +905,12 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
             f"for epic '{epic_name}' with {len(sub_epics_data)} sub-epics"
         )
         
-        # When - User calls epic.get_required_behavior_instructions with action
-        instructions = epic.get_required_behavior_instructions(action)
+        # When - User calls epic.get_required_behavior_instructions (always uses build)
+        instructions = epic.get_required_behavior_instructions()
         
-        # Then - Bot is set to behavior and action
+        # Then - Bot is set to behavior and action (always build)
         assert helper.bot.behaviors.current.name == expected_behavior
-        assert helper.bot.behaviors.current.actions.current.action_name == action
+        assert helper.bot.behaviors.current.actions.current.action_name == 'build'
         
         # And - Scope is restored to 'all' after getting instructions
         helper.scope.assert_scope_is_cleared()
@@ -921,7 +921,7 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert instructions.get('behavior_metadata') is not None, "Instructions should have behavior metadata"
         assert instructions.get('action_metadata') is not None, "Instructions should have action metadata"
         assert instructions.get('behavior_metadata')['name'] == expected_behavior
-        assert instructions.get('action_metadata')['name'] == action
+        assert instructions.get('action_metadata')['name'] == 'build'
 
     def test_display_behavior_needed_via_cli_and_get_instructions(self, tmp_path):
         """
@@ -1027,14 +1027,13 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         # When - User calls CLI submit command for epic with action "build"
         # (Using the epic's behavior_needed which should be 'explore' based on highest behavior)
         expected_behavior = test_epic['behavior_needed']
-        action = 'build'
         
-        # Get instructions using the domain method
-        instructions = epic.get_required_behavior_instructions(action)
+        # Get instructions using the domain method (always uses build)
+        instructions = epic.get_required_behavior_instructions()
         
-        # Then - Bot is set to behavior and action
+        # Then - Bot is set to behavior and action (always build)
         assert helper.domain.bot.behaviors.current.name == expected_behavior
-        assert helper.domain.bot.behaviors.current.actions.current.action_name == action
+        assert helper.domain.bot.behaviors.current.actions.current.action_name == 'build'
         
         # And - Instructions object is returned
         from instructions.instructions import Instructions
@@ -1049,5 +1048,122 @@ class TestSetScopeToSelectedStoryNodeAndSubmit:
         assert 'behavior_metadata' in instructions_dict
         assert 'action_metadata' in instructions_dict
         assert instructions_dict['behavior_metadata']['name'] == expected_behavior
-        assert instructions_dict['action_metadata']['name'] == action
+        assert instructions_dict['action_metadata']['name'] == 'build'
+
+
+# ============================================================================
+# DOMAIN TESTS - Submit Current Behavior Action
+# ============================================================================
+
+class TestSubmitCurrentBehaviorActionForSelectedNode:
+    """
+    Story: Submit Current Behavior Action For Selected Node
+    
+    Tests the bot's ability to use current behavior and action (from bot/panel selection)
+    to submit instructions and set scope to the selected node.
+    """
+    
+    @pytest.mark.parametrize("node_name,node_path,behavior,action", [
+        ("Upload File", "File Management.Upload File", "code", "build"),
+    ])
+    def test_submit_current_behavior_action_for_selected_node(
+        self,
+        tmp_path,
+        node_name,
+        node_path,
+        behavior,
+        action
+    ):
+        """
+        SCENARIO: Submit Current Behavior Action For Selected Node
+        GIVEN: Bot has story map loaded with node <node_name>
+        AND: Bot has current behavior <behavior>
+        AND: Bot has current action <action>
+        WHEN: User calls bot.story_graph."<node_path>".submit_current_instructions
+        THEN: Bot submits instructions using current behavior <behavior> and action <action>
+        AND: Scope is set to node <node_name>
+        """
+        # Given - Create a test story and set bot to current behavior/action
+        helper = BotTestHelper(tmp_path)
+        epic_name, story_name = node_path.split('.')
+        story = helper.story.create_story_with_state_for_behavior_test(
+            epic_name,
+            story_name,
+            test_class=None,
+            acceptance_criteria='',
+            scenarios=[],
+            test_methods=[]
+        )
+        
+        # Set bot to current behavior and action
+        helper.bot.behaviors.navigate_to(behavior)
+        helper.bot.behaviors.current.actions.navigate_to(action)
+        
+        # When - User calls submit_current_instructions
+        story.submit_current_instructions()
+        
+        # Then - Bot submits instructions using current behavior and action
+        assert helper.bot.behaviors.current.name == behavior
+        assert helper.bot.behaviors.current.actions.current.action_name == action
+        
+        # And - Scope is set to story
+        scope = helper.bot.scope()
+        assert scope.type.value == 'story'
+        assert story.name in scope.value
+
+    @pytest.mark.parametrize("node_name,node_path,behavior,action", [
+        ("Upload File", "File Management.Upload File", "code", "build"),
+    ])
+    def test_submit_current_instructions_via_cli_json_format(
+        self,
+        tmp_path,
+        node_name,
+        node_path,
+        behavior,
+        action
+    ):
+        """
+        SCENARIO: Submit Current Instructions Via CLI JSON Format
+        GIVEN: CLI has story map loaded with node <node_name>
+        AND: Bot has current behavior <behavior>
+        AND: Bot has current action <action>
+        WHEN: User executes CLI command story_graph."<node_path>".submit_current_instructions
+        THEN: CLI returns JSON with submit result
+        AND: Bot submits instructions using current behavior <behavior> and action <action>
+        AND: Scope is set to node <node_name>
+        """
+        # Given - Create story and set bot to current behavior/action
+        helper = JsonBotTestHelper(tmp_path)
+        epic_name, story_name = node_path.split('.')
+        
+        story = helper.domain.story.create_story_with_state_for_behavior_test(
+            epic_name,
+            story_name,
+            test_class=None,
+            acceptance_criteria='',
+            scenarios=[],
+            test_methods=[]
+        )
+        
+        helper.domain.bot.behaviors.navigate_to(behavior)
+        helper.domain.bot.behaviors.current.actions.navigate_to(action)
+        
+        # When - Execute submit_current_instructions via CLI
+        command = f'story_graph."{epic_name}"."Test SubEpic"."{story_name}".submit_current_instructions'
+        cli_response = helper.cli_session.execute_command(command)
+        
+        # Then - CLI returns valid JSON with submit result
+        import json
+        response_data = json.loads(cli_response.output.strip())
+        assert 'status' in response_data, "Response should contain status"
+        assert response_data.get('status') in ['success', 'error'], f"Status should be success or error, got {response_data.get('status')}"
+        
+        # Verify bot submitted instructions using current behavior and action
+        assert helper.domain.bot.behaviors.current.name == behavior
+        assert helper.domain.bot.behaviors.current.actions.current.action_name == action
+        
+        # Verify scope is set to story (check on the story's bot instance)
+        scope = story._bot.scope() if story._bot else helper.domain.bot.scope()
+        assert scope.type.value == 'story', f"Expected scope type 'story', got '{scope.type.value}'"
+        assert story_name in scope.value, f"Expected '{story_name}' in scope value, got {scope.value}"
 

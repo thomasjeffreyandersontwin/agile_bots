@@ -3,6 +3,7 @@ from typing import List, Iterator, Optional, Dict, Any, Union, TYPE_CHECKING
 from dataclasses import dataclass, field
 from pathlib import Path
 import json
+import logging
 from datetime import datetime
 from story_graph.domain import DomainConcept, StoryUser
 
@@ -70,50 +71,64 @@ class StoryNode(ABC):
         # Same as save() since updating the parent updates all children
         self.save()
 
-    def get_required_behavior_instructions(self, action: str):
-        """Get instructions for the required behavior without submitting them."""
+    def _scope_command_for_node(self) -> str:
+        """Get scope command string for this node type."""
+        if isinstance(self, Story):
+            return f"story {self.name}"
+        elif isinstance(self, SubEpic):
+            return f"sub-epic {self.name}"
+        elif isinstance(self, Epic):
+            return f"epic {self.name}"
+        return f"story {self.name}"
+
+    def submit_instructions(self, behavior: str, action: str, restore_scope: bool = True):
+        """Get instructions scoped to this node, submit them, and optionally restore scope.
+
+        Args:
+            behavior: Behavior name to use for getting instructions
+            action: Action name to use for getting instructions
+            restore_scope: Whether to reset scope to 'all' after submitting
+
+        Returns:
+            Submit result dictionary
+        """
+        if not self._bot:
+            raise RuntimeError(f"Cannot submit instructions: node '{self.name}' has no bot reference")
+        
+        self._bot.scope(self._scope_command_for_node())
+        try:
+            instructions = self._bot.execute(behavior, action_name=action)
+            submit_result = self._bot.submit_instructions(instructions, behavior, action)
+            return submit_result
+        finally:
+            if restore_scope:
+                self._bot.scope('all')
+
+
+    def get_required_behavior_instructions(self, action: str = 'build'):
+        """Get required behavior instructions without submitting them (build by default)."""
         if not self._bot:
             raise RuntimeError(f"Cannot get instructions: node '{self.name}' has no bot reference")
         
-        # Set scope to this node, get instructions, then restore scope
         behavior_needed = self.behavior_needed
-        self._bot.scope(f"story {self.name}")
+        self._bot.scope(self._scope_command_for_node())
         
         try:
-            # Get instructions
             return self._bot.execute(behavior_needed, action_name=action)
         finally:
-            # Restore scope to 'all'
             self._bot.scope('all')
     
     def submit_required_behavior_instructions(self, action: str):
-        """Get instructions and submit them to Cursor chat."""
-        import logging
-        logger = logging.getLogger(__name__)
+        """Submit the required behavior instructions. Behavior from node; action passed in (e.g. build)."""
+        behavior_needed = self.behavior_needed
+        return self.submit_instructions(behavior=behavior_needed, action=action)
+
+    def submit_current_instructions(self):
+        """Submit instructions using bot's current behavior and action with scope set to this node."""
+        current_behavior = self._bot.behaviors.current.name
+        current_action = self._bot.behaviors.current.actions.current.action_name
         
-        logger.info(f"[submit_required_behavior_instructions] CALLED on node '{self.name}' with action='{action}'")
-        
-        if not self._bot:
-            error_msg = f"Cannot submit instructions: node '{self.name}' has no bot reference"
-            logger.error(f"[submit_required_behavior_instructions] ERROR: {error_msg}")
-            raise RuntimeError(error_msg)
-        
-        try:
-            # Get the instructions first
-            logger.info(f"[submit_required_behavior_instructions] Getting instructions for behavior '{self.behavior_needed}', action '{action}'")
-            instructions = self.get_required_behavior_instructions(action)
-            logger.info(f"[submit_required_behavior_instructions] Got instructions: {type(instructions)}")
-            
-            # Submit the instructions to chat (copy to clipboard and paste)
-            behavior_needed = self.behavior_needed
-            logger.info(f"[submit_required_behavior_instructions] Submitting instructions to chat...")
-            submit_result = self._bot.submit_instructions(instructions, behavior_needed, action)
-            logger.info(f"[submit_required_behavior_instructions] Submit result: {submit_result.get('status', 'unknown')}")
-            
-            return submit_result
-        except Exception as e:
-            logger.error(f"[submit_required_behavior_instructions] EXCEPTION: {str(e)}", exc_info=True)
-            raise
+        return self.submit_instructions(behavior=current_behavior, action=current_action, restore_scope=False)
 
     @staticmethod
     def _parse_steps_from_data(steps_value: Any) -> List[str]:

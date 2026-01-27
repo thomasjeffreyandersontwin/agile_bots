@@ -28,11 +28,9 @@ class StoryGraphFilter:
         if not self.search_terms and not self.increments:
             return story_graph
         
-        all_filter_names = self.search_terms or []
+        all_filter_names = self.search_terms
         
         def name_matches(name: str) -> bool:
-            if not all_filter_names:
-                return False
             return any(filter_name.lower() in name.lower() for filter_name in all_filter_names)
         
         def filter_sub_epic(sub_epic: Dict[str, Any]) -> Optional[Dict[str, Any]]:
@@ -45,8 +43,22 @@ class StoryGraphFilter:
             for story_group in sub_epic.get('story_groups', []):
                 matching_stories = []
                 for story in story_group.get('stories', []):
-                    if name_matches(story.get('name', '')):
+                    story_name = story.get('name', '')
+                    if name_matches(story_name):
+                        # Story name matches - include full story with all scenarios
                         matching_stories.append(story)
+                    else:
+                        # Check if any scenario matches
+                        matching_scenarios = []
+                        for scenario in story.get('scenarios', []):
+                            scenario_name = scenario.get('name', '')
+                            if name_matches(scenario_name):
+                                matching_scenarios.append(scenario)
+                        
+                        if matching_scenarios:
+                            # Scenario matched - include story but filter to only matching scenarios
+                            filtered_story = {**story, 'scenarios': matching_scenarios}
+                            matching_stories.append(filtered_story)
                 
                 if matching_stories:
                     matching_story_groups.append({
@@ -56,8 +68,22 @@ class StoryGraphFilter:
             
             matching_direct_stories = []
             for story in sub_epic.get('stories', []):
-                if name_matches(story.get('name', '')):
+                story_name = story.get('name', '')
+                if name_matches(story_name):
+                    # Story name matches - include full story with all scenarios
                     matching_direct_stories.append(story)
+                else:
+                    # Check if any scenario matches
+                    matching_scenarios = []
+                    for scenario in story.get('scenarios', []):
+                        scenario_name = scenario.get('name', '')
+                        if name_matches(scenario_name):
+                            matching_scenarios.append(scenario)
+                    
+                    if matching_scenarios:
+                        # Scenario matched - include story but filter to only matching scenarios
+                        filtered_story = {**story, 'scenarios': matching_scenarios}
+                        matching_direct_stories.append(filtered_story)
             
             filtered_nested_sub_epics = []
             for nested_sub_epic in sub_epic.get('sub_epics', []):

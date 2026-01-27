@@ -428,7 +428,7 @@ class BotPanel {
               this._botView?.execute(message.commandText)
                 .then((result) => {
                   this._log(`[BotPanel] executeNavigationCommand success: ${message.commandText} | result keys: ${Object.keys(result || {})}`);
-                  return this._update();
+                  return this._updateBehaviorsOnly();
                 })
                 .catch((error) => {
                   this._log(`[BotPanel] executeNavigationCommand ERROR: ${error.message}`);
@@ -719,7 +719,7 @@ class BotPanel {
               this._botView?.execute(cmd)
                 .then((result) => {
                   this._log(`[BotPanel] navigateToBehavior success: ${cmd} | result keys: ${Object.keys(result || {})}`);
-                  return this._update();
+                  return this._updateBehaviorsOnly();
                 })
                 .catch((error) => {
                   this._log(`[BotPanel] navigateToBehavior ERROR: ${error.message}`);
@@ -738,7 +738,7 @@ class BotPanel {
                   const currentAction = result?.bot?.current_action || result?.current_action;
                   const currentBehavior = result?.bot?.current_behavior || result?.current_behavior;
                   this._log(`[BotPanel] After navigation - current_behavior: ${currentBehavior}, current_action: ${currentAction}`);
-                  return this._update();
+                  return this._updateBehaviorsOnly();
                 })
                 .catch((error) => {
                   this._log(`[BotPanel] navigateToAction ERROR: ${error.message}`);
@@ -1059,7 +1059,10 @@ class BotPanel {
       fetch('http://127.0.0.1:7242/ingest/cc11718e-e210-436d-8aa6-f3e81dc3fdfc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'bot_panel.js:405',message:'Before _botView.render()',data:{},timestamp:Date.now(),sessionId:'debug-session',hypothesisId:'E'})}).catch(()=>{});
       // #endregion
       // Render HTML using BotView (async now)
-      const html = this._getWebviewContent(await this._botView.render());
+      const botData = this._botView.botData || await this._botView.execute('status');
+      const currentBehavior = botData?.behaviors?.current_behavior || botData?.current_behavior || null;
+      const currentAction = botData?.behaviors?.current_action || botData?.current_action || null;
+      const html = this._getWebviewContent(await this._botView.render(), currentBehavior, currentAction);
       const perfRenderEnd = performance.now();
       const renderDuration = (perfRenderEnd - perfRenderStart).toFixed(2);
       // #region agent log
@@ -1151,6 +1154,36 @@ class BotPanel {
     }
   }
 
+  async _updateBehaviorsOnly() {
+    try {
+      this._log('[BotPanel] _updateBehaviorsOnly() called');
+      
+      // Refresh botData to get updated current_behavior/current_action
+      await this._botView.refresh();
+      
+      // Get current behavior from botData
+      const botData = this._botView.botData;
+      const currentBehavior = botData?.behaviors?.current_behavior || botData?.current_behavior || null;
+      
+      // Re-render only the behaviors section
+      const behaviorsHtml = await this._botView.behaviorsView.render();
+      
+      // Send message to webview to update just the behaviors section and current behavior
+      this._panel.webview.postMessage({
+        command: 'updateBehaviorsSection',
+        html: behaviorsHtml,
+        currentBehavior: currentBehavior
+      });
+      
+      this._log('[BotPanel] _updateBehaviorsOnly() completed');
+    } catch (err) {
+      console.error(`[BotPanel] ERROR in _updateBehaviorsOnly: ${err.message}`);
+      this._log(`[BotPanel] ERROR in _updateBehaviorsOnly: ${err.message}`);
+      // Fallback to full update on error
+      return this._update();
+    }
+  }
+
   _escapeHtml(text) {
     if (typeof text !== 'string') {
       text = String(text);
@@ -1165,7 +1198,10 @@ class BotPanel {
     return text.replace(/[&<>"']/g, m => map[m]);
   }
 
-  _getWebviewContent(contentHtml) {
+  _getWebviewContent(contentHtml, currentBehavior = null, currentAction = null) {
+    const currentBehaviorScript = currentBehavior 
+      ? `\n        <script>\n            window.currentBehavior = ${JSON.stringify(currentBehavior)};\n            ${currentAction ? `window.currentAction = ${JSON.stringify(currentAction)};` : ''}\n        </script>`
+      : '';
     return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1640,7 +1676,7 @@ class BotPanel {
             font-style: italic;
             padding: var(--space-sm);
         }
-    </style>
+    </style>${currentBehaviorScript}
 </head>
 <body>
     ${contentHtml}
@@ -2834,18 +2870,26 @@ class BotPanel {
                 // Note: submit button will be shown below if scenario has behavior_needed
             }
             
-            // Update submit button based on behavior_needed
+            // Update submit button based on current behavior and action
             console.log('═══════════════════════════════════════════════════════');
             console.log('[SUBMIT BUTTON DEBUG] Starting submit button update');
             console.log('[SUBMIT BUTTON DEBUG] Node clicked:', window.selectedNode.name);
             console.log('[SUBMIT BUTTON DEBUG] Node type:', window.selectedNode.type);
-            console.log('[SUBMIT BUTTON DEBUG] behavior_needed from CLI:', window.selectedNode.behavior);
+            console.log('[SUBMIT BUTTON DEBUG] Current behavior from bot:', window.currentBehavior || '(none)');
+            console.log('[SUBMIT BUTTON DEBUG] Current action from bot:', window.currentAction || '(none)');
+            console.log('[SUBMIT BUTTON DEBUG] behavior_needed from node:', window.selectedNode.behaviorNeeded || '(none)');
             console.log('[SUBMIT BUTTON DEBUG] btnSubmit exists:', !!btnSubmit);
             console.log('[SUBMIT BUTTON DEBUG] Is root?', window.selectedNode.type === 'root');
-            console.log('[SUBMIT BUTTON DEBUG] Has behavior_needed?', !!window.selectedNode.behavior);
+            console.log('[SUBMIT BUTTON DEBUG] Has behaviorNeeded?', !!window.selectedNode.behaviorNeeded);
             
-            if (btnSubmit && window.selectedNode.type !== 'root' && window.selectedNode.behavior) {
-                const behavior = window.selectedNode.behavior;
+            // btn-submit uses behavior_needed (required next behavior), not current behavior
+            const requiredBehavior = window.selectedNode.behaviorNeeded;
+            const currentBehavior = window.currentBehavior || window.selectedNode.behavior;
+            const currentAction = window.currentAction || 'build'; // Default to 'build' if no action
+            
+            if (btnSubmit && window.selectedNode.type !== 'root' && requiredBehavior) {
+                const behavior = requiredBehavior;
+                const action = currentAction;
                 const nodeType = window.selectedNode.type;
                 const btnSubmitIcon = document.getElementById('btn-submit-icon');
                 
@@ -2926,6 +2970,30 @@ class BotPanel {
                     console.log('[SUBMIT BUTTON DEBUG]   This may indicate behavior_needed is not being read from story graph');
                 }
             }
+            
+            // Update btn-submit-current button (shows beside btn-submit)
+            const btnSubmitCurrent = document.getElementById('btn-submit-current');
+            if (btnSubmitCurrent && window.selectedNode.type !== 'root' && currentBehavior) {
+                const behavior = currentBehavior;
+                const action = currentAction;
+                const btnSubmitCurrentIcon = document.getElementById('btn-submit-current-icon');
+                
+                // Use refresh icon for now (same as btn-submit)
+                const refreshIcon = btnSubmitCurrent.getAttribute('data-refresh-icon') || btnSubmit?.getAttribute('data-refresh-icon');
+                
+                const tooltip = 'Submit current behavior (' + behavior + '.' + action + ')';
+                
+                if (refreshIcon && btnSubmitCurrentIcon) {
+                    btnSubmitCurrentIcon.src = refreshIcon;
+                    btnSubmitCurrent.title = tooltip;
+                    btnSubmitCurrent.style.display = 'block';
+                } else {
+                    btnSubmitCurrent.style.display = 'none';
+                }
+            } else if (btnSubmitCurrent) {
+                btnSubmitCurrent.style.display = 'none';
+            }
+            
             console.log('═══════════════════════════════════════════════════════');
         };
         
@@ -2975,11 +3043,15 @@ class BotPanel {
                 console.log('[WebView]   WARNING: Target node not found');
             }
             
+            // Store both current behavior and behavior_needed
+            const behavior = window.currentBehavior || options.behavior || null;
+            
             window.selectedNode = {
                 type: type,
                 name: name,
                 path: options.path || null,
-                behavior: options.behavior || null,
+                behavior: behavior, // Current behavior in progress
+                behaviorNeeded: options.behavior || null, // Required next behavior from story graph
                 canHaveSubEpic: options.canHaveSubEpic || false,
                 canHaveStory: options.canHaveStory || false,
                 canHaveTests: options.canHaveTests || false,
@@ -2992,9 +3064,11 @@ class BotPanel {
             console.log('[NODE CLICK DEBUG] ═══════════════════════════════════════');
             console.log('[NODE CLICK DEBUG] Node clicked:', name);
             console.log('[NODE CLICK DEBUG] Node type:', type);
-            console.log('[NODE CLICK DEBUG] behavior_needed from CLI:', options.behavior || '(none)');
-            if (!options.behavior) {
-                console.log('[NODE CLICK DEBUG] ⚠️ WARNING: No behavior_needed - check story graph data');
+            console.log('[NODE CLICK DEBUG] Current behavior from bot:', window.currentBehavior || '(none)');
+            console.log('[NODE CLICK DEBUG] behavior_needed from node:', options.behavior || '(none)');
+            console.log('[NODE CLICK DEBUG] Using behavior:', behavior || '(none)');
+            if (!behavior) {
+                console.log('[NODE CLICK DEBUG] ⚠️ WARNING: No current behavior - submit button will not show');
             }
             console.log('[NODE CLICK DEBUG] ═══════════════════════════════════════');
             console.log('');
@@ -3164,11 +3238,11 @@ class BotPanel {
                 return;
             }
             
-            if (!window.selectedNode.behavior) {
-                console.error('[WebView] ERROR: No behavior for selected node');
+            if (!window.selectedNode.behaviorNeeded) {
+                console.error('[WebView] ERROR: No behaviorNeeded for selected node');
                 vscode.postMessage({
                     command: 'logToFile',
-                    message: '[WebView] ERROR: handleSubmit called but node has no behavior: ' + window.selectedNode.name
+                    message: '[WebView] ERROR: handleSubmit called but node has no behaviorNeeded: ' + window.selectedNode.name
                 });
                 return;
             }
@@ -3176,17 +3250,17 @@ class BotPanel {
             const nodeName = window.selectedNode.name;
             const nodePath = window.selectedNode.path;
             
-            console.log('[WebView] Submit: Getting instructions for', nodeName);
+            console.log('[WebView] Submit: Submitting required behavior instructions for', nodeName);
             vscode.postMessage({
                 command: 'logToFile',
-                message: '[WebView] SUBMIT: Getting instructions for node=' + nodeName + ', path=' + nodePath
+                message: '[WebView] SUBMIT: Submitting required behavior instructions for node=' + nodeName + ', path=' + nodePath
             });
             
-            // Call the domain object's method to submit instructions
-            // This will: get instructions, then submit them to Cursor chat
+            // Call submit_required_behavior_instructions with the build action
+            const action = 'build';
             const commandText = nodePath 
-                ? nodePath + '.submit_required_behavior_instructions action:build'
-                : 'story_graph."' + nodeName + '".submit_required_behavior_instructions action:build';
+                ? nodePath + '.submit_required_behavior_instructions action:"' + action + '"'
+                : 'story_graph."' + nodeName + '".submit_required_behavior_instructions action:"' + action + '"';
             
             console.log('[WebView] ========== SENDING COMMAND ==========');
             console.log('[WebView] Executing command:', commandText);
@@ -3203,6 +3277,49 @@ class BotPanel {
                 command: 'logToFile',
                 message: '[WebView] SUBMIT: Command sent: ' + commandText
             });
+        };
+        
+        window.handleSubmitCurrent = function() {
+            console.log('[WebView] ========== handleSubmitCurrent CALLED ==========');
+            console.log('[WebView] handleSubmitCurrent called for node:', window.selectedNode);
+            
+            if (!window.selectedNode || !window.selectedNode.name) {
+                console.error('[WebView] ERROR: No node selected for submit');
+                vscode.postMessage({
+                    command: 'logToFile',
+                    message: '[WebView] ERROR: handleSubmitCurrent called but no node selected'
+                });
+                return;
+            }
+            
+            const nodeName = window.selectedNode.name;
+            const nodePath = window.selectedNode.path;
+            
+            console.log('[WebView] Submit Current: Submitting current instructions for', nodeName);
+            console.log('[WebView] Submit Current: nodeName =', nodeName);
+            console.log('[WebView] Submit Current: nodePath =', nodePath);
+            console.log('[WebView] Submit Current: nodePath exists?', !!nodePath);
+            
+            vscode.postMessage({
+                command: 'logToFile',
+                message: '[WebView] SUBMIT CURRENT: node=' + nodeName + ', path=' + nodePath + ', pathExists=' + !!nodePath
+            });
+            
+            // Call submit_current_instructions which uses current behavior and action
+            const commandText = nodePath 
+                ? nodePath + '.submit_current_instructions'
+                : 'story_graph."' + nodeName + '".submit_current_instructions';
+            
+            console.log('[WebView] ========== SUBMIT CURRENT COMMAND ==========');
+            console.log('[WebView] Command constructed:', commandText);
+            console.log('[WebView] Command length:', commandText.length);
+            
+            vscode.postMessage({
+                command: 'executeCommand',
+                commandText: commandText
+            });
+            
+            console.log('[WebView] ========== COMMAND SENT ==========');
         };
         
         
@@ -3374,6 +3491,37 @@ class BotPanel {
                 } else {
                     console.log('[WebView] No saved collapse state found');
                 }
+            }
+            
+            if (message.command === 'updateBehaviorsSection') {
+                console.log('[WebView] Updating behaviors section only');
+                
+                // Update current behavior if provided
+                if (message.currentBehavior !== undefined) {
+                    window.currentBehavior = message.currentBehavior;
+                    console.log('[WebView] Updated window.currentBehavior to:', window.currentBehavior);
+                    // If a node is selected, update the submit button with new behavior
+                    if (window.selectedNode && window.selectedNode.type !== 'root') {
+                        window.updateContextualButtons();
+                    }
+                }
+                
+                const behaviorsSection = document.querySelector('.section.card-primary');
+                if (behaviorsSection && message.html) {
+                    // Create a temporary container to parse the HTML
+                    const temp = document.createElement('div');
+                    temp.innerHTML = message.html;
+                    const newSection = temp.querySelector('.section.card-primary');
+                    if (newSection) {
+                        behaviorsSection.outerHTML = newSection.outerHTML;
+                        console.log('[WebView] Behaviors section updated successfully');
+                    } else {
+                        console.warn('[WebView] Could not find behaviors section in provided HTML');
+                    }
+                } else {
+                    console.warn('[WebView] Behaviors section element not found or HTML missing');
+                }
+                return;
             }
             
             // Optimistic update disabled - full refresh preserves icons and structure

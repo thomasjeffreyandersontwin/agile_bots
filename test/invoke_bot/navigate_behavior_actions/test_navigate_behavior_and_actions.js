@@ -59,10 +59,13 @@ before(() => {
     setupTestWorkspace();
 });
 
-// Use production workspace directory (has config, behaviors, and src) but temp workspace for data
+// Use production bot path (has config and behaviors) but temp workspace for data
+// The helper needs the workspace directory to derive the bot path, but WORKING_AREA
+// environment variable ensures all data writes go to tempWorkspaceDir
 const workspaceDir = repoRoot;
 
 // Create ONE helper for all tests - shares single CLI process
+// WORKING_AREA is set to tempWorkspaceDir in setupTestWorkspace(), so all data writes go to temp directory
 const helper = new BehaviorsViewTestHelper(workspaceDir, 'story_bot');
 
 // Cleanup after all tests
