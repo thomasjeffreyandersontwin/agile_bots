@@ -1,1 +1,8 @@
-{"type": "story", "value": ["Initialize Bot"], "exclude": [], "skiprule": []}
+{
+  "type": "story",
+  "value": [
+    "Add Filter Part To File Scope"
+  ],
+  "exclude": [],
+  "skiprule": []
+}

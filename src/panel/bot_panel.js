@@ -649,11 +649,15 @@ class BotPanel {
                     this._log(`[BotPanel] Panel will NOT refresh - optimistic updates remain visible`);
                     return Promise.resolve();
                   } else {
-                    // Non-story operations (like submit, scope, etc.) may refresh if needed
-                    // But story-changing operations NEVER refresh
-                    this._log(`[BotPanel] Non-story operation - checking if refresh needed...`);
-                    // For now, skip refresh for all operations to be safe
-                    // Can add specific cases later if needed
+                    // Check if this is a scope command - needs refresh to show filtered view
+                    const isScopeCommand = message.commandText.startsWith('scope ');
+                    if (isScopeCommand) {
+                      this._log(`[BotPanel] Scope command detected - refreshing panel to show filtered view...`);
+                      return this._update();
+                    }
+                    
+                    // Non-story operations (like submit) don't need refresh
+                    this._log(`[BotPanel] Non-story operation - skipping refresh`);
                     return Promise.resolve();
                   }
                 })
@@ -3253,19 +3257,32 @@ class BotPanel {
                 return;
             }
             
-            // Use the node name as the filter value
-            const filterValue = window.selectedNode.name;
+            // Build scope command with node type prefix (matches nodes.py _scope_command_for_node)
+            const nodeName = window.selectedNode.name;
+            const nodeType = window.selectedNode.type;
+            let scopeCommand;
             
-            console.log('[WebView] Scope To filter:', filterValue);
+            if (nodeType === 'story') {
+                scopeCommand = 'story ' + nodeName;
+            } else if (nodeType === 'sub-epic') {
+                scopeCommand = 'sub-epic ' + nodeName;
+            } else if (nodeType === 'epic') {
+                scopeCommand = 'epic ' + nodeName;
+            } else {
+                // Fallback to just the name for unknown types
+                scopeCommand = nodeName;
+            }
+            
+            console.log('[WebView] Scope To command:', scopeCommand);
             vscode.postMessage({
                 command: 'logToFile',
-                message: '[WebView] SENDING SCOPE TO COMMAND: scope "' + filterValue + '"'
+                message: '[WebView] SENDING SCOPE TO COMMAND: scope ' + scopeCommand
             });
             
-            // Execute scope command with the node name as filter
+            // Execute scope command with the node type and name
             vscode.postMessage({
                 command: 'executeCommand',
-                commandText: 'scope "' + filterValue + '"'
+                commandText: 'scope ' + scopeCommand
             });
         };
         

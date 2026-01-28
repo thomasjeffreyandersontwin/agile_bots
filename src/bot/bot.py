@@ -304,7 +304,7 @@ class Bot:
         
         if prefix in ('file', 'files'):
             return ScopeType.FILES
-        elif prefix in ('story', 'epic'):
+        elif prefix in ('story', 'epic', 'sub-epic'):
             return ScopeType.STORY
         elif prefix == 'increment':
             return ScopeType.INCREMENT
@@ -335,7 +335,7 @@ class Bot:
         parts = scope_filter.split(None, 1)
         potential_prefix = parts[0].lower()
         
-        if potential_prefix in ('story', 'epic', 'increment', 'file', 'files'):
+        if potential_prefix in ('story', 'epic', 'sub-epic', 'increment', 'file', 'files'):
             prefix = potential_prefix
             value_part = parts[1] if len(parts) > 1 else ''
             scope_values = [v.strip() for v in value_part.split(',') if v.strip()]
