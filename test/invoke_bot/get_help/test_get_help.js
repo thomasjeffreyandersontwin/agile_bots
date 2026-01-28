@@ -95,7 +95,7 @@ test('TestGetHelpThroughPanel', { concurrency: false }, async (t) => {
         await cli.execute('shape.strategy');
         const status = await cli.execute('status');
         
-        assert.ok(status.current_action, 'Should have current action');
-        assert.strictEqual(status.current_action, 'strategy');
+        assert.ok(status.bot.current_action, 'Should have current action');
+        assert.strictEqual(status.bot.current_action, 'strategy');
     });
 });

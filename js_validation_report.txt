@@ -1,0 +1,71 @@
+================================================================================
+JavaScript Clean Code Validation Report
+================================================================================
+
+Total Violations: 30060
+Files Checked: 1876
+Rules Violated: 8
+
+eliminate_duplication | FAIL | 9331 violation(s)
+  src\panel\behaviors_view.js:194 - Duplicate code found on lines 194, 208, 222, 275, 289, 303: background-color: var(--vscode-button-secondaryBac...
+  src\panel\behaviors_view.js:195 - Duplicate code found on lines 195, 209, 223, 276, 290, 304: color: var(--vscode-button-secondaryForeground);...
+  src\panel\behaviors_view.js:201 - Duplicate code found on lines 201, 215, 229, 282, 296, 310: font-family: inherit;...
+  src\panel\behaviors_view.js:205 - Duplicate code found on lines 205, 219, 233, 286, 300, 314: justify-content: center;...
+  src\panel\behaviors_view.js:250 - Duplicate code found on lines 250, 333, 386: * @returns {string} HTML string...
+  ... and 9326 more
+
+keep_functions_single_responsibility | FAIL | 43 violation(s)
+  src\panel\node_modules\fastq\queue.js:190 - Function name contains 'And' - suggests multiple responsibilities
+  src\panel\node_modules\yauzl\index.js:225 - Function name contains 'And' - suggests multiple responsibilities
+  src\panel\node_modules\yauzl\index.js:621 - Function name contains 'And' - suggests multiple responsibilities
+  src\panel\node_modules\xmlchars\xml\1.1\ed2.js:78 - Function name contains 'And' - suggests multiple responsibilities
+  src\panel\node_modules\ws\lib\websocket.js:1039 - Function name contains 'And' - suggests multiple responsibilities
+  ... and 38 more
+
+keep_functions_small_focused | FAIL | 518 violation(s)
+  src\panel\behaviors_view.js:252 - Function is 70 lines long (should be under 20-30 lines)
+  src\panel\behaviors_view.js:335 - Function is 39 lines long (should be under 20-30 lines)
+  src\panel\bot_panel.js:1967 - Function is 35 lines long (should be under 20-30 lines)
+  src\panel\bot_panel.js:3508 - Function is 34 lines long (should be under 20-30 lines)
+  src\panel\node_modules\ansi-styles\index.js:61 - Function is 97 lines long (should be under 20-30 lines)
+  ... and 513 more
+
+never_swallow_exceptions | FAIL | 431 violation(s)
+  src\panel\bot_header_view.js:244 - Empty catch block - exceptions should be logged or rethrown
+  src\panel\bot_header_view.js:258 - Empty catch block - exceptions should be logged or rethrown
+  src\panel\bot_panel.js:50 - Empty catch block - exceptions should be logged or rethrown
+  src\panel\bot_panel.js:79 - Empty catch block - exceptions should be logged or rethrown
+  src\panel\bot_panel.js:84 - Empty catch block - exceptions should be logged or rethrown
+  ... and 426 more
+
+provide_meaningful_context | FAIL | 17226 violation(s)
+  src\panel\behaviors_view.js:55 - Magic number '039' - should be a named constant
+  src\panel\behaviors_view.js:187 - Magic number '600' - should be a named constant
+  src\panel\behaviors_view.js:268 - Magic number '600' - should be a named constant
+  src\panel\bot_header_view.js:44 - Magic number '039' - should be a named constant
+  src\panel\bot_header_view.js:87 - Magic number '300' - should be a named constant
+  ... and 17221 more
+
+stop_writing_useless_comments | FAIL | 1318 violation(s)
+  src\panel\behaviors_view.js:117 - Obvious comment about getting variable
+  src\panel\bot_header_view.js:138 - Obvious comment about getting variable
+  src\panel\bot_panel.js:75 - Obvious comment about creation
+  src\panel\bot_panel.js:89 - Obvious comment about initialization
+  src\panel\bot_panel.js:92 - Obvious comment about setting variable
+  ... and 1313 more
+
+use_consistent_naming | FAIL | 73 violation(s)
+  src\panel\bot_header_view.js:1 - Inconsistent naming: using get, fetch for similar operations
+  src\panel\bot_panel.js:1 - Inconsistent naming: using get, fetch for similar operations
+  src\panel\story_map_view.js:1 - Inconsistent naming: using get, fetch for similar operations
+  src\panel\node_modules\azure-devops-node-api\BuildApi.js:1 - Inconsistent naming: using get, retrieve for similar operations
+  src\panel\node_modules\azure-devops-node-api\CoreApi.js:1 - Inconsistent naming: using get, fetch for similar operations
+  ... and 68 more
+
+use_domain_language | FAIL | 1120 violation(s)
+  src\panel\bot_header_view.js:241 - Generic variable name 'result' - use domain-specific language
+  src\panel\bot_header_view.js:255 - Generic variable name 'result' - use domain-specific language
+  src\panel\instructions_view.js:481 - Generic variable name 'config' - use domain-specific language
+  src\panel\story_map_view.js:2527 - Generic variable name 'result' - use domain-specific language
+  src\panel\story_map_view.js:2854 - Generic variable name 'result' - use domain-specific language
+  ... and 1115 more

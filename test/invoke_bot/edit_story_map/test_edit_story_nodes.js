@@ -658,7 +658,7 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         }
         assert.ok(subEpic, 'SubEpic should exist');
         assert.strictEqual(subEpic.sub_epics.length, 0, 'SubEpic should have no SubEpic children');
-        assert.ok(!subEpic.stories || subEpic.stories.length === 0, 'SubEpic should have no Story children');
+        assert.ok(!subEpic.story_groups || subEpic.story_groups.length === 0, 'SubEpic should have no Story children');
         
         // SIMULATE: User clicks "Create Story" button on empty SubEpic
         await testPanel.postMessageFromWebview({
@@ -666,14 +666,16 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
             commandText: `story_graph."${epicName}"."${subEpicName}".create_story name:"${storyName}"`
         });
         
-        // Verify Story was added via message handler
+        // Verify Story was added via message handler (stories are in story_groups)
         data = await queryStoryGraph(testPanel);
         epic = data.epics.find(e => e.name === epicName);
         subEpic = epic.sub_epics.find(se => se.name === subEpicName);
-        assert.ok(subEpic.stories && subEpic.stories.length === 1,
-            'System should allow Story child type for empty SubEpic');
-        assert.strictEqual(subEpic.stories[0].name, storyName,
-            'Story should be added to stories collection');
+        assert.ok(subEpic.story_groups && subEpic.story_groups.length > 0,
+            'System should create story_group for Story child');
+        const stories = subEpic.story_groups.flatMap(sg => sg.stories || []);
+        assert.ok(stories.length === 1, 'System should allow Story child type for empty SubEpic');
+        assert.strictEqual(stories[0].name, storyName,
+            'Story should be added to story_groups collection');
     });
     
     await t.test('test_subepic_with_subepics_can_only_create_subepics', async () => {
@@ -779,8 +781,9 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
             console.warn('[TEST] SubEpic creation failed, skipping test');
             return;
         }
-        assert.ok(subEpic.stories && subEpic.stories.length === 1,
-            'SubEpic should have Story child');
+        // Stories are now in story_groups, not directly in stories array
+        let stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        assert.ok(stories.length === 1, 'SubEpic should have Story child');
         
         // SIMULATE: User can create another Story (allowed)
         await testPanel.postMessageFromWebview({
@@ -792,9 +795,10 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         data = await queryStoryGraph(testPanel);
         epic = data.epics.find(e => e.name === epicName);
         subEpic = epic.sub_epics.find(se => se.name === subEpicName);
-        assert.strictEqual(subEpic.stories.length, 2,
+        stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        assert.strictEqual(stories.length, 2,
             'System should allow creating more Story children');
-        assert.strictEqual(subEpic.stories[1].name, story2Name,
+        assert.strictEqual(stories[1].name, story2Name,
             'Second Story should be added');
     });
     
@@ -841,7 +845,9 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
             console.warn('[TEST] SubEpic creation failed, skipping test');
             return;
         }
-        let story = subEpic.stories.find(s => s.name === storyName);
+        // Stories are in story_groups now
+        let stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        let story = stories.find(s => s.name === storyName);
         if (!story) {
             console.warn('[TEST] Story creation failed, skipping test');
             return;
@@ -859,7 +865,8 @@ test('TestCreateChildStoryNodeUnderParent', { concurrency: false }, async (t) =>
         data = await queryStoryGraph(testPanel);
         epic = data.epics.find(e => e.name === epicName);
         subEpic = epic.sub_epics.find(se => se.name === subEpicName);
-        story = subEpic.stories.find(s => s.name === storyName);
+        stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        story = stories.find(s => s.name === storyName);
         assert.ok(story.scenarios && story.scenarios.length === 1,
             'System should add scenario to story\'s scenarios collection');
         assert.strictEqual(story.scenarios[0].name, scenarioName,
@@ -1431,39 +1438,47 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
          */
         const testPanel = createTestBotPanel();
         
+        // Use unique names to avoid test conflicts
+        const epicName = uniqueTestName('Incompatible Move Test');
+        const sourceSubEpicName = uniqueTestName('Source SubEpic');
+        const subEpicToMoveName = uniqueTestName('SubEpic To Move');
+        const targetSubEpicName = uniqueTestName('Target With Stories');
+        const storyName = uniqueTestName('Story1');
+        
         // Create incompatible structure: SubEpic with Story children via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph.create_epic name:"Incompatible Move Test"'
+            commandText: `story_graph.create_epic name:"${epicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Incompatible Move Test".create_sub_epic name:"Source SubEpic"'
+            commandText: `story_graph."${epicName}".create_sub_epic name:"${sourceSubEpicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Incompatible Move Test"."Source SubEpic".create_sub_epic name:"SubEpic To Move"'
+            commandText: `story_graph."${epicName}"."${sourceSubEpicName}".create_sub_epic name:"${subEpicToMoveName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Incompatible Move Test".create_sub_epic name:"Target With Stories"'
+            commandText: `story_graph."${epicName}".create_sub_epic name:"${targetSubEpicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Incompatible Move Test"."Target With Stories".create_story name:"Story1"'
+            commandText: `story_graph."${epicName}"."${targetSubEpicName}".create_story name:"${storyName}"`
         });
         
-        // Verify structure
+        // Verify structure (stories are in story_groups)
         let data = await queryStoryGraph(testPanel);
-        let epic = data.epics.find(e => e.name === 'Incompatible Move Test');
-        let targetSubEpic = epic.sub_epics.find(se => se.name === 'Target With Stories');
-        assert.ok(targetSubEpic.stories && targetSubEpic.stories.length > 0,
+        let epic = data.epics.find(e => e.name === epicName);
+        let targetSubEpic = epic.sub_epics.find(se => se.name === targetSubEpicName);
+        const stories = targetSubEpic.story_groups ? targetSubEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        assert.ok(stories.length > 0,
             'Target SubEpic should have Story children');
         
         // SIMULATE: User tries to drag SubEpic to SubEpic that has Stories (incompatible)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Incompatible Move Test"."Source SubEpic"."SubEpic To Move".move_to."Target With Stories"'
+            commandText: `story_graph."${epicName}"."${sourceSubEpicName}"."${subEpicToMoveName}".move_to."${targetSubEpicName}"`
         });
         
         // Verify validation error through message handler
@@ -1473,9 +1488,9 @@ test('TestMoveStoryNode', { concurrency: false }, async (t) => {
         
         // Verify node remained in source location
         data = await queryStoryGraph(testPanel);
-        epic = data.epics.find(e => e.name === 'Incompatible Move Test');
-        let sourceSubEpic = epic.sub_epics.find(se => se.name === 'Source SubEpic');
-        assert.ok(sourceSubEpic.sub_epics.find(se => se.name === 'SubEpic To Move'),
+        epic = data.epics.find(e => e.name === epicName);
+        let sourceSubEpic = epic.sub_epics.find(se => se.name === sourceSubEpicName);
+        assert.ok(sourceSubEpic.sub_epics.find(se => se.name === subEpicToMoveName),
             'Source node should remain in original location after validation error');
     });
     
@@ -1629,35 +1644,42 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
          */
         const testPanel = createTestBotPanel();
         
+        // Use unique names to avoid conflicts with other tests
+        const epicName = uniqueTestName('Action Test Epic');
+        const subEpicName = uniqueTestName('Action SubEpic');
+        const storyName = uniqueTestName('Target Story');
+        const scenarioName = uniqueTestName('Generated Scenario');
+        
         // Create Story structure via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph.create_epic name:"Action Test Epic"'
+            commandText: `story_graph.create_epic name:"${epicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Action Test Epic".create_sub_epic name:"Action SubEpic"'
+            commandText: `story_graph."${epicName}".create_sub_epic name:"${subEpicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Action Test Epic"."Action SubEpic".create_story name:"Target Story"'
+            commandText: `story_graph."${epicName}"."${subEpicName}".create_story name:"${storyName}"`
         });
         
-        // Verify Story exists
+        // Verify Story exists (stories are in story_groups)
         let data = await queryStoryGraph(testPanel);
-        let epic = data.epics.find(e => e.name === 'Action Test Epic');
-        let subEpic = epic.sub_epics.find(se => se.name === 'Action SubEpic');
-        let story = subEpic.stories.find(s => s.name === 'Target Story');
+        let epic = data.epics.find(e => e.name === epicName);
+        let subEpic = epic.sub_epics.find(se => se.name === subEpicName);
+        let stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        let story = stories.find(s => s.name === storyName);
         assert.ok(story, 'Target Story should exist');
         
         // SIMULATE: User clicks action button for story (e.g., "Create Scenario")
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Action Test Epic"."Action SubEpic"."Target Story".create_scenario name:"Generated Scenario"'
+            commandText: `story_graph."${epicName}"."${subEpicName}"."${storyName}".create_scenario name:"${scenarioName}"`
         });
         
         // Verify action command executed with story scope
-        assert.ok(testPanel.executedCommands.includes('story_graph."Action Test Epic"."Action SubEpic"."Target Story".create_scenario name:"Generated Scenario"'),
+        assert.ok(testPanel.executedCommands.includes(`story_graph."${epicName}"."${subEpicName}"."${storyName}".create_scenario name:"${scenarioName}"`),
             'System should identify target story node and execute action with story context');
         
         // Verify result was returned
@@ -1667,40 +1689,47 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         
         // Verify scenario was actually created in the graph
         data = await queryStoryGraph(testPanel);
-        epic = data.epics.find(e => e.name === 'Action Test Epic');
-        subEpic = epic.sub_epics.find(se => se.name === 'Action SubEpic');
-        story = subEpic.stories.find(s => s.name === 'Target Story');
+        epic = data.epics.find(e => e.name === epicName);
+        subEpic = epic.sub_epics.find(se => se.name === subEpicName);
+        stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        story = stories.find(s => s.name === storyName);
         assert.ok(story.scenarios && story.scenarios.length > 0, 
             'System should execute action and modify story graph');
-        const scenario = story.scenarios.find(sc => sc.name === 'Generated Scenario');
+        const scenario = story.scenarios.find(sc => sc.name === scenarioName);
         assert.ok(scenario, 'Generated Scenario should exist in Target Story');
     });
     
     await t.test('test_user_clicks_action_button_and_executes', async () => {
         const testPanel = createTestBotPanel();
         
+        // Use unique names to avoid conflicts with other tests
+        const epicName = uniqueTestName('Graph Modify Epic');
+        const subEpicName = uniqueTestName('Test SubEpic');
+        const storyName = uniqueTestName('Create Scenarios');
+        const scenarioName = uniqueTestName('New Scenario');
+        
         // Create Story structure first
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph.create_epic name:"Graph Modify Epic"'
+            commandText: `story_graph.create_epic name:"${epicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Graph Modify Epic".create name:"Test SubEpic"'
+            commandText: `story_graph."${epicName}".create name:"${subEpicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Graph Modify Epic"."Test SubEpic".create_story name:"Create Scenarios"'
+            commandText: `story_graph."${epicName}"."${subEpicName}".create_story name:"${storyName}"`
         });
         
         // Simulate action execution via webview message
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Graph Modify Epic"."Test SubEpic"."Create Scenarios".create_scenario name:"New Scenario"'
+            commandText: `story_graph."${epicName}"."${subEpicName}"."${storyName}".create_scenario name:"${scenarioName}"`
         });
         
         // Verify action command was executed through message handler
-        assert.ok(testPanel.executedCommands.includes('story_graph."Graph Modify Epic"."Test SubEpic"."Create Scenarios".create_scenario name:"New Scenario"'),
+        assert.ok(testPanel.executedCommands.includes(`story_graph."${epicName}"."${subEpicName}"."${storyName}".create_scenario name:"${scenarioName}"`),
             'Action command should be executed via message handler');
         
         // Verify result was sent back to webview
@@ -1709,12 +1738,14 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         
         // Verify scenario was actually created in the graph
         const data = await queryStoryGraph(testPanel);
-        const epic = data.epics.find(e => e.name === 'Graph Modify Epic');
-        const subEpic = epic.sub_epics.find(se => se.name === 'Test SubEpic');
-        const story = subEpic.stories.find(s => s.name === 'Create Scenarios');
+        const epic = data.epics.find(e => e.name === epicName);
+        const subEpic = epic.sub_epics.find(se => se.name === subEpicName);
+        // Stories are in story_groups now
+        const stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        const story = stories.find(s => s.name === storyName);
         assert.ok(story.scenarios && story.scenarios.length > 0, 
             'Scenario should be created in story graph');
-        const scenario = story.scenarios.find(sc => sc.name === 'New Scenario');
+        const scenario = story.scenarios.find(sc => sc.name === scenarioName);
         assert.ok(scenario, 'New Scenario should exist in Create Scenarios story');
     });
     
@@ -1731,31 +1762,39 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
          */
         const testPanel = createTestBotPanel();
         
+        // Use unique names to avoid conflicts with other tests
+        const epicName = uniqueTestName('Graph Modify Epic');
+        const subEpicName = uniqueTestName('Modify SubEpic');
+        const storyName = uniqueTestName('Story With Action');
+        const scenarioName = uniqueTestName('Generated Scenario');
+        
         // Create Story structure via message handler
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph.create_epic name:"Graph Modify Epic"'
+            commandText: `story_graph.create_epic name:"${epicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Graph Modify Epic".create_sub_epic name:"Modify SubEpic"'
+            commandText: `story_graph."${epicName}".create_sub_epic name:"${subEpicName}"`
         });
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Graph Modify Epic"."Modify SubEpic".create_story name:"Story With Action"'
+            commandText: `story_graph."${epicName}"."${subEpicName}".create_story name:"${storyName}"`
         });
         
         // Get initial state
         let data = await queryStoryGraph(testPanel);
-        let epic = data.epics.find(e => e.name === 'Graph Modify Epic');
-        let subEpic = epic.sub_epics.find(se => se.name === 'Modify SubEpic');
-        let story = subEpic.stories.find(s => s.name === 'Story With Action');
+        let epic = data.epics.find(e => e.name === epicName);
+        let subEpic = epic.sub_epics.find(se => se.name === subEpicName);
+        // Stories are in story_groups now
+        let stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        let story = stories.find(s => s.name === storyName);
         const initialScenarioCount = story.scenarios ? story.scenarios.length : 0;
         
         // SIMULATE: User executes action that modifies graph (e.g., creates scenarios)
         await testPanel.postMessageFromWebview({
             command: 'executeCommand',
-            commandText: 'story_graph."Graph Modify Epic"."Modify SubEpic"."Story With Action".create_scenario name:"Generated Scenario"'
+            commandText: `story_graph."${epicName}"."${subEpicName}"."${storyName}".create_scenario name:"${scenarioName}"`
         });
         
         // Verify action executed
@@ -1769,14 +1808,16 @@ test('TestSubmitActionScopedToStoryScope', { concurrency: false }, async (t) => 
         
         // Verify graph was modified via message handler query
         data = await queryStoryGraph(testPanel);
-        epic = data.epics.find(e => e.name === 'Graph Modify Epic');
-        subEpic = epic.sub_epics.find(se => se.name === 'Modify SubEpic');
-        story = subEpic.stories.find(s => s.name === 'Story With Action');
+        epic = data.epics.find(e => e.name === epicName);
+        subEpic = epic.sub_epics.find(se => se.name === subEpicName);
+        // Stories are in story_groups now
+        stories = subEpic.story_groups ? subEpic.story_groups.flatMap(sg => sg.stories || []) : [];
+        story = stories.find(s => s.name === storyName);
         
         // Verify modification occurred (scenario was added)
         assert.ok(story.scenarios && story.scenarios.length > initialScenarioCount,
             'System should modify story graph structure');
-        const generatedScenario = story.scenarios.find(sc => sc.name === 'Generated Scenario');
+        const generatedScenario = story.scenarios.find(sc => sc.name === scenarioName);
         assert.ok(generatedScenario, 
             'System should save updated graph with Generated Scenario');
     });
@@ -2416,155 +2457,3 @@ test('TestSaveStoryMapChangesAsynchronously', { concurrency: false }, async (t) 
     }
 });
 
-// ============================================================================
-// STORY: Submit Current Behavior Action For Selected Node
-// Maps to: TestSubmitCurrentBehaviorActionForSelectedNode in test_submit_scoped_action.py
-// ============================================================================
-test('TestSubmitCurrentBehaviorActionForSelectedNode', { concurrency: false }, async (t) => {
-    
-    await t.test('test_panel_submit_button_uses_current_behavior_action_and_submits_instructions', async () => {
-        /**
-         * SCENARIO: Panel submit button uses current behavior action and submits instructions
-         * GIVEN: User has selected a <node_type> <node_name> in the panel
-         * AND: Bot has current behavior <behavior>
-         * AND: Bot has current action <action>
-         * AND: Panel displays behavior <behavior> and action <action> for selected node
-         * WHEN: Panel renders the submit button
-         * THEN: Submit button displays <icon_file> icon indicating <behavior> behavior
-         * WHEN: User hovers over the submit button
-         * THEN: Submit button shows tooltip <tooltip_text>
-         * WHEN: User clicks the submit button
-         * THEN: Panel calls node.get_required_behavior_instructions with action <action>
-         * AND: Instructions for <behavior> behavior and <action> action are returned
-         * AND: Panel sets scope to selected <node_type> <node_name>
-         * AND: Scope is set to <node_type> <node_name>
-         */
-        const examples = [
-            { node_type: 'epic', node_name: 'Product Catalog', behavior: 'shape', action: 'build', icon_file: 'submit_subepic.png', tooltip_text: 'Submit shape instructions for epic' },
-            { node_type: 'sub-epic', node_name: 'Report Export', behavior: 'explore', action: 'build', icon_file: 'submit_story.png', tooltip_text: 'Submit exploration instructions for sub-epic' },
-            { node_type: 'story', node_name: 'Create User', behavior: 'scenario', action: 'build', icon_file: 'submit_ac.png', tooltip_text: 'Submit scenario instructions for story' },
-            { node_type: 'story', node_name: 'Delete File', behavior: 'test', action: 'validate', icon_file: 'submit_tests.png', tooltip_text: 'Submit test instructions for story' },
-            { node_type: 'story', node_name: 'Upload File', behavior: 'code', action: 'build', icon_file: 'submit_code.png', tooltip_text: 'Submit code instructions for story' }
-        ];
-        
-        for (const example of examples) {
-            const testPanel = createTestBotPanel();
-            
-            // Reset scope to 'all' before each test to avoid cross-contamination
-            await testPanel.postMessageFromWebview({
-                command: 'executeCommand',
-                commandText: 'scope.set_scope_to_all'
-            });
-            await new Promise(resolve => setTimeout(resolve, 50));
-            
-            // Given - Create node structure based on node_type
-            const nodePath = await createNodeAndGetPath(testPanel, example.node_type, example.node_name);
-            
-            // Set bot to current behavior and action
-            await testPanel.postMessageFromWebview({
-                command: 'executeCommand',
-                commandText: `bot.behaviors.navigate_to name:"${example.behavior}"`
-            });
-            await testPanel.postMessageFromWebview({
-                command: 'executeCommand',
-                commandText: `bot.behaviors.current.actions.navigate_to name:"${example.action}"`
-            });
-            
-            // Render panel HTML (use backendPanel which is a PanelView instance)
-            const view = new StoryMapView(backendPanel);
-            const html = await view.render();
-            
-            // Then - Verify submit button displays correct icon
-            // Map behavior names to their data attribute names (explore -> exploration)
-            const behaviorToDataAttr = {
-                'explore': 'exploration',
-                'scenario': 'scenarios',
-                'test': 'tests',
-                'shape': 'shape',
-                'code': 'code'
-            };
-            const dataAttrName = behaviorToDataAttr[example.behavior] || example.behavior;
-            
-            const iconPattern = example.icon_file.replace('.png', '');
-            const hasIcon = html.includes(iconPattern) || 
-                           html.includes('data-' + dataAttrName + '-icon') ||
-                           html.includes('data-' + example.behavior + '-icon') ||
-                           html.includes(example.behavior);
-            assert.ok(hasIcon, 
-                `Submit button should display ${example.icon_file} icon for ${example.behavior} behavior. ` +
-                `Checked for: ${iconPattern}, data-${dataAttrName}-icon, data-${example.behavior}-icon`);
-            
-            // Verify tooltip is correct (check for behavior name in tooltip or data attribute)
-            const tooltipPattern = example.tooltip_text.toLowerCase();
-            const htmlLower = html.toLowerCase();
-            const hasTooltip = htmlLower.includes(tooltipPattern) || 
-                              html.includes('data-' + dataAttrName + '-tooltip') ||
-                              html.includes('data-' + example.behavior + '-tooltip') ||
-                              (htmlLower.includes(example.behavior) && htmlLower.includes('submit')) ||
-                              (htmlLower.includes(dataAttrName) && htmlLower.includes('submit'));
-            assert.ok(hasTooltip,
-                `Submit button should show tooltip "${example.tooltip_text}". ` +
-                `Checked for: "${tooltipPattern}", data-${dataAttrName}-tooltip, data-${example.behavior}-tooltip. ` +
-                `HTML sample: ${html.substring(0, 500)}`);
-            
-            // When - Simulate clicking submit button (via handleSubmit)
-            // The handleSubmit function uses window.selectedNode, so we need to simulate node selection
-            // In the actual panel, selectNode sets window.selectedNode with behavior
-            // For testing, we'll directly call submit_current_instructions which uses current behavior/action
-            const commandText = `${nodePath}.submit_current_instructions`;
-            
-            const result = await executeViaEventHandler(testPanel, commandText);
-            
-            // Then - Verify command was executed and instructions were submitted
-            assert.ok(result.commandExecuted, `Panel should call node.submit_current_instructions`);
-            assert.ok(result.success, `Submit command should succeed`);
-            
-            // Verify scope is set to selected node (submit_current_instructions sets scope automatically)
-            // Query scope via CLI command and verify it matches the selected node
-            await testPanel.postMessageFromWebview({
-                command: 'executeCommand',
-                commandText: 'scope'
-            });
-            
-            // Wait for response
-            await new Promise(resolve => setTimeout(resolve, 200));
-            
-            // Find the scope response in sent messages
-            const scopeResponse = testPanel.sentMessages
-                .slice()
-                .reverse()
-                .find(msg => msg.command === 'commandResult' && msg.data?.result);
-            
-            if (scopeResponse && scopeResponse.data.result) {
-                const resultData = scopeResponse.data.result;
-                const scopeData = typeof resultData === 'string' ? JSON.parse(resultData) : resultData;
-                
-                // Handle different response structures - scope can be nested or direct
-                const scope = scopeData.scope || scopeData.result?.scope || scopeData;
-                
-                // Scope type can be in scope.type.value, scope.type, or scope.filter indicates the node name
-                const scopeType = scope?.type?.value || scope?.type;
-                const scopeFilter = scope?.filter || '';
-                
-                // Normalize node_type for comparison (sub-epic -> sub_epic)
-                const expectedType = example.node_type === 'sub-epic' ? 'sub_epic' : example.node_type;
-                
-                // For epic nodes, the scope might use filter instead of type
-                // Check if filter matches the node name as a fallback
-                const filterMatches = scopeFilter && scopeFilter.includes(example.node_name);
-                const typeMatches = scopeType === expectedType;
-                
-                // Accept if either type matches OR filter matches (for epic nodes, filter may be used)
-                if (!typeMatches && !filterMatches) {
-                    assert.fail(
-                        `Scope should be set to ${expectedType} (or filter should include "${example.node_name}"). ` +
-                        `Got type: ${scopeType}, filter: ${scopeFilter}. Full scope data: ${JSON.stringify(scopeData)}`
-                    );
-                }
-            } else {
-                // If we can't find scope response, at least verify the submit command executed
-                console.warn(`[TEST] Could not verify scope for ${example.node_type} ${example.node_name}, but submit command executed`);
-            }
-        }
-    });
-});

@@ -1,8 +1,6 @@
 {
-  "type": "story",
-  "value": [
-    "Generate CLI"
-  ],
+  "type": "showAll",
+  "value": [],
   "exclude": [],
   "skiprule": []
 }
